@@ -22,7 +22,7 @@ public class SanPhamController {
     private SanPhamService sanPhamService;
     @GetMapping("/hien_thi")
     public ResponseEntity<List<Map<String, Object>>> hienthi() {
-        List<Object[]> results = sanPhamService.getAllSanPham();
+        List<Object[]> results = sanPhamService.getAllSanPhams();
         List<Map<String, Object>> responseList = new ArrayList<>();
 
         for (Object[] result : results) {
@@ -59,6 +59,9 @@ public class SanPhamController {
             map.put("tenDanhMuc", row[2]);
             map.put("tenLoaiVoucher", row[3]);
             map.put("trangThai", row[4]);
+            map.put("mauSac", row[5]);
+            map.put("kichThuoc", row[6]);
+            map.put("chatLieu", row[7]);
             return map;
         }).collect(Collectors.toList());
     }

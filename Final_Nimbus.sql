@@ -176,7 +176,6 @@ go
 CREATE TABLE [san_pham_chi_tiet] (
   [Id_san_pham_chi_tiet] INT PRIMARY KEY IDENTITY(1,1),
   [so_luong] INT NOT NULL,
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [trang_thai] BIT DEFAULT 1,
   [mo_ta] NVARCHAR(MAX),
