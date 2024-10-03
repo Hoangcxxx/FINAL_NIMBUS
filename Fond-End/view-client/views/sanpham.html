@@ -44,17 +44,17 @@
             <div class="home-title-block" id="home-title">
                 <h2 class="home-title">KHÁM PHÁ CỬA HÀNG CỦA CHÚNG TÔI</h2>
                 <div class="menu-container">
-                    <div class="menu-item" ng-repeat="item in products">
+                    <div class="menu-item" ng-repeat="item in dsSanPham" >
                         <image ng-src="{{item.urlAnh}}" alt="image" class="menu-image">
                             <h3 class="menu-name"><strong>{{item.tenSanPham}}</strong></h3>
                             <!-- In đậm bằng <strong> -->
                             <p class="menu-description"><span style="font-size: 90%">{{item.moTa}}</span></p>
                             <!-- Mô tả to hơn <small> -->
                             <p class="menu-price">{{item.giaBan}}</p>
-                            <button class="order-btn" type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#exampleModal">
-                                <i class="fa-solid fa-cart-shopping"></i> ĐẶT HÀNG
-                            </button>
+                            <a href="" class="order-btn"   ng-click="onclickSanPham(item.IdSanPham)"
+                                class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal"><i
+                                    class="fa-solid fa-cart-shopping"></i> ĐẶT HÀNG
+                            </a>
                     </div>
                 </div>
             </div>
@@ -66,3 +66,60 @@
     </div>
 </main>
 
+
+
+
+
+
+
+<!-- Modal Thông tin sản phẩm -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-center">
+          <h5 class="modal-title" id="exampleModalLabel">Thông tin chi tiết sản phẩm</h5>
+          <button type="button" class="btn btn-close btn-danger" data-bs-dismiss="modal" aria-label="Close">
+            <i class="fas fa-circle-xmark" style="font-size: 30px;"></i>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <img src="./assets/img/products/ao-thun-nam.jpeg" alt="Áo thun nam" class="img-fluid product-image">
+          <h2 class="product-title mt-3">Áo thun nam cổ tròn</h2>
+          <div class="product-control">
+            <div class="priceBox">
+              <span class="current-price">250.000&nbsp;₫</span>
+            </div>
+            <div class="buttons_added">
+              <input class="minus is-form" type="button" value="-" onclick="decreasingNumber(this)">
+              <input class="input-qty" max="100" min="1" type="number" value="1">
+              <input class="plus is-form" type="button" value="+" onclick="increasingNumber(this)">
+            </div>
+          </div>
+          <p class="product-description mt-2">Áo thun nam cổ tròn, chất liệu cotton mềm mại, thoáng mát, phù hợp cho cả đi
+            chơi và đi làm. Thiết kế đơn giản nhưng trẻ trung, dễ phối đồ với quần jeans hoặc quần short.</p>
+          <div class="notebox mt-3">
+            <p class="notebox-title">Ghi chú</p>
+            <textarea class="text-note" id="popup-detail-note" placeholder="Nhập thông tin cần lưu ý..."
+              rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="price-total">
+            <span class="thanhtien">Thành tiền</span>
+            <span class="price">250.000&nbsp;₫</span>
+          </div>
+          <div class="modal-footer-control">
+            <a href="#!thanh_toan">
+              <button class="button-dathangngay btn btn-success" data-product="1" data-bs-dismiss="modal">Đặt hàng
+                ngay</button>
+            </a>
+            <button class="button-dat btn btn-primary" id="add-cart" onclick="animationCart()" data-bs-dismiss="modal">
+              <i class="fa-light fa-basket-shopping"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  

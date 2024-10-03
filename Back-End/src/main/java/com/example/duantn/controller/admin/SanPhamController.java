@@ -41,11 +41,33 @@ public class SanPhamController {
         }).collect(Collectors.toList());
     }
 
-    @GetMapping("/findSanPham/{id}")
-    public ResponseEntity<SanPham> getSanPham(@PathVariable Integer id) {
-        SanPham sanPham = sanPhamService.getSanPhamById(id);
-        return sanPham != null ? ResponseEntity.ok(sanPham) : ResponseEntity.notFound().build();
+    @GetMapping("/findSanPham/{idSanPham}")
+    public ResponseEntity<Map<String, Object>> getSanPham(@PathVariable Integer idSanPham) {
+        List<Object[]> sanPhamDetails = sanPhamService.getSanPhamById(idSanPham);
+
+        if (sanPhamDetails.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        Object[] row = sanPhamDetails.get(0); // Lấy thông tin sản phẩm đầu tiên
+        map.put("idSanPham", row[0]);
+        map.put("tenSanPham", row[1]);
+        map.put("soLuong", row[2]);
+        map.put("giaBan", row[3]);
+        map.put("moTa", row[4]);
+        map.put("tenDanhMuc", row[5]);
+        map.put("tenLoaiVoucher", row[6]);
+        map.put("trangThai", row[7]);
+        map.put("mauSac", row[8]);
+        map.put("kichThuoc", row[9]);
+        map.put("chatLieu", row[10]);
+        map.put("urlAnh", row[11]);
+
+        return ResponseEntity.ok(map);
     }
+
+
 
     @GetMapping("/findDanhMuc/{idDanhMuc}") // Thêm endpoint mới
     public ResponseEntity<List<Map<String, Object>>> getSanPhamsByDanhMuc(@PathVariable Integer idDanhMuc) {
