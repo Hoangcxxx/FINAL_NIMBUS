@@ -14,6 +14,6 @@ window.TrangchuController = function ($scope, $http) {
             console.error('Error fetching data:', error);
         });
     }
-    fetchData('http://localhost:8080/api/san_pham/hien_thi', 'products');
+    fetchData('http://localhost:8080/api/san_pham', 'products');
 };
    

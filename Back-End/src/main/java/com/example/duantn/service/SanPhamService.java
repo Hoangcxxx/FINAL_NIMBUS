@@ -4,6 +4,7 @@ import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,6 +19,10 @@ public class SanPhamService {
 
     public SanPham getSanPhamById(Integer id) {
         return sanPhamRepository.findById(id).orElse(null);
+    }
+
+    public List<Object[]> getSanPhamsByDanhMuc(Integer idDanhMuc) {
+        return sanPhamRepository.getSanPhamByDanhMuc(idDanhMuc); // Trả về danh sách từ repository
     }
 
     public SanPham createSanPham(SanPham sanPham) {

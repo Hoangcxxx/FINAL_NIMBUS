@@ -20,35 +20,7 @@ import java.util.stream.Collectors;
 public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
-    @GetMapping("/hien_thi")
-    public ResponseEntity<List<Map<String, Object>>> hienthi() {
-        List<Object[]> results = sanPhamService.getAllSanPhams();
-        List<Map<String, Object>> responseList = new ArrayList<>();
 
-        for (Object[] result : results) {
-            if (result.length < 5) continue; // Kiểm tra số lượng trường
-
-            Map<String, Object> responseMap = new HashMap<>();
-
-            // Lấy thông tin sản phẩm từ Object[]
-            Integer idSanPham = (Integer) result[0];
-            String tenSanPham = (String) result[1];
-            String moTa = (String) result[2];
-            BigDecimal giaBan = (BigDecimal) result[3];
-            String urlAnh = (String) result[4];
-
-            // Thêm thông tin vào map
-            responseMap.put("idSanPham", idSanPham);
-            responseMap.put("tenSanPham", tenSanPham);
-            responseMap.put("moTa", moTa);
-            responseMap.put("giaBan", giaBan.toString());
-            responseMap.put("urlAnh", urlAnh);
-
-            responseList.add(responseMap);
-        }
-
-        return ResponseEntity.ok(responseList);
-    }
     @GetMapping
     public List<Map<String, Object>> getAllSanPhams() {
         List<Object[]> results = sanPhamService.getAllSanPhams();
@@ -56,22 +28,49 @@ public class SanPhamController {
             Map<String, Object> map = new HashMap<>();
             map.put("tenSanPham", row[0]);
             map.put("soLuong", row[1]);
-            map.put("tenDanhMuc", row[2]);
-            map.put("tenLoaiVoucher", row[3]);
-            map.put("trangThai", row[4]);
-            map.put("mauSac", row[5]);
-            map.put("kichThuoc", row[6]);
-            map.put("chatLieu", row[7]);
+            map.put("giaBan", row[2]);
+            map.put("moTa", row[3]);
+            map.put("tenDanhMuc", row[4]);
+            map.put("tenLoaiVoucher", row[5]);
+            map.put("trangThai", row[6]);
+            map.put("mauSac", row[7]);
+            map.put("kichThuoc", row[8]);
+            map.put("chatLieu", row[9]);
+            map.put("urlAnh", row[10]);
             return map;
         }).collect(Collectors.toList());
     }
 
-
-    @GetMapping("/{id}")
+    @GetMapping("/findSanPham/{id}")
     public ResponseEntity<SanPham> getSanPham(@PathVariable Integer id) {
         SanPham sanPham = sanPhamService.getSanPhamById(id);
         return sanPham != null ? ResponseEntity.ok(sanPham) : ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/findDanhMuc/{idDanhMuc}") // Thêm endpoint mới
+    public ResponseEntity<List<Map<String, Object>>> getSanPhamsByDanhMuc(@PathVariable Integer idDanhMuc) {
+        List<Object[]> results = sanPhamService.getSanPhamsByDanhMuc(idDanhMuc);
+
+        List<Map<String, Object>> sanPhams = results.stream().map(row -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("tenSanPham", row[0]);
+            map.put("soLuong", row[1]);
+            map.put("giaBan", row[2]);
+            map.put("moTa", row[3]);
+            map.put("tenDanhMuc", row[4]);
+            map.put("tenLoaiVoucher", row[5]);
+            map.put("trangThai", row[6]);
+            map.put("mauSac", row[7]);
+            map.put("kichThuoc", row[8]);
+            map.put("chatLieu", row[9]);
+            map.put("urlAnh", row[10]); // Thêm trường hình ảnh sản phẩm
+            return map;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(sanPhams);
+    }
+
+
 
     @PostMapping
     public ResponseEntity<SanPham> createSanPham(@RequestBody SanPham sanPham) {
