@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -17,7 +18,7 @@ public class SanPhamService {
         return sanPhamRepository.getAllSanPham();
     }
 
-    public List<Object[]> getSanPhamById(Integer idSanPham) {
+    public List<Object[]> getSanPhamById(String idSanPham) {
         return sanPhamRepository.getSanPhamById(idSanPham);
     }
 
@@ -26,6 +27,8 @@ public class SanPhamService {
     }
 
     public SanPham createSanPham(SanPham sanPham) {
+        sanPham.setNgayTao(new Date());
+        sanPham.setNgayCapNhat(new Date());
         return sanPhamRepository.save(sanPham);
     }
 

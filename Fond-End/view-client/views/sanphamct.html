@@ -1,0 +1,79 @@
+<div class="container">
+    <section class="py-5" style="margin-top: 100px;">
+        <h5 class="fw-bold mb-5" style="color: #47357B;">
+            <a href="#!san_pham"><i class="fas fa-angle-left me-2"></i>Back to shopping</a>
+        </h5>
+
+        <div class="container my-5">
+            <div class="row gx-4 gx-lg-5 align-items-start">
+                <div class="col-md-1" style="padding-left: 0px; padding-right: 0px;">
+                    <div class="align-items-start mb-2">
+                        <div class="mb-3" ng-repeat="anh in anhSanPham track by $index">
+                            <img class="d-block w-100" ng-src="{{anh.urlAnh}}" alt="Ảnh sản phẩm"
+                                style="cursor:pointer;" ng-click="currentDiv($index + 1)">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item mySlides" ng-repeat="anh in anhSanPham track by $index"
+                                ng-class="{'active': $index === 0}">
+                                <img class="d-block w-100" ng-src="{{anh.urlAnh}}" alt="Ảnh sản phẩm" />
+                            </div>
+                        </div>
+
+                        <!-- Dots -->
+                        <div class="dots">
+                            <span class="demo" ng-repeat="anh in anhSanPham track by $index"
+                                ng-click="currentDiv($index + 1)"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5 d-flex flex-column" style="padding-left: 0px;padding-right: 0px;">
+                    <h1 class="display-5 fw-bolder">{{sanPhamChiTiet.tenSanPham}}</h1>
+                    <div class="fs-5">
+                        <h3><span>{{sanPhamChiTiet.giaBan | currency}}</span></h3>
+                    </div>
+                    <div>
+                        <p class="lead"> <b>Thông Tin Sản Phẩm</b>
+                            <br> - Kích thước: {{sanPhamChiTiet.kichThuoc}}
+                            <br> - Màu sắc: {{sanPhamChiTiet.mauSac}}
+                            <br> - Mô tả: {{sanPhamChiTiet.moTa}}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="product-info-tabs mt-5">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab"
+                        aria-controls="description" aria-selected="true">{{sanPhamChiTiet.moTa}}</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="description" role="tabpanel"
+                    aria-labelledby="description-tab">
+                    <p>THÔNG SỐ KỸ THUẬT SẢN PHẨM: <br>
+                        - Kích cỡ: 1-2cm <br>
+                        ✔Quy trình sản xuất: Đá được gom lại từ các phần dư thừa khi chế tác các sản phẩm nguyên khối
+                        to, sau đó được gia công làm nhỏ và cho vào máy rung để tạo độ bóng mịn cho đá.</p>
+                    <p>CÔNG DỤNG LỢI ÍCH: <br>
+                        ✔ Dùng để trấn trạch: sẽ được rải tại các vị trí đặc biệt trong nhà: nền nhà, bậc tam cấp, cổng
+                        ra vào, chỗ đặt bàn thờ, các góc nhà, bàn tiếp khách, dùng để trang trí cây cảnh, lót giường, để
+                        tủ, bàn học....
+                        Trang trí chậu cây cảnh, bàn học, lọ hoa..</p>
+                    <p>CHẾ ĐỘ BẢO HÀNH: <br>
+                        ✔ SHOP cam kết với khách hàng: <br>
+                        ✔Sản phẩm là đá tự nhiên, nếu khách hàng phát hiện không phải là đá thật shop xin hoàn tiền 10
+                        lần <br>
+                        ✔Hỗ trợ khách hàng đổi sản phẩm miễn phí trong 7 ngày nếu có lỗi.
+                        ✔Chất lượng đặt nên hàng đầu <br>
+                        <br> LH: 0918829273
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

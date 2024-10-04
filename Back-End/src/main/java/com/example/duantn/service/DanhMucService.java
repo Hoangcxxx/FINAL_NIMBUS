@@ -18,6 +18,8 @@ public class DanhMucService {
     }
 
     public com.example.duantn.entity.DanhMuc createDanhMuc(com.example.duantn.entity.DanhMuc DanhMuc) {
+        DanhMuc.setNgayTao(new Date());
+        DanhMuc.setNgayCapNhat(new Date());
         return danhMucRepository.save(DanhMuc);
     }
 

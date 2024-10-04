@@ -21,6 +21,7 @@
     <!-- Bootstrap CSS -->
     <!-- Font Awesome -->
     <link rel="stylesheet" href="lib/all.min.css">
+    <link rel="stylesheet" href="assets/css/w3.css">
     <script src="lib/bootstrap.js"></script>
     <script src="lib/font-fontawesome-ae333ffef2.js"></script>
     <script src="lib/angular.js"></script>
@@ -30,6 +31,7 @@
     <script src="view-client/controllers/ThanhtoanController.js"></script>
     <script src="view-client/controllers/TrangchuController.js"></script>
     <script src="view-client/controllers/LoginController.js"></script>
+    <script src="view-client/controllers/SanPhamCTController.js"></script>
 </head>
 
 <body ng-app="myApp">
@@ -51,6 +53,10 @@
                 .when("/san_pham", {
                     templateUrl: "view-client/views/sanpham.html",
                     controller: SanPhamController
+                })
+                .when("/san_pham_ct/:id", {
+                    templateUrl: "view-client/views/sanphamct.html",
+                    controller: SanPhamCTController
                 })
                 .when("/login", {
                     templateUrl: "view-client/views/login.html",
@@ -77,9 +83,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="./js/initialization.js"></script>
     <script src="./js/main.js"></script>
-    <script src="./js/checkout.js"></script>
     <script src="./js/toast-message.js"></script>
 </body>
 

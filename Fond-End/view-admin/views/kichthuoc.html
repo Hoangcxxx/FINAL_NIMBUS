@@ -27,7 +27,7 @@
                 </div>
 
                 <div class="admin-control-right">
-                    <button class="btn-control-large" id="btn-cancel-product" onclick="hienThiModalThemSanPham()"><i
+                    <button class="btn-control-large" id="btn-cancel-product" onclick="hienThiModalThemKichThuoc()"><i
                             class="fa-light fa-rotate-right"></i> Làm mới</button>
                     <button type="button" class="btn-control-large" data-toggle="modal"
                         data-target="#addKichThuocModal">
@@ -58,8 +58,9 @@
                                         <td>{{item.ngayTao | date:'shortDate'}}</td>
                                         <td>{{item.ngayCapNhat | date:'shortDate'}}</td>
                                         <td>
-                                            <a href="#" class="btn btn-warning btn-sm"
-                                                ng-click="chinhSuaKichThuoc(item)">
+                                            <a class="btn btn-warning btn-sm" data-toggle="modal"
+                                                data-target="#updateKichThuocModal"
+                                                ng-click="getKichThuocById(item.id)">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </td>
@@ -75,7 +76,16 @@
 </main>
 
 
-
+<div ng-controller="KichThuocController">
+    <table>
+        <tr ng-repeat="item in dsKichThuoc">
+            <td>{{item.tenKichThuoc}}</td>
+            <td>
+                <button ng-click="editKichThuoc(item.id)">Chỉnh sửa</button>
+            </td>
+        </tr>
+    </table>
+</div>
 
 
 
@@ -94,16 +104,47 @@
                 <form id="productForm">
                     <div class="form-group">
                         <label for="ten_kich_thuoc">Tên Kích thước:</label>
-                        <input type="text" class="form-control" ng-model="kichthuoc.tenKichThuoc" id="ten_kich_thuoc"
+                        <input type="text" class="form-control" ng-model="KichThuoc.tenKichThuoc" id="ten_kich_thuoc"
                             required>
                     </div>
 
                     <div class="form-group">
                         <label for="mo_ta">Mô Tả:</label>
-                        <textarea class="form-control" ng-model="kichthuoc.moTa" id="mo_ta"></textarea>
+                        <textarea class="form-control" ng-model="KichThuoc.moTa" id="mo_ta"></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Thêm Kích Thước</button>
+                    <button type="submit" ng-click="onCreate()" class="btn btn-primary">Thêm Kích Thước</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chỉnh sửa Kích Thước -->
+<div class="modal fade" id="updateKichThuocModal" tabindex="-1" role="dialog"
+    aria-labelledby="updateKichThuocModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateKichThuocModalLabel">Chỉnh sửa kích thước</h5>
+                <button class="modal-close product-form" data-dismiss="modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="ten_kich_thuoc">Tên Kích thước:</label>
+                        <input type="text" class="form-control" ng-model="KichThuoc.tenKichThuoc" id="ten_kich_thuoc"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mo_ta">Mô Tả:</label>
+                        <textarea class="form-control" ng-model="KichThuoc.moTa" id="mo_ta"></textarea>
+                    </div>
+
+                    <button type="submit" ng-click="onUpdate()" class="btn btn-primary">Chỉnh sửa kích Thước</button>
                 </form>
             </div>
         </div>

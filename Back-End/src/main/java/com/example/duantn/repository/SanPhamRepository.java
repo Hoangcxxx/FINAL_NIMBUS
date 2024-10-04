@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Query(value = "SELECT " +
+            "    sp.id_san_pham AS idSanPham, " +
             "    sp.ten_san_pham AS tenSanPham, " +
             "    sct.so_luong AS soLuong, " +
             "    sp.gia_ban AS giaBan, " +
@@ -97,10 +98,10 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
             "    dm.ten_danh_muc AS tenDanhMuc, " +
             "    lv.ten_loai_voucher AS tenLoaiVoucher, " +
             "    sct.trang_thai AS trangThai, " +
-            "    msc.ten_mau_sac AS tenMauSac, " +   // Màu sắc
-            "    kt.ten_kich_thuoc AS tenKichThuoc, " + // Kích thước
-            "    cl.ten_chat_lieu AS tenChatLieu, " + // Chất liệu
-            "    hasp.url_anh AS urlAnh " + // Hình ảnh sản phẩm
+            "    msc.ten_mau_sac AS tenMauSac, " +
+            "    kt.ten_kich_thuoc AS tenKichThuoc, " +
+            "    cl.ten_chat_lieu AS tenChatLieu, " +
+            "    hasp.url_anh AS urlAnh " +
             "FROM " +
             "    san_pham sp " +
             "JOIN " +
@@ -123,9 +124,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
             "    chat_lieu cl ON clt.id_chat_lieu = cl.Id_chat_lieu " +
             "LEFT JOIN " +
             "    hinh_anh_san_pham hasp ON sp.Id_san_pham = hasp.id_san_pham " +
-            "WHERE sp.Id_san_pham = :idSanPham", // Điều kiện WHERE để lọc theo idSanPham
+            "WHERE sp.id_san_pham = :idSanPham", // Thêm điều kiện WHERE để lọc theo ma_san_pham
             nativeQuery = true)
-    List<Object[]> getSanPhamById(@Param("idSanPham") int idSanPham);
-
-
+    List<Object[]> getSanPhamById(@Param("idSanPham") String idSanPham);
 }

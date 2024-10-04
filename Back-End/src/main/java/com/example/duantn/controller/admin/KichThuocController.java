@@ -39,4 +39,11 @@ public class KichThuocController {
         kichThuocService.deleteKichThuoc(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    // Thêm endpoint để lấy chi tiết kích thước
+    @GetMapping("/{id}")
+    public ResponseEntity<KichThuoc> getKichThuocById(@PathVariable Integer id) {
+        KichThuoc kichThuoc = kichThuocService.getKichThuocById(id);
+        return new ResponseEntity<>(kichThuoc, HttpStatus.OK);
+    }
 }
