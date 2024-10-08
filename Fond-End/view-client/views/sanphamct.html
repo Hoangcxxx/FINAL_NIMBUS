@@ -42,6 +42,27 @@
                             <br> - Mô tả: {{sanPhamChiTiet.moTa}}
                         </p>
                     </div>
+
+                    <!-- Buttons for adding to cart and checkout -->
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center btn btn-danger">
+                                <div class="cart-icon-menu me-2" style="position: relative;">
+                                    <i class="fa-light fa-basket-shopping" style="font-size: 24px; color: #ffffff;"></i>
+                                </div>
+                                <span style="color: #fbfbfb; font-weight: 500; cursor: pointer;padding-left: 15px;"
+                                    onclick="openCart()">Giỏ hàng</span>
+                            </div>
+                            <a href="#!thanh_toan">
+                                <button class="btn btn-success ms-2"
+                                    style="background-color: #28a745; border: none; padding: 10px 20px; font-size: 23px;"
+                                    ng-click="checkout()">
+                                    <i class="fas fa-check me-3" style="padding-right: 10px;"></i>Thanh toán
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
