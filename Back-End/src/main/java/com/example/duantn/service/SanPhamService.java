@@ -4,16 +4,14 @@ import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
 public class SanPhamService {
     @Autowired
     private SanPhamRepository sanPhamRepository;
-
     public List<Object[]> getAllSanPhams() {
         return sanPhamRepository.getAllSanPham();
     }

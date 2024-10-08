@@ -1,4 +1,4 @@
-package com.example.duantn.controller.admin;
+package com.example.duantn.controller.client;
 
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.service.SanPhamChiTietService;

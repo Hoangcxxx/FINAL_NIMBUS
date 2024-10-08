@@ -30,7 +30,6 @@
     <script src="view-client/controllers/SanPhamController.js"></script>
     <script src="view-client/controllers/ThanhtoanController.js"></script>
     <script src="view-client/controllers/TrangchuController.js"></script>
-    <script src="view-client/controllers/LoginController.js"></script>
     <script src="view-client/controllers/SanPhamCTController.js"></script>
 </head>
 
@@ -57,10 +56,6 @@
                 .when("/san_pham_ct/:id", {
                     templateUrl: "view-client/views/sanphamct.html",
                     controller: SanPhamCTController
-                })
-                .when("/login", {
-                    templateUrl: "view-client/views/login.html",
-                    controller: LoginController
                 })
                 .when("/hoa_don", {
                     templateUrl: "view-client/views/hoadon.html",

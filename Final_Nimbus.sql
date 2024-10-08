@@ -66,7 +66,6 @@ CREATE TABLE [danh_muc] (
 go
 CREATE TABLE [san_pham] (
   [Id_san_pham] INT PRIMARY KEY IDENTITY(1,1),
-  [ma_san_pham] NVARCHAR(100) NOT NULL,
   [ten_san_pham] NVARCHAR(100) NOT NULL,
   [gia_ban] DECIMAL(18,2) NOT NULL,
   [ngay_tao] DATETIME DEFAULT GETDATE(),
@@ -153,11 +152,12 @@ CREATE TABLE [mau_sac_chi_tiet] (
 );
 go
 CREATE TABLE [gio_hang] (
-  [Id_gio_hang] INT PRIMARY KEY IDENTITY(1,1),
-  [id_nguoi_dung] INT,
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [trang_thai] BIT DEFAULT 1,
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+    [Id_gio_hang] INT PRIMARY KEY IDENTITY(1,1),
+    [id_nguoi_dung] INT,
+    [ngay_tao] DATETIME DEFAULT GETDATE(),
+    [trang_thai] BIT DEFAULT 1,
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY ([id_nguoi_dung]) REFERENCES nguoi_dung(Id_nguoi_dung)
 );
 go
 CREATE TABLE [gio_hang_chi_tiet] (
@@ -177,6 +177,7 @@ go
 CREATE TABLE [san_pham_chi_tiet] (
   [Id_san_pham_chi_tiet] INT PRIMARY KEY IDENTITY(1,1),
   [so_luong] INT NOT NULL,
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [trang_thai] BIT DEFAULT 1,
   [mo_ta] NVARCHAR(MAX),
@@ -311,15 +312,17 @@ CREATE TABLE [hoa_don_chi_tiet] (
 go
 CREATE TABLE [hinh_anh_san_pham] (
   [Id_hinh_anh_san_pham] INT PRIMARY KEY IDENTITY(1,1),
-  [id_san_pham] INT,
+  [id_san_pham_chi_tiet] INT,
   [url_anh] NVARCHAR(255) NOT NULL,
   [mo_ta] NVARCHAR(MAX),
   [trang_thai] BIT DEFAULT 1,
+  [thu_tu] INT,
+  [loai_hinh_anh] NVARCHAR(50),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
-  CONSTRAINT [FK_hinh_anh_san_pham_id_san_pham]
-    FOREIGN KEY ([id_san_pham])
-      REFERENCES [san_pham]([Id_san_pham])
+  CONSTRAINT [FK_hinh_anh_san_pham_id_san_pham_chi_tiet]
+    FOREIGN KEY ([id_san_pham_chi_tiet])
+      REFERENCES [san_pham_chi_tiet]([Id_san_pham_chi_tiet])
 );
 go
 CREATE TABLE [xac_thuc] (
@@ -532,69 +535,69 @@ go
 
 
 -- Insert data for san_pham
-INSERT INTO san_pham (ma_san_pham, ten_san_pham, gia_ban, mo_ta, id_danh_muc, id_loai_voucher) VALUES 
-(N'AP001', N'Áo phông hình bàn tay', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP002', N'Áo phông butterfly', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP003', N'Áo phông cotton', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP004', N'Áo phông ENJOYABLE', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP005', N'Áo phông loang', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP006', N'Áo phông holiday 1961', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP007', N'Áo phông nam nữ 1984', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP008', N'Áo phông nam nữ oversize', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP009', N'Áo phông tay lỡ', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP010', N'Áo phông thể thao', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
-(N'AP011', N'Áo phông SPORT FASHION', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc,id_loai_voucher) VALUES 
+(N'Áo phông hình bàn tay',120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông butterfly',  120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông cotton',  120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông ENJOYABLE',120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông loang',  120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông holiday 1961', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông nam nữ 1984', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông nam nữ oversize',120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông tay lỡ',  120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông thể thao',  120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
+(N'Áo phông SPORT FASHION', 120000, N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4),
 
-(N'SM001', N'Áo sơ mi đũi nơ thắt eo', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
-(N'SM002', N'Áo sơ mi nam kẻ sọc', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
-(N'SM003', N'Áo sơ mi lụa công sở', 120000, N'Áo sơ mi được làm từ lụa mềm mại, thoáng khí', 2, 4),
-(N'SM004', N'Áo sơ mi nam loang', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
-(N'SM005', N'Áo sơ mi ngắn siết eo', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
-(N'SM006', N'Áo sơ mi tay ngắn túi hộp', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
-(N'SM007', N'Áo sơ mi thắt cà vạt', 120000, N'Áo sơ mi được làm theo phong cách Nhật', 2, 4),
-(N'SM008', N'Áo sơ mi sọc đơn giản', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
-(N'SM009', N'Áo sơ mi tay ngắn', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
-(N'SM010', N'Áo sơ mi trơn', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi đũi nơ thắt eo', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi nam kẻ sọc', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi lụa công sở', 120000, N'Áo sơ mi được làm từ lụa mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi nam loang', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi ngắn siết eo',  120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi tay ngắn túi hộp', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi thắt cà vạt', 120000, N'Áo sơ mi được làm theo phong cách Nhật', 2, 4),
+(N'Áo sơ mi sọc đơn giản',  120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi tay ngắn', 120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
+(N'Áo sơ mi trơn',  120000, N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4),
 
-(N'AC001', N'Áo ấm lông cừu', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
-(N'AC002', N'Áo béo buộc nơ', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
-(N'AC003', N'Áo phao bông', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
-(N'AC004', N'Áo phao cài khuy', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
-(N'AC005', N'Áo phao gile', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
-(N'AC006', N'Áo phao cài khuy cổ', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
-(N'AC007', N'Áo phao cài lửng thời trang', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
-(N'AC008', N'Áo phao nhung cừu', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
-(N'AC009', N'Áo phao cài NIKE', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo ấm lông cừu', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo béo buộc nơ', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo phao bông',  120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo phao cài khuy', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo phao gile', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo phao cài khuy cổ', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo phao cài lửng thời trang', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo phao nhung cừu', 120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
+(N'Áo phao cài NIKE',  120000, N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4),
 
-(N'AN001', N'Áo chống nắng viền tròn', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
-(N'AN002', N'Áo chống nắng toàn thân', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
-(N'AN003', N'Áo chống nắng thông hơi', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
-(N'AN004', N'Áo chống nắng thời trang', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
-(N'AN005', N'Áo chống nắng thể thao', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
-(N'AN006', N'Áo chống nắng LV', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
-(N'AN007', N'Áo chống nắng dài xoe', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
-(N'AN008', N'Áo chống nắng croptop', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
-(N'AN009', N'Áo chống nắng cánh dơi', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng viền tròn', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng toàn thân',  120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng thông hơi', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng thời trang', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng thể thao', 120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng LV',  120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng dài xoe',  120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng croptop',  120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
+(N'Áo chống nắng cánh dơi',  120000, N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4),
 
-(N'QU001', N'Quần baggy kaki', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
-(N'QU002', N'Quần đũi dài nam', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
-(N'QU003', N'Quần đũi dài nữ', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
-(N'QU004', N'Quần ống rộng cạp cao', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
-(N'QU005', N'Quần ống rộng nam', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
-(N'QU006', N'Quần đũi rộng túi hộp', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
-(N'QU007', N'Quần suông đơn giản', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
-(N'QU008', N'Quần suông rộng', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
+(N'Quần baggy kaki',  120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
+(N'Quần đũi dài nam',  120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
+(N'Quần đũi dài nữ', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
+(N'Quần ống rộng cạp cao',  120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
+(N'Quần ống rộng nam',  120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
+(N'Quần đũi rộng túi hộp', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
+(N'Quần suông đơn giản', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
+(N'Quần suông rộng', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4),
 
-(N'QU009', N'Quần ống rộng suông', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
-(N'QU010', N'Quần sort nữ cá tính', 120000, N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
-(N'QU011', N'Quần sort nữ đũi', 120000, N'Quần sort chất liệu đũi mềm mại, co giãn nhẹ', 6, 4),
-(N'QU012', N'Quần đùi túi hộp đứng', 120000, N'Quần dài dáng suông, chất liệu đũi mềm mại, co giãn nhẹ', 6, 4),
-(N'QU013', N'Quần jean cạp trễ', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
-(N'QU014', N'Quần jean thời trang', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
-(N'QU015', N'Quần sort bò rộng', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
-(N'QU016', N'Quần sort tây nam', 120000, N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
-(N'QU017', N'Quần suông dài basic', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4);
-
+(N'Quần ống rộng suông',  120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
+(N'Quần sort nữ cá tính', 120000, N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
+(N'Quần sort nữ đũi', 120000, N'Quần sort chất liệu đũi mềm mại, co giãn nhẹ', 6, 4),
+(N'Quần đùi túi hộp đứng', 120000, N'Quần dài dáng suông, chất liệu đũi mềm mại, co giãn nhẹ', 6, 4),
+(N'Quần jean cạp trễ',  120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
+(N'Quần jean thời trang', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
+(N'Quần sort bò rộng',  120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
+(N'Quần sort tây nam', 120000, N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 4),
+(N'Quần suông dài basic', 120000, N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4);
+go
 INSERT INTO danh_gia (id_nguoi_dung, id_san_pham, noi_dung, diem) VALUES 
 (1, 1, N'Sản phẩm đẹp như trên mô tả', 5),
 (2, 2, N'Sản phẩm chất lượng', 4),
@@ -606,336 +609,223 @@ go
 -- Insert data for san_pham_chi_tiet
 INSERT INTO san_pham_chi_tiet (so_luong, mo_ta, id_kich_thuoc_chi_tiet, id_mau_sac_chi_tiet, id_chat_lieu_chi_tiet, id_gio_hang_chi_tiet, id_san_pham)
 VALUES 
--- Áo phông hình bàn tay (M, màu trắng, cotton, giỏ hàng 1)
 (100, N'Áo phông hình bàn tay, size M, màu trắng', 2, 1, 1, 1, 1),
-
--- Áo phông butterfly (M, màu đen, cotton, giỏ hàng 2)
+(100, N'Áo phông hình bàn tay, size M, màu vàng', 2, 5, 1, 1, 1),
 (100, N'Áo phông butterfly, size M, màu đen', 2, 2, 1, 2, 2),
-
--- Áo phông cotton (M, màu xám, cotton, giỏ hàng 3)
 (100, N'Áo phông cotton, size M, màu xám', 2, 3, 1, 3, 3),
-
--- Áo phông ENJOYABLE (M, màu xanh, cotton, giỏ hàng 4)
 (100, N'Áo phông ENJOYABLE, size M, màu xanh', 2, 4, 1, 4, 4),
-
--- Áo phông loang (M, màu đỏ, cotton, giỏ hàng 5)
 (100, N'Áo phông loang, size M, màu đỏ', 2, 5, 1, 5, 5),
-
--- Áo phông holiday 1961 (M, màu vàng, cotton, giỏ hàng 6)
 (100, N'Áo phông holiday 1961, size M, màu vàng', 2, 6, 1, 3, 6),
--- Áo phông nam nữ 1984 (100 sản phẩm, màu trắng, cotton, giỏ hàng 4)
 (100, N'Áo phông nam nữ 1984, 100 sản phẩm, màu trắng, cotton', 2, 1, 1, 4, 7),
-
--- Áo phông nam nữ oversize (100 sản phẩm, màu đen, cotton, giỏ hàng 4)
 (100, N'Áo phông nam nữ oversize, 100 sản phẩm, màu đen, cotton', 2, 2, 1, 4, 8),
-
--- Áo phông tay lỡ (100 sản phẩm, màu xám, cotton, giỏ hàng 4)
 (100, N'Áo phông tay lỡ, 100 sản phẩm, màu xám, cotton', 2, 3, 1, 4, 9),
-
--- Áo phông thể thao (100 sản phẩm, màu xanh, cotton, giỏ hàng 4)
 (100, N'Áo phông thể thao, 100 sản phẩm, màu xanh, cotton', 2, 4, 1, 4, 10),
-
--- Áo phông SPORT FASHION (100 sản phẩm, màu đỏ, cotton, giỏ hàng 4)
 (100, N'Áo phông SPORT FASHION, 100 sản phẩm, màu đỏ, cotton', 2, 5, 1, 4, 11),
-
--- Áo sơ mi đũi nơ thắt eo (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi đũi nơ thắt eo, 100 sản phẩm, được làm từ 100% cotton mềm mại, thoáng khí', 2, 1, 1, 4, 12),
-
--- Áo sơ mi nam kẻ sọc (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi nam kẻ sọc, 100 sản phẩm, được làm từ 100% cotton mềm mại, thoáng khí', 2, 2, 1, 4, 13),
-
--- Áo sơ mi lụa công sở (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi lụa công sở, 100 sản phẩm, được làm từ lụa mềm mại, thoáng khí', 2, 3, 2, 4, 14),
-
--- Áo sơ mi nam loang (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi nam loang, 100 sản phẩm, được làm từ 100% cotton mềm mại, thoáng khí', 2, 4, 1, 4, 15),
-
--- Áo sơ mi ngắn siết eo (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi ngắn siết eo, 100 sản phẩm, được làm từ 100% cotton mềm mại, thoáng khí', 2, 5, 1, 4, 16),
-
--- Áo sơ mi tay ngắn túi hộp (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi tay ngắn túi hộp, 100 sản phẩm, được làm từ 100% cotton mềm mại, thoáng khí', 2, 6, 1, 4, 17),
-
--- Áo sơ mi thắt cà vạt (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi thắt cà vạt, 100 sản phẩm, được làm theo phong cách Nhật', 2, 7, 1, 4, 18),
-
--- Áo sơ mi sọc đơn giản (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi sọc đơn giản, 100 sản phẩm, được làm từ 100% cotton mềm mại, thoáng khí', 2, 8, 1, 4, 19),
-
--- Áo sơ mi tay ngắn (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi tay ngắn, 100 sản phẩm, được làm từ 100% cotton mềm mại, thoáng khí', 2, 9, 1, 4, 20),
-
--- Áo sơ mi trơn (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo sơ mi trơn, 100 sản phẩm, được làm từ 100% cotton mềm mại, thoáng khí', 2, 10, 1, 4, 21),
-
--- Áo ấm lông cừu (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo ấm lông cừu, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1, 1, 4, 22),
-
--- Áo béo buộc nơ (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo béo buộc nơ, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 2, 1, 4, 23),
-
--- Áo phao bông (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo phao bông, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 3, 1, 4, 24),
-
--- Áo phao cài khuy (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo phao cài khuy, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4, 1, 4, 25),
-
--- Áo phao gile (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo phao gile, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 5, 1, 4, 26),
-
--- Áo phao cài khuy cổ (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo phao cài khuy cổ, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 6, 1, 4, 27),
-
--- Áo phao cài lửng thời trang (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo phao cài lửng thời trang, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 7, 1, 4, 28),
-
--- Áo phao nhung cừu (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo phao nhung cừu, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 8, 1, 4, 29),
-
--- Áo phao cài NIKE (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo phao cài NIKE, 100 sản phẩm, áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 9, 1, 4, 30),
-
--- Áo chống nắng viền tròn (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng viền tròn, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1, 2, 4, 31),
-
--- Áo chống nắng toàn thân (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng toàn thân, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 2, 2, 4, 32),
-
--- Áo chống nắng thông hơi (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng thông hơi, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 3, 2, 4, 33),
-
--- Áo chống nắng thời trang (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng thời trang, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4, 2, 4, 34),
-
--- Áo chống nắng thể thao (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng thể thao, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 5, 2, 4, 35),
-
--- Áo chống nắng LV (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng LV, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 6, 2, 4, 36),
-
--- Áo chống nắng dài xòe (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng dài xòe, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 7, 2, 4, 37),
-
--- Áo chống nắng croptop (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng croptop, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 8, 2, 4, 38),
-
--- Áo chống nắng cánh dơi (100 sản phẩm, giỏ hàng 4)
 (100, N'Áo chống nắng cánh dơi, 100 sản phẩm, áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 9, 2, 4, 39),
-
-
--- Quần baggy kaki (100 sản phẩm, giỏ hàng 4)
 (100, N'Quần baggy kaki, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1, 2, 4, 40),
-
--- Quần đũi dài nam (100 sản phẩm, giỏ hàng 4)
 (100, N'Quần đũi dài nam, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 2, 2, 4, 41),
-
--- Quần đũi dài nữ (100 sản phẩm, giỏ hàng 4)
 (100, N'Quần đũi dài nữ, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 3, 2, 4, 42),
-
--- Quần ống rộng cạp cao (100 sản phẩm, giỏ hàng 4)
 (100, N'Quần ống rộng cạp cao, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4, 2, 4, 43),
-
--- Quần ống rộng nam (100 sản phẩm, giỏ hàng 4)
 (100, N'Quần ống rộng nam, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 5, 2, 4, 44),
-
--- Quần đũi rộng túi hộp (100 sản phẩm, giỏ hàng 4)
 (100, N'Quần đũi rộng túi hộp, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 6, 2, 4, 45),
-
--- Quần suông đơn giản (100 sản phẩm, giỏ hàng 4)
 (100, N'Quần suông đơn giản, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 7, 2, 4, 46),
-
--- Quần suông rộng (100 sản phẩm, giỏ hàng 4)
 (100, N'Quần suông rộng, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 8, 2, 4, 47),
-
--- Quần ống rộng suông
 (100, N'Quần ống rộng suông, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 4, 1, 2, 4, 48),
-
--- Quần sort nữ cá tính
 (100, N'Quần sort nữ cá tính, 100 sản phẩm, quần sort chất liệu kaki mềm mại, co giãn nhẹ', 4, 2, 2, 4, 49),
-
--- Quần sort nữ đũi
 (100, N'Quần sort nữ đũi, 100 sản phẩm, quần sort chất liệu đũi mềm mại, co giãn nhẹ', 4, 3, 3, 4, 50),
-
--- Quần đùi túi hộp đứng
 (100, N'Quần đùi túi hộp đứng, 100 sản phẩm, quần dài dáng suông, chất liệu đũi mềm mại, co giãn nhẹ', 4, 4, 3, 4, 51),
-
--- Quần jean cạp trễ
 (100, N'Quần jean cạp trễ, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 4, 5, 2, 4, 52),
-
--- Quần jean thời trang
 (100, N'Quần jean thời trang, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 4, 6, 2, 4, 53),
-
--- Quần sort bò rộng
 (100, N'Quần sort bò rộng, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 4, 7, 2, 4, 54),
-
--- Quần sort tây nam
 (100, N'Quần sort tây nam, 100 sản phẩm, quần sort chất liệu kaki mềm mại, co giãn nhẹ', 4, 8, 2, 4, 55),
-
--- Quần suông dài basic
 (100, N'Quần suông dài basic, 100 sản phẩm, quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 4, 9, 2, 4, 56);
 
 go
-INSERT INTO hinh_anh_san_pham (id_san_pham, url_anh, mo_ta) VALUES 
-/* Áo phông */
-(1,'images/ao_phong/aophongbantaydep.jpg', N'Hình ảnh áo phông'),
-(1,'images/ao_phong/aophongbantaydep(2).jpg', N'Hình ảnh áo phông'),
-(1,'images/ao_phong/aophongbantaydep(3).jpg', N'Hình ảnh áo phông'),
-(2,'images/ao_phong/aophongbutterfly.jpg', N'Hình ảnh áo phông'),
-(2,'images/ao_phong/aophongbutterfly(2).jpg', N'Hình ảnh áo phông'),
-(2,'images/ao_phong/aophongbutterfly(3).jpg', N'Hình ảnh áo phông'),
-(3,'images/ao_phong/aophongcotton.jpg', N'Hình ảnh áo phông'),
-(3,'images/ao_phong/aophongcotton(2).jpg', N'Hình ảnh áo phông'),
-(3,'images/ao_phong/aophongcotton(3).jpg', N'Hình ảnh áo phông'),
-(4,'images/ao_phong/aophongenjoyable.jpg', N'Hình ảnh áo phông'),
-(4,'images/ao_phong/aophongenjoyable(2).jpg', N'Hình ảnh áo phông'),
-(4,'images/ao_phong/aophongenjoyable(3).jpg', N'Hình ảnh áo phông'),
-(5,'images/ao_phong/aophongloang.jpg', N'Hình ảnh áo phông'),
-(5,'images/ao_phong/aophongloang(2).jpg', N'Hình ảnh áo phông'),
-(6,'images/ao_phong/aophongmatholiday.jpg', N'Hình ảnh áo phông'),
-(6,'images/ao_phong/aophongmatholiday(2).jpg', N'Hình ảnh áo phông'),
-(6,'images/ao_phong/aophongmatholiday(3).jpg', N'Hình ảnh áo phông'),
-(7,'images/ao_phong/aophongnamnu1984.jpg', N'Hình ảnh áo phông'),
-(7,'images/ao_phong/aophongnamnu1984(2).jpg', N'Hình ảnh áo phông'),
-(7,'images/ao_phong/aophongnamnu1984(3).jpg', N'Hình ảnh áo phông'),
-(8,'images/ao_phong/aophongnamnuoversize.jpg', N'Hình ảnh áo phông'),
-(8,'images/ao_phong/aophongnamnuoversize(2).jpg', N'Hình ảnh áo phông'),
-(9,'images/ao_phong/aophongtaylo.jpg', N'Hình ảnh áo phông'),
-(9,'images/ao_phong/aophongtaylo(2).jpg', N'Hình ảnh áo phông'),
-(9,'images/ao_phong/aophongtaylo(3).jpg', N'Hình ảnh áo phông'),
-(10,'images/ao_phong/aophongthethao.jpg', N'Hình ảnh áo phông'),
-(10,'images/ao_phong/aophongthethao(2).jpg', N'Hình ảnh áo phông'),
-(10,'images/ao_phong/aophongthethao(3).jpg', N'Hình ảnh áo phông'),
-(11,'images/ao_phong/sportfashion.jpg', N'Hình ảnh áo phông'),
-(11,'images/ao_phong/sportfashion(2).jpg', N'Hình ảnh áo phông'),
-(11,'images/ao_phong/sportfashion(3).jpg', N'Hình ảnh áo phông'),
+INSERT INTO hinh_anh_san_pham (id_san_pham, url_anh, mo_ta, trang_thai, thu_tu, loai_hinh_anh) VALUES /* Áo phông */
+(1,'images/ao_phong/aophongbantaydep.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(1,'images/ao_phong/aophongbantaydep(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(1,'images/ao_phong/aophongbantaydep(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
+(2,'images/ao_phong/aophongbutterfly.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(2,'images/ao_phong/aophongbutterfly(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(2,'images/ao_phong/aophongbutterfly(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
+(3,'images/ao_phong/aophongcotton.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(3,'images/ao_phong/aophongcotton(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(3,'images/ao_phong/aophongcotton(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
+(4,'images/ao_phong/aophongenjoyable.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(4,'images/ao_phong/aophongenjoyable(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(4,'images/ao_phong/aophongenjoyable(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
+(5,'images/ao_phong/aophongloang.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(5,'images/ao_phong/aophongloang(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(6,'images/ao_phong/aophongmatholiday.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(6,'images/ao_phong/aophongmatholiday(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(6,'images/ao_phong/aophongmatholiday(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
+(7,'images/ao_phong/aophongnamnu1984.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(7,'images/ao_phong/aophongnamnu1984(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(7,'images/ao_phong/aophongnamnu1984(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
+(8,'images/ao_phong/aophongnamnuoversize.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(8,'images/ao_phong/aophongnamnuoversize(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(9,'images/ao_phong/aophongtaylo.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(9,'images/ao_phong/aophongtaylo(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(9,'images/ao_phong/aophongtaylo(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
+(10,'images/ao_phong/aophongthethao.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(10,'images/ao_phong/aophongthethao(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(10,'images/ao_phong/aophongthethao(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
+(11,'images/ao_phong/sportfashion.jpg', N'Hình ảnh áo phông',1,1,N'Áo phông'),
+(11,'images/ao_phong/sportfashion(2).jpg', N'Hình ảnh áo phông',1,2,N'Áo phông'),
+(11,'images/ao_phong/sportfashion(3).jpg', N'Hình ảnh áo phông',1,3,N'Áo phông'),
 
 /* Áo sơ mi */
-(12,'images/ao_so_mi/aosomiduinobuoceo.jpg', N'Hình ảnh áo sơ mi'),
-(12,'images/ao_so_mi/aosomiduinobuoceo(2).jpg', N'Hình ảnh sơ mi'),
-(13,'images/ao_so_mi/aosomikesoc.jpg', N'Hình ảnh áo sơ mi'),
-(13,'images/ao_so_mi/aosomikesoc(2).jpg', N'Hình ảnh áo sơ mi'),
-(14,'images/ao_so_mi/aosomiluacongso.jpg', N'Hình ảnh sơ mi'),
-(14,'images/ao_so_mi/aosomiluacongso(2).jpg', N'Hình ảnh sơ mi'), 
-(15,'images/ao_so_mi/aosominamnuloang.jpg', N'Hình ảnh sơ mi'), 
-(15,'images/ao_so_mi/aosominamnuloang(2).jpg', N'Hình ảnh sơ mi'),
-(16,'images/ao_so_mi/aosomingansieteo.jpg', N'Hình ảnh sơ mi'),
-(17,'images/ao_so_mi/aosomingansieteo(2).jpg', N'Hình ảnh sơ mi'),
-(17,'images/ao_so_mi/aosomingantaytuihop.jpg', N'Hình ảnh sơ mi'),
-(17,'images/ao_so_mi/aosomingantaytuihop(2).jpg', N'Hình ảnh sơ mi'),
-(17,'images/ao_so_mi/aosomingantaytuihop(3).jpg', N'Hình ảnh sơ mi'),
-(18,'images/ao_so_mi/aosomiphongcachnhat.jpg', N'Hình ảnh sơ mi'),
-(18,'images/ao_so_mi/aosomiphongcachnhat(2).jpg', N'Hình ảnh sơ mi '),
-(18,'images/ao_so_mi/aosomiphongcachnhat(3).jpg', N'Hình ảnh sơ mi'),
-(19,'images/ao_so_mi/aosomisocdongian.jpg', N'Hình ảnh áo sơ mi'),
-(19,'images/ao_so_mi/aosomisocdongian(2).jpg', N'Hình ảnh áo sơ mi'),
-(20,'images/ao_so_mi/aosomitayngan.jpg', N'Hình ảnh áo sơ mi'),
-(20,'images/ao_so_mi/aosomitayngan(2).jpg', N'Hình ảnh áo sơ mi'),
-(21,'images/ao_so_mi/aosomitron.jpg', N'Hình ảnh áo sơ mi'),
-(21,'images/ao_so_mi/aosomitron(2).jpg', N'Hình ảnh áo sơ mi'),
-(21,'images/ao_so_mi/aosomitron(3).jpg', N'Hình ảnh áo sơ mi'),
+(12,'images/ao_so_mi/aosomiduinobuoceo.jpg', N'Hình ảnh áo sơ mi',1,1,N'Áo sơ mi'),
+(12,'images/ao_so_mi/aosomiduinobuoceo(2).jpg', N'Hình ảnh sơ mi',1,2,N'Áo sơ mi'),
+(13,'images/ao_so_mi/aosomikesoc.jpg', N'Hình ảnh áo sơ mi',1,1,N'Áo sơ mi'),
+(13,'images/ao_so_mi/aosomikesoc(2).jpg', N'Hình ảnh áo sơ mi',1,2,N'Áo sơ mi'),
+(14,'images/ao_so_mi/aosomiluacongso.jpg', N'Hình ảnh sơ mi',1,1,N'Áo sơ mi'),
+(14,'images/ao_so_mi/aosomiluacongso(2).jpg', N'Hình ảnh sơ mi',1,2,N'Áo sơ mi'), 
+(15,'images/ao_so_mi/aosominamnuloang.jpg', N'Hình ảnh sơ mi',1,1,N'Áo sơ mi'), 
+(15,'images/ao_so_mi/aosominamnuloang(2).jpg', N'Hình ảnh sơ mi',1,2,N'Áo sơ mi'),
+(16,'images/ao_so_mi/aosomingansieteo.jpg', N'Hình ảnh sơ mi',1,1,N'Áo sơ mi'),
+(17,'images/ao_so_mi/aosomingansieteo(2).jpg', N'Hình ảnh sơ mi',1,2,N'Áo sơ mi'),
+(17,'images/ao_so_mi/aosomingantaytuihop.jpg', N'Hình ảnh sơ mi',1,1,N'Áo sơ mi'),
+(17,'images/ao_so_mi/aosomingantaytuihop(2).jpg', N'Hình ảnh sơ mi',1,2,N'Áo sơ mi'),
+(17,'images/ao_so_mi/aosomingantaytuihop(3).jpg', N'Hình ảnh sơ mi',1,3,N'Áo sơ mi'),
+(18,'images/ao_so_mi/aosomiphongcachnhat.jpg', N'Hình ảnh sơ mi',1,1,N'Áo sơ mi'),
+(18,'images/ao_so_mi/aosomiphongcachnhat(2).jpg', N'Hình ảnh sơ mi ',1,2,N'Áo sơ mi'),
+(18,'images/ao_so_mi/aosomiphongcachnhat(3).jpg', N'Hình ảnh sơ mi',1,3,N'Áo sơ mi'),
+(19,'images/ao_so_mi/aosomisocdongian.jpg', N'Hình ảnh áo sơ mi',1,1,N'Áo sơ mi'),
+(19,'images/ao_so_mi/aosomisocdongian(2).jpg', N'Hình ảnh áo sơ mi',1,2,N'Áo sơ mi'),
+(20,'images/ao_so_mi/aosomitayngan.jpg', N'Hình ảnh áo sơ mi',1,1,N'Áo sơ mi'),
+(20,'images/ao_so_mi/aosomitayngan(2).jpg', N'Hình ảnh áo sơ mi',1,2,N'Áo sơ mi'),
+(21,'images/ao_so_mi/aosomitron.jpg', N'Hình ảnh áo sơ mi',1,1,N'Áo sơ mi'),
+(21,'images/ao_so_mi/aosomitron(2).jpg', N'Hình ảnh áo sơ mi',1,2,N'Áo sơ mi'),
+(21,'images/ao_so_mi/aosomitron(3).jpg', N'Hình ảnh áo sơ mi',1,3,N'Áo sơ mi'),
 
 /* Áo phao */
-(22,'images/ao_phao/aoamcolong.jpg', N'Hình ảnh áo phao'),
-(22,'images/ao_phao/aoamcolong(2).jpg', N'Hình ảnh áo phao'),
-(22,'images/ao_phao/aoamcolong(3).jpg', N'Hình ảnh áo phao'),
-(23,'images/ao_phao/aobeobuocno.jpg', N'Hình ảnh áo phao'),
-(23,'images/ao_phao/aobeobuocno(2).jpg', N'Hình ảnh áo phao'),
-(23,'images/ao_phao/aobeobuocno(3).jpg', N'Hình ảnh áo phao'),
-(24,'images/ao_phao/aophaobongngau.jpg', N'Hình ảnh áo phao'),
-(24,'images/ao_phao/aophaobongngau(2).jpg', N'Hình ảnh áo phao'),
-(25,'images/ao_phao/aophaocaikhuydethuong.jpg', N'Hình ảnh áo phao'),
-(25,'images/ao_phao/aophaocaikhuydethuong(2).jpg', N'Hình ảnh áo phao'),
-(25,'images/ao_phao/aophaocaikhuydethuong(3).jpg', N'Hình ảnh áo phao'),
-(26,'images/ao_phao/aophaogile.jpg', N'Hình ảnh áo phao'),
-(26,'images/ao_phao/aophaogile(2).jpg', N'Hình ảnh áo phao'),
-(26,'images/ao_phao/aophaogile(3).jpg', N'Hình ảnh áo phao'),
-(27,'images/ao_phao/aophaokhuyco.jpg', N'Hình ảnh áo phao'),
-(27,'images/ao_phao/aophaokhuyco(2).jpg', N'Hình ảnh áo phao'),
-(27,'images/ao_phao/aophaokhuyco(3).jpg', N'Hình ảnh áo phao'),
-(28,'images/ao_phao/aophaolungthoitrang.jpg', N'Hình ảnh áo phao'),
-(28,'images/ao_phao/aophaolungthoitrang(2).jpg', N'Hình ảnh áo phao'),
-(28,'images/ao_phao/aophaolungthoitrang(3).jpg', N'Hình ảnh áo phao'),
-(29,'images/ao_phao/aophaonhungcuu.jpg', N'Hình ảnh áo phao'),
-(29,'images/ao_phao/aophaonhungcuu(2).jpg', N'Hình ảnh áo phao'),
-(29,'images/ao_phao/aophaonhungcuu(3).jpg', N'Hình ảnh áo phao'),
-(30,'images/ao_phao/aophaoNIKE.jpg', N'Hình ảnh áo phao'),
-(30,'images/ao_phao/aophaoNIKE(2).jpg', N'Hình ảnh áo phao'),
-(30,'images/ao_phao/aophaoNIKE(3).jpg', N'Hình ảnh áo phao'),
+(22,'images/ao_phao/aoamcolong.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(22,'images/ao_phao/aoamcolong(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(22,'images/ao_phao/aoamcolong(3).jpg', N'Hình ảnh áo phao',1,3,N'Áo phao'),
+(23,'images/ao_phao/aobeobuocno.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(23,'images/ao_phao/aobeobuocno(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(23,'images/ao_phao/aobeobuocno(3).jpg', N'Hình ảnh áo phao',1,3,N'Áo phao'),
+(24,'images/ao_phao/aophaobongngau.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(24,'images/ao_phao/aophaobongngau(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(25,'images/ao_phao/aophaocaikhuydethuong.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(25,'images/ao_phao/aophaocaikhuydethuong(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(25,'images/ao_phao/aophaocaikhuydethuong(3).jpg', N'Hình ảnh áo phao',1,3,N'Áo phao'),
+(26,'images/ao_phao/aophaogile.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(26,'images/ao_phao/aophaogile(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(26,'images/ao_phao/aophaogile(3).jpg', N'Hình ảnh áo phao',1,3,N'Áo phao'),
+(27,'images/ao_phao/aophaokhuyco.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(27,'images/ao_phao/aophaokhuyco(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(27,'images/ao_phao/aophaokhuyco(3).jpg', N'Hình ảnh áo phao',1,3,N'Áo phao'),
+(28,'images/ao_phao/aophaolungthoitrang.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(28,'images/ao_phao/aophaolungthoitrang(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(28,'images/ao_phao/aophaolungthoitrang(3).jpg', N'Hình ảnh áo phao',1,3,N'Áo phao'),
+(29,'images/ao_phao/aophaonhungcuu.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(29,'images/ao_phao/aophaonhungcuu(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(29,'images/ao_phao/aophaonhungcuu(3).jpg', N'Hình ảnh áo phao',1,3,N'Áo phao'),
+(30,'images/ao_phao/aophaoNIKE.jpg', N'Hình ảnh áo phao',1,1,N'Áo phao'),
+(30,'images/ao_phao/aophaoNIKE(2).jpg', N'Hình ảnh áo phao',1,2,N'Áo phao'),
+(30,'images/ao_phao/aophaoNIKE(3).jpg', N'Hình ảnh áo phao',1,3,N'Áo phao'),
 /* Áo chống nắng */
-(31,'images/ao_chong_nang/aochongnangvientron.jpg', N'Hình ảnh áo chống nắng'),
-(31,'images/ao_chong_nang/aochongnangvientron(2).jpg', N'Hình ảnh chống nắng'),
-(31,'images/ao_chong_nang/aochongnangvientron(3).jpg', N'Hình ảnh chống nắng'),
-(32,'images/ao_chong_nang/aochongnangtoanthan.jpg', N'Hình ảnh áo chống nắng'),
-(32,'images/ao_chong_nang/aochongnangtoanthan(2).jpg', N'Hình ảnh áo chống nắng'),
-(32,'images/ao_chong_nang/aochongnangtoanthan(3).jpg', N'Hình ảnh áo chống nắng'),
-(33,'images/ao_chong_nang/aochongnangthonghoi.jpg', N'Hình ảnh áo chống nắng'),
-(33,'images/ao_chong_nang/aochongnangthonghoi(2).jpg', N'Hình ảnh áo chống nắng'),
-(33,'images/ao_chong_nang/aochongnangthonghoi(3).jpg', N'Hình ảnh áo chống nắng'),
-(34,'images/ao_chong_nang/aochongnangthoitrang.jpg', N'Hình ảnh áo chống nắng'),
-(34,'images/ao_chong_nang/aochongnangthoitrang(2).jpg', N'Hình ảnh áo chống nắng'),
-(34,'images/ao_chong_nang/aochongnangthoitrang(3).jpg', N'Hình ảnh áo chống nắng'),
-(35,'images/ao_chong_nang/aochongnangthethao.jpg', N'Hình ảnh áo chống nắng'),
-(35,'images/ao_chong_nang/aochongnangthethao(2).jpg', N'Hình ảnh áo chống nắng'),
-(35,'images/ao_chong_nang/aochongnangthethao(3).jpg', N'Hình ảnh áo chống nắng'),
-(36,'images/ao_chong_nang/aochongnangLV.jpg', N'Hình ảnh áo chống nắng'),
-(36,'images/ao_chong_nang/aochongnangLV(2).jpg', N'Hình ảnh áo chống nắng'),
-(36,'images/ao_chong_nang/aochongnangLV(3).jpg', N'Hình ảnh áo chống nắng'),
-(37,'images/ao_chong_nang/aochongnangdaixoe.jpg', N'Hình ảnh áo chống nắng'),
-(37,'images/ao_chong_nang/aochongnangdaixoe(2).jpg', N'Hình ảnh áo chống nắng'),
-(37,'images/ao_chong_nang/aochongnangdaixoe(3).jpg', N'Hình ảnh áo chống nắng'),
-(38,'images/ao_chong_nang/aochongnangcroptop.jpg', N'Hình ảnh áo chống nắng'),
-(38,'images/ao_chong_nang/aochongnangcroptop(2).jpg', N'Hình ảnh áo chống nắng'),
-(38,'images/ao_chong_nang/aochongnangcroptop(3).jpg', N'Hình ảnh áo chống nắng'),
-(39,'images/ao_chong_nang/aochongnangcanhdoi.jpg', N'Hình ảnh áo chống nắng'),
-(39,'images/ao_chong_nang/aochongnangcanhdoi(2).jpg', N'Hình ảnh áo chống nắng'),
-(39,'images/ao_chong_nang/aochongnangcanhdoi(3).jpg', N'Hình ảnh áo chống nắng'),
+(31,'images/ao_chong_nang/aochongnangvientron.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(31,'images/ao_chong_nang/aochongnangvientron(2).jpg', N'Hình ảnh chống nắng',1,2,N'Áo chống nắng'),
+(31,'images/ao_chong_nang/aochongnangvientron(3).jpg', N'Hình ảnh chống nắng',1,3,N'Áo chống nắng'),
+(32,'images/ao_chong_nang/aochongnangtoanthan.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(32,'images/ao_chong_nang/aochongnangtoanthan(2).jpg', N'Hình ảnh áo chống nắng',1,2,N'Áo chống nắng'),
+(32,'images/ao_chong_nang/aochongnangtoanthan(3).jpg', N'Hình ảnh áo chống nắng',1,3,N'Áo chống nắng'),
+(33,'images/ao_chong_nang/aochongnangthonghoi.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(33,'images/ao_chong_nang/aochongnangthonghoi(2).jpg', N'Hình ảnh áo chống nắng',1,2,N'Áo chống nắng'),
+(33,'images/ao_chong_nang/aochongnangthonghoi(3).jpg', N'Hình ảnh áo chống nắng',1,3,N'Áo chống nắng'),
+(34,'images/ao_chong_nang/aochongnangthoitrang.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(34,'images/ao_chong_nang/aochongnangthoitrang(2).jpg', N'Hình ảnh áo chống nắng',1,2,N'Áo chống nắng'),
+(35,'images/ao_chong_nang/aochongnangthethao.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(35,'images/ao_chong_nang/aochongnangthethao(2).jpg', N'Hình ảnh áo chống nắng',1,2,N'Áo chống nắng'),
+(35,'images/ao_chong_nang/aochongnangthethao(3).jpg', N'Hình ảnh áo chống nắng',1,3,N'Áo chống nắng'),
+(36,'images/ao_chong_nang/aochongnangLV.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(36,'images/ao_chong_nang/aochongnangLV(2).jpg', N'Hình ảnh áo chống nắng',1,2,N'Áo chống nắng'),
+(36,'images/ao_chong_nang/aochongnangLV(3).jpg', N'Hình ảnh áo chống nắng',1,3,N'Áo chống nắng'),
+(37,'images/ao_chong_nang/aochongnangdaixoe.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(37,'images/ao_chong_nang/aochongnangdaixoe(2).jpg', N'Hình ảnh áo chống nắng',1,2,N'Áo chống nắng'),
+(37,'images/ao_chong_nang/aochongnangdaixoe(3).jpg', N'Hình ảnh áo chống nắng',1,3,N'Áo chống nắng'),
+(38,'images/ao_chong_nang/aochongnangcroptop.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(38,'images/ao_chong_nang/aochongnangcroptop(2).jpg', N'Hình ảnh áo chống nắng',1,2,N'Áo chống nắng'),
+(38,'images/ao_chong_nang/aochongnangcroptop(3).jpg', N'Hình ảnh áo chống nắng',1,3,N'Áo chống nắng'),
+(39,'images/ao_chong_nang/aochongnangcanhdoi.jpg', N'Hình ảnh áo chống nắng',1,1,N'Áo chống nắng'),
+(39,'images/ao_chong_nang/aochongnangcanhdoi(2).jpg', N'Hình ảnh áo chống nắng',1,2,N'Áo chống nắng'),
+(39,'images/ao_chong_nang/aochongnangcanhdoi(3).jpg', N'Hình ảnh áo chống nắng',1,3,N'Áo chống nắng'),
 /* Quần kaki */
-(40,'images/quan_kaki/quanbaggykaki.jpg', N'Hình ảnh quần kaki'),
-(40,'images/quan_kaki/quanbaggykaki(2).jpg', N'Hình ảnh quần kaki'),
-(40,'images/quan_kaki/quanbaggykaki(3).jpg', N'Hình ảnh quần kaki'),
-(41,'images/quan_kaki/quanduidainamnu.jpg',N'Hình ảnh quần kaki'),
-(41,'images/quan_kaki/quanduidainamnu(2).jpg',N'Hình ảnh quần kaki'),
-(41,'images/quan_kaki/quanduidainamnu(3).jpg', N'Hình ảnh quần kaki'),
-(42,'images/quan_kaki/quanduithoaimai.jpg', N'Hình ảnh quần kaki'),
-(42,'images/quan_kaki/quanduithoaimai(2).jpg', N'Hình ảnh quần kaki'),
-(42,'images/quan_kaki/quanduithoaimai(3).jpg', N'Hình ảnh quần kaki'),
-(43,'images/quan_kaki/quanongrongcapcao.jpg', N'Hình ảnh quần kaki'),
-(43,'images/quan_kaki/quanongrongcapcao(2).jpg', N'Hình ảnh quần kaki'),
-(43,'images/quan_kaki/quanongrongcapcao(3).jpg',N'Hình ảnh quần kaki'),
-(44,'images/quan_kaki/quanongrongcongso.jpg', N'Hình ảnh quần kaki'),
-(44,'images/quan_kaki/quanongrongcongso(2).jpg', N'Hình ảnh quần kaki'),
-(45,'images/quan_kaki/quanrongtuihopngau.jpg', N'Hình ảnh quần kaki'),
-(45,'images/quan_kaki/quanrongtuihopngau(2).jpg',N'Hình ảnh quần kaki'),
-(46,'images/quan_kaki/quansuongdongian.jpg', N'Hình ảnh quần kaki'),
-(46,'images/quan_kaki/quansuongdongian(2).jpg',N'Hình ảnh quần kaki'),
-(47,'images/quan_kaki/quansuongongrong.jpg',N'Hình ảnh quần kaki'),
-(47,'images/quan_kaki/quansuongongrong(2).jpg',N'Hình ảnh quần kaki'),
+(40,'images/quan_kaki/quanbaggykaki.jpg', N'Hình ảnh quần kaki',1,1,N'Quần kaki'),
+(40,'images/quan_kaki/quanbaggykaki(2).jpg', N'Hình ảnh quần kaki',1,2,N'Quần kaki'),
+(40,'images/quan_kaki/quanbaggykaki(3).jpg', N'Hình ảnh quần kaki',1,3,N'Quần kaki'),
+(41,'images/quan_kaki/quanduidainamnu.jpg',N'Hình ảnh quần kaki',1,1,N'Quần kaki'),
+(41,'images/quan_kaki/quanduidainamnu(2).jpg',N'Hình ảnh quần kaki',1,2,N'Quần kaki'),
+(42,'images/quan_kaki/quanduithoaimai.jpg', N'Hình ảnh quần kaki',1,1,N'Quần kaki'),
+(42,'images/quan_kaki/quanduithoaimai(2).jpg', N'Hình ảnh quần kaki',1,2,N'Quần kaki'),
+(42,'images/quan_kaki/quanduithoaimai(3).jpg', N'Hình ảnh quần kaki',1,3,N'Quần kaki'),
+(43,'images/quan_kaki/quanongrongcapcao.jpg', N'Hình ảnh quần kaki',1,1,N'Quần kaki'),
+(43,'images/quan_kaki/quanongrongcapcao(2).jpg', N'Hình ảnh quần kaki',1,2,N'Quần kaki'),
+(43,'images/quan_kaki/quanongrongcapcao(3).jpg',N'Hình ảnh quần kaki',1,3,N'Quần kaki'),
+(44,'images/quan_kaki/quanongrongcongso.jpg', N'Hình ảnh quần kaki',1,1,N'Quần kaki'),
+(44,'images/quan_kaki/quanongrongcongso(2).jpg', N'Hình ảnh quần kaki',1,2,N'Quần kaki'),
+(45,'images/quan_kaki/quanrongtuihopngau.jpg', N'Hình ảnh quần kaki',1,1,N'Quần kaki'),
+(45,'images/quan_kaki/quanrongtuihopngau(2).jpg',N'Hình ảnh quần kaki',1,2,N'Quần kaki'),
+(46,'images/quan_kaki/quansuongdongian.jpg', N'Hình ảnh quần kaki',1,1,N'Quần kaki'),
+(46,'images/quan_kaki/quansuongdongian(2).jpg',N'Hình ảnh quần kaki',1,2,N'Quần kaki'),
+(47,'images/quan_kaki/quansuongongrong.jpg',N'Hình ảnh quần kaki',1,1,N'Quần kaki'),
+(47,'images/quan_kaki/quansuongongrong(2).jpg',N'Hình ảnh quần kaki',1,2,N'Quần kaki'),
 
 /* Quần sort and jean */
-(48,'images/quan_sort_&_jean/quanboongrongsuong.jpg',N'Hình ảnh quần kiểu'),
-(48,'images/quan_sort_&_jean/quanboongrongsuong(2).jpg',N'Hình ảnh quần kiểu'),
-(48,'images/quan_sort_&_jean/quanboongrongsuong(3).jpg',N'Hình ảnh quần kiểu'),
-(49,'images/quan_sort_&_jean/quanduinucatinh.jpg',N'Hình ảnh quần kiểu'),
-(49,'images/quan_sort_&_jean/quanduinucatinh(2).jpg',N'Hình ảnh quần kiểu'),
-(50,'images/quan_sort_&_jean/quanduinuthoaimai.jpg',N'Hình ảnh quần kiểu'),
-(50,'images/quan_sort_&_jean/quanduinuthoaimai(2).jpg',N'Hình ảnh quần kiểu'),
-(50,'images/quan_sort_&_jean/quanduinuthoaimai(3).jpg',N'Hình ảnh quần kiểu'),
-(51,'images/quan_sort_&_jean/quanduituihopdung.jpg',N'Hình ảnh quần kiểu'),
-(51,'images/quan_sort_&_jean/quanduituihopdung(2).jpg',N'Hình ảnh quần kiểu'),
-(52,'images/quan_sort_&_jean/quanjeancaptre.jpg',N'Hình ảnh quần kiểu'),
-(52,'images/quan_sort_&_jean/quanjeancaptre(2).jpg',N'Hình ảnh quần kiểu'),
-(52,'images/quan_sort_&_jean/quanjeancaptre(3).jpg',N'Hình ảnh quần kiểu'),
-(53,'images/quan_sort_&_jean/quanjeanthoitrang.jpg',N'Hình ảnh quần kiểu'),
-(53,'images/quan_sort_&_jean/quanjeanthoitrang(2).jpg',N'Hình ảnh quần kiểu'),
-(53,'images/quan_sort_&_jean/quanjeanthoitrang(3).jpg',N'Hình ảnh quần kiểu'),
-(54,'images/quan_sort_&_jean/quanshortborong.jpg',N'Hình ảnh quần kiểu'),
-(54,'images/quan_sort_&_jean/quanshortborong(2).jpg',N'Hình ảnh quần kiểu'),
-(55,'images/quan_sort_&_jean/quanshorttaynam.jpg',N'Hình ảnh quần kiểu'),
-(55,'images/quan_sort_&_jean/quanshorttaynam(2).jpg',N'Hình ảnh quần kiểu'),
-(55,'images/quan_sort_&_jean/quanshorttaynam(3).jpg',N'Hình ảnh quần kiểu'),
-(56,'images/quan_sort_&_jean/quansuongdaibasic.jpg',N'Hình ảnh quần kiểu'),
-(56,'images/quan_sort_&_jean/quansuongdaibasic(2).jpg',N'Hình ảnh quần kiểu'),
-(56,'images/quan_sort_&_jean/quansuongdaibasic(3).jpg',N'Hình ảnh quần kiểu');
+(48,'images/quan_sort_&_jean/quanboongrongsuong.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(48,'images/quan_sort_&_jean/quanboongrongsuong(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(48,'images/quan_sort_&_jean/quanboongrongsuong(3).jpg',N'Hình ảnh quần kiểu',1,3,N'Quần sort and jean'),
+(49,'images/quan_sort_&_jean/quanduinucatinh.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(49,'images/quan_sort_&_jean/quanduinucatinh(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(50,'images/quan_sort_&_jean/quanduinuthoaimai.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(50,'images/quan_sort_&_jean/quanduinuthoaimai(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(50,'images/quan_sort_&_jean/quanduinuthoaimai(3).jpg',N'Hình ảnh quần kiểu',1,3,N'Quần sort and jean'),
+(51,'images/quan_sort_&_jean/quanduituihopdung.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(51,'images/quan_sort_&_jean/quanduituihopdung(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(52,'images/quan_sort_&_jean/quanjeancaptre.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(52,'images/quan_sort_&_jean/quanjeancaptre(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(52,'images/quan_sort_&_jean/quanjeancaptre(3).jpg',N'Hình ảnh quần kiểu',1,3,N'Quần sort and jean'),
+(53,'images/quan_sort_&_jean/quanjeanthoitrang.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(53,'images/quan_sort_&_jean/quanjeanthoitrang(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(53,'images/quan_sort_&_jean/quanjeanthoitrang(3).jpg',N'Hình ảnh quần kiểu',1,3,N'Quần sort and jean'),
+(54,'images/quan_sort_&_jean/quanshortborong.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(54,'images/quan_sort_&_jean/quanshortborong(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(55,'images/quan_sort_&_jean/quanshorttaynam.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(55,'images/quan_sort_&_jean/quanshorttaynam(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(55,'images/quan_sort_&_jean/quanshorttaynam(3).jpg',N'Hình ảnh quần kiểu',1,3,N'Quần sort and jean'),
+(56,'images/quan_sort_&_jean/quansuongdaibasic.jpg',N'Hình ảnh quần kiểu',1,1,N'Quần sort and jean'),
+(56,'images/quan_sort_&_jean/quansuongdaibasic(2).jpg',N'Hình ảnh quần kiểu',1,2,N'Quần sort and jean'),
+(56,'images/quan_sort_&_jean/quansuongdaibasic(3).jpg',N'Hình ảnh quần kiểu',1,3,N'Quần sort and jean');
 go
 --Insert data for hoa_don_chi_tiet
 INSERT INTO hoa_don_chi_tiet (id_san_pham_chi_tiet, id_hoa_don, so_luong, tong_tien,so_tien_thanh_toan,tien_tra_lai) VALUES 
@@ -954,6 +844,9 @@ INSERT INTO lich_su_hoa_don (so_tien_thanh_toan, id_hoa_don_chi_tiet, id_nguoi_d
 (1200.00, 4, 3),
 (150.00, 5, 5);
 go
+
+
+
 select * from vai_tro
 select * from nguoi_dung
 select * from voucher
@@ -980,6 +873,5 @@ select * from lich_su_hoa_don
 select * from san_pham
 select * from san_pham_chi_tiet
 select * from hinh_anh_san_pham
-
 
 

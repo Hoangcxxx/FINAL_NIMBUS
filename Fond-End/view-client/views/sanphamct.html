@@ -10,7 +10,7 @@
                     <div class="align-items-start mb-2">
                         <div class="mb-3" ng-repeat="anh in anhSanPham track by $index">
                             <img class="d-block w-100" ng-src="{{anh.urlAnh}}" alt="Ảnh sản phẩm"
-                                style="cursor:pointer;" ng-click="currentDiv($index + 1)">
+                                style="cursor:pointer;" ng-click="showProductDetail($index)">
                         </div>
                     </div>
                 </div>

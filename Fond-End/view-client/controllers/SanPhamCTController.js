@@ -27,6 +27,14 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
 
     // Gán hàm currentDiv vào scope để có thể sử dụng trong HTML
     $scope.currentDiv = currentDiv;
+
+    // Thêm hàm để lấy thông tin chi tiết sản phẩm khi click vào ảnh
+    $scope.showProductDetail = function (index) {
+        if ($scope.anhSanPham && $scope.anhSanPham[index]) {
+            $scope.sanPhamChiTiet = $scope.anhSanPham[index]; // Cập nhật sản phẩm chi tiết với thông tin từ ảnh click
+            console.log("Thông tin sản phẩm chi tiết:", $scope.sanPhamChiTiet);
+        }
+    };
 };
 
 // JavaScript còn lại không thay đổi
