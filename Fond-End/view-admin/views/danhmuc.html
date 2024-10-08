@@ -2,7 +2,7 @@
 <main class="content">
     <div class="section active">
         <div class="container-fluid">
-            <h1 class="page-title">Quản lý kích thước</h1>
+            <h1 class="page-title">Quản lý danh mục</h1>
             <div class="admin-control">
                 <div class="admin-control-left">
                     <div class="dropdown">
@@ -23,7 +23,7 @@
                     <form action="" class="form-search">
                         <span class="search-btn"><i class="fa-light fa-magnifying-glass"></i></span>
                         <input id="form-search-product" type="text" class="form-search-input"
-                            placeholder="Tìm kiếm kích thước..." oninput="showProduct()">
+                            placeholder="Tìm kiếm danh mục..." oninput="showProduct()">
                     </form>
                 </div>
 
@@ -31,8 +31,8 @@
                     <button class="btn-control-large" id="btn-cancel-product" ng-click="onRefresh()">
                         <i class="fa-light fa-rotate-right"></i> Làm mới
                     </button>
-                    <button type="button" class="btn-control-large" data-toggle="modal" data-target="#addKichThuocModal">
-                        <i class="fa-light fa-plus"></i> Thêm kích thước mới
+                    <button type="button" class="btn-control-large" data-toggle="modal" data-target="#addDanhMucModal">
+                        <i class="fa-light fa-plus"></i> Thêm danh mục mới
                     </button>
                 </div>
             </div>
@@ -44,7 +44,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Tên kích thước</th>
+                                        <th scope="col">Tên danh mục</th>
                                         <th scope="col">Mô tả</th>
                                         <th scope="col">Ngày tạo</th>
                                         <th scope="col">Ngày cập nhật</th>
@@ -52,19 +52,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in dsKichThuoc">
+                                    <tr ng-repeat="item in dsDanhMuc">
                                         <th scope="row">{{$index + 1}}</th>
-                                        <td>{{item.tenKichThuoc}}</td>
+                                        <td>{{item.tenDanhMuc}}</td>
                                         <td>{{item.moTa}}</td>
                                         <td>{{item.ngayTao | date:'shortDate'}}</td>
                                         <td>{{item.ngayCapNhat | date:'shortDate'}}</td>
                                         <td>
-                                            <a href="#!kich_thuoc" class="btn btn-warning btn-sm"
-                                                ng-click="chinhSuaKichThuoc(item)">
+                                            <a href="#!danh_muc" class="btn btn-warning btn-sm"
+                                                ng-click="chinhSuaDanhMuc(item)">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="#!kich_thuoc" class="btn btn-danger btn-sm"
-                                                ng-click="onDelete(item.idKichThuoc)">
+                                            <a href="#!danh_muc" class="btn btn-danger btn-sm"
+                                                ng-click="onDelete(item.idDanhMuc)">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </td>
@@ -79,30 +79,32 @@
     </div>
 </main>
 
-<!-- Modal Thêm/Kích Thước -->
-<div class="modal fade" id="addKichThuocModal" tabindex="-1" role="dialog" aria-labelledby="addKichThuocModalLabel"
+
+
+<!-- Modal Thêm danh mục -->
+<div class="modal fade" id="addDanhMucModal" tabindex="-1" role="dialog" aria-labelledby="addDanhMucModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addKichThuocModalLabel">{{isEditing ? 'Sửa Kích Thước' : 'Thêm Kích Thước'}}</h5>
-                <button class="modal-close product-form" data-dismiss="modal">
+                <h5 class="modal-title" id="addDanhMucModalLabel">{{isEditing ? 'Sửa danh mục' : 'Thêm danh mục'}}
+                </h5>
+                <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <form id="productForm" ng-submit="isEditing ? onUpdate() : onCreate()">
                     <div class="form-group">
-                        <label for="ten_kich_thuoc">Tên Kích Thước:</label>
-                        <input type="text" class="form-control" ng-model="KichThuoc.tenKichThuoc" id="ten_kich_thuoc" required>
+                        <label for="ten_danh_muc">Tên danh mục:</label>
+                        <input type="text" class="form-control" ng-model="DanhMuc.tenDanhMuc" id="ten_danh_muc"
+                            required>
                     </div>
-
                     <div class="form-group">
                         <label for="mo_ta">Mô Tả:</label>
-                        <textarea class="form-control" ng-model="KichThuoc.moTa" id="mo_ta"></textarea>
+                        <textarea class="form-control" ng-model="DanhMuc.moTa" id="mo_ta"></textarea>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">{{isEditing ? 'Cập Nhật' : 'Thêm Kích Thước'}}</button>
+                    <button type="submit" class="btn btn-primary">{{isEditing ? 'Cập Nhật' : 'Thêm danh mục'}}</button>
                 </form>
             </div>
         </div>

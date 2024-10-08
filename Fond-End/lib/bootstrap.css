@@ -4357,7 +4357,7 @@ fieldset:disabled .btn {
     padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
     font-size: var(--bs-nav-link-font-size);
     font-weight: var(--bs-nav-link-font-weight);
-    color: var(--bs-nav-link-color);
+    color: #43464a;
     text-decoration: none;
     background: 0 0;
     border: 0;
@@ -4372,7 +4372,7 @@ fieldset:disabled .btn {
 
 .nav-link:focus,
 .nav-link:hover {
-    color: var(--bs-nav-link-hover-color)
+    color: #f00;
 }
 
 .nav-link:focus-visible {
@@ -4413,7 +4413,7 @@ fieldset:disabled .btn {
 
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
-    color: var(--bs-nav-tabs-link-active-color);
+    color: #f41111;
     background-color: var(--bs-nav-tabs-link-active-bg);
     border-color: var(--bs-nav-tabs-link-active-border-color)
 }

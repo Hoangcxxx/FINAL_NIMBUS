@@ -1,9 +1,12 @@
 window.SanPhamController = function ($scope, $http) {
     $scope.dsSanPham = [];
     $scope.dsDanhMuc = [];
-    $scope.selectedCategoryId = null;
+    $scope.dsChatLieu = [];
+    $scope.dsMauSac = [];
+    $scope.dsKichThuoc = [];
+    $scope.selectedProduct = {};
 
-    // Hàm lấy dữ liệu từ API
+    // Function to fetch data
     $scope.fetchData = function (url, target, logMessage) {
         $http.get(url).then(function (response) {
             $scope[target] = response.data;
@@ -13,29 +16,74 @@ window.SanPhamController = function ($scope, $http) {
         });
     };
 
-    // Hàm click vào danh mục
-    $scope.onclickDanhMuc = function (idDanhMuc) {
-        console.log("Danh mục được click: " + idDanhMuc);
-        $scope.selectedCategoryId = idDanhMuc;
-        // Lấy danh sách sản phẩm theo danh mục đã chọn
-        $scope.fetchData('http://localhost:8080/api/san_pham/findDanhMuc/' + idDanhMuc, 'dsSanPham', "Dữ liệu API trả về:");
-    };
-
-    // Hàm click vào sản phẩm
-    $scope.onclickSanPham = function (idSanPham) {
-        console.log('ID sản phẩm:', idSanPham);
-        // Chuyển hướng đến trang chi tiết sản phẩm
-        window.location.href = '#!/san_pham_ct/' + idSanPham;
-    };
-
-    // Hàm lấy dữ liệu sản phẩm và danh mục khi khởi tạo controller
-    function initializeData() {
-        // Lấy danh sách sản phẩm
-        $scope.fetchData('http://localhost:8080/api/san_pham', 'dsSanPham');
-        // Lấy danh sách danh mục
-        $scope.fetchData('http://localhost:8080/api/danh_muc', 'dsDanhMuc');
+    // Fetch data for materials, colors, sizes
+    function fetchChatLieu() {
+        $scope.fetchData('http://localhost:8080/api/chat_lieu', 'dsChatLieu', 'Fetched materials:');
     }
 
-    // Gọi hàm khởi tạo
+    function fetchMauSac() {
+        $scope.fetchData('http://localhost:8080/api/mau_sac', 'dsMauSac', 'Fetched colors:');
+    }
+
+    function fetchKichThuoc() {
+        $scope.fetchData('http://localhost:8080/api/kich_thuoc', 'dsKichThuoc', 'Fetched sizes:');
+    }
+
+    // Function to initialize data
+    function initializeData() {
+        $scope.fetchData('http://localhost:8080/api/san_pham', 'dsSanPham', 'Fetched products:');
+        $scope.fetchData('http://localhost:8080/api/danh_muc', 'dsDanhMuc', 'Fetched categories:');
+        fetchChatLieu();
+        fetchMauSac();
+        fetchKichThuoc();
+    }
+
+    // Initial data fetch
     initializeData();
+
+    // Function to save a product (add or edit)
+    $scope.saveProduct = function () {
+        if ($scope.selectedProduct.idSanPham) {
+            $http.put('http://localhost:8080/api/san_pham/' + $scope.selectedProduct.idSanPham, $scope.selectedProduct)
+                .then(function (response) {
+                    console.log('Sản phẩm được sửa thành công:', response.data);
+                    $('#addProductModal').modal('hide');
+                    initializeData(); // Re-fetch products
+                }, function (error) {
+                    console.error('Error updating product:', error);
+                });
+        } else {
+            $http.post('http://localhost:8080/api/san_pham', $scope.selectedProduct).then(function (response) {
+                console.log('Sản phẩm được thêm thành công:', response.data);
+                $('#addProductModal').modal('hide');
+                initializeData(); // Re-fetch products
+            }, function (error) {
+                console.error('Error adding product:', error);
+            });
+        }
+    };
+
+    // Function to edit a product
+    $scope.chinhSuaSanPham = function (item) {
+        $scope.selectedProduct = angular.copy(item);
+        $('#addProductModal').modal('show');
+    };
+
+    // Function to delete a product
+    $scope.xoaSanPham = function (id) {
+        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
+            $http.delete('http://localhost:8080/api/san_pham/' + id).then(function (response) {
+                console.log('Sản phẩm được xóa thành công:', response.data);
+                initializeData(); // Re-fetch products
+            }, function (error) {
+                console.error('Error deleting product:', error);
+            });
+        }
+    };
+
+    // Reset the form when opening the modal
+    window.resetForm = function () {
+        $scope.selectedProduct = {};
+        $('#addProductModal').modal('show');
+    };
 };
