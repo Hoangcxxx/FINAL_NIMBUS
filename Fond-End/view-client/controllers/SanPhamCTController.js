@@ -1,17 +1,14 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
-    // Biến để lưu thông tin sản phẩm chi tiết
     $scope.sanPhamChiTiet = null;
-    $scope.anhSanPham = []; // Biến lưu trữ danh sách ảnh sản phẩm
-
-    // Lấy ID sản phẩm từ URL
+    $scope.anhSanPham = [];
     var idSanPham = $routeParams.id;
+    $scope.slideIndex = 1; // Đưa slideIndex vào scope
 
-    // Hàm lấy thông tin chi tiết sản phẩm
     function fetchSanPhamChiTiet() {
         $http.get('http://localhost:8080/api/san_pham/findSanPham/' + idSanPham)
             .then(function (response) {
                 if (response.data.length > 0) {
-                    $scope.sanPhamChiTiet = response.data[0]; // Lấy sản phẩm đầu tiên trong mảng
+                    $scope.sanPhamChiTiet = response.data[0];
                     $scope.anhSanPham = response.data; // Giả sử tất cả ảnh có trong mảng này
                     console.log("Ảnh sản phẩm:", $scope.anhSanPham);
                 } else {
@@ -22,23 +19,20 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             });
     }
 
-    // Gọi hàm để lấy thông tin chi tiết sản phẩm khi controller được khởi tạo
     fetchSanPhamChiTiet();
-
-    // Gán hàm currentDiv vào scope để có thể sử dụng trong HTML
     $scope.currentDiv = currentDiv;
 
-    // Thêm hàm để lấy thông tin chi tiết sản phẩm khi click vào ảnh
     $scope.showProductDetail = function (index) {
         if ($scope.anhSanPham && $scope.anhSanPham[index]) {
-            $scope.sanPhamChiTiet = $scope.anhSanPham[index]; // Cập nhật sản phẩm chi tiết với thông tin từ ảnh click
+            $scope.slideIndex = index + 1; // Cập nhật chỉ số slide
+            showDivs($scope.slideIndex); // Gọi hàm với slideIndex từ scope
+            $scope.sanPhamChiTiet = $scope.anhSanPham[index];
             console.log("Thông tin sản phẩm chi tiết:", $scope.sanPhamChiTiet);
         }
     };
 };
 
-// JavaScript còn lại không thay đổi
-
+// Hàm để điều khiển carousel
 function currentDiv(n) {
     showDivs(slideIndex = n);
 }
@@ -48,20 +42,20 @@ function showDivs(n) {
     var x = document.getElementsByClassName("mySlides");
     var dots = document.getElementsByClassName("demo");
 
-    if (n > x.length) { slideIndex = 1; }
-    if (n < 1) { slideIndex = x.length; }
+    if (n > x.length) { n = 1; }
+    if (n < 1) { n = x.length; }
 
     for (i = 0; i < x.length; i++) {
         x[i].style.display = "none";
     }
 
     // Kiểm tra số lượng dots trước khi truy cập
-    if (dots.length > 0 && slideIndex > 0 && slideIndex <= dots.length) {
+    if (dots.length > 0 && n > 0 && n <= dots.length) {
         for (i = 0; i < dots.length; i++) {
             dots[i].className = dots[i].className.replace(" w3-opacity-off", "");
         }
-        x[slideIndex - 1].style.display = "block";
-        dots[slideIndex - 1].className += " w3-opacity-off";
+        x[n - 1].style.display = "block"; // Hiển thị hình ảnh tương ứng
+        dots[n - 1].className += " w3-opacity-off";
     } else {
         console.error("Không có phần tử dots nào hoặc slideIndex không hợp lệ.");
     }
