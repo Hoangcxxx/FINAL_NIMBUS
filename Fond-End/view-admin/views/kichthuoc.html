@@ -27,10 +27,10 @@
                 </div>
 
                 <div class="admin-control-right">
-                    <button class="btn-control-large" id="btn-cancel-product" onclick="hienThiModalThemKichThuoc()"><i
-                            class="fa-light fa-rotate-right"></i> Làm mới</button>
-                    <button type="button" class="btn-control-large" data-toggle="modal"
-                        data-target="#addKichThuocModal">
+                    <button class="btn-control-large" id="btn-cancel-product" ng-click="onRefresh()">
+                        <i class="fa-light fa-rotate-right"></i> Làm mới
+                    </button>
+                    <button type="button" class="btn-control-large" data-toggle="modal" data-target="#addKichThuocModal">
                         <i class="fa-light fa-plus"></i> Thêm kích thước mới
                     </button>
                 </div>
@@ -58,10 +58,13 @@
                                         <td>{{item.ngayTao | date:'shortDate'}}</td>
                                         <td>{{item.ngayCapNhat | date:'shortDate'}}</td>
                                         <td>
-                                            <a class="btn btn-warning btn-sm" data-toggle="modal"
-                                                data-target="#updateKichThuocModal"
-                                                ng-click="getKichThuocById(item.id)">
+                                            <a href="#!kich_thuoc" class="btn btn-warning btn-sm"
+                                                ng-click="chinhSuaKichThuoc(item)">
                                                 <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#!kich_thuoc" class="btn btn-danger btn-sm"
+                                                ng-click="onDelete(item.idKichThuoc)">
+                                                <i class="fas fa-trash"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -75,37 +78,22 @@
     </div>
 </main>
 
-
-<div ng-controller="KichThuocController">
-    <table>
-        <tr ng-repeat="item in dsKichThuoc">
-            <td>{{item.tenKichThuoc}}</td>
-            <td>
-                <button ng-click="editKichThuoc(item.id)">Chỉnh sửa</button>
-            </td>
-        </tr>
-    </table>
-</div>
-
-
-
-<!-- Modal Thêm Kích Thước -->
+<!-- Modal Thêm/Kích Thước -->
 <div class="modal fade" id="addKichThuocModal" tabindex="-1" role="dialog" aria-labelledby="addKichThuocModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addKichThuocModalLabel">Thêm Kích thước</h5>
+                <h5 class="modal-title" id="addKichThuocModalLabel">{{isEditing ? 'Sửa Kích Thước' : 'Thêm Kích Thước'}}</h5>
                 <button class="modal-close product-form" data-dismiss="modal">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="productForm">
+                <form id="productForm" ng-submit="isEditing ? onUpdate() : onCreate()">
                     <div class="form-group">
-                        <label for="ten_kich_thuoc">Tên Kích thước:</label>
-                        <input type="text" class="form-control" ng-model="KichThuoc.tenKichThuoc" id="ten_kich_thuoc"
-                            required>
+                        <label for="ten_kich_thuoc">Tên Kích Thước:</label>
+                        <input type="text" class="form-control" ng-model="KichThuoc.tenKichThuoc" id="ten_kich_thuoc" required>
                     </div>
 
                     <div class="form-group">
@@ -113,38 +101,7 @@
                         <textarea class="form-control" ng-model="KichThuoc.moTa" id="mo_ta"></textarea>
                     </div>
 
-                    <button type="submit" ng-click="onCreate()" class="btn btn-primary">Thêm Kích Thước</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Chỉnh sửa Kích Thước -->
-<div class="modal fade" id="updateKichThuocModal" tabindex="-1" role="dialog"
-    aria-labelledby="updateKichThuocModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="updateKichThuocModalLabel">Chỉnh sửa kích thước</h5>
-                <button class="modal-close product-form" data-dismiss="modal">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="productForm">
-                    <div class="form-group">
-                        <label for="ten_kich_thuoc">Tên Kích thước:</label>
-                        <input type="text" class="form-control" ng-model="KichThuoc.tenKichThuoc" id="ten_kich_thuoc"
-                            required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="mo_ta">Mô Tả:</label>
-                        <textarea class="form-control" ng-model="KichThuoc.moTa" id="mo_ta"></textarea>
-                    </div>
-
-                    <button type="submit" ng-click="onUpdate()" class="btn btn-primary">Chỉnh sửa kích Thước</button>
+                    <button type="submit" class="btn btn-primary">{{isEditing ? 'Cập Nhật' : 'Thêm Kích Thước'}}</button>
                 </form>
             </div>
         </div>

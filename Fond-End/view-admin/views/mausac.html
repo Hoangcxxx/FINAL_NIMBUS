@@ -57,8 +57,14 @@
                                         <td>{{item.ngayTao | date:'shortDate'}}</td>
                                         <td>{{item.ngayCapNhat | date:'shortDate'}}</td>
                                         <td>
-                                            <a href="#" class="btn btn-warning btn-sm"
-                                                ng-click="chinhSuaMauSac(item)"><i class="fas fa-edit"></i></a>
+                                            <a href="#!mau_sac" class="btn btn-warning btn-sm"
+                                                ng-click="chinhSuaMauSac(item)">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="#!mau_sac" class="btn btn-danger btn-sm"
+                                                ng-click="onDelete(item.id)">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -72,30 +78,30 @@
 </main>
 
 
-<!-- Modal Thêm Màu Sắc -->
+<!-- Modal Thêm/Màu Sắc -->
 <div class="modal fade" id="addMauSacModal" tabindex="-1" role="dialog" aria-labelledby="addMauSacModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addMauSacModalLabel">Thêm Màu Sắc</h5>
+                <h5 class="modal-title" id="addMauSacModalLabel">{{isEditing ? 'Sửa Màu Sắc' : 'Thêm Màu Sắc'}}</h5>
                 <button class="modal-close product-form" data-dismiss="modal">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="productForm">
+                <form id="productForm" ng-submit="isEditing ? onUpdate() : onCreate()">
                     <div class="form-group">
-                        <label for="ten_mau_sac">Tên Màu Sắc:</label>
-                        <input type="text" class="form-control" ng-model="MauSac.tenMauSac" name="tenMauSac" required>
+                        <label for="ten_kich_thuoc">Tên Màu Sắc:</label>
+                        <input type="text" class="form-control" ng-model="MauSac.tenMauSac" id="ten_kich_thuoc" required>
                     </div>
 
                     <div class="form-group">
                         <label for="mo_ta">Mô Tả:</label>
-                        <textarea class="form-control" ng-model="MauSac.moTa" name="moTa"></textarea>
+                        <textarea class="form-control" ng-model="MauSac.moTa" id="mo_ta"></textarea>
                     </div>
 
-                    <button type="submit" ng-click="onCreate()" class="btn btn-primary">Thêm Màu Sắc</button>
+                    <button type="submit" class="btn btn-primary">{{isEditing ? 'Cập Nhật' : 'Thêm Màu Sắc'}}</button>
                 </form>
             </div>
         </div>
