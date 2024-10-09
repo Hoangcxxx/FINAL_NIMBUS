@@ -18,7 +18,7 @@ public class DanhMucController {
     private com.example.duantn.service.DanhMucService danhMucService;
 
     @GetMapping
-    @PreAuthorize("hasRole('Khach_Hang') or hasAnyRole('nhan_vien')")
+//    @PreAuthorize("hasRole('Khach_Hang') or hasAnyRole('nhan_vien')")
     public ResponseEntity<List<DanhMuc>> getAllDanhMuc() {
         List<DanhMuc> DanhMuccList = danhMucService.getAllDanhMuc();
         return new ResponseEntity<>(DanhMuccList, HttpStatus.OK);

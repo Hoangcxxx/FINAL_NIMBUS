@@ -23,7 +23,7 @@ public class SanPhamController {
     private SanPhamService sanPhamService;
 
     @GetMapping
-//    @PreAuthorize("hasRole('Khach_Hang')")
+//    @PreAuthorize("hasRole('khach_hang')")
     public List<Map<String, Object>> getAllSanPhams() {
         List<Object[]> results = sanPhamService.getAllSanPhams();
         return results.stream().map(row -> {

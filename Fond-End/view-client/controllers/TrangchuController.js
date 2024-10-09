@@ -3,6 +3,7 @@ window.TrangchuController = function ($scope, $http, $window) {
     $scope.dsSanPham = [];
     $scope.email = '';
     $scope.password = '';
+    $scope.tenNguoiDung = '';
     $scope.successMessage = '';
     $scope.errorMessage = '';
     $scope.forgotPasswordEmail = '';
