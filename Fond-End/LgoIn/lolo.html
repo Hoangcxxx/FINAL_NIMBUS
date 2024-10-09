@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <title>Login Menu</title>
+</head>
+<body ng-app="myApp" ng-controller="MainController">
+
+<header>
+    <div class="container">
+        <div class="header">
+            <div class="auth-container" ng-if="!isLoggedIn">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#loginModal">Đăng nhập</button>
+            </div>
+            <div class="auth-container" ng-if="isLoggedIn">
+                <span>{{userName}}</span>
+                <button class="btn btn-secondary" ng-click="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Đăng nhập</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="username">Tên đăng nhập</label>
+                        <input type="text" class="form-control" id="username" ng-model="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mật khẩu</label>
+                        <input type="password" class="form-control" id="password" ng-model="password" required>
+                    </div>
+                    <button type="button" class="btn btn-primary" ng-click="login()">Đăng nhập</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    angular.module('myApp', [])
+        .controller('MainController', function($scope) {
+            $scope.isLoggedIn = false;
+            $scope.userName = '';
+            $scope.username = '';
+            $scope.password = '';
+
+            $scope.login = function() {
+                // Simulate login logic
+                if ($scope.username && $scope.password) {
+                    $scope.isLoggedIn = true;
+                    $scope.userName = $scope.username;
+                    // Reset fields
+                    $scope.username = '';
+                    $scope.password = '';
+                    // Close the modal
+                    $('#loginModal').modal('hide');
+                }
+            };
+
+            $scope.logout = function() {
+                $scope.isLoggedIn = false;
+                $scope.userName = '';
+            };
+        });
+</script>
+</body>
+</html>

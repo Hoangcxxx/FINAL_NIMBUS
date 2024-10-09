@@ -19,6 +19,9 @@ public class SanPham {
     @Column(name = "Id_san_pham")
     private Integer idSanPham;
 
+    @Column(name = "ma_san_pham", nullable = false)
+    private String maSanPham;
+
     @Column(name = "ten_san_pham", nullable = false)
     private String tenSanPham;
 

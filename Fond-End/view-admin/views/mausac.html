@@ -50,7 +50,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in MauSac">
+                                    <tr ng-repeat="item in dsMauSac">
                                         <th scope="row">{{$index + 1}}</th>
                                         <td>{{item.tenMauSac}}</td>
                                         <td>{{item.moTa}}</td>
@@ -70,3 +70,34 @@
         </div>
     </div>
 </main>
+
+
+<!-- Modal Thêm Màu Sắc -->
+<div class="modal fade" id="addMauSacModal" tabindex="-1" role="dialog" aria-labelledby="addMauSacModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMauSacModalLabel">Thêm Màu Sắc</h5>
+                <button class="modal-close product-form" data-dismiss="modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="ten_mau_sac">Tên Màu Sắc:</label>
+                        <input type="text" class="form-control" ng-model="MauSac.tenMauSac" name="tenMauSac" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mo_ta">Mô Tả:</label>
+                        <textarea class="form-control" ng-model="MauSac.moTa" name="moTa"></textarea>
+                    </div>
+
+                    <button type="submit" ng-click="onCreate()" class="btn btn-primary">Thêm Màu Sắc</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

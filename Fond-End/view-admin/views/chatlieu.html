@@ -50,7 +50,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in ChatLieu">
+                                    <tr ng-repeat="item in dsChatLieu">
                                         <th scope="row">{{$index + 1}}</th>
                                         <td>{{item.tenChatLieu}}</td>
                                         <td>{{item.moTa}}</td>
@@ -72,3 +72,35 @@
         </div>
     </div>
 </main>
+
+
+
+<!-- Modal Thêm Chất liệu -->
+<div class="modal fade" id="addChatLieuModal" tabindex="-1" role="dialog" aria-labelledby="addChatLieuModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addChatLieuModalLabel">Thêm Chất liệu</h5>
+                <button class="modal-close product-form" data-dismiss="modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="ten_mau_sac">Tên Chất Liệu:</label>
+                        <input type="text" class="form-control" ng-model="ChatLieu.tenChatLieu" id="ten_mau_sac" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mo_ta">Mô Tả:</label>
+                        <textarea class="form-control" ng-model="ChatLieu.moTa" id="mo_ta"></textarea>
+                    </div>
+
+                    <button type="submit" ng-click="onCreate()" class="btn btn-primary">Thêm Chất Liệu</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

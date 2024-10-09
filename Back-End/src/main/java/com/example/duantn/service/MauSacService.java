@@ -1,5 +1,7 @@
 package com.example.duantn.service;
 
+import com.example.duantn.entity.ChatLieu;
+import com.example.duantn.entity.MauSac;
 import com.example.duantn.repository.MauSacRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,10 @@ public class MauSacService {
         return mauSacRepository.findAll();
     }
 
-    public com.example.duantn.entity.MauSac createMauSac(com.example.duantn.entity.MauSac mauSac) {
+    public MauSac createMauSac(MauSac mauSac) {
+        // Thiết lập ngày tạo là thời điểm hiện tại
+        mauSac.setNgayTao(new Date());
+        mauSac.setNgayCapNhat(new Date());
         return mauSacRepository.save(mauSac);
     }
 

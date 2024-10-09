@@ -1,5 +1,5 @@
 window.ChatLieuController = function ($scope,$http) {
-    $scope.ChatLieu = [];
+    $scope.dsChatLieu = [];
     // Hàm để lấy danh sách nhân viên
     function fetchData(url, target) {
         $http({
@@ -11,7 +11,24 @@ window.ChatLieuController = function ($scope,$http) {
             console.error('Error fetching data:', error);
         });
     }
-
+    $scope.ChatLieu = {
+        tenChatLieu: "",
+        moTa: ""
+    }
+    $scope.onCreate = function () {
+        $http({
+            method: 'POST',
+            url: "http://localhost:8080/api/chat_lieu",
+            data: $scope.ChatLieu
+        }).then(function (response) {
+            // Call api thành công
+            // Thông thường, chúng ta sẽ hiển thị thông báo tạo mới thành công
+            // Lưu ý: Live Server. Sau khi Post, Put, Patch thành công, trình duyệt sẽ tự refresh lại
+            // ==> Buộc phải dùng alert của js để báo thành công
+            alert('Chúc mừng bạn tạo mới thành công');
+            location.reload()
+        })
+    }
     // Gọi hàm lấy dữ liệu khi controller được khởi tạo
-    fetchData('http://localhost:8080/api/chat_lieu', 'ChatLieu');
+    fetchData('http://localhost:8080/api/chat_lieu', 'dsChatLieu');
 }

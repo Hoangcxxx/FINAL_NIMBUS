@@ -50,10 +50,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in SanPham">
+                                    <tr ng-repeat="item in dsSanPham">
                                         <th scope="row">{{$index + 1}}</th>
-                                        <td>{{item.tenSanPham }}</td>
-                                        <td>{{item.soLuongTon}}</td>
+                                        <td>{{item.tenSanPham}}</td>
+                                        <td>{{item.soLuong}}</td>
                                         <td>{{item.tenDanhMuc}}</td>
                                         <td>
                                             <input type="checkbox" ng-model="item.trangThai"
@@ -75,3 +75,73 @@
         </div>
     </div>
 </main>
+
+
+
+
+
+
+
+
+<!-- Modal Thêm Sản Phẩm -->
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Thêm Sản Phẩm</h5>
+                <button class="modal-close product-form" data-dismiss="modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="ten_san_pham">Tên Sản Phẩm:</label>
+                        <input type="text" class="form-control" id="ten_san_pham" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="so_luong">Số Lượng Tồn:</label>
+                        <input type="number" class="form-control" id="so_luong" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gia_ban">Giá Bán:</label>
+                        <input type="number" class="form-control" id="gia_ban" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="chat_lieu">Chất Liệu:</label>
+                        <select class="form-control" id="chat_lieu" required>
+                            <option value="">Chọn Chất Liệu</option>
+                            <option ng-repeat="item in dsChatLieu" value="{{item.idChatLieu}}">{{item.tenChatLieu}}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mau_sac">Màu Sắc:</label>
+                        <select class="form-control" id="mau_sac" required>
+                            <option value="">Chọn Màu Sắc</option>
+                            <option ng-repeat="item in dsMauSac" value="{{item.idMauSac}}">{{item.tenMauSac}}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="kich_thuoc">Kích Thước:</label>
+                        <select class="form-control" id="kich_thuoc" required>
+                            <option value="">Chọn Kích Thước</option>
+                            <option ng-repeat="item in dsKichThuoc" value="{{item.idKichThuoc}}">{{item.tenKichThuoc}}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mo_ta">Mô Tả:</label>
+                        <textarea class="form-control" id="mo_ta"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Thêm Sản Phẩm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
