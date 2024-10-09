@@ -15,4 +15,7 @@ public interface MauSacRepository extends JpaRepository<MauSac, Integer> {
             "FROM \n" +
             "    mau_sac ms;",nativeQuery = true)
     List<Object[]> getAllMauSac();
+
+    List<MauSac> findByTenMauSacContaining(String tenMauSac);
+
 }

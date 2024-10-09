@@ -22,7 +22,11 @@ public class MauSacController {
         List<MauSac> mauSacList = mauSacService.getAllMauSac();
         return new ResponseEntity<>(mauSacList, HttpStatus.OK);
     }
-
+    @GetMapping("/{tenMauSac}")
+    public ResponseEntity<List<MauSac>> searchMauSac(@PathVariable String tenMauSac) {
+        List<MauSac> mauSacList = mauSacService.searchMauSacByTen(tenMauSac);
+        return new ResponseEntity<>(mauSacList, HttpStatus.OK);
+    }
     @PostMapping
     public ResponseEntity<MauSac> createMauSac(@RequestBody MauSac mauSac) {
         MauSac newMauSac = mauSacService.createMauSac(mauSac);
