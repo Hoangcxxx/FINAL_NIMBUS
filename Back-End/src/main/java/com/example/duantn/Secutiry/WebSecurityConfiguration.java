@@ -40,7 +40,7 @@ public class WebSecurityConfiguration {
 
                 // Configure access rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**","/api/san-pham-chi-tiet" ,"api/san_pham/findDanhMuc/" ,"/api/san_pham", "/api/vai-tro/**", "/api/xac-thuc/**", "/api/admin/**").permitAll()
+                        .requestMatchers("/api/auth/**","/api/san-pham-chi-tiet" ,"api/gio_hang/" ,"/api/san_pham", "/api/vai-tro/**", "/api/xac-thuc/**", "/api/admin/**").permitAll()
 //                        .requestMatchers("/api/admin/login/**").hasRole("admin")
 //                        .requestMatchers("/api/auth/login/**").hasRole("Khach_Hang")
                         .anyRequest().authenticated()
