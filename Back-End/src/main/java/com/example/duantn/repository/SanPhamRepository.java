@@ -96,42 +96,5 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     List<Object[]> getSanPhamById(@Param("idSanPham") String idSanPham);
 
 
-    @Query(value = """
-                SELECT 
-                    sp.Id_san_pham,
-                    sp.ten_san_pham,
-                    sp.gia_ban,
-                    SUM(spct.so_luong) AS tong_so_luong,
-                    sp.mo_ta,
-                    MAX(ms.ten_mau_sac) AS mau_sac,
-                    cl.ten_chat_lieu,
-                    STRING_AGG(kc.ten_kich_thuoc, ', ') AS danh_sach_kich_thuoc
-                FROM 
-                    san_pham sp
-                JOIN 
-                    san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham
-                LEFT JOIN 
-                    chat_lieu_chi_tiet clt ON spct.id_chat_lieu_chi_tiet = clt.Id_chat_lieu_tiet
-                LEFT JOIN 
-                    chat_lieu cl ON clt.id_chat_lieu = cl.Id_chat_lieu
-                LEFT JOIN 
-                    kich_thuoc_chi_tiet kct ON spct.id_kich_thuoc_chi_tiet = kct.id_kich_thuoc_chi_tiet
-                LEFT JOIN 
-                    kich_thuoc kc ON kct.id_kich_thuoc = kc.Id_kich_thuoc
-                LEFT JOIN 
-                    mau_sac_chi_tiet mct ON spct.id_mau_sac_chi_tiet = mct.id_mau_sac_chi_tiet
-                LEFT JOIN 
-                    mau_sac ms ON mct.id_mau_sac = ms.Id_mau_sac
-                WHERE 
-                    sp.Id_san_pham = :idSanPham AND ms.Id_mau_sac = :idMauSac
-                GROUP BY 
-                    sp.Id_san_pham,
-                    sp.ten_san_pham,
-                    sp.gia_ban,
-                    sp.mo_ta,
-                    cl.ten_chat_lieu
-            """, nativeQuery = true)
-    List<Object[]> findKichThuocBySanPhamAndMauSac(Integer idSanPham, Integer idMauSac);
-
 
 }

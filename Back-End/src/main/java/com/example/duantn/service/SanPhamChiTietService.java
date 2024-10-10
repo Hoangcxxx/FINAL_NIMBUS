@@ -22,7 +22,12 @@ public class SanPhamChiTietService {
     public List<Object[]> getMauSacById(Integer idSanPhamCT) {
         return repository.getMauSacByIdSanPham(idSanPhamCT);
     }
-
+    public List<Object[]> getKichThuocById(Integer idSanPhamCT) {
+        return repository.getKichThuocByIdSanPham(idSanPhamCT);
+    }
+    public List<Object[]> getChatLieuById(Integer idSanPhamCT) {
+        return repository.getChatLieuByIdSanPham(idSanPhamCT);
+    }
     public SanPhamChiTiet create(SanPhamChiTiet sanPhamChiTiet) {
         return repository.save(sanPhamChiTiet);
     }

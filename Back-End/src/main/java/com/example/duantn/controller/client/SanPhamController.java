@@ -58,10 +58,5 @@ public class SanPhamController {
         return ResponseEntity.ok(mapSanPhams(sanPhamService.getSanPhamsByDanhMuc(idDanhMuc)));
     }
 
-    @GetMapping("/kich_thuoc/{idSanPham}/{idMauSac}")
-    public List<Map<String, Object>> getKichThuoc(@PathVariable Integer idSanPham, @PathVariable Integer idMauSac) {
-        return sanPhamService.getKichThuocBySanPhamAndMauSac(idSanPham, idMauSac);
-    }
-
 
 }

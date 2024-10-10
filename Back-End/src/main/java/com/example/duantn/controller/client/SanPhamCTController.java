@@ -3,11 +3,9 @@ package com.example.duantn.controller.client;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.service.SanPhamChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,45 +18,41 @@ public class SanPhamCTController {
     @Autowired
     private SanPhamChiTietService service;
 
-    private Map<String, Object> getAllSanPhamChiTiet(Object[] row) {
+    private Map<String, Object> mapRow(Object[] row, String... keys) {
         Map<String, Object> map = new HashMap<>();
-        map.put("idSanPham", row[0]); // Id_san_pham
-        map.put("tenSanPham", row[1]); // ten_san_pham
-        map.put("giaBan", row[2]); // gia_ban
-        map.put("moTa", row[3]); // mo_ta_spct
+        for (int i = 0; i < keys.length; i++) {
+            map.put(keys[i], row[i]);
+        }
         return map;
     }
-    private Map<String, Object> getAllMauSacChiTiet(Object[] row) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("idSanPham", row[0]); // Id_san_pham
-        map.put("tenMauSac", row[1]); // ten_mau_sac
-        return map;
-    }
-    private List<Map<String, Object>> mapSanPhamCTs(List<Object[]> results) {
-        return results.stream().map(this::getAllSanPhamChiTiet).collect(Collectors.toList());
+
+    private <T> ResponseEntity<List<Map<String, Object>>> getResponse(List<Object[]> results, String... keys) {
+        if (results.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Map<String, Object>> mappedList = results.stream()
+                .map(row -> mapRow(row, keys))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(mappedList);
     }
 
     @GetMapping("/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
-        List<Object[]> sanPhamChiTiet = service.getById(idSanPhamCT);
-        if (sanPhamChiTiet.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        List<Map<String, Object>> mappedList = mapSanPhamCTs(sanPhamChiTiet);
-        return ResponseEntity.ok(mappedList);
+        return getResponse(service.getById(idSanPhamCT), "idSanPham", "tenSanPham", "giaBan", "moTa");
     }
+
     @GetMapping("/mau_sac/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getMauSacById(@PathVariable Integer idSanPhamCT) {
-        List<Object[]> sanPhamChiTiet = service.getMauSacById(idSanPhamCT);
-        if (sanPhamChiTiet.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        List<Map<String, Object>> mappedList = sanPhamChiTiet.stream()
-                .map(this::getAllMauSacChiTiet)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(mappedList);
+        return getResponse(service.getMauSacById(idSanPhamCT), "idMauSac", "tenMauSac");
     }
 
+    @GetMapping("/kich_thuoc/{idSanPhamCT}")
+    public ResponseEntity<List<Map<String, Object>>> getKichThuocById(@PathVariable Integer idSanPhamCT) {
+        return getResponse(service.getKichThuocById(idSanPhamCT), "idKichThuoc", "tenKichThuoc");
+    }
+
+    @GetMapping("/chat_lieu/{idSanPhamCT}")
+    public ResponseEntity<List<Map<String, Object>>> getChatLieuById(@PathVariable Integer idSanPhamCT) {
+        return getResponse(service.getChatLieuById(idSanPhamCT), "idChatLieu", "tenChatLieu");
+    }
 }

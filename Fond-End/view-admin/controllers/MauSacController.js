@@ -76,17 +76,5 @@ window.MauSacController = function ($scope, $http) {
             });
         }
     };
-    // $scope.onDelete = function (idMauSac) {
-    //     if (confirm('Bạn có chắc chắn muốn xóa chất liệu này không?')) {
-    //         $http({
-    //             method: 'DELETE',
-    //             url: `http://localhost:8080/api/mau_sac/${idMauSac}`
-    //         }).then(function (response) {
-    //             alert('Chất liệu đã được xóa thành công');
-    //             location.reload();
-    //         });
-    //     }
-    // };
-    // Gọi hàm lấy dữ liệu khi controller được khởi tạo
     fetchData('http://localhost:8080/api/mau_sac', 'dsMauSac');
 };

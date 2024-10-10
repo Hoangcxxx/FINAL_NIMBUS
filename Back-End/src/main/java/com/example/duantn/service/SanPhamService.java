@@ -28,16 +28,6 @@ public class SanPhamService {
         return map;
     }
 
-    public List<Map<String, Object>> getKichThuocBySanPhamAndMauSac(Integer idSanPham, Integer idMauSac) {
-        List<Object[]> results = sanPhamRepository.findKichThuocBySanPhamAndMauSac(idSanPham, idMauSac);
-        List<Map<String, Object>> kichThuocList = new ArrayList<>();
-
-        for (Object[] result : results) {
-            kichThuocList.add(mapSanPhamSizes(result)); // Sử dụng phương thức map để chuyển đổi
-        }
-        return kichThuocList;
-    }
-
 
     public List<Object[]> getSanPhamById(String idSanPham) {
         return sanPhamRepository.getSanPhamById(idSanPham);

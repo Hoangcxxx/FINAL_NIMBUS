@@ -1,8 +1,12 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
-    $scope.sanPhamChiTiet = null;
+    $scope.dsSanPhamChiTiet = [];
+    $scope.dsMauSacChiTiet = [];
+    $scope.dsKichThuocChiTiet = [];
     $scope.anhSanPham = [];
-    $scope.mauSacChiTiet = [];
+    $scope.kichThuocChiTiet = [];
+    $scope.selectedColor = null;
     var idSanPham = $routeParams.id;
+    var idMauSacCT = $routeParams.id; // Initialize idMauSacCT to null
     $scope.slideIndex = 1;
 
     function fetchAnhSanPham() {
@@ -18,6 +22,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
                 console.error('Error fetching product images:', error);
             });
     }
+
     function fetchSanPhamChiTiet() {
         $http.get('http://localhost:8080/api/san_pham_chi_tiet/' + idSanPham)
             .then(function (response) {
@@ -31,19 +36,57 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
                 console.error('Error fetching product details:', error);
             });
     }
+
     function fetchMauSacChiTiet() {
         $http.get('http://localhost:8080/api/san_pham_chi_tiet/mau_sac/' + idSanPham)
             .then(function (response) {
-                if (response.data.length > 0) {
+                if (response.data && response.data.length > 0) {
                     $scope.mauSacChiTiet = response.data;
                     console.log("Màu sắc sản phẩm:", $scope.mauSacChiTiet);
                 } else {
-                    console.log("Không tìm thấy màu sắc cho sản phẩm.");
+                    console.error("Không tìm thấy màu sắc cho sản phẩm. Dữ liệu trả về:", response.data);
                 }
             }, function (error) {
-                console.error('Error fetching product images:', error);
+                console.error('Error fetching product colors:', error);
             });
     }
+    function fetchKichThuocChiTiet() {
+        $http.get('http://localhost:8080/api/san_pham_chi_tiet/kich_thuoc/' + idSanPham)
+            .then(function (response) {
+                if (response.data && response.data.length > 0) {
+                    $scope.kichThuocChiTiet = response.data;
+                    console.log("Kích thước sản phẩm:", $scope.kichThuocChiTiet);
+                } else {
+                    console.error("Không tìm thấy kích thước cho sản phẩm. Dữ liệu trả về:", response.data);
+                }
+            }, function (error) {
+                console.error('Error fetching product colors:', error);
+            });
+    }
+    function fetchChatLieuChiTiet() {
+        $http.get('http://localhost:8080/api/san_pham_chi_tiet/chat_lieu/' + idSanPham)
+            .then(function (response) {
+                if (response.data && response.data.length > 0) {
+                    $scope.chatLieuChiTiet = response.data;
+                    console.log("Chất liệu sản phẩm:", $scope.chatLieuChiTiet);
+                } else {
+                    console.error("Không tìm thấy chất liệu cho sản phẩm. Dữ liệu trả về:", response.data);
+                }
+            }, function (error) {
+                console.error('Error fetching product colors:', error);
+            });
+    }
+    // Fetch functions
+    fetchAnhSanPham();
+    fetchSanPhamChiTiet();
+    fetchMauSacChiTiet();
+    fetchKichThuocChiTiet();
+    fetchChatLieuChiTiet();
+
+
+
+
+
     $scope.addToCart = function (sanPham) {
         // Logic để thêm sản phẩm vào giỏ hàng
         console.log("Đã thêm vào giỏ hàng:", sanPham);
@@ -56,9 +99,6 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
         // Ví dụ: Chuyển hướng đến trang thanh toán với thông tin sản phẩm
     };
 
-    fetchAnhSanPham();
-    fetchSanPhamChiTiet();
-    fetchMauSacChiTiet();
 
     $scope.currentDiv = currentDiv;
 

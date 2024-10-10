@@ -40,17 +40,36 @@
                         <div>
                             <p><strong>Tên sản phẩm:</strong> {{sanPhamChiTiet.tenSanPham}}</p>
                             <p><strong>Màu sắc:</strong>
-                                <button class="btn btn-secondary" ng-repeat="mauSacChiTiet in mauSacChiTiet track by $index">{{mauSacChiTiet.tenMauSac}}</button>
+                            <ul class="menu-list">
+                                <li class="menu-list-item">
+                                    <a href="" class="menu-link text-dark" ng-repeat="mauSacChiTiet in mauSacChiTiet track by $index"
+                                    ng-click="onclickMauSac(mauSacChiTiet.idMauSacCT)">
+                                        {{mauSacChiTiet.tenMauSac}}
+                                    </a>
+                                </li>
+                            </ul>
                             </p>
                             <p><strong>Chất liệu:</strong>
-                                <span class="text-bg-dark">{{sanPhamChiTiet.chatLieu}}</span>
+                                <ul class="menu-list">
+                                    <li class="menu-list-item">
+                                        <a href="" class="menu-link text-dark" ng-repeat="chatLieuChiTiet in chatLieuChiTiet track by $index"
+                                        ng-click="onclickKichThuoc(chatLieuChiTiet.idChatLieuCT)">
+                                            {{chatLieuChiTiet.tenChatLieu}}
+                                        </a>
+                                    </li>
+                                </ul>
                             </p>
                             <p><strong>Kích thước:</strong>
-                                <span class="text-bg-dark">{{sanPhamChiTiet.kichThuoc}}</span>
+                                <ul class="menu-list">
+                                    <li class="menu-list-item">
+                                        <a href="" class="menu-link text-dark" ng-repeat="kichThuocChiTiet in kichThuocChiTiet track by $index"
+                                        ng-click="onclickKichThuoc(kichThuocChiTiet.idKichThuocCT)">
+                                            {{kichThuocChiTiet.tenKichThuoc}}
+                                        </a>
+                                    </li>
+                                </ul>
                             </p>
-                            <p><strong>Giá bán:</strong> {{sanPhamChiTiet.giaBan | currency:'₫'}}</p>
                             <p><strong>Mô tả:</strong> {{sanPhamChiTiet.moTa}}</p>
-                            <p><strong>Số lượng:</strong> 12</p>
                         </div>
                     </div>
 
