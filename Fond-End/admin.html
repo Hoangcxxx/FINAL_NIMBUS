@@ -24,6 +24,7 @@
     <script src="view-admin/controllers/ChatLieuController.js"></script>
     <script src="view-admin/controllers/KichThuocController.js"></script>
     <script src="view-admin/controllers/MauSacController.js"></script>
+    <script src="view-admin/controllers/DanhMucController.js"></script>
     <title>Quản lý cửa hàng</title>
 </head>
 
@@ -64,6 +65,10 @@
                 .when('/chat_lieu', {
                     templateUrl: 'view-admin/views/chatlieu.html',
                     controller: ChatLieuController
+                })
+                .when('/danh_muc', {
+                    templateUrl: 'view-admin/views/danhmuc.html',
+                    controller: DanhMucController
                 })
                 .when('/khach_hang', {
                     templateUrl: 'view-admin/views/khachhang.html',

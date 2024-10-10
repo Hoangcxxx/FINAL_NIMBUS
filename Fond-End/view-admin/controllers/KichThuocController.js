@@ -1,7 +1,7 @@
-window.KichThuocController = function ($scope, $http, $routeParams, $location) {
+window.KichThuocController = function ($scope, $http) {
     $scope.dsKichThuoc = [];
-    
-    // Hàm để lấy danh sách kích thước
+
+    // Hàm để lấy danh sách chất liệu
     function fetchData(url, target) {
         $http({
             method: 'GET',
@@ -13,25 +13,21 @@ window.KichThuocController = function ($scope, $http, $routeParams, $location) {
         });
     }
 
-    // Hàm để lấy chi tiết kích thước
-    $scope.getKichThuocById = function (id) {
-        console.log("Fetching KichThuoc with ID:", id); // Log ID
-        $http({
-            method: 'GET',
-            url: 'http://localhost:8080/api/kich_thuoc/' + id
-        }).then(function (response) {
-            $scope.KichThuoc = response.data;
-            $('#updateKichThuocModal').modal('show');
-        }, function (error) {
-            console.error('Error fetching KichThuoc:', error.data);
-        });
+    $scope.onRefresh = function () {
+        fetchData('http://localhost:8080/api/kich_thuoc', 'dsKichThuoc');
     };
 
     $scope.KichThuoc = {
         tenKichThuoc: "",
         moTa: ""
     };
-    
+
+    $scope.chinhSuaKichThuoc = function (item) {
+        $scope.KichThuoc = angular.copy(item); // Sao chép dữ liệu để sửa
+        $('#addKichThuocModal').modal('show'); // Hiển thị modal
+        $scope.isEditing = true; // Đánh dấu là đang chỉnh sửa
+    };
+
     $scope.onCreate = function () {
         $http({
             method: 'POST',
@@ -39,21 +35,48 @@ window.KichThuocController = function ($scope, $http, $routeParams, $location) {
             data: $scope.KichThuoc
         }).then(function (response) {
             alert('Chúc mừng bạn tạo mới thành công');
-            location.reload();
+            $scope.onRefresh(); // Refresh the data
+            $scope.resetModal(); // Reset the modal
         });
     };
 
     $scope.onUpdate = function () {
         $http({
             method: 'PUT',
-            url: 'http://localhost:8080/api/kich_thuoc/' + $scope.KichThuoc.id, // Sử dụng ID từ KichThuoc
+            url: `http://localhost:8080/api/kich_thuoc/${$scope.KichThuoc.idKichThuoc}`,
             data: $scope.KichThuoc
         }).then(function (response) {
-            alert('Chúc mừng bạn chỉnh sửa thành công');
-            location.reload(); // Refresh trang sau khi chỉnh sửa
+            alert('Chất liệu đã được cập nhật thành công');
+            $scope.onRefresh(); // Refresh the data
+            $scope.resetModal(); // Reset the modal
         });
+    };
+
+
+
+    $scope.resetModal = function () {
+        $scope.KichThuoc = {
+            tenKichThuoc: "",
+            moTa: ""
+        };
+        $scope.isEditing = false; // Reset editing state
+        $('#addKichThuocModal').modal('hide'); // Hide the modal
+    };
+
+
+
+    $scope.onDelete = function (idKichThuoc) {
+        if (confirm('Bạn có chắc chắn muốn xóa chất liệu này không?')) {
+            $http({
+                method: 'DELETE',
+                url: `http://localhost:8080/api/kich_thuoc/${idKichThuoc}`
+            }).then(function (response) {
+                alert('Chất liệu đã được xóa thành công');
+                location.reload();
+            });
+        }
     };
 
     // Gọi hàm lấy dữ liệu khi controller được khởi tạo
     fetchData('http://localhost:8080/api/kich_thuoc', 'dsKichThuoc');
-}
+};
