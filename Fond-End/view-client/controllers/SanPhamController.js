@@ -26,7 +26,7 @@ window.SanPhamController = function ($scope, $http) {
     $scope.onclickSanPham = function (idSanPham) {
         console.log('ID sản phẩm:', idSanPham);
         // Lấy chi tiết sản phẩm đã chọn
-        $http.get('http://localhost:8080/api/san_pham/findSanPham/' + idSanPham).then(function (response) {
+        $http.get('http://localhost:8080/api/san_pham_chi_tiet/' + idSanPham).then(function (response) {
             $scope.dsSanPham = response.data; // Gán dữ liệu sản phẩm chi tiết vào biến selectedProduct
             console.log("Dữ liệu sản phẩm chi tiết:", response.data);
             window.location.href = '#!/san_pham_ct/' + idSanPham;

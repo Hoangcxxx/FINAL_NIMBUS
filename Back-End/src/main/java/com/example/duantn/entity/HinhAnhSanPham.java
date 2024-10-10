@@ -20,7 +20,7 @@ public class HinhAnhSanPham {
     private Integer idHinhAnhSanPham;
 
     @ManyToOne
-    @JoinColumn(name = "id_san_pham_chi_tiet", nullable = false)  // Đảm bảo không null
+    @JoinColumn(name = "id_san_pham", nullable = false)  // Đảm bảo không null
     private SanPham sanPham;  // Giả sử bạn có một entity SanPham
 
     @Column(name = "url_anh", nullable = false)

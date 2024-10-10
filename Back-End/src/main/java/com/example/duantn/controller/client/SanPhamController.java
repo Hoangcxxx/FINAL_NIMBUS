@@ -1,9 +1,7 @@
 package com.example.duantn.controller.client;
 
-import com.example.duantn.entity.SanPham;
 import com.example.duantn.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,20 +21,14 @@ public class SanPhamController {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
         map.put("tenSanPham", row[1]);
-        map.put("soLuong", row[2]);
-        map.put("giaBan", row[3]);
-        map.put("moTa", row[4]);
-        map.put("tenDanhMuc", row[5]);
-        map.put("tenLoaiVoucher", row[6]);
-        map.put("trangThai", row[7]);
-        map.put("mauSac", row[8]);
-        map.put("kichThuoc", row[9]);
-        map.put("chatLieu", row[10]);
-        map.put("urlAnh", row[11]);  // Hình ảnh đầu tiên đã được lọc
+        map.put("tenDanhMuc", row[2]);
+        map.put("giaBan", row[3]);  // Cập nhật chỉ số cho giá bán
+        map.put("moTa", row[4]);     // Cập nhật chỉ số cho mô tả
+        map.put("trangThai", row[5]); // Cập nhật chỉ số cho trạng thái
+        map.put("urlAnh", row[6]);   // Cập nhật chỉ số cho URL ảnh
+        map.put("thuTu", row[7]);    // Cập nhật chỉ số cho thứ tự
         return map;
     }
-
-
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {
         return results.stream().map(this::mapSanPhamDetail).collect(Collectors.toList());
     }
@@ -66,19 +58,10 @@ public class SanPhamController {
         return ResponseEntity.ok(mapSanPhams(sanPhamService.getSanPhamsByDanhMuc(idDanhMuc)));
     }
 
-    @PostMapping
-    public ResponseEntity<SanPham> createSanPham(@RequestBody SanPham sanPham) {
-        return new ResponseEntity<>(sanPhamService.createSanPham(sanPham), HttpStatus.CREATED);
+    @GetMapping("/kich_thuoc/{idSanPham}/{idMauSac}")
+    public List<Map<String, Object>> getKichThuoc(@PathVariable Integer idSanPham, @PathVariable Integer idMauSac) {
+        return sanPhamService.getKichThuocBySanPhamAndMauSac(idSanPham, idMauSac);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SanPham> updateSanPham(@PathVariable Integer id, @RequestBody SanPham sanPham) {
-        return ResponseEntity.ok(sanPhamService.updateSanPham(id, sanPham));
-    }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSanPham(@PathVariable Integer id) {
-        sanPhamService.deleteSanPham(id);
-        return ResponseEntity.noContent().build();
-    }
 }

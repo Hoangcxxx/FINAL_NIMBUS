@@ -7,43 +7,58 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/san-pham-chi-tiet")
+@RequestMapping("/api/san_pham_chi_tiet")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class SanPhamCTController {
     @Autowired
     private SanPhamChiTietService service;
 
-    @GetMapping
-    public ResponseEntity<List<SanPhamChiTiet>> getAll() {
-        List<SanPhamChiTiet> list = service.getAll();
-        return ResponseEntity.ok(list);
+    private Map<String, Object> getAllSanPhamChiTiet(Object[] row) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("idSanPham", row[0]); // Id_san_pham
+        map.put("tenSanPham", row[1]); // ten_san_pham
+        map.put("giaBan", row[2]); // gia_ban
+        map.put("moTa", row[3]); // mo_ta_spct
+        return map;
+    }
+    private Map<String, Object> getAllMauSacChiTiet(Object[] row) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("idSanPham", row[0]); // Id_san_pham
+        map.put("tenMauSac", row[1]); // ten_mau_sac
+        return map;
+    }
+    private List<Map<String, Object>> mapSanPhamCTs(List<Object[]> results) {
+        return results.stream().map(this::getAllSanPhamChiTiet).collect(Collectors.toList());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<SanPhamChiTiet> getById(@PathVariable Integer id) {
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/{idSanPhamCT}")
+    public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
+        List<Object[]> sanPhamChiTiet = service.getById(idSanPhamCT);
+        if (sanPhamChiTiet.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Map<String, Object>> mappedList = mapSanPhamCTs(sanPhamChiTiet);
+        return ResponseEntity.ok(mappedList);
     }
+    @GetMapping("/mau_sac/{idSanPhamCT}")
+    public ResponseEntity<List<Map<String, Object>>> getMauSacById(@PathVariable Integer idSanPhamCT) {
+        List<Object[]> sanPhamChiTiet = service.getMauSacById(idSanPhamCT);
+        if (sanPhamChiTiet.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-    @PostMapping
-    public ResponseEntity<SanPhamChiTiet> create(@RequestBody SanPhamChiTiet sanPhamChiTiet) {
-        SanPhamChiTiet created = service.create(sanPhamChiTiet);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
+        List<Map<String, Object>> mappedList = sanPhamChiTiet.stream()
+                .map(this::getAllMauSacChiTiet)
+                .collect(Collectors.toList());
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SanPhamChiTiet> update(@PathVariable Integer id, @RequestBody SanPhamChiTiet sanPhamChiTiet) {
-        return ResponseEntity.ok(service.update(id, sanPhamChiTiet));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(mappedList);
     }
 
 }

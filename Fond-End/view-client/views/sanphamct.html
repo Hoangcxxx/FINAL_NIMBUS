@@ -30,39 +30,47 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5 d-flex flex-column" style="padding-left: 0px;padding-right: 0px;">
+                <div class="col-md-5 d-flex flex-column" style="padding-left: 0px;padding-right: 0px;"
+                    ng-repeat="sanPhamChiTiet in sanPhamChiTiet track by $index">
                     <h1 class="display-5 fw-bolder">{{sanPhamChiTiet.tenSanPham}}</h1>
                     <div class="fs-5">
                         <h3><span>{{sanPhamChiTiet.giaBan | currency}}</span></h3>
                     </div>
-                    <div>
-                        <p class="lead"> <b>Thông Tin Sản Phẩm</b>
-                            <br> - Kích thước: {{sanPhamChiTiet.kichThuoc}}
-                            <br> - Màu sắc: {{sanPhamChiTiet.mauSac}}
-                            <br> - Mô tả: {{sanPhamChiTiet.moTa}}
-                        </p>
+                    <div class="product-details">
+                        <div>
+                            <p><strong>Tên sản phẩm:</strong> {{sanPhamChiTiet.tenSanPham}}</p>
+                            <p><strong>Màu sắc:</strong>
+                                <button class="btn btn-secondary" ng-repeat="mauSacChiTiet in mauSacChiTiet track by $index">{{mauSacChiTiet.tenMauSac}}</button>
+                            </p>
+                            <p><strong>Chất liệu:</strong>
+                                <span class="text-bg-dark">{{sanPhamChiTiet.chatLieu}}</span>
+                            </p>
+                            <p><strong>Kích thước:</strong>
+                                <span class="text-bg-dark">{{sanPhamChiTiet.kichThuoc}}</span>
+                            </p>
+                            <p><strong>Giá bán:</strong> {{sanPhamChiTiet.giaBan | currency:'₫'}}</p>
+                            <p><strong>Mô tả:</strong> {{sanPhamChiTiet.moTa}}</p>
+                            <p><strong>Số lượng:</strong> 12</p>
+                        </div>
                     </div>
 
                     <!-- Buttons for adding to cart and checkout -->
                     <div class="mt-4">
                         <div class="d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center btn btn-danger">
+                            <div class="d-flex align-items-center btn btn-danger" ng-click="addToCart(sanPhamChiTiet)">
                                 <div class="cart-icon-menu me-2" style="position: relative;">
                                     <i class="fa-light fa-basket-shopping" style="font-size: 24px; color: #ffffff;"></i>
                                 </div>
-                                <span style="color: #fbfbfb; font-weight: 500; cursor: pointer;padding-left: 15px;"
-                                    onclick="openCart()">Giỏ hàng</span>
+                                <span style="color: #fbfbfb; font-weight: 500; cursor: pointer;padding-left: 15px;">Giỏ
+                                    hàng</span>
                             </div>
-                            <a href="#!thanh_toan">
-                                <button class="btn btn-success ms-2"
-                                    style="background-color: #28a745; border: none; padding: 10px 20px; font-size: 23px;"
-                                    ng-click="checkout()">
-                                    <i class="fas fa-check me-3" style="padding-right: 10px;"></i>Thanh toán
-                                </button>
-                            </a>
+                            <button class="btn btn-success ms-2"
+                                style="background-color: #28a745; border: none; padding: 10px 20px; font-size: 23px;"
+                                ng-click="checkout(sanPhamChiTiet)">
+                                <i class="fas fa-check me-3" style="padding-right: 10px;"></i>Thanh toán
+                            </button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

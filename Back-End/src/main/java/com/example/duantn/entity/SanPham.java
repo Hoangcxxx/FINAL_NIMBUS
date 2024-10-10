@@ -16,7 +16,7 @@ import java.util.Date;
 public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_san_pham")
+    @Column(name = "id_san_pham")
     private Integer idSanPham;
 
     @Column(name = "ma_san_pham", nullable = false)
@@ -30,6 +30,8 @@ public class SanPham {
 
     @Column(name = "mo_ta")
     private String moTa;
+    @Column(name = "trang_thai", nullable = false)
+    private Boolean trangThai;
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

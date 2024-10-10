@@ -5,9 +5,8 @@ import com.example.duantn.repository.SanPhamChiTietRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+
 @Service
 public class SanPhamChiTietService {
     @Autowired
@@ -17,8 +16,11 @@ public class SanPhamChiTietService {
         return repository.findAll();
     }
 
-    public Optional<SanPhamChiTiet> getById(Integer id) {
-        return repository.findById(id);
+    public List<Object[]> getById(Integer idSanPhamCT) {
+        return repository.getSanPhamById(idSanPhamCT);
+    }
+    public List<Object[]> getMauSacById(Integer idSanPhamCT) {
+        return repository.getMauSacByIdSanPham(idSanPhamCT);
     }
 
     public SanPhamChiTiet create(SanPhamChiTiet sanPhamChiTiet) {
