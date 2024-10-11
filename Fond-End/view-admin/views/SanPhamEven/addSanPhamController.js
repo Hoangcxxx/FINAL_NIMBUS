@@ -5,6 +5,9 @@ window.addSanPhamController = function ($scope, $http) {
     $scope.dsMauSac = [];
     $scope.dsKichThuoc = [];
     $scope.selectedProduct = {};
+    $scope.selectedMaterials = [];
+    $scope.selectedColors = [];
+    $scope.selectedSizes = [];
 
     // Fetch data function
     $scope.fetchData = function (url, target, logMessage) {
@@ -34,7 +37,12 @@ window.addSanPhamController = function ($scope, $http) {
     $scope.saveProduct = function () {
         const method = $scope.selectedProduct.idSanPham ? 'put' : 'post';
         const url = `http://localhost:8080/api/san_pham${$scope.selectedProduct.idSanPham ? '/' + $scope.selectedProduct.idSanPham : ''}`;
-        
+
+        // Add selected materials, colors, and sizes to the product
+        $scope.selectedProduct.materials = $scope.dsChatLieu.filter(item => item.selected);
+        $scope.selectedProduct.colors = $scope.dsMauSac.filter(item => item.selected);
+        $scope.selectedProduct.sizes = $scope.dsKichThuoc.filter(item => item.selected);
+
         $http[method](url, $scope.selectedProduct).then(response => {
             console.log(`Sản phẩm được ${method === 'put' ? 'sửa' : 'thêm'} thành công:`, response.data);
             $('#addProductModal').modal('hide');
@@ -45,6 +53,10 @@ window.addSanPhamController = function ($scope, $http) {
     // Edit a product
     $scope.chinhSuaSanPham = function (item) {
         $scope.selectedProduct = angular.copy(item);
+        // Set selected materials, colors, and sizes
+        $scope.dsChatLieu.forEach(mat => mat.selected = item.materials.some(m => m.id === mat.id));
+        $scope.dsMauSac.forEach(color => color.selected = item.colors.some(c => c.id === color.id));
+        $scope.dsKichThuoc.forEach(size => size.selected = item.sizes.some(s => s.id === size.id));
         $('#addProductModal').modal('show');
     };
 
@@ -66,21 +78,45 @@ window.addSanPhamController = function ($scope, $http) {
             danhMuc: "",
             trangThai: ""
         };
+        $scope.dsChatLieu.forEach(mat => mat.selected = false);
+        $scope.dsMauSac.forEach(color => color.selected = false);
+        $scope.dsKichThuoc.forEach(size => size.selected = false);
         $('#addProductModal').modal('hide');
-        $('#attributeModal').modal('hide');
+        $('#materialModal').modal('hide');
+        $('#colorModal').modal('hide');
+        $('#sizeModal').modal('hide');
     };
 
-    // Save attributes
-    $scope.saveAttribute = function () {
-        const attributes = {
-            materials: Array.from(document.getElementById('material').selectedOptions).map(option => option.value),
-            sizes: Array.from(document.getElementById('size').selectedOptions).map(option => option.value),
-            colors: Array.from(document.getElementById('color').selectedOptions).map(option => option.value),
-        };
+    // Update selected material
+    $scope.updateMaterial = function (material) {
+        if (material.selected) {
+            $scope.selectedMaterials.push(material);
+        } else {
+            const index = $scope.selectedMaterials.findIndex(m => m.id === material.id);
+            if (index > -1) $scope.selectedMaterials.splice(index, 1);
+        }
+        document.getElementById('material').value = $scope.selectedMaterials.map(m => m.tenChatLieu).join(', ');
+    };
 
-        $http.post('http://localhost:8080/api/thuoc_tinh', attributes).then(response => {
-            console.log('Thuộc tính được thêm thành công:', response.data);
-            $('#attributeModal').modal('hide');
-        }).catch(error => console.error('Error adding attribute:', error));
+    // Update selected color
+    $scope.updateColor = function (color) {
+        if (color.selected) {
+            $scope.selectedColors.push(color);
+        } else {
+            const index = $scope.selectedColors.findIndex(c => c.id === color.id);
+            if (index > -1) $scope.selectedColors.splice(index, 1);
+        }
+        document.getElementById('color').value = $scope.selectedColors.map(c => c.tenMauSac).join(', ');
+    };
+
+    // Update selected size
+    $scope.updateSize = function (size) {
+        if (size.selected) {
+            $scope.selectedSizes.push(size);
+        } else {
+            const index = $scope.selectedSizes.findIndex(s => s.id === size.id);
+            if (index > -1) $scope.selectedSizes.splice(index, 1);
+        }
+        document.getElementById('size').value = $scope.selectedSizes.map(s => s.tenKichThuoc).join(', ');
     };
 };
