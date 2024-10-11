@@ -28,11 +28,13 @@
                 </div>
 
                 <div class="admin-control-right">
-                    <button class="btn-control-large" id="btn-cancel-product" onclick="hienThiModalThemSanPham()"><i
-                            class="fa-light fa-rotate-right"></i> Làm mới</button>
-                    <button type="button" class="btn-control-large" data-toggle="modal" data-target="#addProductModal">
-                        <i class="fa-light fa-plus"></i> Thêm sản phẩm mới
-                    </button>
+                    <button class="btn-control-large" id="btn-cancel-product"><i class="fa-light fa-rotate-right"></i>
+                        Làm mới</button>
+                    <a href="#!Add_SP">
+                        <button type="button" class="btn-control-large">
+                            <i class="fa-light fa-plus"></i> Thêm sản phẩm mới
+                        </button>
+                    </a>
                 </div>
             </div>
             <div id="show-product">
@@ -78,114 +80,3 @@
         </div>
     </div>
 </main>
-
-
-
-
-
-
-
-<!-- The Modal -->
-<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title" id="addProductModalLabel">Thêm sản phẩm mới</h4>
-                <button class="modal-close product-form" data-dismiss="modal">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-                <ul class="nav nav-tabs" id="authTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="product-tab" data-bs-toggle="tab" href="#product" role="tab"
-                            aria-controls="product" aria-selected="true">Sản phẩm</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="attributes-tab" data-bs-toggle="tab" href="#attributes" role="tab"
-                            aria-controls="attributes" aria-selected="false">Thuộc tính sản phẩm</a>
-                    </li>
-                </ul>
-
-                <div class="tab-content mt-3" id="authTabContent">
-                    <!-- Product Form -->
-                    <div class="tab-pane fade show active" id="product" role="tabpanel" aria-labelledby="product-tab">
-                        <form ng-submit="addProduct()">
-                            <div class="mb-3">
-                                <label for="tenSanPham" class="form-label">Tên sản phẩm</label>
-                                <input type="text" class="form-control" id="tenSanPham" placeholder="Nhập tên sản phẩm"
-                                    required ng-model="tenSanPham">
-                            </div>
-                            <div class="form-group">
-                                <label for="">Chọn danh mục:</label>
-                                <select class="form-control" id="danhMuc" required ng-model="selectedDanhMuc">
-                                    <option value="">Chọn danh mục</option>
-                                    <option ng-repeat="item in dsDanhMuc" value="{{item.idDanhMuc}}">
-                                        {{item.tenDanhMuc}}</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="giaBan" class="form-label">Giá bán</label>
-                                <input type="number" class="form-control" id="giaBan" placeholder="Nhập giá bán"
-                                    required ng-model="giaBan">
-                            </div>
-                            <div class="mb-3">
-                                <label for="moTa" class="form-label">Mô tả</label>
-                                <textarea class="form-control" id="moTa" placeholder="Mô tả..." rows="3" required
-                                    ng-model="moTa"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Lưu sản phẩm</button>
-                            <p class="error-message" ng-show="errorMessage">{{errorMessage}}</p>
-                        </form>
-                    </div>
-
-                    <!-- Attributes Form -->
-                    <div class="tab-pane fade" id="attributes" role="tabpanel" aria-labelledby="attributes-tab">
-                        <form>
-                            <div class="form-group">
-                                <label for="san_pham">Chọn sản phẩm:</label>
-                                <select class="form-control" id="san_pham" required ng-model="selectedSanPham">
-                                    <option value="">Chọn Sản phẩm</option>
-                                    <option ng-repeat="item in dsSanPham" value="{{item.idSanPham}}">
-                                        {{item.tenSanPham}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="chat_lieu">Chất Liệu:</label>
-                                <select class="form-control" id="chat_lieu" required ng-model="selectedChatLieu">
-                                    <option value="">Chọn Chất Liệu</option>
-                                    <option ng-repeat="item in dsChatLieu" value="{{item.idChatLieu}}">
-                                        {{item.tenChatLieu}}</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="mau_sac">Màu Sắc:</label>
-                                <select class="form-control" id="mau_sac" required ng-model="selectedMauSac">
-                                    <option value="">Chọn Màu Sắc</option>
-                                    <option ng-repeat="item in dsMauSac" value="{{item.idMauSac}}">{{item.tenMauSac}}
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="kich_thuoc">Kích Thước:</label>
-                                <select class="form-control" id="kich_thuoc" required ng-model="selectedKichThuoc">
-                                    <option value="">Chọn Kích Thước</option>
-                                    <option ng-repeat="item in dsKichThuoc" value="{{item.idKichThuoc}}">
-                                        {{item.tenKichThuoc}}</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Đăng ký thuộc tính</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

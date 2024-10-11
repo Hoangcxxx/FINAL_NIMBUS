@@ -1,0 +1,170 @@
+<!-- Begin Page Content -->
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <h1 class="page-title">Thêm sản phẩm mới</h1>
+            <div class="border border-3 rounded p-3"> <!-- Thêm border và padding -->
+                <div class="d-flex justify-content-between">
+                    <a href="#!san_pham">
+                        <button class="btn btn-secondary">
+                            <i class="fa-light fa-rotate-right"></i> Trở lại
+                        </button>
+                    </a>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addProductModal">
+                        <i class="fa-light fa-plus"></i> Thêm sản phẩm mới
+                    </button>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                        data-bs-target="#attributeModal">
+                        <i class="fa-light fa-plus"></i> Thêm thuộc tính
+                    </button>
+                </div>
+            </div>
+
+            <h3 class="mb-4 mt-3">Danh sách các sản phẩm cùng loại</h3>
+            <div id="show-product">
+                <div class="card shadow mb-4 mt-3">
+                    <div class="card-body">
+                        <div class="table-responsive text-center">
+                            <h4 class="mb-4 mt-3">Các sản phẩm màu trắng</h4>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Tên sản phẩm</th>
+                                        <th scope="col">Số lượng</th>
+                                        <th scope="col">Đơn giá</th>
+                                        <th scope="col">Danh mục</th>
+                                        <th scope="col">Trạng thái</th>
+                                        <th scope="col">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in ">
+                                        <th scope="row">{{$index + 1}}</th>
+                                        <td>{{item.tenSanPham}}</td>
+                                        <td><input type="number" class="form-control" value="10"></td>
+                                        <td><input type="text" class="form-control" value="100,000"></td>
+                                        <td>{{item.tenDanhMuc}}</td>
+                                        <td>
+                                            <input type="checkbox" ng-model="item.trangThai"
+                                                ng-change="updateTrangThai(item)" id="user-status-{{$index}}"
+                                                class="switch-input">
+                                            <label for="user-status-{{$index}}" class="switch"></label>
+                                        </td>
+                                        <td>
+                                            <a href="#!san_pham" class="btn btn-warning btn-sm"
+                                                ng-click="chinhSuaSanPham(item)"><i class="fas fa-edit"></i></a>
+                                            <a href="#!san_pham" class="btn btn-danger btn-sm"
+                                                ng-click="xoaSanPham(item.idSanPham)"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal Thêm Sản phẩm -->
+<div class="modalsiu fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Thêm sản phẩm</h5>
+                <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm" class="border-2 border-dark p-3">
+                    <div class="mb-3">
+                        <select id="selectProduct" class="form-select" required>
+                            <option value="">Chọn danh mục...</option>
+                            <option ng-repeat="item in dsDanhMuc track by $index" value="{{item.idDanhMuc}}">
+                                {{item.tenDanhMuc}}</option>
+                        </select>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="tenSanPham" placeholder="Nhập tên sản phẩm"
+                            name="tenSanPham" required>
+                        <label for="tenSanPham">Tên sản phẩm</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea id="moTa" placeholder="Nhập mô tả" name="moTa" class="form-control"
+                            required></textarea>
+                        <label for="moTa">Mô tả</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    ng-click="resetModal()">Đóng</button>
+                <button type="submit" form="addProductForm" class="btn btn-primary">
+                    <i class="fa-light fa-plus"></i> Thêm sản phẩm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm thuộc tính -->
+<div class="modalsiu fade" id="attributeModal" tabindex="-1" aria-labelledby="attributeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attributeModalLabel">Thêm thuộc tính sản phẩm</h5>
+                <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addAttributeForm">
+                    <div class="mb-3">
+                        <label for="selectProduct" class="form-label">Chọn sản phẩm</label>
+                        <select id="selectProduct" class="form-select" required>
+                            <option value="">Chọn sản phẩm...</option>
+                            <option ng-repeat="sanPham in dsSanPham track by $index" value="{{sanPham.idSanPham}}">
+                                {{sanPham.tenSanPham}}</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="material" class="form-label">Chất liệu</label>
+                            <select id="material" class="form-select">
+                                <option ng-repeat="chatLieu in dsChatLieu track by $index" value="{{chatLieu.id}}">
+                                    {{chatLieu.tenChatLieu}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="size" class="form-label">Kích thước</label>
+                            <select id="size" class="form-select">
+                                <option ng-repeat="kichThuoc in dsKichThuoc track by $index" value="{{kichThuoc.id}}">
+                                    {{kichThuoc.tenKichThuoc}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="color" class="form-label">Màu sắc</label>
+                            <select id="color" class="form-select">
+                                <option ng-repeat="mauSac in dsMauSac track by $index" value="{{mauSac.id}}">
+                                    {{mauSac.tenMauSac}}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    ng-click="resetModal()">Đóng</button>
+                <button type="submit" form="addAttributeForm" class="btn btn-success">
+                    <i class="fa-light fa-plus"></i> Thêm thuộc tính
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

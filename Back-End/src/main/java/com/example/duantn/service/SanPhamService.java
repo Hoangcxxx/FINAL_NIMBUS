@@ -15,19 +15,6 @@ public class SanPhamService {
     public List<Object[]> getAllSanPhams() {
         return sanPhamRepository.getAllSanPham();
     }
-    private Map<String, Object> mapSanPhamSizes(Object[] row) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("idSanPham", row[0]);               // Id sản phẩm
-        map.put("tenSanPham", row[1]);              // Tên sản phẩm
-        map.put("giaBan", row[2]);                  // Giá bán
-        map.put("tongSoLuong", row[3]);             // Tổng số lượng
-        map.put("moTa", row[4]);                     // Mô tả
-        map.put("mauSac", row[5]);                   // Tên màu sắc
-        map.put("tenChatLieu", row[6]);              // Tên chất liệu
-        map.put("danhSachKichThuoc", row[7]);       // Danh sách kích thước
-        return map;
-    }
-
 
     public List<Object[]> getSanPhamById(String idSanPham) {
         return sanPhamRepository.getSanPhamById(idSanPham);

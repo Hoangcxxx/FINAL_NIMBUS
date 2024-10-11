@@ -64,7 +64,6 @@ window.ChatLieuController = function ($scope, $http) {
     };
 
 
-
     $scope.onDelete = function (id) {
         if (confirm('Bạn có chắc chắn muốn xóa chất liệu này không?')) {
             $http({

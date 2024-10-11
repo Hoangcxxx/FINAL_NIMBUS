@@ -25,6 +25,7 @@
     <script src="view-admin/controllers/KichThuocController.js"></script>
     <script src="view-admin/controllers/MauSacController.js"></script>
     <script src="view-admin/controllers/DanhMucController.js"></script>
+    <script src="view-admin/views/SanPhamEven/addSanPhamController.js"></script>
     <title>Quản lý cửa hàng</title>
 </head>
 
@@ -53,6 +54,10 @@
                 .when('/san_pham', {
                     templateUrl: 'view-admin/views/sanpham.html',
                     controller: SanPhamController
+                })
+                .when('/Add_SP', {
+                    templateUrl: 'view-admin/views/SanPhamEven/addSanPham.html',
+                    controller: addSanPhamController
                 })
                 .when('/kich_thuoc', {
                     templateUrl: 'view-admin/views/kichthuoc.html',

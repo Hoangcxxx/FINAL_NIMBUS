@@ -4,7 +4,7 @@
       <span>Phân loại </span>
       <select name="" id="advanced-search-category-select" ng-model="selectedCategoryId"
         ng-change="onclickDanhMuc(selectedCategoryId)">
-        <option value="">Tất cả</option>
+        <option value="null">Tất cả</option>
         <option ng-repeat="item in dsDanhMuc" value="{{item.idDanhMuc}}">{{item.tenDanhMuc}}</option>
       </select>
     </div>
@@ -28,10 +28,10 @@
   <div class="home-service" id="home-service">
     <nav class="header-bottom" style="margin-top: 38px;">
       <div class="container">
-        <ul class="menu-list">
-          <li class="menu-list-item"><a href="#!trang_chu" class="menu-link">Trang chủ</a></li>
-          <li class="menu-list-item"><a href="" class="menu-link text-dark" ng-repeat="item in dsDanhMuc"
-              ng-click="onclickDanhMuc(item.idDanhMuc)">{{item.tenDanhMuc}}</a>
+        <ul class="menu-list" style="margin-bottom: 0px;">
+          <li class="menu-list-item"><a href="#!trang_chu" class="menu-link text-decoration-none">Trang chủ</a></li>
+          <li class="menu-list-item"><a href="" class="menu-link text-dark text-decoration-none"
+              ng-repeat="item in dsDanhMuc" ng-click="onclickDanhMuc(item.idDanhMuc)">{{item.tenDanhMuc}}</a>
           </li>
         </ul>
       </div>
@@ -47,8 +47,8 @@
             <h3 class="menu-name"><strong>{{item.tenSanPham}}</strong></h3>
             <p class="menu-description"><span style="font-size: 90%">{{item.moTa}}</span></p>
             <p class="menu-price">{{item.giaBan}}</p>
-            <a href="#!san_pham_ct/{{item.idSanPham}}" class="order-btn" ng-click="onclickSanPham(item.idSanPham)"
-              class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <a href="#!san_pham_ct/{{item.idSanPham}}" class="order-btn text-decoration-none"
+              ng-click="onclickSanPham(item.idSanPham)" data-bs-toggle="modal" data-bs-target="#exampleModal">
               <i class="fa-solid fa-cart-shopping"></i> ĐẶT HÀNG
             </a>
           </div>

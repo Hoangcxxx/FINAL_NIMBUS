@@ -17,9 +17,14 @@ window.SanPhamController = function ($scope, $http) {
     // Hàm click vào danh mục
     $scope.onclickDanhMuc = function (idDanhMuc) {
         console.log("Danh mục được click: " + idDanhMuc);
-        $scope.selectedCategoryId = idDanhMuc;
-        // Lấy danh sách sản phẩm theo danh mục đã chọn
-        $scope.fetchData('http://localhost:8080/api/san_pham/findDanhMuc/' + idDanhMuc, 'dsSanPham', "Dữ liệu API trả về:");
+        if (idDanhMuc === "null") {
+            // Nếu chọn "Tất cả", lấy tất cả sản phẩm
+            $scope.fetchData('http://localhost:8080/api/san_pham', 'dsSanPham', "Dữ liệu API trả về:");
+        } else {
+            $scope.selectedCategoryId = idDanhMuc;
+            // Lấy danh sách sản phẩm theo danh mục đã chọn
+            $scope.fetchData('http://localhost:8080/api/san_pham/findDanhMuc/' + idDanhMuc, 'dsSanPham', "Dữ liệu API trả về:");
+        }
     };
 
     // Hàm click vào sản phẩm
@@ -34,7 +39,6 @@ window.SanPhamController = function ($scope, $http) {
             console.error('Error fetching product details:', error);
         });
     };
-
 
     // Hàm lấy dữ liệu sản phẩm và danh mục khi khởi tạo controller
     function initializeData() {

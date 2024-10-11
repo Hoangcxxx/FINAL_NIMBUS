@@ -82,8 +82,14 @@ window.SanPhamController = function ($scope, $http) {
     };
 
     // Reset the form when opening the modal
-    window.resetForm = function () {
-        $scope.selectedProduct = {};
-        $('#addProductModal').modal('show');
+    $scope.resetModal = function () {
+        $scope.SanPham = {
+            tenSanPham: "",
+            soLuong: "",
+            danhMuc: "",
+            trangThai: ""
+        };
+        $scope.isEditing = false; // Reset editing state
+        $('#addProductModal').modal('hide'); // Hide the modal
     };
 };
