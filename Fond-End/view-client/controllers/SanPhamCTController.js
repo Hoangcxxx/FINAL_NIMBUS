@@ -1,4 +1,5 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
+
     $scope.dsSanPhamChiTiet = [];
     $scope.dsMauSacChiTiet = [];
     $scope.dsKichThuocChiTiet = [];
@@ -22,7 +23,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
                 console.error('Error fetching product images:', error);
             });
     }
-
+    console.log("Thông tin sản phẩm phẩm phẩm phẩm:");
     function fetchSanPhamChiTiet() {
         $http.get('http://localhost:8080/api/san_pham_chi_tiet/' + idSanPham)
             .then(function (response) {

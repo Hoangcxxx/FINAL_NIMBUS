@@ -39,6 +39,9 @@
     <script src="view-client/controllers/ThanhtoanController.js"></script>
     <script src="view-client/controllers/TrangchuController.js"></script>
     <script src="view-client/controllers/SanPhamCTController.js"></script>
+    <script src="view-client/controllers/AboutController.js"></script>
+    <script src="view-client/controllers/BlogController.js"></script>
+    <script src="view-client/controllers/ContactController.js"></script>
 </head>
 
 <body ng-app="myApp">
@@ -56,6 +59,18 @@
                 .when("/", {
                     templateUrl: "view-client/views/trangchu.html",
                     controller: TrangchuController
+                })
+                .when("/about", {
+                    templateUrl: "view-client/views/about.html",
+                    controller: AboutController
+                })
+                .when("/blog", {
+                    templateUrl: "view-client/views/blog.html",
+                    controller: BlogController
+                })
+                .when("/contact", {
+                    templateUrl: "view-client/views/contact.html",
+                    controller: ContactController
                 })
                 .when("/san_pham", {
                     templateUrl: "view-client/views/sanpham.html",

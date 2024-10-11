@@ -3,9 +3,9 @@
         <ul class="menu-list" style="margin-bottom: 0px;">
             <li class="menu-list-item"><a href="#!trang_chu" class="menu-link text-decoration-none">Trang chủ</a></li>
             <li class="menu-list-item"><a href="#!san_pham" class="menu-link text-decoration-none">Shop</a></li>
-            <li class="menu-list-item"><a href="#!ao_thu_dong" class="menu-link text-decoration-none">Blog</a></li>
-            <li class="menu-list-item"><a href="#!ao_phao" class="menu-link text-decoration-none">About</a></li>
-            <li class="menu-list-item"><a href="#!ao_so_mi" class="menu-link text-decoration-none">Contact</a></li>
+            <li class="menu-list-item"><a href="#!blog" class="menu-link text-decoration-none">Blog</a></li>
+            <li class="menu-list-item"><a href="#!about" class="menu-link text-decoration-none">About</a></li>
+            <li class="menu-list-item"><a href="#!contact" class="menu-link text-decoration-none">Contact</a></li>
         </ul>
     </div>
 </nav>
@@ -63,7 +63,7 @@
                         <h3 class="menu-name"><strong>{{item.tenSanPham}}</strong></h3> <!-- In đậm bằng <strong> -->
                         <p class="menu-description"><span style="font-size: 90%">{{item.moTa}}</span></p>
                         <!-- Mô tả to hơn <small> -->
-                        <p class="menu-price">{{item.giaBan}}</p>
+                        <p class="menu-price"><span>{{ item.giaBan/1 | currency: '$': 0 }}</span> VND</p>
                         <button class="order-btn" type="button" class="btn btn-danger" data-bs-toggle="modal"
                             data-bs-target="#exampleModal">
                             <i class="fa-solid fa-cart-shopping"></i> ĐẶT HÀNG

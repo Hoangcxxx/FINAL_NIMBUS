@@ -1,0 +1,3 @@
+window.ContactController = function ($scope) {
+    
+}

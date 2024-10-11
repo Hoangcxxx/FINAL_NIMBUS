@@ -46,7 +46,7 @@
             <img ng-src="{{item.urlAnh}}" alt="image" class="menu-image">
             <h3 class="menu-name"><strong>{{item.tenSanPham}}</strong></h3>
             <p class="menu-description"><span style="font-size: 90%">{{item.moTa}}</span></p>
-            <p class="menu-price">{{item.giaBan}}</p>
+            <p class="menu-price"><span>{{ item.giaBan/1 | currency: '$': 0 }}</span> VND</p>
             <a href="#!san_pham_ct/{{item.idSanPham}}" class="order-btn text-decoration-none"
               ng-click="onclickSanPham(item.idSanPham)" data-bs-toggle="modal" data-bs-target="#exampleModal">
               <i class="fa-solid fa-cart-shopping"></i> ĐẶT HÀNG
