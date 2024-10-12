@@ -14,7 +14,7 @@ window.ChatLieuController = function ($scope, $http) {
     }
 
     $scope.onRefresh = function () {
-        fetchData('http://localhost:8080/api/chat_lieu', 'dsChatLieu');
+        fetchData('http://localhost:8080/api/ad_chat_lieu', 'dsChatLieu');
     };
 
     $scope.ChatLieu = {
@@ -31,7 +31,7 @@ window.ChatLieuController = function ($scope, $http) {
     $scope.onCreate = function () {
         $http({
             method: 'POST',
-            url: "http://localhost:8080/api/chat_lieu",
+            url: "http://localhost:8080/api/ad_chat_lieu",
             data: $scope.ChatLieu
         }).then(function (response) {
             alert('Chúc mừng bạn tạo mới thành công');
@@ -43,7 +43,7 @@ window.ChatLieuController = function ($scope, $http) {
     $scope.onUpdate = function () {
         $http({
             method: 'PUT',
-            url: `http://localhost:8080/api/chat_lieu/${$scope.ChatLieu.id}`,
+            url: `http://localhost:8080/api/ad_chat_lieu/${$scope.ChatLieu.id}`,
             data: $scope.ChatLieu
         }).then(function (response) {
             alert('Chất liệu đã được cập nhật thành công');
@@ -68,7 +68,7 @@ window.ChatLieuController = function ($scope, $http) {
         if (confirm('Bạn có chắc chắn muốn xóa chất liệu này không?')) {
             $http({
                 method: 'DELETE',
-                url: `http://localhost:8080/api/chat_lieu/${id}`
+                url: `http://localhost:8080/api/ad_chat_lieu/${id}`
             }).then(function (response) {
                 alert('Chất liệu đã được xóa thành công');
                 location.reload();
@@ -77,5 +77,20 @@ window.ChatLieuController = function ($scope, $http) {
     };
 
     // Gọi hàm lấy dữ liệu khi controller được khởi tạo
-    fetchData('http://localhost:8080/api/chat_lieu', 'dsChatLieu');
+    fetchData('http://localhost:8080/api/ad_chat_lieu', 'dsChatLieu');
+
+    $scope.onSearch = function () {
+        const query = $scope.tenChatLieu; // Lấy tên màu sắc từ ô nhập
+        const url = `http://localhost:8080/api/ad_chat_lieu/${query}`; // URL tìm kiếm theo tên
+
+        if (query) {
+            $http.get(url).then(function (response) {
+                $scope.dsChatLieu = response.data; // Cập nhật danh sách màu sắc
+            }).catch(function (error) {
+                console.error('Error searching colors:', error);
+            });
+        } else {
+            $scope.onRefresh(); // Nếu ô tìm kiếm rỗng, làm mới danh sách
+        }
+    };
 };

@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/kich_thuoc")
+@RequestMapping("/api/ad_kich_thuoc")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
-public class KichThuocController {
+public class ADKichThuocController {
     @Autowired
     private KichThuocService kichThuocService;
 
@@ -21,29 +21,27 @@ public class KichThuocController {
         List<KichThuoc> kichThuoccList = kichThuocService.getAllKichThuoc();
         return new ResponseEntity<>(kichThuoccList, HttpStatus.OK);
     }
-
+    @GetMapping("/{tenKichThuoc}")
+    public ResponseEntity<List<KichThuoc>> searchKichThuoc(@PathVariable String tenKichThuoc) {
+        List<KichThuoc> kichThuocList = kichThuocService.searchKichThuocByTen(tenKichThuoc);
+        return new ResponseEntity<>(kichThuocList, HttpStatus.OK);
+    }
     @PostMapping
-    public ResponseEntity<KichThuoc> createKichThuocc(@RequestBody KichThuoc kichThuocc) {
-        KichThuoc newKichThuoc = kichThuocService.createKichThuoc(kichThuocc);
+    public ResponseEntity<KichThuoc> createKichThuocc(@RequestBody KichThuoc kichThuoc) {
+        KichThuoc newKichThuoc = kichThuocService.createKichThuoc(kichThuoc);
         return new ResponseEntity<>(newKichThuoc, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<KichThuoc> updateKichThuocc(@PathVariable Integer id, @RequestBody KichThuoc kichThuoccDetails) {
-        KichThuoc updatedKichThuoc = kichThuocService.updateKichThuoc(id, kichThuoccDetails);
+    public ResponseEntity<KichThuoc> updateKichThuoc(@PathVariable Integer id, @RequestBody KichThuoc kichThuocDetails) {
+        KichThuoc updatedKichThuoc = kichThuocService.updateKichThuoc(id, kichThuocDetails);
         return new ResponseEntity<>(updatedKichThuoc, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteKichThuocc(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteKichThuoc(@PathVariable Integer id) {
         kichThuocService.deleteKichThuoc(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Thêm endpoint để lấy chi tiết kích thước
-    @GetMapping("/{id}")
-    public ResponseEntity<KichThuoc> getKichThuocById(@PathVariable Integer id) {
-        KichThuoc kichThuoc = kichThuocService.getKichThuocById(id);
-        return new ResponseEntity<>(kichThuoc, HttpStatus.OK);
-    }
 }

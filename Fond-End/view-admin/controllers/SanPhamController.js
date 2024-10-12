@@ -18,15 +18,15 @@ window.SanPhamController = function ($scope, $http) {
 
     // Fetch data for materials, colors, sizes
     function fetchChatLieu() {
-        $scope.fetchData('http://localhost:8080/api/chat_lieu', 'dsChatLieu', 'Fetched materials:');
+        $scope.fetchData('http://localhost:8080/api/ad_chat_lieu', 'dsChatLieu', 'Fetched materials:');
     }
 
     function fetchMauSac() {
-        $scope.fetchData('http://localhost:8080/api/mau_sac', 'dsMauSac', 'Fetched colors:');
+        $scope.fetchData('http://localhost:8080/api/ad_mau_sac', 'dsMauSac', 'Fetched colors:');
     }
 
     function fetchKichThuoc() {
-        $scope.fetchData('http://localhost:8080/api/kich_thuoc', 'dsKichThuoc', 'Fetched sizes:');
+        $scope.fetchData('http://localhost:8080/api/ad_kich_thuoc', 'dsKichThuoc', 'Fetched sizes:');
     }
 
     // Function to initialize data

@@ -1,7 +1,6 @@
 package com.example.duantn.service;
 
 import com.example.duantn.entity.DanhMuc;
-import com.example.duantn.repository.DanhMucRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,9 @@ public class DanhMucService {
     public List<DanhMuc> getAllDanhMuc() {
         return danhMucRepository.findAll();
     }
-
+    public List<DanhMuc> searchDanhMucByTen(String tenDanhMuc) {
+        return danhMucRepository.findByTenDanhMucContaining(tenDanhMuc);
+    }
     public com.example.duantn.entity.DanhMuc createDanhMuc(com.example.duantn.entity.DanhMuc DanhMuc) {
         DanhMuc.setNgayTao(new Date());
         DanhMuc.setNgayCapNhat(new Date());

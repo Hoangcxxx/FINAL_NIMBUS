@@ -86,5 +86,19 @@ public class SanPhamQuery {
             "    sp.Id_san_pham = :idSanPham";
 
 
+    public static final String ADD_SAN_PHAM_AD = "INSERT INTO san_pham (id_danh_muc, ten_san_pham, mo_ta) VALUES (:idDanhMuc, :moTa, :tenSanPham)";
+    public static final String GET_SAN_PHAM_AD = "SELECT \n" +
+            "    sp.ten_san_pham AS tenSanPham,\n" +
+            "    sp.mo_ta AS moTa,\n" +
+            "    dm.ten_danh_muc AS tenDanhMuc\n" +
+            "FROM \n" +
+            "    san_pham sp\n" +
+            "JOIN \n" +
+            "    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc\n" +
+            "WHERE \n" +
+            "    sp.trang_thai = 1 -- Điều kiện để lấy sản phẩm đang hoạt động\n" +
+            "ORDER BY \n" +
+            "    sp.ngay_cap_nhat DESC;";
+
 
 }

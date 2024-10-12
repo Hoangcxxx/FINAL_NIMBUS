@@ -21,10 +21,10 @@ window.addSanPhamController = function ($scope, $http) {
     function initializeData() {
         const urls = [
             { url: 'http://localhost:8080/api/san_pham', target: 'dsSanPham', log: 'Fetched products:' },
-            { url: 'http://localhost:8080/api/danh_muc', target: 'dsDanhMuc', log: 'Fetched categories:' },
-            { url: 'http://localhost:8080/api/chat_lieu', target: 'dsChatLieu', log: 'Fetched materials:' },
-            { url: 'http://localhost:8080/api/mau_sac', target: 'dsMauSac', log: 'Fetched colors:' },
-            { url: 'http://localhost:8080/api/kich_thuoc', target: 'dsKichThuoc', log: 'Fetched sizes:' }
+            { url: 'http://localhost:8080/api/ad_danh_muc', target: 'dsDanhMuc', log: 'Fetched categories:' },
+            { url: 'http://localhost:8080/api/ad_chat_lieu', target: 'dsChatLieu', log: 'Fetched materials:' },
+            { url: 'http://localhost:8080/api/ad_mau_sac', target: 'dsMauSac', log: 'Fetched colors:' },
+            { url: 'http://localhost:8080/api/ad_kich_thuoc', target: 'dsKichThuoc', log: 'Fetched sizes:' }
         ];
 
         urls.forEach(({ url, target, log }) => $scope.fetchData(url, target, log));
@@ -39,9 +39,9 @@ window.addSanPhamController = function ($scope, $http) {
         const url = `http://localhost:8080/api/san_pham${$scope.selectedProduct.idSanPham ? '/' + $scope.selectedProduct.idSanPham : ''}`;
 
         // Add selected materials, colors, and sizes to the product
-        $scope.selectedProduct.materials = $scope.dsChatLieu.filter(item => item.selected);
-        $scope.selectedProduct.colors = $scope.dsMauSac.filter(item => item.selected);
-        $scope.selectedProduct.sizes = $scope.dsKichThuoc.filter(item => item.selected);
+        $scope.selectedProduct.materials = $scope.selectedMaterials;
+        $scope.selectedProduct.colors = $scope.selectedColors;
+        $scope.selectedProduct.sizes = $scope.selectedSizes;
 
         $http[method](url, $scope.selectedProduct).then(response => {
             console.log(`Sản phẩm được ${method === 'put' ? 'sửa' : 'thêm'} thành công:`, response.data);
@@ -54,9 +54,15 @@ window.addSanPhamController = function ($scope, $http) {
     $scope.chinhSuaSanPham = function (item) {
         $scope.selectedProduct = angular.copy(item);
         // Set selected materials, colors, and sizes
-        $scope.dsChatLieu.forEach(mat => mat.selected = item.materials.some(m => m.id === mat.id));
-        $scope.dsMauSac.forEach(color => color.selected = item.colors.some(c => c.id === color.id));
-        $scope.dsKichThuoc.forEach(size => size.selected = item.sizes.some(s => s.id === size.id));
+        $scope.selectedMaterials = item.materials || [];
+        $scope.selectedColors = item.colors || [];
+        $scope.selectedSizes = item.sizes || [];
+
+        // Update selection status for chatLieu, mauSac, kichThuoc
+        $scope.dsChatLieu.forEach(mat => mat.selected = $scope.selectedMaterials.some(m => m.id === mat.id));
+        $scope.dsMauSac.forEach(color => color.selected = $scope.selectedColors.some(c => c.id === color.id));
+        $scope.dsKichThuoc.forEach(size => size.selected = $scope.selectedSizes.some(s => s.id === size.id));
+
         $('#addProductModal').modal('show');
     };
 
@@ -72,28 +78,20 @@ window.addSanPhamController = function ($scope, $http) {
 
     // Reset the form
     $scope.resetModal = function () {
-        $scope.selectedProduct = {
-            tenSanPham: "",
-            soLuong: "",
-            danhMuc: "",
-            trangThai: ""
-        };
-        $scope.dsChatLieu.forEach(mat => mat.selected = false);
-        $scope.dsMauSac.forEach(color => color.selected = false);
-        $scope.dsKichThuoc.forEach(size => size.selected = false);
+        // Giữ nguyên dữ liệu đã chọn
         $('#addProductModal').modal('hide');
         $('#materialModal').modal('hide');
         $('#colorModal').modal('hide');
         $('#sizeModal').modal('hide');
     };
 
+
     // Update selected material
     $scope.updateMaterial = function (material) {
         if (material.selected) {
             $scope.selectedMaterials.push(material);
         } else {
-            const index = $scope.selectedMaterials.findIndex(m => m.id === material.id);
-            if (index > -1) $scope.selectedMaterials.splice(index, 1);
+            $scope.selectedMaterials = $scope.selectedMaterials.filter(m => m.id !== material.id);
         }
         document.getElementById('material').value = $scope.selectedMaterials.map(m => m.tenChatLieu).join(', ');
     };
@@ -103,8 +101,7 @@ window.addSanPhamController = function ($scope, $http) {
         if (color.selected) {
             $scope.selectedColors.push(color);
         } else {
-            const index = $scope.selectedColors.findIndex(c => c.id === color.id);
-            if (index > -1) $scope.selectedColors.splice(index, 1);
+            $scope.selectedColors = $scope.selectedColors.filter(c => c.id !== color.id);
         }
         document.getElementById('color').value = $scope.selectedColors.map(c => c.tenMauSac).join(', ');
     };
@@ -114,8 +111,7 @@ window.addSanPhamController = function ($scope, $http) {
         if (size.selected) {
             $scope.selectedSizes.push(size);
         } else {
-            const index = $scope.selectedSizes.findIndex(s => s.id === size.id);
-            if (index > -1) $scope.selectedSizes.splice(index, 1);
+            $scope.selectedSizes = $scope.selectedSizes.filter(s => s.id !== size.id);
         }
         document.getElementById('size').value = $scope.selectedSizes.map(s => s.tenKichThuoc).join(', ');
     };

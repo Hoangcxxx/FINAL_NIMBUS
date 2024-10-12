@@ -15,19 +15,15 @@ public class SanPhamService {
     public List<Object[]> getAllSanPhams() {
         return sanPhamRepository.getAllSanPham();
     }
-
+    public List<Object[]> getAllSanPhamAD() {
+        return sanPhamRepository.getAllSanPhamAD();
+    }
     public List<Object[]> getSanPhamById(String idSanPham) {
         return sanPhamRepository.getSanPhamById(idSanPham);
     }
 
     public List<Object[]> getSanPhamsByDanhMuc(Integer idDanhMuc) {
         return sanPhamRepository.getSanPhamByDanhMuc(idDanhMuc); // Trả về danh sách từ repository
-    }
-
-    public SanPham createSanPham(SanPham sanPham) {
-        sanPham.setNgayTao(new Date());
-        sanPham.setNgayCapNhat(new Date());
-        return sanPhamRepository.save(sanPham);
     }
 
     public SanPham updateSanPham(Integer id, SanPham sanPham) {
@@ -37,5 +33,8 @@ public class SanPhamService {
 
     public void deleteSanPham(Integer id) {
         sanPhamRepository.deleteById(id);
+    }
+    public void addSanPham(Integer idDanhMuc,String tenSanPham, String moTa) {
+        sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, moTa);
     }
 }

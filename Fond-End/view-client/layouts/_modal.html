@@ -32,11 +32,13 @@
             <form ng-submit="login()">
               <div class="mb-3">
                 <label for="loginEmail" class="form-label">Email</label>
-                <input type="email" class="form-control" id="loginEmail" placeholder="Nhập email" required ng-model="email">
+                <input type="email" class="form-control" id="loginEmail" placeholder="Nhập email" required
+                  ng-model="email">
               </div>
               <div class="mb-3">
                 <label for="loginPassword" class="form-label">Mật khẩu</label>
-                <input type="password" class="form-control" id="loginPassword" placeholder="Nhập mật khẩu" required ng-model="password">
+                <input type="password" class="form-control" id="loginPassword" placeholder="Nhập mật khẩu" required
+                  ng-model="password">
               </div>
               <button type="submit" class="btn btn-primary">Đăng nhập</button>
               <p class="error-message" ng-show="errorMessage">{{errorMessage}}</p>
@@ -45,7 +47,7 @@
 
           <!-- Register Form -->
           <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
-            <form  id="registerForm">
+            <form id="registerForm">
               <div class="mb-3">
                 <label for="tenNguoiDung" class="form-label">Tên người dùng</label>
                 <input type="email" class="form-control" id="tenNguoiDung" placeholder="Nhập email" name="tenNguoiDung"
@@ -57,17 +59,17 @@
               </div>
               <div class="mb-3">
                 <label for="matKhau" class="form-label">Mật khẩu</label>
-                <input type="password" class="form-control" id="matKhau" placeholder="Nhập mật khẩu" required name="matKhau">
+                <input type="password" class="form-control" id="matKhau" placeholder="Nhập mật khẩu" required
+                  name="matKhau">
               </div>
               <div class="mb-3">
                 <label for="sdtNguoiDung" class="form-label">Số điện thoại</label>
-                <input type="email" class="form-control" id="sdtNguoiDung" placeholder="Nhập số điện thoại" name="sdtNguoiDung"
-                  required>
+                <input type="email" class="form-control" id="sdtNguoiDung" placeholder="Nhập số điện thoại"
+                  name="sdtNguoiDung" required>
               </div>
               <div class="mb-3">
                 <label for="diaChi" class="form-label">Địa chỉ</label>
-                <input type="email" class="form-control" id="diaChi" placeholder="Nhập địa chỉ" name="diaChi"
-                  required>
+                <input type="email" class="form-control" id="diaChi" placeholder="Nhập địa chỉ" name="diaChi" required>
               </div>
               <div class="mb-3">
                 <label for="gioiTinh" class="form-label">Giới tính</label>
@@ -96,35 +98,6 @@
       <!-- Modal footer -->
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-<!-- The Modal Cart-->
-<div class="modal-cart open">
-  <div class="cart-container">
-    <div class="cart-header">
-      <h3 class="cart-header-title"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Giỏ hàng</h3>
-      <button class="cart-close" onclick="closeCart()"><i class="fa-sharp fa-solid fa-xmark" style="font-size: 15px;"></i></button>
-    </div>
-    <div class="cart-body">
-      <div class="gio-hang-trong" style="display: flex;">
-        <i class="fa-thin fa-cart-xmark"></i>
-        <p>Không có sản phẩm nào trong giỏ hàng của bạn</p>
-      </div>
-      <ul class="cart-list"></ul>
-    </div>
-    <div class="cart-footer">
-      <div class="cart-total-price">
-        <p class="text-tt">Tổng tiền:</p>
-        <p class="text-price">0&nbsp;₫</p>
-      </div>
-      <div class="cart-footer-payment">
-        <button class="them-mon"><i class="fa-regular fa-plus"></i> Thêm sản phẩm</button>
-        <button class="thanh-toan disabled">Thanh toán</button>
       </div>
     </div>
   </div>

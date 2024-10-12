@@ -9,8 +9,5 @@ import java.util.List;
 
 public interface MauSacRepository extends JpaRepository<MauSac, Integer> {
 
-    @Query(value = MauSacQuery.GET_ALL_MAU_SAC, nativeQuery = true)
-    List<Object[]> getAllMauSac();
-
     List<MauSac> findByTenMauSacContaining(String tenMauSac);
 }
