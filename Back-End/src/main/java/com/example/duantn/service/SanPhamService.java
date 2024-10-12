@@ -4,6 +4,7 @@ import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,8 @@ public class SanPhamService {
     public void deleteSanPham(Integer id) {
         sanPhamRepository.deleteById(id);
     }
-    public void addSanPham(Integer idDanhMuc,String tenSanPham, String moTa) {
-        sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, moTa);
+    public void addSanPham(Integer idDanhMuc, String tenSanPham, String moTa, BigDecimal giaBan, Date ngayTao,Date ngayCapNhat, Boolean trangThai) {
+        sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, moTa, giaBan, ngayTao, ngayCapNhat, trangThai);
     }
+
 }

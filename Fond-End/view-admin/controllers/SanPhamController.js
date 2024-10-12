@@ -31,8 +31,8 @@ window.SanPhamController = function ($scope, $http) {
 
     // Function to initialize data
     function initializeData() {
-        $scope.fetchData('http://localhost:8080/api/san_pham', 'dsSanPham', 'Fetched products:');
-        $scope.fetchData('http://localhost:8080/api/danh_muc', 'dsDanhMuc', 'Fetched categories:');
+        $scope.fetchData('http://localhost:8080/api/ad_san_pham', 'dsSanPham', 'Fetched products:');
+        $scope.fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc', 'Fetched categories:');
         fetchChatLieu();
         fetchMauSac();
         fetchKichThuoc();
@@ -44,7 +44,7 @@ window.SanPhamController = function ($scope, $http) {
     // Function to save a product (add or edit)
     $scope.saveProduct = function () {
         if ($scope.selectedProduct.idSanPham) {
-            $http.put('http://localhost:8080/api/san_pham/' + $scope.selectedProduct.idSanPham, $scope.selectedProduct)
+            $http.put('http://localhost:8080/api/ad_san_pham/' + $scope.selectedProduct.idSanPham, $scope.selectedProduct)
                 .then(function (response) {
                     console.log('Sản phẩm được sửa thành công:', response.data);
                     $('#addProductModal').modal('hide');
@@ -53,7 +53,7 @@ window.SanPhamController = function ($scope, $http) {
                     console.error('Error updating product:', error);
                 });
         } else {
-            $http.post('http://localhost:8080/api/san_pham', $scope.selectedProduct).then(function (response) {
+            $http.post('http://localhost:8080/api/ad_san_pham', $scope.selectedProduct).then(function (response) {
                 console.log('Sản phẩm được thêm thành công:', response.data);
                 $('#addProductModal').modal('hide');
                 initializeData(); // Re-fetch products
@@ -72,7 +72,7 @@ window.SanPhamController = function ($scope, $http) {
     // Function to delete a product
     $scope.xoaSanPham = function (id) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-            $http.delete('http://localhost:8080/api/san_pham/' + id).then(function (response) {
+            $http.delete('http://localhost:8080/api/ad_san_pham/' + id).then(function (response) {
                 console.log('Sản phẩm được xóa thành công:', response.data);
                 initializeData(); // Re-fetch products
             }, function (error) {

@@ -1,11 +1,13 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.service.SanPhamChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,4 +57,21 @@ public class SanPhamCTController {
     public ResponseEntity<List<Map<String, Object>>> getChatLieuById(@PathVariable Integer idSanPhamCT) {
         return getResponse(service.getChatLieuById(idSanPhamCT), "idChatLieu", "tenChatLieu");
     }
+    @PostMapping("/multiple")
+    public ResponseEntity<List<SanPhamChiTiet>> createMultiple(@RequestBody List<SanPhamChiTiet> sanPhamChiTietList) throws IOException {
+        // Kiểm tra xem danh sách sản phẩm chi tiết có rỗng không
+        if (sanPhamChiTietList.isEmpty()) {
+            return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu danh sách rỗng
+        }
+
+        // Lấy ID sản phẩm từ sản phẩm đầu tiên trong danh sách
+        Integer idSanPham = sanPhamChiTietList.get(0).getSanPham().getIdSanPham();
+        if (idSanPham == null) {
+            return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu ID sản phẩm không được chọn
+        }
+
+        List<SanPhamChiTiet> savedProducts = service.createMultiple(sanPhamChiTietList, idSanPham);
+        return ResponseEntity.ok(savedProducts); // Trả về danh sách đã lưu
+    }
+
 }

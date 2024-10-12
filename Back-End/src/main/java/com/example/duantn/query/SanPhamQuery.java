@@ -86,11 +86,12 @@ public class SanPhamQuery {
             "    sp.Id_san_pham = :idSanPham";
 
 
-    public static final String ADD_SAN_PHAM_AD = "INSERT INTO san_pham (id_danh_muc, ten_san_pham, mo_ta) VALUES (:idDanhMuc, :moTa, :tenSanPham)";
+    public static final String ADD_SAN_PHAM_AD = "INSERT INTO san_pham (id_danh_muc, ten_san_pham, mo_ta, gia_ban, ngay_tao, ngay_cap_nhat, trang_thai) VALUES (:idDanhMuc, :tenSanPham, :moTa, :giaBan, :ngayTao, :ngayCapNhat, :trangThai)";
     public static final String GET_SAN_PHAM_AD = "SELECT \n" +
             "    sp.ten_san_pham AS tenSanPham,\n" +
             "    sp.mo_ta AS moTa,\n" +
-            "    dm.ten_danh_muc AS tenDanhMuc\n" +
+            "    dm.ten_danh_muc AS tenDanhMuc,\n" +
+            "    sp.trang_thai AS trangThai\n" +
             "FROM \n" +
             "    san_pham sp\n" +
             "JOIN \n" +

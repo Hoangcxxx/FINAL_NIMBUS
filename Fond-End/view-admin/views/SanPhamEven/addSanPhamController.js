@@ -20,7 +20,7 @@ window.addSanPhamController = function ($scope, $http) {
     // Initialize data
     function initializeData() {
         const urls = [
-            { url: 'http://localhost:8080/api/san_pham', target: 'dsSanPham', log: 'Fetched products:' },
+            { url: 'http://localhost:8080/api/ad_san_pham', target: 'dsSanPham', log: 'Fetched products:' },
             { url: 'http://localhost:8080/api/ad_danh_muc', target: 'dsDanhMuc', log: 'Fetched categories:' },
             { url: 'http://localhost:8080/api/ad_chat_lieu', target: 'dsChatLieu', log: 'Fetched materials:' },
             { url: 'http://localhost:8080/api/ad_mau_sac', target: 'dsMauSac', log: 'Fetched colors:' },
@@ -36,7 +36,7 @@ window.addSanPhamController = function ($scope, $http) {
     // Save or edit a product
     $scope.saveProduct = function () {
         const method = $scope.selectedProduct.idSanPham ? 'put' : 'post';
-        const url = `http://localhost:8080/api/san_pham${$scope.selectedProduct.idSanPham ? '/' + $scope.selectedProduct.idSanPham : ''}`;
+        const url = `http://localhost:8080/api/ad_san_pham${$scope.selectedProduct.idSanPham ? '/' + $scope.selectedProduct.idSanPham : ''}`;
 
         // Add selected materials, colors, and sizes to the product
         $scope.selectedProduct.materials = $scope.selectedMaterials;
@@ -69,7 +69,7 @@ window.addSanPhamController = function ($scope, $http) {
     // Delete a product
     $scope.xoaSanPham = function (id) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-            $http.delete(`http://localhost:8080/api/san_pham/${id}`).then(response => {
+            $http.delete(`http://localhost:8080/api/ad_san_pham/${id}`).then(response => {
                 console.log('Sản phẩm được xóa thành công:', response.data);
                 initializeData();
             }).catch(error => console.error('Error deleting product:', error));
@@ -115,4 +115,45 @@ window.addSanPhamController = function ($scope, $http) {
         }
         document.getElementById('size').value = $scope.selectedSizes.map(s => s.tenKichThuoc).join(', ');
     };
+
+
+
+    $scope.SanPham = {
+        idDanhMuc: null,
+        tenSanPham: "",
+        moTa: "",
+        giaBan: 100000,
+        ngayTao: new Date(),
+        ngayCapNhat: new Date(),
+        trangThai: true
+    };
+
+    $scope.chinhSuaSanPham = function (item) {
+        $scope.SanPham = angular.copy(item); // Sao chép dữ liệu để sửa
+        $('#addProductModal').modal('show'); // Hiển thị modal
+        $scope.isEditing = true; // Đánh dấu là đang chỉnh sửa
+    };
+
+    $scope.onCreate = function () {
+        console.log('Thông tin sản phẩm:', $scope.SanPham);
+        // Chuyển đổi idDanhMuc thành số nguyên
+        $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
+        if (!$scope.SanPham.idDanhMuc || !$scope.SanPham.tenSanPham || !$scope.SanPham.moTa) {
+            alert('Vui lòng điền đầy đủ thông tin sản phẩm.');
+            return;
+        }
+        $http({
+            method: 'POST',
+            url: "http://localhost:8080/api/ad_san_pham",
+            data: $scope.SanPham
+        }).then(function (response) {
+            alert('Chúc mừng bạn tạo mới thành công');
+            $scope.onRefresh(); // Refresh the data
+            $scope.resetModal(); // Reset the modal
+        });
+    };
+
+
+
+
 };

@@ -129,7 +129,7 @@
             <div class="modal-body">
                 <form id="addProductForm" class="border-2 border-dark p-3">
                     <div class="mb-3">
-                        <select id="selectCategory" class="form-select" required>
+                        <select id="selectCategory" class="form-select" required ng-model="SanPham.idDanhMuc">
                             <option value="">Chọn danh mục...</option>
                             <option ng-repeat="item in dsDanhMuc track by $index" value="{{item.idDanhMuc}}">
                                 {{item.tenDanhMuc}}
@@ -137,12 +137,12 @@
                         </select>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="tenSanPham" placeholder="Nhập tên sản phẩm"
+                        <input type="text" class="form-control" id="tenSanPham" ng-model="SanPham.tenSanPham" placeholder="Nhập tên sản phẩm"
                             name="tenSanPham" required>
                         <label for="tenSanPham">Tên sản phẩm</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <textarea id="moTa" placeholder="Nhập mô tả" name="moTa" class="form-control"
+                        <textarea id="moTa" placeholder="Nhập mô tả" ng-model="SanPham.moTa" name="moTa" class="form-control"
                             required></textarea>
                         <label for="moTa">Mô tả</label>
                     </div>
@@ -151,7 +151,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                     ng-click="resetModal()">Đóng</button>
-                <button type="submit" form="addProductForm" class="btn btn-danger">
+                <button type="submit" form="addProductForm" class="btn btn-danger" ng-click="onCreate()">
                     <i class="fa-light fa-plus"></i> Thêm sản phẩm
                 </button>
             </div>

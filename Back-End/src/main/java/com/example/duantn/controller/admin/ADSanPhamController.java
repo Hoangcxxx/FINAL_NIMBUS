@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,7 @@ public class ADSanPhamController {
         map.put("tenSanPham", row[0]);
         map.put("moTa", row[1]);    // Cập nhật chỉ số cho mô tả
         map.put("tenDanhMuc", row[2]); // Cập nhật chỉ số cho trạng thái
+        map.put("trangThai", row[3]); // Cập nhật chỉ số cho trạng thái
         return map;
     }
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {
@@ -35,9 +38,17 @@ public class ADSanPhamController {
         Integer idDanhMuc = (Integer) requestBody.get("idDanhMuc");
         String tenSanPham = (String) requestBody.get("tenSanPham");
         String moTa = (String) requestBody.get("moTa");
-        sanPhamService.addSanPham(idDanhMuc, tenSanPham, moTa);
+
+        // Set default values
+        BigDecimal giaBan = new BigDecimal("100000"); // Default price
+        Boolean trangThai = true; // Set status to true
+        Date ngayTao = new Date(); // Current date
+        Date ngayCapNhat = new Date(); // Current date
+
+        sanPhamService.addSanPham(idDanhMuc, tenSanPham, moTa, giaBan, ngayTao, ngayCapNhat, trangThai);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
 
     // Cập nhật sản phẩm
     @PutMapping("/{id}")

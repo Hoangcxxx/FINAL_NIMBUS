@@ -1,43 +1,99 @@
 package com.example.duantn.service;
 
-import com.example.duantn.entity.SanPhamChiTiet;
-import com.example.duantn.repository.SanPhamChiTietRepository;
+import com.example.duantn.entity.*;
+import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class SanPhamChiTietService {
     @Autowired
-    private SanPhamChiTietRepository repository;
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
+    @Autowired
+    private ChatLieuChiTietRepository chatLieuChiTietRepository; // Change to correct type
+    @Autowired
+    private MauSacChiTietRepository mauSacChiTietRepository; // Change to correct type
+    @Autowired
+    private KichThuocChiTietRepository kichThuocChiTietRepository; // Change to correct type
 
     public List<SanPhamChiTiet> getAll() {
-        return repository.findAll();
+        return sanPhamChiTietRepository.findAll();
     }
 
     public List<Object[]> getById(Integer idSanPhamCT) {
-        return repository.getSanPhamById(idSanPhamCT);
+        return sanPhamChiTietRepository.getSanPhamById(idSanPhamCT);
     }
+
     public List<Object[]> getMauSacById(Integer idSanPhamCT) {
-        return repository.getMauSacByIdSanPham(idSanPhamCT);
+        return sanPhamChiTietRepository.getMauSacByIdSanPham(idSanPhamCT);
     }
+
     public List<Object[]> getKichThuocById(Integer idSanPhamCT) {
-        return repository.getKichThuocByIdSanPham(idSanPhamCT);
+        return sanPhamChiTietRepository.getKichThuocByIdSanPham(idSanPhamCT);
     }
+
     public List<Object[]> getChatLieuById(Integer idSanPhamCT) {
-        return repository.getChatLieuByIdSanPham(idSanPhamCT);
+        return sanPhamChiTietRepository.getChatLieuByIdSanPham(idSanPhamCT);
     }
+
     public SanPhamChiTiet create(SanPhamChiTiet sanPhamChiTiet) {
-        return repository.save(sanPhamChiTiet);
+        return sanPhamChiTietRepository.save(sanPhamChiTiet);
     }
 
     public SanPhamChiTiet update(Integer id, SanPhamChiTiet sanPhamChiTiet) {
         sanPhamChiTiet.setIdSanPhamChiTiet(id);
-        return repository.save(sanPhamChiTiet);
+        return sanPhamChiTietRepository.save(sanPhamChiTiet);
     }
 
     public void delete(Integer id) {
-        repository.deleteById(id);
+        sanPhamChiTietRepository.deleteById(id);
     }
+
+    // Giả sử bạn có một phương thức lưu cho ChatLieuChiTiet
+
+
+
+    public List<SanPhamChiTiet> createMultiple(List<SanPhamChiTiet> sanPhamChiTietList, Integer idSanPham) throws IOException {
+        for (SanPhamChiTiet spct : sanPhamChiTietList) {
+            // Kiểm tra và thiết lập sản phẩm
+            SanPham sanPham = new SanPham();
+            sanPham.setIdSanPham(idSanPham); // Gán ID sản phẩm từ tham số
+            spct.setSanPham(sanPham);
+            spct.setTrangThai(true); // Trạng thái là true
+            spct.setNgayCapNhat(new Date()); // Ngày cập nhật là ngày hiện tại
+
+            // Lưu chatLieuChiTiet nếu cần
+            ChatLieuChiTiet chatLieuChiTiet = spct.getChatLieuChiTiet();
+            if (chatLieuChiTiet != null && chatLieuChiTiet.getIdChatLieuChiTiet() != null) {
+                chatLieuChiTiet = chatLieuChiTietRepository.findById(chatLieuChiTiet.getIdChatLieuChiTiet())
+                        .orElseThrow(() -> new IllegalArgumentException("ChatLieuChiTiet không tồn tại"));
+            }
+            spct.setChatLieuChiTiet(chatLieuChiTiet);
+
+            // Lưu mauSacChiTiet nếu cần
+            MauSacChiTiet mauSacChiTiet = spct.getMauSacChiTiet();
+            if (mauSacChiTiet != null && mauSacChiTiet.getIdMauSacChiTiet() != null) {
+                mauSacChiTiet = mauSacChiTietRepository.findById(mauSacChiTiet.getIdMauSacChiTiet())
+                        .orElseThrow(() -> new IllegalArgumentException("MauSacChiTiet không tồn tại"));
+            }
+            spct.setMauSacChiTiet(mauSacChiTiet);
+
+            // Lưu kichThuocChiTiet nếu cần
+            KichThuocChiTiet kichThuocChiTiet = spct.getKichThuocChiTiet();
+            if (kichThuocChiTiet != null && kichThuocChiTiet.getIdKichThuocChiTiet() != null) {
+                kichThuocChiTiet = kichThuocChiTietRepository.findById(kichThuocChiTiet.getIdKichThuocChiTiet())
+                        .orElseThrow(() -> new IllegalArgumentException("KichThuocChiTiet không tồn tại"));
+            }
+            spct.setKichThuocChiTiet(kichThuocChiTiet);
+        }
+        return sanPhamChiTietRepository.saveAll(sanPhamChiTietList);
+    }
+
+
+
+
 }

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
@@ -28,6 +30,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Query(value = SanPhamQuery.ADD_SAN_PHAM_AD, nativeQuery = true)
     void addSanPham(@Param("idDanhMuc") Integer idDanhMuc,
                     @Param("tenSanPham") String tenSanPham,
-                    @Param("moTa") String moTa
-    );
+                    @Param("moTa") String moTa,
+                    @Param("giaBan") BigDecimal giaBan,
+                    @Param("ngayTao") Date ngayTao,
+                    @Param("ngayCapNhat") Date ngayCapNhat,
+                    @Param("trangThai") Boolean trangThai);
 }
