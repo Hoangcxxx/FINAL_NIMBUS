@@ -36,7 +36,7 @@ window.addSanPhamController = function ($scope, $http) {
     // Save or edit a product
     $scope.saveProduct = function () {
         const method = $scope.selectedProduct.idSanPham ? 'put' : 'post';
-        const url = `http://localhost:8080/api/ad_san_pham${$scope.selectedProduct.idSanPham ? '/' + $scope.selectedProduct.idSanPham : ''}`;
+        const url = `http://localhost:8080/api/ad_san_pham/multiple${$scope.selectedProduct.idSanPham ? '/' + $scope.selectedProduct.idSanPham : ''}`;
 
         // Add selected materials, colors, and sizes to the product
         $scope.selectedProduct.materials = $scope.selectedMaterials;
@@ -135,22 +135,16 @@ window.addSanPhamController = function ($scope, $http) {
     };
 
     $scope.onCreate = function () {
-        console.log('Thông tin sản phẩm:', $scope.SanPham);
-        // Chuyển đổi idDanhMuc thành số nguyên
         $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
         if (!$scope.SanPham.idDanhMuc || !$scope.SanPham.tenSanPham || !$scope.SanPham.moTa) {
             alert('Vui lòng điền đầy đủ thông tin sản phẩm.');
             return;
         }
-        $http({
-            method: 'POST',
-            url: "http://localhost:8080/api/ad_san_pham",
-            data: $scope.SanPham
-        }).then(function (response) {
+        $http.post("http://localhost:8080/api/ad_san_pham", $scope.SanPham).then(response => {
             alert('Chúc mừng bạn tạo mới thành công');
-            $scope.onRefresh(); // Refresh the data
-            $scope.resetModal(); // Reset the modal
-        });
+            initializeData(); // Load lại dsSanPham
+            $scope.resetModal(); // Reset modal
+        }).catch(error => console.error('Error creating product:', error));
     };
 
 

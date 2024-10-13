@@ -57,6 +57,10 @@ public class SanPhamCTController {
     public ResponseEntity<List<Map<String, Object>>> getChatLieuById(@PathVariable Integer idSanPhamCT) {
         return getResponse(service.getChatLieuById(idSanPhamCT), "idChatLieu", "tenChatLieu");
     }
+
+
+
+
     @PostMapping("/multiple")
     public ResponseEntity<List<SanPhamChiTiet>> createMultiple(@RequestBody List<SanPhamChiTiet> sanPhamChiTietList) throws IOException {
         // Kiểm tra xem danh sách sản phẩm chi tiết có rỗng không
