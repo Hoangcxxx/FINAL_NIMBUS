@@ -24,7 +24,8 @@ public class SanPham {
 
     @Column(name = "ten_san_pham", nullable = false)
     private String tenSanPham;
-
+    @Column(name = "gia_ban", nullable = false)
+    private BigDecimal giaBan;
     @Column(name = "mo_ta")
     private String moTa;
     @Column(name = "trang_thai", nullable = false)

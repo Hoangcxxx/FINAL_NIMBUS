@@ -5,7 +5,7 @@ public class SanPhamQuery {
             "    sp.Id_san_pham AS idSanPham, \n" +
             "    sp.ten_san_pham AS tenSanPham, \n" +
             "    sp.trang_thai AS trangThai, \n" +
-            "    spct.gia_ban AS giaBan,       -- Giá bán trung bình\n" +
+            "    sp.gia_ban AS giaBan,       -- Giá bán trung bình\n" +
             "    MAX(sp.mo_ta) AS moTa,           -- Mô tả sản phẩm\n" +
             "    dc.ten_danh_muc AS tenDanhMuc, \n" +
             "    SUM(spct.so_luong) AS soLuong, \n" +
@@ -26,7 +26,7 @@ public class SanPhamQuery {
             "    sp.ten_san_pham, \n" +
             "    sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY\n" +
             "    dc.ten_danh_muc,\n" +
-            "    spct.gia_ban,\n" +
+            "    sp.gia_ban,\n" +
             "    spct.so_luong\n" +
             "ORDER BY \n" +
             "    sp.Id_san_pham ASC;";
@@ -35,7 +35,7 @@ public class SanPhamQuery {
             "    sp.Id_san_pham AS idSanPham, \n" +
             "    sp.ten_san_pham AS tenSanPham, \n" +
             "    sp.trang_thai AS trangThai, \n" +
-            "    spct.gia_ban AS giaBan,       -- Giá bán trung bình\n" +
+            "    sp.gia_ban AS giaBan,       -- Giá bán trung bình\n" +
             "    MAX(sp.mo_ta) AS moTa,           -- Mô tả sản phẩm\n" +
             "    dc.ten_danh_muc AS tenDanhMuc, \n" +
             "    MAX(hl.url_anh) AS urlAnh,       -- Lấy URL ảnh\n" +
@@ -54,7 +54,7 @@ public class SanPhamQuery {
             "    sp.Id_san_pham, \n" +
             "    sp.ten_san_pham, \n" +
             "    sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY\n" +
-            "    spct.gia_ban,  -- Đảm bảo trường này có trong GROUP BY\n" +
+            "    sp.gia_ban,  -- Đảm bảo trường này có trong GROUP BY\n" +
             "    dc.ten_danh_muc";
 
     public static final String GET_SAN_PHAM_BY_ID = "SELECT " +
@@ -62,7 +62,7 @@ public class SanPhamQuery {
             "    sp.ten_san_pham AS tenSanPham, " +
             "    spct.so_luong AS soLuong, " +
             "    spct.mo_ta AS mo_ta_spct, " +
-            "    spct.gia_ban AS giaBan, " +
+            "    sp.gia_ban AS giaBan, " +
             "    dc.ten_danh_muc AS tenDanhMuc, " +
             "    lv.ten_loai_voucher AS tenLoaiVoucher, " +
             "    hl.trang_thai AS trangThai, " +
@@ -86,7 +86,7 @@ public class SanPhamQuery {
             "    sp.Id_san_pham = :idSanPham";
 
 
-    public static final String ADD_SAN_PHAM_AD = "INSERT INTO san_pham (id_danh_muc, ten_san_pham, mo_ta, ngay_tao, ngay_cap_nhat, trang_thai) VALUES (:idDanhMuc, :tenSanPham, :moTa, :ngayTao, :ngayCapNhat, :trangThai)";
+    public static final String ADD_SAN_PHAM_AD = "INSERT INTO san_pham (id_danh_muc, ten_san_pham,gia_ban, mo_ta, ngay_tao, ngay_cap_nhat, trang_thai) VALUES (:idDanhMuc, :tenSanPham,:giaBan, :moTa, :ngayTao, :ngayCapNhat, :trangThai)";
 
     public static final String ADD_HINH_ANH_SAN_PHAM_AD = "INSERT INTO hinh_anh_san_pham (id_san_pham, url_anh, mo_ta, trang_thai, thu_tu, loai_hinh_anh) VALUES (:idSanPham, :urlAnh, :moTa, :trangThai, :thuTu, :loaiHinhAnh);";
 
@@ -95,6 +95,7 @@ public class SanPhamQuery {
     public static final String GET_SAN_PHAM_AD = "SELECT \n" +
             "    sp.id_san_pham AS idSanPham,\n" +
             "    sp.ten_san_pham AS tenSanPham,\n" +
+            "    sp.gia_ban AS giaBan,\n" +
             "    sp.mo_ta AS moTa,\n" +
             "    dm.ten_danh_muc AS tenDanhMuc,\n" +
             "    sp.trang_thai AS trangThai\n" +

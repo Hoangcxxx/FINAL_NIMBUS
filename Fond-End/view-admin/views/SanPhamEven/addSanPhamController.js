@@ -163,7 +163,7 @@ window.addSanPhamController = function ($scope, $http) {
         idDanhMuc: null,
         tenSanPham: "",
         moTa: "",
-        giaBan: 100000,
+        giaBan: 0,
         ngayTao: new Date(),
         ngayCapNhat: new Date(),
         trangThai: true
@@ -177,7 +177,7 @@ window.addSanPhamController = function ($scope, $http) {
 
     $scope.onCreate = function () {
         $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
-        if (!$scope.SanPham.idDanhMuc || !$scope.SanPham.tenSanPham || !$scope.SanPham.moTa) {
+        if (!$scope.SanPham.idDanhMuc || !$scope.SanPham.tenSanPham || !$scope.SanPham.giaBan || !$scope.SanPham.moTa) {
             alert('Vui lòng điền đầy đủ thông tin sản phẩm.');
             return;
         }
