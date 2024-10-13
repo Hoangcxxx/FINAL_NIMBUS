@@ -5,9 +5,10 @@ SELECT
     sp.Id_san_pham AS idSanPham, 
     sp.ten_san_pham AS tenSanPham, 
     sp.trang_thai AS trangThai, 
-    AVG(sp.gia_ban) AS giaBan,       -- Giá bán trung bình
+    sp.gia_ban AS giaBan,       -- Giá bán trung bình
     MAX(sp.mo_ta) AS moTa,           -- Mô tả sản phẩm
     dc.ten_danh_muc AS tenDanhMuc, 
+    SUM(spct.so_luong) AS soLuong, 
     MAX(hl.url_anh) AS urlAnh,       -- Lấy URL ảnh
     MAX(hl.thu_tu) AS thuTu           -- Lấy thứ tự ảnh tối đa
 FROM 
@@ -24,9 +25,53 @@ GROUP BY
     sp.Id_san_pham, 
     sp.ten_san_pham, 
     sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY
-    dc.ten_danh_muc
+    dc.ten_danh_muc,
+    sp.gia_ban,
+    spct.so_luong
 ORDER BY 
     sp.Id_san_pham ASC;  -- Sắp xếp theo idSanPham từ nhỏ đến lớn
+
+
+
+
+
+
+/*Lấy ra sản phẩm có hình ảnh là 1 và sắp xếp theo thứ tự tăng dần và phân trang*/
+SELECT 
+    sp.Id_san_pham AS idSanPham, 
+    sp.ten_san_pham AS tenSanPham, 
+    sp.trang_thai AS trangThai, 
+    sp.gia_ban AS giaBan, 
+    MAX(sp.mo_ta) AS moTa, 
+    dc.ten_danh_muc AS tenDanhMuc, 
+    SUM(spct.so_luong) AS soLuong, 
+    MAX(hl.url_anh) AS urlAnh, 
+    MAX(hl.thu_tu) AS thuTu
+FROM 
+    san_pham sp 
+JOIN 
+    san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham 
+LEFT JOIN 
+    hinh_anh_san_pham hl ON spct.Id_san_pham = hl.id_san_pham 
+LEFT JOIN 
+    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+WHERE 
+    hl.thu_tu = 1 
+GROUP BY 
+    sp.Id_san_pham, 
+    sp.ten_san_pham, 
+    sp.trang_thai, 
+    dc.ten_danh_muc,
+    sp.gia_ban,
+    spct.so_luong
+ORDER BY 
+    sp.Id_san_pham ASC
+OFFSET 2 ROWS 
+FETCH NEXT 5 ROWS ONLY;
+
+
+
+
 
 
 /*Lấy ra hình ảnh sản phẩm có id là 1*/
@@ -165,7 +210,7 @@ SELECT
     sp.Id_san_pham AS idSanPham, 
     sp.ten_san_pham AS tenSanPham, 
     sp.trang_thai AS trangThai, 
-    AVG(sp.gia_ban) AS giaBan,       -- Giá bán trung bình
+    sp.gia_ban AS giaBan,       -- Giá bán trung bình
     MAX(sp.mo_ta) AS moTa,           -- Mô tả sản phẩm
     dc.ten_danh_muc AS tenDanhMuc, 
     MAX(hl.url_anh) AS urlAnh,       -- Lấy URL ảnh
@@ -184,6 +229,48 @@ GROUP BY
     sp.Id_san_pham, 
     sp.ten_san_pham, 
     sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY
+    sp.gia_ban,  -- Đảm bảo trường này có trong GROUP BY
     dc.ten_danh_muc
 ORDER BY 
     sp.Id_san_pham ASC;  -- Sắp xếp theo idSanPham từ nhỏ đến lớn
+
+
+
+
+/* Lấy ra tất cả sản phẩm của admin có tên danh mục và mô tả, sắp xếp theo ngày tạo mới nhất */
+SELECT 
+    sp.ten_san_pham AS tenSanPham,
+    sp.mo_ta AS moTa,
+    dm.ten_danh_muc AS tenDanhMuc
+FROM 
+    san_pham sp
+JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+WHERE 
+    sp.trang_thai = 1 -- Điều kiện để lấy sản phẩm đang hoạt động
+ORDER BY 
+    sp.ngay_tao DESC; -- Sắp xếp theo ngày tạo mới nhất
+
+
+
+
+/* Lấy ra danh sách danh mục, sắp xếp theo ngày tạo mới nhất */
+SELECT 
+    dm.ten_danh_muc AS tenDanhMuc,
+    dm.mo_ta AS moTa,
+    dm.ngay_tao AS ngayTao,
+    dm.ngay_cap_nhat AS ngayCapNhat
+FROM 
+    danh_muc dm
+ORDER BY 
+    dm.ngay_cap_nhat DESC; -- Sắp xếp theo ngày tạo mới nhất
+
+	select * from san_pham_chi_tiet
+
+/* Lấy ra danh sách sản phẩm chi tiết mới nhất */
+
+
+
+
+
+

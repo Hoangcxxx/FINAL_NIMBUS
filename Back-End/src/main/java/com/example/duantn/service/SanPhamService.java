@@ -1,5 +1,6 @@
 package com.example.duantn.service;
 import com.example.duantn.entity.SanPham;
+import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,8 @@ public class SanPhamService {
     public void deleteSanPham(Integer id) {
         sanPhamRepository.deleteById(id);
     }
-    public void addSanPham(Integer idDanhMuc, String tenSanPham, String moTa, BigDecimal giaBan, Date ngayTao,Date ngayCapNhat, Boolean trangThai) {
-        sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, moTa, giaBan, ngayTao, ngayCapNhat, trangThai);
+    public void addSanPham(Integer idDanhMuc, String tenSanPham, String moTa, Date ngayTao,Date ngayCapNhat, Boolean trangThai) {
+        sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, moTa, ngayTao, ngayCapNhat, trangThai);
     }
 
 }

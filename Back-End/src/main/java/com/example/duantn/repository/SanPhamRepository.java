@@ -31,7 +31,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     void addSanPham(@Param("idDanhMuc") Integer idDanhMuc,
                     @Param("tenSanPham") String tenSanPham,
                     @Param("moTa") String moTa,
-                    @Param("giaBan") BigDecimal giaBan,
                     @Param("ngayTao") Date ngayTao,
                     @Param("ngayCapNhat") Date ngayCapNhat,
                     @Param("trangThai") Boolean trangThai);
