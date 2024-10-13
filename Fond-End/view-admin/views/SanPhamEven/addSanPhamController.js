@@ -191,4 +191,34 @@ window.addSanPhamController = function ($scope, $http) {
 
 
 
+
+    function previewImages(event) {
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        imagePreviewContainer.innerHTML = ''; // Xóa nội dung trước đó
+
+        const files = event.target.files;
+        if (files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '150px'; // Chiều rộng tối đa của hình ảnh
+                    img.style.maxHeight = '150px'; // Chiều cao tối đa của hình ảnh
+                    img.style.marginRight = '10px'; // Khoảng cách giữa các hình ảnh
+                    imagePreviewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
+
+
+
+
+
+
+
+
 };

@@ -72,45 +72,54 @@
 
                 </div>
             </div>
-
-            <h3 class="mb-4 mt-3">Danh sách các sản phẩm cùng loại</h3>
-            <div id="show-product">
-                <div class="card shadow mb-4 mt-3">
-                    <div class="card-body">
-                        <div class="table-responsive text-center">
-                            <h4 class="mb-4 mt-3">Sản phẩm phù hợp</h4>
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Tên sản phẩm</th>
-                                        <th scope="col">Số lượng</th>
-                                        <th scope="col">Đơn giá</th>
-                                        <th scope="col">Trạng thái</th>
-                                        <th scope="col">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="item in filteredProducts">
-                                        <th scope="row">{{$index + 1}}</th>
-                                        <td>{{item.tenSanPham}}</td>
-                                        <td><input type="number" class="form-control" value="10"></td>
-                                        <td><input type="text" class="form-control" value="100,000"></td>
-                                        <td>
-                                            <input type="checkbox" ng-model="item.trangThai"
-                                                ng-change="updateTrangThai(item)" id="user-status-{{$index}}"
-                                                class="switch-input">
-                                            <label for="user-status-{{$index}}" class="switch"></label>
-                                        </td>
-                                        <td>
-                                            <a href="#!san_pham" class="btn btn-warning btn-sm"
-                                                ng-click="chinhSuaSanPham(item)"><i class="fas fa-edit"></i></a>
-                                            <a href="#!san_pham" class="btn btn-danger btn-sm"
-                                                ng-click="xoaSanPham(item.idSanPham)"><i class="fas fa-trash"></i></a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <div class="border border-3 rounded p-3 mb-5">
+                <label for="selectProduct" class="form-label">Chọn sản phẩm</label>
+                <select class="form-select" required ng-model="productData.idSanPham">
+                    <option value="">Chọn sản phẩm...</option>
+                    <option ng-repeat="item in dsSanPham track by $index" value="{{item.idSanPham}}">
+                        {{item.tenSanPham}}
+                    </option>
+                </select>
+                <h3 class="mb-4 mt-3">Danh sách các sản phẩm cùng loại</h3>
+                <div id="show-product">
+                    <div class="card shadow mb-4 mt-3">
+                        <div class="card-body">
+                            <div class="table-responsive text-center">
+                                <h4 class="mb-4 mt-3">Sản phẩm phù hợp</h4>
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Tên sản phẩm</th>
+                                            <th scope="col">Số lượng</th>
+                                            <th scope="col">Đơn giá</th>
+                                            <th scope="col">Trạng thái</th>
+                                            <th scope="col">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in filteredProducts">
+                                            <th scope="row">{{$index + 1}}</th>
+                                            <td>{{item.tenSanPham}}</td>
+                                            <td><input type="number" class="form-control" value="10"></td>
+                                            <td><input type="text" class="form-control" value="100,000"></td>
+                                            <td>
+                                                <input type="checkbox" ng-model="item.trangThai"
+                                                    ng-change="updateTrangThai(item)" id="user-status-{{$index}}"
+                                                    class="switch-input">
+                                                <label for="user-status-{{$index}}" class="switch"></label>
+                                            </td>
+                                            <td>
+                                                <a href="#!san_pham" class="btn btn-warning btn-sm"
+                                                    ng-click="chinhSuaSanPham(item)"><i class="fas fa-edit"></i></a>
+                                                <a href="#!san_pham" class="btn btn-danger btn-sm"
+                                                    ng-click="xoaSanPham(item.idSanPham)"><i
+                                                        class="fas fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -122,45 +131,76 @@
 <!-- Modal Thêm Sản phẩm -->
 <div class="modalsiu fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content" style="margin-top: 83px;">
+            <h3 id="addProductModalLabel" class="modal-title text-center mt-3 ">Thêm sản phẩm mới</h3>
+            <hr>
             <div class="modal-header">
-                <h5 class="modal-title" id="addProductModalLabel">Thêm sản phẩm</h5>
                 <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-            </div>
-            <div class="modal-body">
-                <form id="addProductForm" class="border-2 border-dark p-3">
-                    <div class="mb-3">
-                        <select id="selectCategory" class="form-select" required ng-model="SanPham.idDanhMuc">
-                            <option value="">Chọn danh mục...</option>
-                            <option ng-repeat="item in dsDanhMuc track by $index" value="{{item.idDanhMuc}}">
-                                {{item.tenDanhMuc}}
-                            </option>
-                        </select>
+                <form action="" class="add-product-form">
+                    <div class="modal-content-left">
+                        <img src="./assets/img/blank-image.png" alt="" class="upload-image-preview">
+                        <div class="form-group file">
+                            <label style="margin-top: 67px;" for="up-hinh-anh" class="form-label-file"><i
+                                    class="fa-solid fa-cloud-arrow-up"></i>Chọn hình
+                                ảnh</label>
+                            <input accept="image/jpeg, image/png, image/jpg" id="up-hinh-anh" name="up-hinh-anh"
+                                type="file" class="form-control">
+                        </div>
                     </div>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="tenSanPham" ng-model="SanPham.tenSanPham"
-                            placeholder="Nhập tên sản phẩm" name="tenSanPham" required>
-                        <label for="tenSanPham">Tên sản phẩm</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <textarea id="moTa" placeholder="Nhập mô tả" ng-model="SanPham.moTa" name="moTa"
-                            class="form-control" required></textarea>
-                        <label for="moTa">Mô tả</label>
+                    <div class="modal-content-right">
+                        <div class="mb-3">
+                            <select id="selectCategory" class="form-select" required ng-model="SanPham.idDanhMuc">
+                                <option value="">Chọn danh mục...</option>
+                                <option ng-repeat="item in dsDanhMuc track by $index" value="{{item.idDanhMuc}}">
+                                    {{item.tenDanhMuc}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="tenSanPham" ng-model="SanPham.tenSanPham"
+                                placeholder="Nhập tên sản phẩm" name="tenSanPham" required>
+                            <label for="tenSanPham">Tên sản phẩm</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="mo-ta" class="form-label">Mô tả</label>
+                            <textarea class="product-desc" id="mo-ta" placeholder="Nhập mô tả món ăn..."></textarea>
+                            <span class="form-message"></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="form-submit btn-update-product-form edit-product-e"
+                                style="padding-top: 7px;margin-right: 63px;" id="update-product-button"
+                                ng-click="onCreate()">
+                                <i class="fa-light fa-pencil"></i>
+                                <span>Thêm sản phẩm</span>
+                            </button>
+                        </div>
                     </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                    ng-click="resetModal()">Đóng</button>
-                <button type="submit" form="addProductForm" class="btn btn-danger" ng-click="onCreate()">
-                    <i class="fa-light fa-plus"></i> Thêm sản phẩm
-                </button>
             </div>
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <!--Modal Chất liệu -->
 <div class="modal fade" id="materialModal" tabindex="-1" aria-labelledby="materialModalLabel" aria-hidden="true">

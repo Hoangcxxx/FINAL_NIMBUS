@@ -38,4 +38,8 @@ public class SanPhamChiTietQuery {
             "JOIN chat_lieu_chi_tiet clct ON spct.id_chat_lieu_chi_tiet = clct.Id_chat_lieu_tiet " +
             "JOIN chat_lieu cl ON clct.id_chat_lieu = cl.Id_chat_lieu " +
             "WHERE sp.Id_san_pham = :idSanPhamCT GROUP BY sp.Id_san_pham, clct.Id_chat_lieu_tiet, cl.ten_chat_lieu";
+
+
+
+
 }

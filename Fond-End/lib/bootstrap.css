@@ -6192,7 +6192,7 @@ fieldset:disabled .btn {
 
 .modalsiu{
     --bs-modal-zindex: 1055;
-    --bs-modal-width: 750px;
+    --bs-modal-width: 700px;
     --bs-modal-padding: 1rem;
     --bs-modal-margin: 0.5rem;
     --bs-modal-color: ;

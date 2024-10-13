@@ -199,6 +199,23 @@ WHERE
 ORDER BY 
     ms.ten_mau_sac, kt.ten_kich_thuoc; -- Thay đổi tiêu chí sắp xếp nếu cần
 
+SELECT 
+    sp.id_san_pham, 
+    sp.ten_san_pham, 
+    spct.gia_ban,
+    sp.mo_ta
+FROM 
+    san_pham sp
+JOIN 
+    san_pham_chi_tiet spct ON sp.id_san_pham = spct.id_san_pham
+WHERE 
+    sp.id_san_pham = 1
+GROUP BY 
+    sp.id_san_pham, 
+    sp.ten_san_pham,
+	spct.gia_ban,
+    sp.mo_ta;
+
 
 
 
@@ -210,7 +227,7 @@ SELECT
     sp.Id_san_pham AS idSanPham, 
     sp.ten_san_pham AS tenSanPham, 
     sp.trang_thai AS trangThai, 
-    sp.gia_ban AS giaBan,       -- Giá bán trung bình
+    spct.gia_ban AS giaBan,       -- Giá bán trung bình
     MAX(sp.mo_ta) AS moTa,           -- Mô tả sản phẩm
     dc.ten_danh_muc AS tenDanhMuc, 
     MAX(hl.url_anh) AS urlAnh,       -- Lấy URL ảnh
@@ -229,7 +246,7 @@ GROUP BY
     sp.Id_san_pham, 
     sp.ten_san_pham, 
     sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY
-    sp.gia_ban,  -- Đảm bảo trường này có trong GROUP BY
+    spct.gia_ban,  -- Đảm bảo trường này có trong GROUP BY
     dc.ten_danh_muc
 ORDER BY 
     sp.Id_san_pham ASC;  -- Sắp xếp theo idSanPham từ nhỏ đến lớn

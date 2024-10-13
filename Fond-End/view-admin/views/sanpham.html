@@ -46,8 +46,7 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Tên sản phẩm</th>
-                                        <th scope="col">Số lượng</th>
-                                        <th scope="col">Danh mục</th>
+                                        <th scope="col">Mô tả</th>
                                         <th scope="col">Trạng thái</th>
                                         <th scope="col">Thao tác</th>
                                     </tr>
@@ -56,8 +55,7 @@
                                     <tr ng-repeat="item in dsSanPham">
                                         <th scope="row">{{$index + 1}}</th>
                                         <td>{{item.tenSanPham}}</td>
-                                        <td>{{item.soLuong}}</td>
-                                        <td>{{item.tenDanhMuc}}</td>
+                                        <td>{{item.moTa}}</td>
                                         <td>
                                             <input type="checkbox" ng-model="item.trangThai"
                                                 ng-change="updateTrangThai(item)" id="user-status-{{$index}}"
