@@ -1,13 +1,10 @@
 package com.example.duantn.service;
 import com.example.duantn.entity.SanPham;
-import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -28,13 +25,13 @@ public class SanPhamService {
         return sanPhamRepository.getSanPhamByDanhMuc(idDanhMuc); // Trả về danh sách từ repository
     }
 
-    public SanPham updateSanPham(Integer id, SanPham sanPham) {
-        sanPham.setIdSanPham(id);
+    public SanPham updateSanPham(Integer idSanPham, SanPham sanPham) {
+        sanPham.setIdSanPham(idSanPham);
         return sanPhamRepository.save(sanPham);
     }
 
-    public void deleteSanPham(Integer id) {
-        sanPhamRepository.deleteById(id);
+    public void deleteSanPham(Integer idSanPham) {
+        sanPhamRepository.deleteById(idSanPham);
     }
     public void addSanPham(Integer idDanhMuc, String tenSanPham, String moTa, Date ngayTao,Date ngayCapNhat, Boolean trangThai) {
         sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, moTa, ngayTao, ngayCapNhat, trangThai);

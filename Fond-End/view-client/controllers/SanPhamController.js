@@ -45,7 +45,7 @@ window.SanPhamController = function ($scope, $http) {
         // Lấy danh sách sản phẩm
         $scope.fetchData('http://localhost:8080/api/san_pham', 'dsSanPham');
         // Lấy danh sách danh mục
-        $scope.fetchData('http://localhost:8080/api/danh_muc', 'dsDanhMuc');
+        $scope.fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc');
     }
 
     // Gọi hàm khởi tạo

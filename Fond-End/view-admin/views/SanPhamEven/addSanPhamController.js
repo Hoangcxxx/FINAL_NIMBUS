@@ -1,10 +1,11 @@
 window.addSanPhamController = function ($scope, $http) {
     $scope.dsSanPham = [];
+    $scope.sanPhamChiTietList = []; // Initialize as an array
     $scope.dsDanhMuc = [];
     $scope.dsChatLieu = [];
     $scope.dsMauSac = [];
     $scope.dsKichThuoc = [];
-    $scope.selectedProduct = {};
+    $scope.selectedProduct = [];
     $scope.selectedMaterials = [];
     $scope.selectedColors = [];
     $scope.selectedSizes = [];
@@ -33,22 +34,92 @@ window.addSanPhamController = function ($scope, $http) {
     // Initial data fetch
     initializeData();
 
+    // Update selected material
+    $scope.updateMaterial = function (material) {
+        if (material.selected) {
+            $scope.selectedMaterials.push(material);
+        } else {
+            $scope.selectedMaterials = $scope.selectedMaterials.filter(m => m.id !== material.id);
+        }
+        document.getElementById('material').value = $scope.selectedMaterials.map(m => m.tenChatLieu).join(', ');
+    };
+
+    // Update selected color
+    $scope.updateColor = function (color) {
+        if (color.selected) {
+            $scope.selectedColors.push(color);
+        } else {
+            $scope.selectedColors = $scope.selectedColors.filter(c => c.id !== color.id);
+        }
+        document.getElementById('color').value = $scope.selectedColors.map(c => c.tenMauSac).join(', ');
+    };
+
+    // Update selected size
+    $scope.updateSize = function (size) {
+        if (size.selected) {
+            $scope.selectedSizes.push(size);
+        } else {
+            $scope.selectedSizes = $scope.selectedSizes.filter(s => s.id !== size.id);
+        }
+        document.getElementById('size').value = $scope.selectedSizes.map(s => s.tenKichThuoc).join(', ');
+    };
+
     // Save or edit a product
     $scope.saveProduct = function () {
-        const method = $scope.selectedProduct.idSanPham ? 'put' : 'post';
-        const url = `http://localhost:8080/api/ad_san_pham/multiple${$scope.selectedProduct.idSanPham ? '/' + $scope.selectedProduct.idSanPham : ''}`;
+        if (!$scope.productData.idSanPham) {
+            alert("Vui lòng chọn sản phẩm!");
+            return;
+        }
 
-        // Add selected materials, colors, and sizes to the product
-        $scope.selectedProduct.materials = $scope.selectedMaterials;
-        $scope.selectedProduct.colors = $scope.selectedColors;
-        $scope.selectedProduct.sizes = $scope.selectedSizes;
+        // Lấy ID sản phẩm từ dữ liệu sản phẩm
+        const idSanPham = parseInt($scope.productData.idSanPham, 10);
 
-        $http[method](url, $scope.selectedProduct).then(response => {
-            console.log(`Sản phẩm được ${method === 'put' ? 'sửa' : 'thêm'} thành công:`, response.data);
-            $('#addProductModal').modal('hide');
-            initializeData();
-        }).catch(error => console.error(`Error ${method === 'put' ? 'updating' : 'adding'} product:`, error));
+        // Tạo một danh sách sản phẩm chi tiết
+        $scope.selectedMaterials.forEach((material, index) => {
+            // Tạo đối tượng SanPhamChiTiet cho mỗi sự chọn lựa của chất liệu, màu sắc, kích thước
+            const sanPhamChiTiet = {
+                sanPham: {
+                    idSanPham: idSanPham
+                },
+                chatLieuChiTiet: {
+                    idChatLieuChiTiet: material.id // ID chất liệu
+                },
+                mauSacChiTiet: {
+                    idMauSacChiTiet: $scope.selectedColors[index]?.id // ID màu sắc (có thể không có nếu không chọn)
+                },
+                kichThuocChiTiet: {
+                    idKichThuocChiTiet: $scope.selectedSizes[index]?.id // ID kích thước (có thể không có nếu không chọn)
+                }
+            };
+
+            // Đẩy vào danh sách sản phẩm chi tiết
+            $scope.sanPhamChiTietList.push(sanPhamChiTiet);
+        });
+
+        console.log("Payload to send:", JSON.stringify($scope.sanPhamChiTietList, null, 2));
+
+        // Gửi yêu cầu POST tới server
+        $http.post('http://localhost:8080/api/ad_san_pham/multiple', $scope.sanPhamChiTietList)
+            .then(function (response) {
+                alert("Thêm sản phẩm chi tiết thành công!");
+                console.log(response.data);
+                // Xóa danh sách sản phẩm chi tiết và lựa chọn
+                $scope.sanPhamChiTietList = [];
+                $scope.selectedMaterials = [];
+                $scope.selectedColors = [];
+                $scope.selectedSizes = [];
+            })
+            .catch(function (error) {
+                alert("Có lỗi xảy ra khi thêm sản phẩm chi tiết.");
+                if (error.data) {
+                    console.error("Error response data:", error.data);
+                }
+                console.error("Error details:", error);
+            });
     };
+
+
+
 
     // Edit a product
     $scope.chinhSuaSanPham = function (item) {
@@ -85,36 +156,6 @@ window.addSanPhamController = function ($scope, $http) {
         $('#sizeModal').modal('hide');
     };
 
-
-    // Update selected material
-    $scope.updateMaterial = function (material) {
-        if (material.selected) {
-            $scope.selectedMaterials.push(material);
-        } else {
-            $scope.selectedMaterials = $scope.selectedMaterials.filter(m => m.id !== material.id);
-        }
-        document.getElementById('material').value = $scope.selectedMaterials.map(m => m.tenChatLieu).join(', ');
-    };
-
-    // Update selected color
-    $scope.updateColor = function (color) {
-        if (color.selected) {
-            $scope.selectedColors.push(color);
-        } else {
-            $scope.selectedColors = $scope.selectedColors.filter(c => c.id !== color.id);
-        }
-        document.getElementById('color').value = $scope.selectedColors.map(c => c.tenMauSac).join(', ');
-    };
-
-    // Update selected size
-    $scope.updateSize = function (size) {
-        if (size.selected) {
-            $scope.selectedSizes.push(size);
-        } else {
-            $scope.selectedSizes = $scope.selectedSizes.filter(s => s.id !== size.id);
-        }
-        document.getElementById('size').value = $scope.selectedSizes.map(s => s.tenKichThuoc).join(', ');
-    };
 
 
 

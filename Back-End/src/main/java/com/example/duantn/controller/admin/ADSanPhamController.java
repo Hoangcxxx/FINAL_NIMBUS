@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +27,11 @@ public class ADSanPhamController {
     private SanPhamChiTietService sanPhamChiTietService;
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
-        map.put("tenSanPham", row[0]);
-        map.put("moTa", row[1]);    // Cập nhật chỉ số cho mô tả
-        map.put("tenDanhMuc", row[2]); // Cập nhật chỉ số cho trạng thái
-        map.put("trangThai", row[3]); // Cập nhật chỉ số cho trạng thái
+        map.put("idSanPham", row[0]);
+        map.put("tenSanPham", row[1]);
+        map.put("moTa", row[2]);    // Cập nhật chỉ số cho mô tả
+        map.put("tenDanhMuc", row[3]); // Cập nhật chỉ số cho trạng thái
+        map.put("trangThai", row[4]); // Cập nhật chỉ số cho trạng thái
         return map;
     }
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {
@@ -52,7 +52,6 @@ public class ADSanPhamController {
         sanPhamService.addSanPham(idDanhMuc, tenSanPham, moTa, ngayTao, ngayCapNhat, trangThai);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
 
     // Cập nhật sản phẩm
     @PutMapping("/{id}")
@@ -77,24 +76,22 @@ public class ADSanPhamController {
         return ResponseEntity.ok(filteredProducts);
     }
 
-
-
     @PostMapping("/multiple")
     public ResponseEntity<List<SanPhamChiTiet>> createMultiple(@RequestBody List<SanPhamChiTiet> sanPhamChiTietList) throws IOException {
-        // Kiểm tra xem danh sách sản phẩm chi tiết có rỗng không
         if (sanPhamChiTietList.isEmpty()) {
-            return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu danh sách rỗng
+            return ResponseEntity.badRequest().body(null);
         }
 
-        // Lấy ID sản phẩm từ sản phẩm đầu tiên trong danh sách
-        Integer idSanPham = sanPhamChiTietList.get(0).getSanPham().getIdSanPham();
-        if (idSanPham == null) {
-            return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu ID sản phẩm không được chọn
+        SanPhamChiTiet firstChiTiet = sanPhamChiTietList.get(0);
+        if (firstChiTiet.getSanPham() == null || firstChiTiet.getSanPham().getIdSanPham() == null) {
+            return ResponseEntity.badRequest().body(null); // Handle null cases
         }
 
+        Integer idSanPham = firstChiTiet.getSanPham().getIdSanPham();
         List<SanPhamChiTiet> savedProducts = sanPhamChiTietService.createMultiple(sanPhamChiTietList, idSanPham);
-        return ResponseEntity.ok(savedProducts); // Trả về danh sách đã lưu
+        return ResponseEntity.ok(savedProducts);
     }
+
 
 
 

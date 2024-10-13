@@ -1,8 +1,22 @@
 package com.example.duantn.query;
 
 public class SanPhamChiTietQuery {
-    public static final String GET_SAN_PHAM_BY_ID = "SELECT sp.id_san_pham, sp.ten_san_pham, sp.gia_ban, sp.mo_ta " +
-            "FROM san_pham sp WHERE sp.Id_san_pham = :idSanPhamCT";
+    public static final String GET_SAN_PHAM_BY_ID = "SELECT \n" +
+            "    sp.id_san_pham, \n" +
+            "    sp.ten_san_pham, \n" +
+            "    spct.gia_ban,\n" +
+            "    sp.mo_ta\n" +
+            "FROM \n" +
+            "    san_pham sp\n" +
+            "JOIN \n" +
+            "    san_pham_chi_tiet spct ON sp.id_san_pham = spct.id_san_pham\n" +
+            "WHERE \n" +
+            "    sp.id_san_pham = :idSanPhamCT\n" +
+            "GROUP BY \n" +
+            "    sp.id_san_pham, \n" +
+            "    sp.ten_san_pham,\n" +
+            "\tspct.gia_ban,\n" +
+            "    sp.mo_ta";
 
     public static final String GET_MAU_SAC_BY_ID_SAN_PHAM = "SELECT mct.id_mau_sac_chi_tiet, ms.ten_mau_sac AS mau_sac " +
             "FROM san_pham sp " +

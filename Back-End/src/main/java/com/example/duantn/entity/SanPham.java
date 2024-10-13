@@ -25,8 +25,6 @@ public class SanPham {
     @Column(name = "ten_san_pham", nullable = false)
     private String tenSanPham;
 
-
-
     @Column(name = "mo_ta")
     private String moTa;
     @Column(name = "trang_thai", nullable = false)
