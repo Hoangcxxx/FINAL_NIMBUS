@@ -34,8 +34,12 @@ public class SanPhamService {
     public void deleteSanPham(Integer idSanPham) {
         sanPhamRepository.deleteById(idSanPham);
     }
-    public void addSanPham(Integer idDanhMuc, String tenSanPham, BigDecimal giaBan, String moTa, Date ngayTao, Date ngayCapNhat, Boolean trangThai) {
-        sanPhamRepository.addSanPham(idDanhMuc, tenSanPham,giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
+    public Integer addSanPham(Integer idDanhMuc, String tenSanPham, BigDecimal giaBan, String moTa, Date ngayTao, Date ngayCapNhat, Boolean trangThai) {
+        return sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
+    }
+
+    public void addHinhAnhSanPham(Integer idSanPham, String urlAnh, Integer thuTu, String loaiHinhAnh) {
+        sanPhamRepository.addHinhAnhSanPham(idSanPham, urlAnh, thuTu, loaiHinhAnh);
     }
 
 }

@@ -1,6 +1,6 @@
 window.addSanPhamController = function ($scope, $http) {
     $scope.dsSanPham = [];
-    $scope.sanPhamChiTietList = []; // Initialize as an array
+    $scope.sanPhamChiTietList = [];
     $scope.dsDanhMuc = [];
     $scope.dsChatLieu = [];
     $scope.dsMauSac = [];
@@ -71,39 +71,24 @@ window.addSanPhamController = function ($scope, $http) {
             return;
         }
 
-        // Lấy ID sản phẩm từ dữ liệu sản phẩm
         const idSanPham = parseInt($scope.productData.idSanPham, 10);
-
-        // Tạo một danh sách sản phẩm chi tiết
         $scope.selectedMaterials.forEach((material, index) => {
-            // Tạo đối tượng SanPhamChiTiet cho mỗi sự chọn lựa của chất liệu, màu sắc, kích thước
             const sanPhamChiTiet = {
-                sanPham: {
-                    idSanPham: idSanPham
-                },
-                chatLieuChiTiet: {
-                    idChatLieuChiTiet: material.id // ID chất liệu
-                },
-                mauSacChiTiet: {
-                    idMauSacChiTiet: $scope.selectedColors[index]?.id // ID màu sắc (có thể không có nếu không chọn)
-                },
-                kichThuocChiTiet: {
-                    idKichThuocChiTiet: $scope.selectedSizes[index]?.id // ID kích thước (có thể không có nếu không chọn)
-                }
+                sanPham: { idSanPham: idSanPham },
+                chatLieuChiTiet: { idChatLieuChiTiet: material.id },
+                mauSacChiTiet: { idMauSacChiTiet: $scope.selectedColors[index]?.id },
+                kichThuocChiTiet: { idKichThuocChiTiet: $scope.selectedSizes[index]?.id }
             };
 
-            // Đẩy vào danh sách sản phẩm chi tiết
             $scope.sanPhamChiTietList.push(sanPhamChiTiet);
         });
 
         console.log("Payload to send:", JSON.stringify($scope.sanPhamChiTietList, null, 2));
 
-        // Gửi yêu cầu POST tới server
         $http.post('http://localhost:8080/api/ad_san_pham/multiple', $scope.sanPhamChiTietList)
             .then(function (response) {
                 alert("Thêm sản phẩm chi tiết thành công!");
                 console.log(response.data);
-                // Xóa danh sách sản phẩm chi tiết và lựa chọn
                 $scope.sanPhamChiTietList = [];
                 $scope.selectedMaterials = [];
                 $scope.selectedColors = [];
@@ -111,25 +96,17 @@ window.addSanPhamController = function ($scope, $http) {
             })
             .catch(function (error) {
                 alert("Có lỗi xảy ra khi thêm sản phẩm chi tiết.");
-                if (error.data) {
-                    console.error("Error response data:", error.data);
-                }
                 console.error("Error details:", error);
             });
     };
 
-
-
-
     // Edit a product
     $scope.chinhSuaSanPham = function (item) {
         $scope.selectedProduct = angular.copy(item);
-        // Set selected materials, colors, and sizes
         $scope.selectedMaterials = item.materials || [];
         $scope.selectedColors = item.colors || [];
         $scope.selectedSizes = item.sizes || [];
 
-        // Update selection status for chatLieu, mauSac, kichThuoc
         $scope.dsChatLieu.forEach(mat => mat.selected = $scope.selectedMaterials.some(m => m.id === mat.id));
         $scope.dsMauSac.forEach(color => color.selected = $scope.selectedColors.some(c => c.id === color.id));
         $scope.dsKichThuoc.forEach(size => size.selected = $scope.selectedSizes.some(s => s.id === size.id));
@@ -149,15 +126,11 @@ window.addSanPhamController = function ($scope, $http) {
 
     // Reset the form
     $scope.resetModal = function () {
-        // Giữ nguyên dữ liệu đã chọn
         $('#addProductModal').modal('hide');
         $('#materialModal').modal('hide');
         $('#colorModal').modal('hide');
         $('#sizeModal').modal('hide');
     };
-
-
-
 
     $scope.SanPham = {
         idDanhMuc: null,
@@ -166,59 +139,98 @@ window.addSanPhamController = function ($scope, $http) {
         giaBan: 0,
         ngayTao: new Date(),
         ngayCapNhat: new Date(),
-        trangThai: true
+        trangThai: true,
+        hinhAnh: []
     };
 
     $scope.chinhSuaSanPham = function (item) {
-        $scope.SanPham = angular.copy(item); // Sao chép dữ liệu để sửa
-        $('#addProductModal').modal('show'); // Hiển thị modal
-        $scope.isEditing = true; // Đánh dấu là đang chỉnh sửa
+        $scope.SanPham = angular.copy(item);
+        $('#addProductModal').modal('show');
+        $scope.isEditing = true;
     };
 
     $scope.onCreate = function () {
         $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
+        $scope.SanPham.giaBan = parseInt($scope.SanPham.giaBan, 10);
+
+        console.log("Thông tin sản phẩm ban đầu:", JSON.stringify($scope.SanPham, null, 2));
+
         if (!$scope.SanPham.idDanhMuc || !$scope.SanPham.tenSanPham || !$scope.SanPham.giaBan || !$scope.SanPham.moTa) {
             alert('Vui lòng điền đầy đủ thông tin sản phẩm.');
             return;
         }
-        $http.post("http://localhost:8080/api/ad_san_pham", $scope.SanPham).then(response => {
-            alert('Chúc mừng bạn tạo mới thành công');
-            initializeData(); // Load lại dsSanPham
-            $scope.resetModal(); // Reset modal
-        }).catch(error => console.error('Error creating product:', error));
+
+        const images = document.getElementById('up-hinh-anh').files;
+        const imagePromises = [];
+
+        // Reset mảng hinhAnh trước khi đọc file
+        $scope.SanPham.hinhAnh = [];
+
+        Array.from(images).forEach(image => {
+            const reader = new FileReader();
+            const promise = new Promise((resolve, reject) => {
+                reader.onload = function (e) {
+                    // Chỉ thêm tên file vào mảng hinhAnh
+                    $scope.SanPham.hinhAnh.push(image.name);
+                    resolve();
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(image); // Đọc file để hiển thị ảnh
+            });
+            imagePromises.push(promise);
+        });
+
+        Promise.all(imagePromises).then(() => {
+            console.log("Dữ liệu gửi đi:", JSON.stringify($scope.SanPham));
+
+            $http.post("http://localhost:8080/api/ad_san_pham", $scope.SanPham, {
+                headers: { 'Content-Type': 'application/json' },
+            }).then(response => {
+                alert('Chúc mừng bạn tạo mới thành công');
+                initializeData();
+                $scope.resetModal();
+            }).catch(error => {
+                console.error('Error creating product:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            });
+        }).catch(error => {
+            console.error('Error reading images:', error);
+            alert('Có lỗi xảy ra khi đọc hình ảnh.');
+        });
     };
 
-
-
-
-
-    function previewImages(event) {
-        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-        imagePreviewContainer.innerHTML = ''; // Xóa nội dung trước đó
-
-        const files = event.target.files;
-        if (files) {
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.maxWidth = '150px'; // Chiều rộng tối đa của hình ảnh
-                    img.style.maxHeight = '150px'; // Chiều cao tối đa của hình ảnh
-                    img.style.marginRight = '10px'; // Khoảng cách giữa các hình ảnh
-                    imagePreviewContainer.appendChild(img);
-                }
-                reader.readAsDataURL(file);
-            });
+    $scope.uploadImages = function (el) {
+        if (!el || !el.files) {
+            console.error("No file input element or files found.");
+            return;
         }
-    }
 
+        const files = el.files;
+        const maxFiles = 4;
 
+        if (files.length > maxFiles) {
+            alert(`Bạn chỉ có thể chọn tối đa ${maxFiles} hình ảnh.`);
+            el.value = '';
+            return;
+        }
 
+        const previewContainer = document.querySelector(".image-preview-container");
+        previewContainer.innerHTML = '';
+        $scope.SanPham.hinhAnh = [];
 
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
 
+            reader.onload = function (e) {
+                const img = document.createElement("img");
+                img.setAttribute("src", e.target.result);
+                img.classList.add("upload-image-preview");
+                previewContainer.appendChild(img);
+                $scope.SanPham.hinhAnh.push(`${file.name}`);
+                console.log("Selected file info:", $scope.SanPham.hinhAnh);
+            };
 
-
-
-
+            reader.readAsDataURL(file);
+        });
+    };
 };

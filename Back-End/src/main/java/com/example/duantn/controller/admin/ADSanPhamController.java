@@ -54,19 +54,28 @@ public class ADSanPhamController {
         } else if (giaBanObj instanceof BigDecimal) {
             giaBan = (BigDecimal) giaBanObj;
         } else {
-            throw new IllegalArgumentException("Giá bán không hợp lệ"); // Xử lý ngoại lệ
+            throw new IllegalArgumentException("Giá bán không hợp lệ");
         }
 
         String moTa = (String) requestBody.get("moTa");
+        List<String> urlsHinhAnh = (List<String>) requestBody.get("hinhAnh"); // Thêm danh sách URL hình ảnh
 
-        // Set default values
-        Boolean trangThai = true; // Set status to true
-        Date ngayTao = new Date(); // Current date
-        Date ngayCapNhat = new Date(); // Current date
+        Boolean trangThai = true;
+        Date ngayTao = new Date();
+        Date ngayCapNhat = new Date();
 
-        sanPhamService.addSanPham(idDanhMuc, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
+        Integer idSanPham = sanPhamService.addSanPham(idDanhMuc, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
+
+        // Thêm các hình ảnh vào sản phẩm
+        if (urlsHinhAnh != null) {
+            for (int i = 0; i < urlsHinhAnh.size(); i++) {
+                sanPhamService.addHinhAnhSanPham(idSanPham, urlsHinhAnh.get(i), i + 1, "loai_hinh_anh"); // "loai_hinh_anh" là giá trị mẫu, bạn có thể thay đổi theo yêu cầu
+            }
+        }
+
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
 
 
     // Cập nhật sản phẩm
