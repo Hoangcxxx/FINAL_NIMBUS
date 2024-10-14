@@ -1,6 +1,8 @@
 package com.example.duantn.repository;
 
 import com.example.duantn.entity.SanPham;
+import com.example.duantn.entity.SanPhamChiTiet;
+import com.example.duantn.query.SanPhamChiTietQuery;
 import com.example.duantn.query.SanPhamQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,13 +31,12 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Transactional
     @Query(value = SanPhamQuery.ADD_SAN_PHAM_AD, nativeQuery = true)
     Integer addSanPham(@Param("idDanhMuc") Integer idDanhMuc,
-                    @Param("tenSanPham") String tenSanPham,
-                    @Param("giaBan") BigDecimal giaBan,
-                    @Param("moTa") String moTa,
-                    @Param("ngayTao") Date ngayTao,
-                    @Param("ngayCapNhat") Date ngayCapNhat,
-                    @Param("trangThai") Boolean trangThai);
-
+                       @Param("tenSanPham") String tenSanPham,
+                       @Param("giaBan") BigDecimal giaBan,
+                       @Param("moTa") String moTa,
+                       @Param("ngayTao") Date ngayTao,
+                       @Param("ngayCapNhat") Date ngayCapNhat,
+                       @Param("trangThai") Boolean trangThai);
 
     @Modifying
     @Transactional
@@ -44,5 +45,13 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
                            @Param("urlAnh") String urlAnh,
                            @Param("thuTu") Integer thuTu,
                            @Param("loaiHinhAnh") String loaiHinhAnh);
+
+    @Query("SELECT s.idSanPham FROM SanPham s ORDER BY s.ngayTao DESC")
+    List<Integer> getLatestSanPhamId();
+
+
+
+
+
 
 }

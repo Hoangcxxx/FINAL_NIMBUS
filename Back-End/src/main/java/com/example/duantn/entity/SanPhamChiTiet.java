@@ -21,6 +21,9 @@ public class SanPhamChiTiet {
 
     @Column(name = "so_luong", nullable = false)
     private Integer soLuong;
+    @Column(name = "ngay_tao")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao;
 
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)

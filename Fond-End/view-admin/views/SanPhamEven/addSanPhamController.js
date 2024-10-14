@@ -131,7 +131,7 @@ window.addSanPhamController = function ($scope, $http) {
         $('#colorModal').modal('hide');
         $('#sizeModal').modal('hide');
     };
-
+    
     $scope.SanPham = {
         idDanhMuc: null,
         tenSanPham: "",
@@ -140,38 +140,43 @@ window.addSanPhamController = function ($scope, $http) {
         ngayTao: new Date(),
         ngayCapNhat: new Date(),
         trangThai: true,
-        hinhAnh: []
+        hinhAnh: [],
+        idSanPham: null // Thêm trường idSanPham
     };
-
+    
     $scope.chinhSuaSanPham = function (item) {
         $scope.SanPham = angular.copy(item);
         $('#addProductModal').modal('show');
         $scope.isEditing = true;
     };
-
+    
     $scope.onCreate = function () {
         $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
         $scope.SanPham.giaBan = parseInt($scope.SanPham.giaBan, 10);
-
+    
         console.log("Thông tin sản phẩm ban đầu:", JSON.stringify($scope.SanPham, null, 2));
-
+    
         if (!$scope.SanPham.idDanhMuc || !$scope.SanPham.tenSanPham || !$scope.SanPham.giaBan || !$scope.SanPham.moTa) {
             alert('Vui lòng điền đầy đủ thông tin sản phẩm.');
             return;
         }
-
+    
         const images = document.getElementById('up-hinh-anh').files;
         const imagePromises = [];
-
+    
         // Reset mảng hinhAnh trước khi đọc file
         $scope.SanPham.hinhAnh = [];
-
+    
+        // Define folder paths based on category or other criteria
+        const categoryFolder = getCategoryFolder($scope.SanPham.idDanhMuc); // Get the folder based on category
+    
         Array.from(images).forEach(image => {
             const reader = new FileReader();
             const promise = new Promise((resolve, reject) => {
                 reader.onload = function (e) {
-                    // Chỉ thêm tên file vào mảng hinhAnh
-                    $scope.SanPham.hinhAnh.push(image.name);
+                    // Add the full path including folder and file name
+                    const imagePath = `images/${categoryFolder}/${image.name}`;
+                    $scope.SanPham.hinhAnh.push(imagePath);
                     resolve();
                 };
                 reader.onerror = reject;
@@ -179,13 +184,28 @@ window.addSanPhamController = function ($scope, $http) {
             });
             imagePromises.push(promise);
         });
-
+    
         Promise.all(imagePromises).then(() => {
             console.log("Dữ liệu gửi đi:", JSON.stringify($scope.SanPham));
-
+    
             $http.post("http://localhost:8080/api/ad_san_pham", $scope.SanPham, {
                 headers: { 'Content-Type': 'application/json' },
             }).then(response => {
+                // Lưu ID sản phẩm
+                $scope.SanPham.idSanPham = response.data.idSanPham; // Lưu ID sản phẩm từ phản hồi
+    
+                // Thêm hình ảnh cho sản phẩm
+                if ($scope.SanPham.hinhAnh.length > 0) {
+                    $scope.SanPham.hinhAnh.forEach((url, index) => {
+                        $http.post("http://localhost:8080/api/ad_hinh_anh_san_pham", {
+                            idSanPham: $scope.SanPham.idSanPham,
+                            urlAnh: url,
+                            thuTu: index + 1,
+                            loaiHinhAnh: "loai_hinh_anh"
+                        });
+                    });
+                }
+    
                 alert('Chúc mừng bạn tạo mới thành công');
                 initializeData();
                 $scope.resetModal();
@@ -198,29 +218,39 @@ window.addSanPhamController = function ($scope, $http) {
             alert('Có lỗi xảy ra khi đọc hình ảnh.');
         });
     };
-
+    
+    function getCategoryFolder(idDanhMuc) {
+        const category = $scope.dsDanhMuc.find(danhMuc => danhMuc.idDanhMuc === idDanhMuc);
+        
+        if (category) {
+            return category.tenDanhMuc.toLowerCase().replace(/\s+/g, '_');
+        }
+        
+        return 'others';
+    }
+    
     $scope.uploadImages = function (el) {
         if (!el || !el.files) {
             console.error("No file input element or files found.");
             return;
         }
-
+    
         const files = el.files;
         const maxFiles = 4;
-
+    
         if (files.length > maxFiles) {
             alert(`Bạn chỉ có thể chọn tối đa ${maxFiles} hình ảnh.`);
             el.value = '';
             return;
         }
-
+    
         const previewContainer = document.querySelector(".image-preview-container");
         previewContainer.innerHTML = '';
         $scope.SanPham.hinhAnh = [];
-
+    
         Array.from(files).forEach(file => {
             const reader = new FileReader();
-
+    
             reader.onload = function (e) {
                 const img = document.createElement("img");
                 img.setAttribute("src", e.target.result);
@@ -229,8 +259,12 @@ window.addSanPhamController = function ($scope, $http) {
                 $scope.SanPham.hinhAnh.push(`${file.name}`);
                 console.log("Selected file info:", $scope.SanPham.hinhAnh);
             };
-
+    
             reader.readAsDataURL(file);
         });
     };
+        
+
+
+
 };

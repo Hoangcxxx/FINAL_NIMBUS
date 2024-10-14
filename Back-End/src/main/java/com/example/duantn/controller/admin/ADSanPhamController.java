@@ -4,6 +4,7 @@ import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.service.SanPhamChiTietService;
 import com.example.duantn.service.SanPhamService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,12 +41,13 @@ public class ADSanPhamController {
         return results.stream().map(this::mapSanPhamDetail).collect(Collectors.toList());
     }
     // Thêm sản phẩm
+    // Thêm sản phẩm
     @PostMapping
-    public ResponseEntity<Void> createSanPham(@RequestBody Map<String, Object> requestBody) {
+    @Transactional
+    public ResponseEntity<Map<String, Integer>> createSanPham(@RequestBody Map<String, Object> requestBody) {
         Integer idDanhMuc = (Integer) requestBody.get("idDanhMuc");
         String tenSanPham = (String) requestBody.get("tenSanPham");
 
-        // Lấy giaBan và kiểm tra kiểu dữ liệu
         Object giaBanObj = requestBody.get("giaBan");
         BigDecimal giaBan;
 
@@ -58,23 +60,43 @@ public class ADSanPhamController {
         }
 
         String moTa = (String) requestBody.get("moTa");
-        List<String> urlsHinhAnh = (List<String>) requestBody.get("hinhAnh"); // Thêm danh sách URL hình ảnh
+        List<String> urlsHinhAnh = (List<String>) requestBody.get("hinhAnh");
 
         Boolean trangThai = true;
         Date ngayTao = new Date();
         Date ngayCapNhat = new Date();
 
-        Integer idSanPham = sanPhamService.addSanPham(idDanhMuc, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
+        // Thêm sản phẩm vào cơ sở dữ liệu (phương thức sẽ lưu và không trả về ID)
+        sanPhamService.addSanPham(idDanhMuc, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
+        System.out.println("Sản phẩm đã được thêm.");
 
-        // Thêm các hình ảnh vào sản phẩm
-        if (urlsHinhAnh != null) {
-            for (int i = 0; i < urlsHinhAnh.size(); i++) {
-                sanPhamService.addHinhAnhSanPham(idSanPham, urlsHinhAnh.get(i), i + 1, "loai_hinh_anh"); // "loai_hinh_anh" là giá trị mẫu, bạn có thể thay đổi theo yêu cầu
+        // Lấy ID sản phẩm mới nhất
+        Integer idSanPham = sanPhamService.getLatestSanPhamId();
+
+        // Kiểm tra xem ID sản phẩm có hợp lệ không
+        if (idSanPham != null && idSanPham > 0) {
+            // Thêm hình ảnh vào sản phẩm (nếu có)
+            if (urlsHinhAnh != null && !urlsHinhAnh.isEmpty()) {
+                for (int i = 0; i < urlsHinhAnh.size(); i++) {
+                    sanPhamService.addHinhAnhSanPham(idSanPham, urlsHinhAnh.get(i), i + 1, "loai_hinh_anh");
+                }
             }
+        } else {
+            throw new IllegalStateException("ID sản phẩm không hợp lệ sau khi thêm");
         }
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        // Trả về ID sản phẩm vừa thêm
+        Map<String, Integer> response = new HashMap<>();
+        response.put("idSanPham", idSanPham);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+
+
+
+
+
+
 
 
 

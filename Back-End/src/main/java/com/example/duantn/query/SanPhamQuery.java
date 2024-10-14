@@ -86,10 +86,14 @@ public class SanPhamQuery {
             "    sp.Id_san_pham = :idSanPham";
 
 
-    public static final String ADD_SAN_PHAM_AD = "INSERT INTO san_pham (id_danh_muc, ten_san_pham,gia_ban, mo_ta, ngay_tao, ngay_cap_nhat, trang_thai) VALUES (:idDanhMuc, :tenSanPham,:giaBan, :moTa, :ngayTao, :ngayCapNhat, :trangThai)";
+    public static final String ADD_SAN_PHAM_AD =
+            "INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc, ngay_tao, ngay_cap_nhat, trang_thai) " +
+                    "VALUES (:tenSanPham, :giaBan, :moTa, :idDanhMuc, :ngayTao, :ngayCapNhat, :trangThai); " +
+                    "SELECT SCOPE_IDENTITY();";
+
+
 
     public static final String ADD_HINH_ANH_SAN_PHAM_AD = "INSERT INTO hinh_anh_san_pham (id_san_pham, url_anh, thu_tu, loai_hinh_anh) VALUES (:idSanPham, :urlAnh, :thuTu, :loaiHinhAnh);";
-
 
 
     public static final String GET_SAN_PHAM_AD = "SELECT \n" +
@@ -107,6 +111,8 @@ public class SanPhamQuery {
             "    sp.trang_thai = 1 -- Điều kiện để lấy sản phẩm đang hoạt động\n" +
             "ORDER BY \n" +
             "    sp.ngay_cap_nhat DESC;";
+
+
 
 
 }

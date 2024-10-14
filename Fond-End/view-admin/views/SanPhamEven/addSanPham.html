@@ -93,8 +93,7 @@
                                             <th scope="col">#</th>
                                             <th scope="col">Tên sản phẩm</th>
                                             <th scope="col">Số lượng</th>
-                                            <th scope="col">Đơn giá</th>
-                                            <th scope="col">Trạng thái</th>
+                                            <th scope="col">Mô tả</th>
                                             <th scope="col">Thao tác</th>
                                         </tr>
                                     </thead>
@@ -103,7 +102,6 @@
                                             <th scope="row">{{$index + 1}}</th>
                                             <td>{{item.tenSanPham}}</td>
                                             <td><input type="number" class="form-control" value="10"></td>
-                                            <td><input type="text" class="form-control" value="100,000"></td>
                                             <td>
                                                 <input type="checkbox" ng-model="item.trangThai"
                                                     ng-change="updateTrangThai(item)" id="user-status-{{$index}}"
