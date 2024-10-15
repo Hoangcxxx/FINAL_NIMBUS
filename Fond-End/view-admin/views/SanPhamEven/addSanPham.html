@@ -82,12 +82,14 @@
                         {{item.tenSanPham}}
                     </option>
                 </select>
-
                 <h3 class="mb-4 mt-3">Danh sách các sản phẩm cùng loại</h3>
+                <div>
+                    <button class="btn btn-danger">Lưu số lượng sản phẩm</button>
+                </div>
                 <div id="show-product">
                     <div class="card shadow mb-4 mt-3" ng-if="filteredProducts.length > 0">
                         <div class="card-body">
-                            <h4 class="mb-4 mt-3 text-center">Sản phẩm:
+                            <h4 class="mb-4 mt-3 text-center">Tên sản phẩm:
                                 {{filteredProducts[0].colors[0].products[0].productName}}</h4>
                             <!-- Display only the first product name -->
                             <div ng-repeat="materialGroup in filteredProducts">
@@ -130,8 +132,8 @@
                                                             ng-click="chinhSuaSanPham(item)">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <a href="#!san_pham" class="btn btn-danger btn-sm"
-                                                            ng-click="xoaSanPham(item.idSanPham)">
+                                                        <a href="#!Add_SP" class="btn btn-danger btn-sm"
+                                                            ng-click="xoaSanPhamCT(item.idSanPhamCT)">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                     </td>

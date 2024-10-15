@@ -36,6 +36,12 @@
                             <div class="hidden-sidebar">Quản lý sản phẩm</div>
                         </a>
                     </li>
+                    <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'kho_hang'}">
+                        <a href="#!kho_hang" class="sidebar-link" ng-click="setActiveTab('kho_hang')">
+                            <div class="sidebar-icon"><i class="fa-solid fa-store"></i></div>
+                            <div class="hidden-sidebar">Quản lý kho hàng</div>
+                        </a>
+                    </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'khach_hang'}">
                         <a href="#!khach_hang" class="sidebar-link" ng-click="setActiveTab('khach_hang')">
                             <div class="sidebar-icon"><i class="fa-light fa-users"></i></div>

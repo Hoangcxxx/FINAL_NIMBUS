@@ -1,5 +1,6 @@
 window.addSanPhamController = function ($scope, $http) {
     $scope.dsSanPham = [];
+    $scope.dsSanPhamCT = [];
     $scope.sanPhamChiTietList = [];
     $scope.listProductDetail = [];
     $scope.filteredProducts = [];
@@ -87,7 +88,24 @@ window.addSanPhamController = function ($scope, $http) {
             });
     };
 
+    $scope.xoaSanPhamCT = function (idSanPhamCT) {
+        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
+            console.error('id sản phẩm chi tiết là:', idSanPhamCT);
+            $http.delete('http://localhost:8080/api/ad_san_pham_ct/' + idSanPhamCT).then(function (response) {
+                alert("Xóa sản phẩm thành công!");
+                // Assuming you have the selected product ID available, use it to refresh the details
+                if ($scope.productData.idSanPham) {
+                    $scope.fetchProductDetails($scope.productData.idSanPham);
+                }
+            }, function (error) {
+                console.error('Error deleting product:', error);
+            });
+        }
+    };
 
+
+
+    
     $scope.selectAll = false; // Tình trạng chọn tất cả
 
     // Hàm để kiểm tra trạng thái của tất cả check box
@@ -142,8 +160,6 @@ window.addSanPhamController = function ($scope, $http) {
         }
         // Nếu không có 2 hoặc 3 ô được chọn, không làm gì cả
     };
-
-
 
 
     // Initialize data
@@ -336,8 +352,18 @@ window.addSanPhamController = function ($scope, $http) {
     // Get category folder name
     const getCategoryFolder = idDanhMuc => {
         const category = $scope.dsDanhMuc.find(danhMuc => danhMuc.idDanhMuc === idDanhMuc);
-        return category ? category.tenDanhMuc.toLowerCase().replace(/\s+/g, '_') : 'others';
+        return category ? convertToFolderName(category.tenDanhMuc) : 'others';
     };
+
+    // Chuyển đổi tên danh mục thành tên thư mục
+    const convertToFolderName = name => {
+        return name
+            .normalize('NFD') // Chuyển đổi ký tự Unicode
+            .replace(/[\u0300-\u036f]/g, '') // Loại bỏ dấu
+            .toLowerCase() // Chuyển thành chữ thường
+            .replace(/\s+/g, '_'); // Thay thế khoảng trắng bằng dấu gạch dưới
+    };
+
 
     // Handle image uploads
     $scope.uploadImages = function (el) {

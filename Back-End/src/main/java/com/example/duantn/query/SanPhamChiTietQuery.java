@@ -35,6 +35,7 @@ public class SanPhamChiTietQuery {
 
     public static final String GET_SAN_PHAM_CT_BY_ID_SAN_PHAM =
             "SELECT \n" +
+                    "    spc.id_san_pham_chi_tiet,\n" +
                     "    sp.id_san_pham,\n" +
                     "    sp.ten_san_pham,\n" +
                     "    spc.so_luong,\n" +

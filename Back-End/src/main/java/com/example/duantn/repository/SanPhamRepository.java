@@ -1,8 +1,6 @@
 package com.example.duantn.repository;
 
 import com.example.duantn.entity.SanPham;
-import com.example.duantn.entity.SanPhamChiTiet;
-import com.example.duantn.query.SanPhamChiTietQuery;
 import com.example.duantn.query.SanPhamQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,8 +48,20 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     List<Integer> getLatestSanPhamId();
 
 
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM HinhAnhSanPham h WHERE h.sanPham.idSanPham = :idSanPham")
+    void deleteHinhAnhBySanPhamId(@Param("idSanPham") Integer idSanPham);
 
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM SanPhamChiTiet s WHERE s.sanPham.idSanPham = :idSanPham")
+    void deleteChiTietBySanPhamId(@Param("idSanPham") Integer idSanPham);
 
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM SanPham s WHERE s.idSanPham = :idSanPham")
+    void deleteSanPhamByIdSanPham(@Param("idSanPham") Integer idSanPham);
 
 
 }

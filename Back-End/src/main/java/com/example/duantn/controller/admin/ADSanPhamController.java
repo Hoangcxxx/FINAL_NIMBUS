@@ -41,7 +41,6 @@ public class ADSanPhamController {
         return results.stream().map(this::mapSanPhamDetail).collect(Collectors.toList());
     }
     // Thêm sản phẩm
-    // Thêm sản phẩm
     @PostMapping
     @Transactional
     public ResponseEntity<Map<String, Integer>> createSanPham(@RequestBody Map<String, Object> requestBody) {
@@ -92,14 +91,6 @@ public class ADSanPhamController {
     }
 
 
-
-
-
-
-
-
-
-
     // Cập nhật sản phẩm
     @PutMapping("/{id}")
     public ResponseEntity<SanPham> updateSanPham(@PathVariable Integer id, @RequestBody SanPham sanPham) {
@@ -109,11 +100,12 @@ public class ADSanPhamController {
     }
 
     // Xóa sản phẩm
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSanPham(@PathVariable Integer id) {
-        sanPhamService.deleteSanPham(id);
+    @DeleteMapping("/{idSanPham}")
+    public ResponseEntity<Void> deleteSanPham(@PathVariable Integer idSanPham) {
+        sanPhamService.deleteSanPham(idSanPham);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 
     // Lấy tất cả sản phẩm (nếu cần)
     @GetMapping

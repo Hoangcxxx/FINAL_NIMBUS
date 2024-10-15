@@ -51,8 +51,8 @@ public class SanPhamChiTietService {
         return sanPhamChiTietRepository.save(sanPhamChiTiet);
     }
 
-    public void delete(Integer id) {
-        sanPhamChiTietRepository.deleteById(id);
+    public void deleteById(Integer idSanPhamCT) {
+        sanPhamChiTietRepository.deleteById(idSanPhamCT);
     }
 
     // Giả sử bạn có một phương thức lưu cho ChatLieuChiTiet

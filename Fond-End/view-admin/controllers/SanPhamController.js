@@ -73,7 +73,7 @@ window.SanPhamController = function ($scope, $http) {
     $scope.xoaSanPham = function (id) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
             $http.delete('http://localhost:8080/api/ad_san_pham/' + id).then(function (response) {
-                console.log('Sản phẩm được xóa thành công:', response.data);
+                alert("Xóa sản phẩm thành công!");
                 initializeData(); // Re-fetch products
             }, function (error) {
                 console.error('Error deleting product:', error);

@@ -42,7 +42,7 @@ public class SanPhamCTController {
     }
     @GetMapping("/findSanPhamCT/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getSanPhamCTById(idSanPhamCT), "idSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
+        return getResponse(service.getSanPhamCTById(idSanPhamCT), "idSanPhamCT","idSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
     }
 
     @GetMapping("/mau_sac/{idSanPhamCT}")

@@ -34,8 +34,16 @@ public class SanPhamService {
     }
 
     public void deleteSanPham(Integer idSanPham) {
-        sanPhamRepository.deleteById(idSanPham);
+        // Xóa các hình ảnh liên quan
+        sanPhamRepository.deleteHinhAnhBySanPhamId(idSanPham);
+
+        // Xóa các chi tiết sản phẩm liên quan
+        sanPhamRepository.deleteChiTietBySanPhamId(idSanPham);
+
+        // Xóa sản phẩm chính
+        sanPhamRepository.deleteSanPhamByIdSanPham(idSanPham);
     }
+
 
     @Transactional
     public Integer addSanPham(Integer idDanhMuc, String tenSanPham, BigDecimal giaBan, String moTa, Date ngayTao, Date ngayCapNhat, Boolean trangThai) {
