@@ -92,4 +92,35 @@ window.SanPhamController = function ($scope, $http) {
         $scope.isEditing = false; // Reset editing state
         $('#addProductModal').modal('hide'); // Hide the modal
     };
+
+
+
+
+    // Function to update product status
+    $scope.updateTrangThai = function (idSanPham, newStatus) {
+        $http.put('http://localhost:8080/api/ad_san_pham/update_status/' + idSanPham, { trangThai: newStatus })
+            .then(function (response) {
+                console.log('Cập nhật trạng thái sản phẩm thành công:', response.data);
+            })
+            .catch(function (error) {
+                console.error('Error updating product status:', error);
+                // Log thêm thông tin chi tiết về lỗi
+                if (error.status) {
+                    console.error('Status:', error.status);
+                }
+                if (error.data) {
+                    console.error('Response data:', error.data);
+                }
+                // Revert the checkbox state if the update fails
+                const product = $scope.dsSanPham.find(p => p.idSanPham === idSanPham);
+                if (product) {
+                    product.trangThai = !product.trangThai; // Toggle back
+                }
+            });
+    };
+
+
+
+
+
 };

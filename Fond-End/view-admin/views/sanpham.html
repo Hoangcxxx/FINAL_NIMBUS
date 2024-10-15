@@ -58,8 +58,8 @@
                                         <td>{{item.moTa}}</td>
                                         <td>
                                             <input type="checkbox" ng-model="item.trangThai"
-                                                ng-change="updateTrangThai(item)" id="user-status-{{$index}}"
-                                                class="switch-input">
+                                                ng-change="updateTrangThai(item.idSanPham, item.trangThai)"
+                                                id="user-status-{{$index}}" class="switch-input">
                                             <label for="user-status-{{$index}}" class="switch"></label>
                                         </td>
                                         <td>

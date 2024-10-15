@@ -20,7 +20,7 @@ public class SanPhamQuery {
             "LEFT JOIN \n" +
             "    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc \n" +
             "WHERE \n" +
-            "    hl.thu_tu = 1 \n" +
+            "    hl.thu_tu = 1 AND sp.trang_thai = 1 \n" +  // Thêm điều kiện trạng thái
             "GROUP BY \n" +
             "    sp.Id_san_pham, \n" +
             "    sp.ten_san_pham, \n" +
@@ -30,6 +30,7 @@ public class SanPhamQuery {
             "    spct.so_luong\n" +
             "ORDER BY \n" +
             "    sp.Id_san_pham ASC;";
+
 
     public static final String GET_SAN_PHAM_BY_DANH_MUC = "SELECT \n" +
             "    sp.Id_san_pham AS idSanPham, \n" +
@@ -49,13 +50,14 @@ public class SanPhamQuery {
             "LEFT JOIN \n" +
             "    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc \n" +
             "WHERE \n" +
-            "    hl.thu_tu = 1 and dc.Id_danh_muc = :idDanhMuc\n" +
+            "    hl.thu_tu = 1 AND sp.trang_thai = 1 AND dc.Id_danh_muc = :idDanhMuc\n" +  // Thêm điều kiện trạng thái
             "GROUP BY \n" +
             "    sp.Id_san_pham, \n" +
             "    sp.ten_san_pham, \n" +
             "    sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY\n" +
             "    sp.gia_ban,  -- Đảm bảo trường này có trong GROUP BY\n" +
-            "    dc.ten_danh_muc";
+            "    dc.ten_danh_muc;";
+
 
     public static final String GET_SAN_PHAM_BY_ID = "SELECT " +
             "    sp.Id_san_pham AS idSanPham, " +
@@ -107,12 +109,14 @@ public class SanPhamQuery {
             "    san_pham sp\n" +
             "JOIN \n" +
             "    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc\n" +
-            "WHERE \n" +
-            "    sp.trang_thai = 1 -- Điều kiện để lấy sản phẩm đang hoạt động\n" +
             "ORDER BY \n" +
             "    sp.ngay_cap_nhat DESC;";
 
 
+    public static final String UPDATE_STATUS_BY_ID = "UPDATE san_pham\n" +
+            "SET Trang_thai = 0, -- hoặc 1 tùy thuộc vào trạng thái bạn muốn thiết lập\n" +
+            "    ngay_cap_nhat = GETDATE() -- Cập nhật thời gian cập nhật\n" +
+            "WHERE Id_san_pham = :idSanPham; ";
 
 
 }

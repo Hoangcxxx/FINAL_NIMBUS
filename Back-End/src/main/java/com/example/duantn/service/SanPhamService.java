@@ -1,8 +1,8 @@
 package com.example.duantn.service;
 import com.example.duantn.entity.SanPham;
-import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +13,15 @@ import java.util.*;
 @Service
 public class SanPhamService {
     @Autowired
-    private SanPhamRepository sanPhamRepository;
+    private static SanPhamRepository sanPhamRepository;
+
+
+    @Autowired
+    public SanPhamService(SanPhamRepository sanPhamRepository) {
+        this.sanPhamRepository = sanPhamRepository;
+    }
+
+
     public List<Object[]> getAllSanPhams() {
         return sanPhamRepository.getAllSanPham();
     }
@@ -45,6 +53,8 @@ public class SanPhamService {
     }
 
 
+
+
     @Transactional
     public Integer addSanPham(Integer idDanhMuc, String tenSanPham, BigDecimal giaBan, String moTa, Date ngayTao, Date ngayCapNhat, Boolean trangThai) {
         Integer idSanPham = sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
@@ -68,7 +78,10 @@ public class SanPhamService {
     }
 
 
-
+    @Transactional
+    public void toggleStatusById(Integer idSanPham) {
+        sanPhamRepository.updateStatusById(idSanPham);
+    }
 
 
 }

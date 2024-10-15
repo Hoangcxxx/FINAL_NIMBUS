@@ -1,5 +1,6 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.dto.UpdateStatusRequest;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.service.SanPhamChiTietService;
@@ -27,6 +28,7 @@ public class ADSanPhamController {
     private SanPhamService sanPhamService;
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
+
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -37,9 +39,11 @@ public class ADSanPhamController {
         map.put("trangThai", row[5]); // Cập nhật chỉ số cho trạng thái
         return map;
     }
+
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {
         return results.stream().map(this::mapSanPhamDetail).collect(Collectors.toList());
     }
+
     // Thêm sản phẩm
     @PostMapping
     @Transactional
@@ -131,8 +135,10 @@ public class ADSanPhamController {
         return ResponseEntity.ok(savedProducts);
     }
 
-
-
-
+    @PutMapping("/update_status/{idSanPham}")
+    public ResponseEntity<Void> updateStatus(@PathVariable Integer idSanPham) {
+        sanPhamService.toggleStatusById(idSanPham);
+        return ResponseEntity.ok().build();
+    }
 
 }

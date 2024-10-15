@@ -63,5 +63,10 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Query(value = "DELETE FROM SanPham s WHERE s.idSanPham = :idSanPham")
     void deleteSanPhamByIdSanPham(@Param("idSanPham") Integer idSanPham);
 
-
+    @Modifying
+    @Query(value = "UPDATE san_pham " +
+            "SET Trang_thai = CASE WHEN Trang_thai = 1 THEN 0 ELSE 1 END, " +
+            "ngay_cap_nhat = GETDATE() " +
+            "WHERE Id_san_pham = :idSanPham", nativeQuery = true)
+    void updateStatusById(@Param("idSanPham") Integer idSanPham);
 }
