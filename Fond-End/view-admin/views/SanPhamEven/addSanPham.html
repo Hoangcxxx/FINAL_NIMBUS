@@ -75,52 +75,75 @@
             </div>
             <div class="border border-3 rounded p-3 mb-5">
                 <label for="selectProduct" class="form-label">Chọn sản phẩm</label>
-                <select class="form-select" required ng-model="productData.idSanPham">
+                <select class="form-select" required ng-model="productData.idSanPham"
+                    ng-change="fetchProductDetails(productData.idSanPham)">
                     <option value="">Chọn sản phẩm...</option>
                     <option ng-repeat="item in dsSanPham track by $index" value="{{item.idSanPham}}">
                         {{item.tenSanPham}}
                     </option>
                 </select>
+
                 <h3 class="mb-4 mt-3">Danh sách các sản phẩm cùng loại</h3>
                 <div id="show-product">
-                    <div class="card shadow mb-4 mt-3">
+                    <div class="card shadow mb-4 mt-3" ng-if="filteredProducts.length > 0">
                         <div class="card-body">
-                            <div class="table-responsive text-center">
-                                <h4 class="mb-4 mt-3">Sản phẩm phù hợp</h4>
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Tên sản phẩm</th>
-                                            <th scope="col">Số lượng</th>
-                                            <th scope="col">Mô tả</th>
-                                            <th scope="col">Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="item in filteredProducts">
-                                            <th scope="row">{{$index + 1}}</th>
-                                            <td>{{item.tenSanPham}}</td>
-                                            <td><input type="number" class="form-control" value="10"></td>
-                                            <td>
-                                                <input type="checkbox" ng-model="item.trangThai"
-                                                    ng-change="updateTrangThai(item)" id="user-status-{{$index}}"
-                                                    class="switch-input">
-                                                <label for="user-status-{{$index}}" class="switch"></label>
-                                            </td>
-                                            <td>
-                                                <a href="#!san_pham" class="btn btn-warning btn-sm"
-                                                    ng-click="chinhSuaSanPham(item)"><i class="fas fa-edit"></i></a>
-                                                <a href="#!san_pham" class="btn btn-danger btn-sm"
-                                                    ng-click="xoaSanPham(item.idSanPham)"><i
-                                                        class="fas fa-trash"></i></a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <h4 class="mb-4 mt-3 text-center">Sản phẩm:
+                                {{filteredProducts[0].colors[0].products[0].productName}}</h4>
+                            <!-- Display only the first product name -->
+                            <div ng-repeat="materialGroup in filteredProducts">
+                                <h6>Chất liệu: {{materialGroup.material}}</h6>
+                                <div ng-repeat="colorGroup in materialGroup.colors">
+                                    <h7>{{colorGroup.color}}</h7>
+                                    <div class="table-responsive text-center">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">
+                                                        <input type="checkbox" ng-model="selectAll"
+                                                            ng-change="toggleSelectAll(selectAll, colorGroup.products[0].items)">
+                                                    </th>
+                                                    <th scope="col">Tên sản phẩm</th>
+                                                    <th scope="col">Số lượng</th>
+                                                    <th scope="col">Chất liệu</th>
+                                                    <th scope="col">Màu sắc</th>
+                                                    <th scope="col">Kích thước</th>
+                                                    <th scope="col">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in colorGroup.products[0].items">
+                                                    <th scope="row">
+                                                        <input type="checkbox" ng-model="item.selected"
+                                                            ng-change="updateSelectAll(colorGroup.products[0].items)">
+                                                    </th>
+                                                    <td>{{item.tenSanPham}}</td>
+                                                    <td>
+                                                        <input type="number" class="form-control"
+                                                            ng-model="item.soLuong"
+                                                            ng-change="updateSelectedQuantities(item)">
+                                                    </td>
+                                                    <td>{{item.tenChatLieu}}</td>
+                                                    <td>{{item.tenMauSac}}</td>
+                                                    <td>{{item.tenKichThuoc}}</td>
+                                                    <td>
+                                                        <a href="#!san_pham" class="btn btn-warning btn-sm"
+                                                            ng-click="chinhSuaSanPham(item)">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="#!san_pham" class="btn btn-danger btn-sm"
+                                                            ng-click="xoaSanPham(item.idSanPham)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div ng-if="!filteredProducts.length">Không có sản phẩm nào phù hợp.</div>
                 </div>
             </div>
         </div>

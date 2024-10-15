@@ -33,7 +33,33 @@ public class SanPhamChiTietQuery {
             "WHERE sp.Id_san_pham = :idSanPhamCT GROUP BY sp.Id_san_pham, clct.Id_chat_lieu_tiet, cl.ten_chat_lieu";
 
 
-
+    public static final String GET_SAN_PHAM_CT_BY_ID_SAN_PHAM =
+            "SELECT \n" +
+                    "    sp.id_san_pham,\n" +
+                    "    sp.ten_san_pham,\n" +
+                    "    spc.so_luong,\n" +
+                    "    cl.ten_chat_lieu,\n" +
+                    "    ms.ten_mau_sac,\n" +
+                    "    kc.ten_kich_thuoc,\n" +
+                    "    sp.mo_ta\n" +
+                    "FROM \n" +
+                    "    san_pham sp\n" +
+                    "JOIN \n" +
+                    "    san_pham_chi_tiet spc ON sp.Id_san_pham = spc.id_san_pham\n" +
+                    "JOIN \n" +
+                    "    mau_sac_chi_tiet msc ON spc.id_mau_sac_chi_tiet = msc.Id_mau_sac_chi_tiet\n" +
+                    "JOIN \n" +
+                    "    mau_sac ms ON msc.id_mau_sac = ms.Id_mau_sac\n" +
+                    "JOIN \n" +
+                    "    chat_lieu_chi_tiet clc ON spc.id_chat_lieu_chi_tiet = clc.Id_chat_lieu_tiet\n" +
+                    "JOIN \n" +
+                    "    chat_lieu cl ON clc.id_chat_lieu = cl.Id_chat_lieu\n" +
+                    "JOIN \n" +
+                    "    kich_thuoc_chi_tiet kcc ON spc.id_kich_thuoc_chi_tiet = kcc.Id_kich_thuoc_chi_tiet\n" +
+                    "JOIN \n" +
+                    "    kich_thuoc kc ON kcc.id_kich_thuoc = kc.Id_kich_thuoc\n" +
+                    "WHERE \n" +
+                    "    sp.Id_san_pham = :idSanPhamCT -- Replace @productId with the actual product ID\n";
 
 
 }

@@ -40,6 +40,10 @@ public class SanPhamCTController {
     public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
         return getResponse(service.getById(idSanPhamCT), "idSanPham", "tenSanPham", "giaBan", "moTa");
     }
+    @GetMapping("/findSanPhamCT/{idSanPhamCT}")
+    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPhamCT) {
+        return getResponse(service.getSanPhamCTById(idSanPhamCT), "idSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
+    }
 
     @GetMapping("/mau_sac/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getMauSacById(@PathVariable Integer idSanPhamCT) {
