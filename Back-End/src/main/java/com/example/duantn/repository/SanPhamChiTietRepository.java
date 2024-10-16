@@ -30,4 +30,17 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Transactional
     @Query("DELETE FROM SanPhamChiTiet s WHERE s.idSanPhamChiTiet = :idSanPhamCT")
     void deleteById(@Param("idSanPhamCT") Integer idSanPhamCT);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE san_pham_chi_tiet SET so_luong = :soLuong WHERE Id_san_pham_chi_tiet = :idSanPhamCT", nativeQuery = true)
+    void updateSoLuongSanPhamCT(@Param("soLuong") Integer soLuong, @Param("idSanPhamCT") Integer idSanPhamCT);
+
+
+    @Query(value = "SELECT so_luong FROM san_pham_chi_tiet WHERE Id_san_pham_chi_tiet = :idSanPhamCT", nativeQuery = true)
+    Integer findQuantityById(@Param("idSanPhamCT") Integer idSanPhamCT);
+
+
+
 }

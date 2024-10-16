@@ -60,7 +60,9 @@ public class SanPhamChiTietQuery {
                     "JOIN \n" +
                     "    kich_thuoc kc ON kcc.id_kich_thuoc = kc.Id_kich_thuoc\n" +
                     "WHERE \n" +
-                    "    sp.Id_san_pham = :idSanPhamCT -- Replace @productId with the actual product ID\n";
+                    "    sp.Id_san_pham = :idSanPhamCT -- Replace @productId with the actual product ID\n" +
+                    "    AND spc.so_luong IS NULL";
+
 
 
 }

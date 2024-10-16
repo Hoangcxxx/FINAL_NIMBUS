@@ -105,61 +105,7 @@ window.addSanPhamController = function ($scope, $http) {
 
 
 
-    
-    $scope.selectAll = false; // Tình trạng chọn tất cả
 
-    // Hàm để kiểm tra trạng thái của tất cả check box
-    $scope.toggleSelectAll = function (selectAll, items) {
-        items.forEach(item => {
-            item.selected = selectAll; // Cập nhật trạng thái cho từng item
-        });
-    };
-
-    // Hàm để cập nhật tình trạng chọn tất cả
-    $scope.updateSelectAll = function (items) {
-        $scope.selectAll = items.every(item => item.selected); // Kiểm tra xem tất cả đã được chọn hay chưa
-    };
-
-    // Hàm cập nhật số lượng cho các sản phẩm đã chọn
-    $scope.selectAll = false; // Tình trạng chọn tất cả
-
-    // Hàm để kiểm tra trạng thái của tất cả check box
-    $scope.toggleSelectAll = function (selectAll, items) {
-        items.forEach(item => {
-            item.selected = selectAll; // Cập nhật trạng thái cho từng item
-        });
-    };
-
-    // Hàm để cập nhật tình trạng chọn tất cả
-    $scope.updateSelectAll = function (items) {
-        $scope.selectAll = items.every(item => item.selected); // Kiểm tra xem tất cả đã được chọn hay chưa
-    };
-
-    // Hàm cập nhật số lượng cho các sản phẩm đã chọn
-    $scope.updateSelectedQuantities = function (updatedItem) {
-        // Lấy giá trị số lượng từ ô input của sản phẩm đang được thay đổi
-        const quantity = updatedItem.soLuong;
-
-        // Đếm số lượng ô được chọn
-        const selectedItems = [];
-        $scope.filteredProducts.forEach(materialGroup => {
-            materialGroup.colors.forEach(colorGroup => {
-                colorGroup.products[0].items.forEach(item => {
-                    if (item.selected) {
-                        selectedItems.push(item);
-                    }
-                });
-            });
-        });
-
-        // Chỉ cập nhật số lượng nếu đúng 2 hoặc 3 ô được chọn
-        if (selectedItems.length >= 1) {
-            selectedItems.forEach(item => {
-                item.soLuong = quantity; // Cập nhật số lượng cho các sản phẩm đã chọn
-            });
-        }
-        // Nếu không có 2 hoặc 3 ô được chọn, không làm gì cả
-    };
 
 
     // Initialize data
@@ -268,7 +214,10 @@ window.addSanPhamController = function ($scope, $http) {
         document.getElementById('color').value = '';
         document.getElementById('size').value = '';
     };
-
+    $scope.resetTable = function () {
+        $scope.filteredProducts = [];  // Reset bảng sản phẩm chi tiết
+        $scope.resetSelections();  // Reset các lựa chọn trong bảng
+    };
     // Reset the form
     $scope.resetForm = function () {
         $scope.resetSelections();
@@ -400,6 +349,93 @@ window.addSanPhamController = function ($scope, $http) {
 
 
 
+    $scope.selectAll = false; // Tình trạng chọn tất cả
+
+    // Hàm để kiểm tra trạng thái của tất cả check box
+    $scope.toggleSelectAll = function (selectAll, items) {
+        items.forEach(item => {
+            item.selected = selectAll; // Cập nhật trạng thái cho từng item
+        });
+        // Sau khi chọn tất cả, kiểm tra lại số lượng
+        $scope.updateSelectedQuantities();
+    };
+
+    // Hàm để cập nhật tình trạng chọn tất cả
+    $scope.updateSelectAll = function (items) {
+        $scope.selectAll = items.every(item => item.selected); // Kiểm tra xem tất cả đã được chọn hay chưa
+    };
+
+    // Hàm cập nhật số lượng cho các sản phẩm đã chọn
+    $scope.updateSelectedQuantities = function () {
+        const selectedItems = [];
+
+        // Lọc tất cả các sản phẩm được chọn
+        $scope.filteredProducts.forEach(function (materialGroup) {
+            materialGroup.colors.forEach(function (colorGroup) {
+                colorGroup.products[0].items.forEach(function (item) {
+                    if (item.selected) {
+                        selectedItems.push(item);
+                    }
+                });
+            });
+        });
+
+        // Nếu có ít nhất một sản phẩm được chọn, cập nhật số lượng cho tất cả các sản phẩm đã chọn
+        if (selectedItems.length > 0) {
+            // Đồng bộ số lượng cho tất cả sản phẩm đã chọn với số lượng của sản phẩm đầu tiên trong danh sách chọn
+            const quantity = selectedItems[0].soLuong;  // Lấy số lượng từ sản phẩm đầu tiên
+
+            selectedItems.forEach(function (item) {
+                item.soLuong = quantity; // Cập nhật số lượng cho các sản phẩm đã chọn
+            });
+        }
+    };
+
+    // Hàm lưu số lượng sản phẩm khi nhấn nút "Lưu số lượng sản phẩm"
+    $scope.saveQuantities = function () {
+        let updatedProducts = [];
+
+        // Lọc qua các sản phẩm đã chọn và lưu lại thông tin
+        $scope.filteredProducts.forEach(function (materialGroup) {
+            materialGroup.colors.forEach(function (colorGroup) {
+                colorGroup.products[0].items.forEach(function (item) {
+                    if (item.soLuong !== undefined && item.selected) {  // Kiểm tra nếu số lượng thay đổi và sản phẩm được chọn
+                        updatedProducts.push({
+                            idSanPhamCT: item.idSanPhamCT,
+                            newQuantity: item.soLuong
+                        });
+                    }
+                });
+            });
+        });
+
+        // Log dữ liệu đã chuẩn bị
+        console.log("Danh sách sản phẩm và số lượng sẽ được cập nhật:");
+        console.log(JSON.stringify(updatedProducts, null, 4)); // Log với định dạng đẹp
+
+        // Gửi thông tin cập nhật số lượng lên server
+        if (updatedProducts.length > 0) {
+            $http.put('http://localhost:8080/api/ad_san_pham_ct/updateQuantities', updatedProducts)
+                .then(function (response) {
+                    console.log('Cập nhật số lượng thành công');
+                    alert('Cập nhật số lượng thành công!');
+
+                    // Reset bảng và các lựa chọn đã chọn
+                    $scope.resetTable();
+
+                    // Lấy lại chi tiết sản phẩm mới
+                    if ($scope.productData.idSanPham) {
+                        $scope.fetchProductDetails($scope.productData.idSanPham);  // Lấy lại chi tiết sản phẩm
+                    }
+
+                }, function (error) {
+                    console.error('Cập nhật số lượng thất bại');
+                    alert('Cập nhật số lượng thất bại!');
+                });
+        } else {
+            alert('Không có thay đổi nào để lưu.');
+        }
+    };
 
 
 

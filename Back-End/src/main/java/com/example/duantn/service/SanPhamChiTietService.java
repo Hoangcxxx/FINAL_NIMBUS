@@ -1,11 +1,13 @@
 package com.example.duantn.service;
 
+import com.example.duantn.dto.ProductDetailUpdateRequest;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +59,26 @@ public class SanPhamChiTietService {
 
     // Giả sử bạn có một phương thức lưu cho ChatLieuChiTiet
 
+    public void updateSoLuongSanPhamCT(List<ProductDetailUpdateRequest> payload) {
+        for (ProductDetailUpdateRequest request : payload) {
+            System.out.println("Updating ID: " + request.getIdSanPhamCT() + " with Quantity: " + request.getNewQuantity());
+
+            // Kiểm tra xem giá trị có hợp lệ không
+            if (request.getNewQuantity() == null) {
+                System.out.println("New quantity is NULL for ID: " + request.getIdSanPhamCT());
+            }
+
+            sanPhamChiTietRepository.updateSoLuongSanPhamCT(request.getNewQuantity(), request.getIdSanPhamCT());
+
+            // Kiểm tra lại giá trị đã cập nhật
+            Integer updatedQuantity = sanPhamChiTietRepository.findQuantityById(request.getIdSanPhamCT());
+            System.out.println("Quantity after update for ID " + request.getIdSanPhamCT() + ": " + updatedQuantity);
+        }
+
+    }
+
+
+
 
 
     public List<SanPhamChiTiet> createMultiple(List<SanPhamChiTiet> sanPhamChiTietList, Integer idSanPham) throws IOException {
@@ -94,8 +116,5 @@ public class SanPhamChiTietService {
         }
         return sanPhamChiTietRepository.saveAll(sanPhamChiTietList);
     }
-
-
-
 
 }

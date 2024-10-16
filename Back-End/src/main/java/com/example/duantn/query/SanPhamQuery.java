@@ -113,10 +113,7 @@ public class SanPhamQuery {
             "    sp.ngay_cap_nhat DESC;";
 
 
-    public static final String UPDATE_STATUS_BY_ID = "UPDATE san_pham\n" +
-            "SET Trang_thai = 0, -- hoặc 1 tùy thuộc vào trạng thái bạn muốn thiết lập\n" +
-            "    ngay_cap_nhat = GETDATE() -- Cập nhật thời gian cập nhật\n" +
-            "WHERE Id_san_pham = :idSanPham; ";
+
 
 
 }

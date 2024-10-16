@@ -1,6 +1,5 @@
 package com.example.duantn.controller.admin;
 
-import com.example.duantn.dto.UpdateStatusRequest;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.service.SanPhamChiTietService;

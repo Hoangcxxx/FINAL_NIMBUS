@@ -69,4 +69,9 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
             "ngay_cap_nhat = GETDATE() " +
             "WHERE Id_san_pham = :idSanPham", nativeQuery = true)
     void updateStatusById(@Param("idSanPham") Integer idSanPham);
+
+
+
+
+
 }
