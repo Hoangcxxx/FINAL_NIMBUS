@@ -1,13 +1,13 @@
 window.addSanPhamController = function ($scope, $http) {
     $scope.dsSanPham = [];
     $scope.dsSanPhamCT = [];
-    $scope.sanPhamChiTietList = [];
-    $scope.listProductDetail = [];
-    $scope.filteredProducts = [];
     $scope.dsDanhMuc = [];
     $scope.dsChatLieu = [];
     $scope.dsMauSac = [];
     $scope.dsKichThuoc = [];
+    $scope.sanPhamChiTietList = [];
+    $scope.listProductDetail = [];
+    $scope.filteredProducts = [];
     $scope.selectedProduct = [];
     $scope.selectedMaterials = [];
     $scope.selectedColors = [];

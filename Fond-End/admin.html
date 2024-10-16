@@ -25,7 +25,10 @@
     <script src="view-admin/controllers/KichThuocController.js"></script>
     <script src="view-admin/controllers/MauSacController.js"></script>
     <script src="view-admin/controllers/DanhMucController.js"></script>
+    <script src="view-admin/controllers/KhoHangController.js"></script>
+    <script src="view-admin/controllers/KhuyenMaiController.js"></script>
     <script src="view-admin/views/SanPhamEven/addSanPhamController.js"></script>
+    <script src="view-admin/views/KhuyenMaiEven/addKhuyenMaiController.js"></script>
     <title>Quản lý cửa hàng</title>
 </head>
 
@@ -47,6 +50,14 @@
                     templateUrl: 'view-admin/views/banhang.html',
                     controller: BanHangController
                 })
+                .when('/kho_hang', {
+                    templateUrl: 'view-admin/views/khohang.html',
+                    controller: KhoHangController
+                })
+                .when('/khuyen_mai', {
+                    templateUrl: 'view-admin/views/khuyenmai.html',
+                    controller: KhuyenMaiController
+                })
                 .when('/don_hang', {
                     templateUrl: 'view-admin/views/donhang.html',
                     controller: DonHangController
@@ -57,6 +68,10 @@
                 })
                 .when('/Add_SP', {
                     templateUrl: 'view-admin/views/SanPhamEven/addSanPham.html',
+                    controller: addSanPhamController
+                })
+                .when('/Add_KM', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/addKhuyenMai.html',
                     controller: addSanPhamController
                 })
                 .when('/kich_thuoc', {
