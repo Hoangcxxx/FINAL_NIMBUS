@@ -88,20 +88,48 @@ window.addSanPhamController = function ($scope, $http) {
             });
     };
 
-    $scope.xoaSanPhamCT = function (idSanPhamCT) {
-        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-            console.error('id sản phẩm chi tiết là:', idSanPhamCT);
-            $http.delete('http://localhost:8080/api/ad_san_pham_ct/' + idSanPhamCT).then(function (response) {
-                alert("Xóa sản phẩm thành công!");
-                // Assuming you have the selected product ID available, use it to refresh the details
-                if ($scope.productData.idSanPham) {
-                    $scope.fetchProductDetails($scope.productData.idSanPham);
-                }
-            }, function (error) {
-                console.error('Error deleting product:', error);
+
+    $scope.xoaNhieuSanPham = function () {
+        // Tạo danh sách các idSanPhamCT được chọn
+        let idSanPhamCTs = [];
+        // Duyệt qua tất cả các sản phẩm và kiểm tra sản phẩm nào được chọn
+        angular.forEach($scope.filteredProducts, function (materialGroup) {
+            angular.forEach(materialGroup.colors, function (colorGroup) {
+                angular.forEach(colorGroup.products[0].items, function (item) {
+                    if (item.selected) {
+                        idSanPhamCTs.push(item.idSanPhamCT);
+                    }
+                });
             });
+        });
+
+        // Nếu không có sản phẩm nào được chọn, thông báo cho người dùng
+        if (idSanPhamCTs.length === 0) {
+            alert("Vui lòng chọn ít nhất một sản phẩm chi tiết để xóa.");
+            return;
+        }
+
+        // Xác nhận với người dùng trước khi xóa
+        if (confirm("Bạn có chắc chắn muốn xóa các sản phẩm chi tiết đã chọn?")) {
+            console.log('Đang xóa các sản phẩm chi tiết với các id:', idSanPhamCTs);
+
+            // Gọi API xóa sản phẩm chi tiết
+            $http.delete('http://localhost:8080/api/ad_san_pham_ct', { data: idSanPhamCTs, headers: { 'Content-Type': 'application/json' } })
+                .then(function (response) {
+                    alert("Xóa sản phẩm chi tiết thành công!");
+
+                    // Cập nhật lại danh sách sản phẩm sau khi xóa
+                    if ($scope.productData.idSanPham) {
+                        $scope.fetchProductDetails($scope.productData.idSanPham);
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Lỗi khi xóa sản phẩm chi tiết:', error);
+                    alert("Xóa sản phẩm chi tiết thất bại!");
+                });
         }
     };
+
 
 
 
@@ -147,6 +175,21 @@ window.addSanPhamController = function ($scope, $http) {
     $scope.saveProduct = function () {
         if (!$scope.productData.idSanPham) {
             alert("Vui lòng chọn sản phẩm!");
+            return;
+        }
+        // Kiểm tra nếu chưa chọn chất liệu, màu sắc hoặc kích thước
+        if ($scope.selectedMaterials.length === 0) {
+            alert("Vui lòng chọn ít nhất một chất liệu.");
+            return;
+        }
+
+        if ($scope.selectedColors.length === 0) {
+            alert("Vui lòng chọn ít nhất một màu sắc.");
+            return;
+        }
+
+        if ($scope.selectedSizes.length === 0) {
+            alert("Vui lòng chọn ít nhất một kích thước.");
             return;
         }
         const idSanPham = parseInt($scope.productData.idSanPham, 10);
@@ -223,9 +266,24 @@ window.addSanPhamController = function ($scope, $http) {
         $scope.resetSelections();
         $scope.productData = { idSanPham: null };
         $('#addProductModal').modal('hide');
+        $('#materialModal').modal('hide');
+        $('#colorModal').modal('hide');
+        $('#sizeModal').modal('hide');
+
     };
 
-    // Reset modal
+    // Hàm đóng modal bằng AngularJS
+    $scope.hideModal = function (modalId) {
+        var modal = document.getElementById(modalId); // Dùng pure DOM để lấy modal
+        if (modal) {
+            $(modal).modal('hide'); // Sử dụng jQuery để ẩn modal
+        } else {
+            console.error('Không tìm thấy modal với id: ' + modalId);
+        }
+    };
+
+
+    // Hàm reset modal
     $scope.resetModal = function () {
         $scope.SanPham = {
             idDanhMuc: null,
@@ -243,9 +301,13 @@ window.addSanPhamController = function ($scope, $http) {
         const previewContainer = document.querySelector(".image-preview-container");
         previewContainer.innerHTML = '';
         document.getElementById('up-hinh-anh').value = '';
-        $('#addProductModal').modal('hide');
-    };
 
+        // Đóng modal
+        $scope.hideModal('addProductModal');  // Đóng modal addProductModal
+        $scope.hideModal('materialModal');   // Đóng modal materialModal
+        $scope.hideModal('colorModal');      // Đóng modal colorModal
+        $scope.hideModal('sizeModal');       // Đóng modal sizeModal
+    };
     // Handle product creation
     $scope.onCreate = function () {
         $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
@@ -348,10 +410,8 @@ window.addSanPhamController = function ($scope, $http) {
     };
 
 
-
     $scope.selectAll = false; // Tình trạng chọn tất cả
 
-    // Hàm để kiểm tra trạng thái của tất cả check box
     $scope.toggleSelectAll = function (selectAll, items) {
         items.forEach(item => {
             item.selected = selectAll; // Cập nhật trạng thái cho từng item
@@ -360,10 +420,10 @@ window.addSanPhamController = function ($scope, $http) {
         $scope.updateSelectedQuantities();
     };
 
-    // Hàm để cập nhật tình trạng chọn tất cả
     $scope.updateSelectAll = function (items) {
         $scope.selectAll = items.every(item => item.selected); // Kiểm tra xem tất cả đã được chọn hay chưa
     };
+
 
     // Hàm cập nhật số lượng cho các sản phẩm đã chọn
     $scope.updateSelectedQuantities = function () {

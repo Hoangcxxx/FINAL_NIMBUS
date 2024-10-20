@@ -3,6 +3,7 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,32 +16,25 @@ import java.time.LocalDateTime;
 public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer IdVoucher;
-
-    @Column(name = "ma_voucher", nullable = false, unique = true)
+    @Column(name = "Id_voucher")
+    private Integer idVoucher;
+    @Column(name = "ma_voucher")
     private String maVoucher;
-
-    @Column(name = "phan_tram_giam")
-    private Double phanTramGiamGia;
-
+    @Column(name = "gia_tri_giam_gia")
+    private BigDecimal giaTriGiamGia;
     @Column(name = "so_luong")
     private Integer soLuong;
-
-    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
+    @Column(name = "gia_toi_thieu")
+    private BigDecimal giaToiThieu;
+    @Column(name = "trang_thai")
     private Boolean trangThai;
-
     @Column(name = "mo_ta")
     private String moTa;
-
     @Column(name = "ngay_bat_dau")
     private LocalDateTime ngayBatDau;
-
     @Column(name = "ngay_ket_thuc")
     private LocalDateTime ngayKetThuc;
-
-    @Column(name = "ngay_tao", columnDefinition = "DATETIME DEFAULT GETDATE()")
-    private LocalDateTime ngayTao;
-
-    @Column(name = "ngay_cap_nhat", columnDefinition = "DATETIME DEFAULT GETDATE()")
-    private LocalDateTime ngayCapNhat;
+    @ManyToOne
+    @JoinColumn(name = "id_loai_voucher")
+    private LoaiVoucher loaiVoucher; // Liên kết với loại voucher
 }

@@ -23,6 +23,7 @@ CREATE TABLE [nguoi_dung] (
   [Mat_Khau] NVARCHAR(255) NOT NULL,
   [Anh_Dai_Dien] NVARCHAR(255),
   [Trang_thai] BIT DEFAULT 1,
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [id_vai_tro] INT,
   CONSTRAINT [FK_nguoi_dung_id_vai_tro]
@@ -30,31 +31,35 @@ CREATE TABLE [nguoi_dung] (
       REFERENCES [vai_tro]([Id_vai_tro])
 );
 -- Insert data for vai_tro
-
-CREATE TABLE [voucher] (
-  [Id_voucher] INT PRIMARY KEY IDENTITY(1,1),
-  [ma_voucher] NVARCHAR(50) NOT NULL UNIQUE,
-  [phan_tram_giam] DECIMAL(5),
-  [so_luong] INT,
-  [trang_thai] BIT DEFAULT 1,
-  [mo_ta] NVARCHAR(MAX),
-  [ngay_bat_dau] DATETIME,
-  [ngay_ket_thuc] DATETIME,
+go
+CREATE TABLE [loai_voucher] (
+  [Id_loai_voucher] INT PRIMARY KEY IDENTITY(1,1),
+  [ten_loai_voucher] NVARCHAR(100) NOT NULL, -- Tên loại voucher (ví dụ: Giảm giá phần trăm, Giảm giá theo số tiền)
+  [mo_ta] NVARCHAR(MAX), -- Mô tả chi tiết
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
 );
 go
-CREATE TABLE [loai_voucher] (
-  [Id_loai_voucher] INT PRIMARY KEY IDENTITY(1,1),
-  [ten_loai_voucher] NVARCHAR(100) NOT NULL,
-  [mo_ta] NVARCHAR(MAX),
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
-  [id_voucher] INT,
-  CONSTRAINT [FK_loai_voucher_id_voucher]
-    FOREIGN KEY ([id_voucher])
-      REFERENCES [voucher]([Id_voucher])
+CREATE TABLE [voucher] (
+  [Id_voucher] INT PRIMARY KEY IDENTITY(1,1),
+  [ma_voucher] NVARCHAR(50) NOT NULL UNIQUE,
+  [gia_tri_giam_gia] DECIMAL(18), -- Số tiền giảm giá cho sản phẩm hoặc hóa đơn
+  [so_luong] INT, -- Số lượng voucher có sẵn
+  [gia_toi_thieu] DECIMAL(18), -- Giá tối thiểu để áp dụng voucher cho hóa đơn
+  [trang_thai] BIT DEFAULT 1, -- Trạng thái của voucher (còn sử dụng hay không)
+  [mo_ta] NVARCHAR(MAX), -- Mô tả chi tiết
+  [ngay_bat_dau] DATETIME, -- Ngày bắt đầu áp dụng voucher
+  [ngay_ket_thuc] DATETIME, -- Ngày kết thúc áp dụng voucher
+  [ngay_tao] DATETIME DEFAULT GETDATE(), -- Ngày tạo
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE(), -- Ngày cập nhật
+  [id_loai_voucher] INT, -- Liên kết với bảng loại voucher
+  CONSTRAINT [FK_voucher_id_loai_voucher]
+    FOREIGN KEY ([id_loai_voucher])
+      REFERENCES [loai_voucher]([Id_loai_voucher])
 );
+
+
+
 go
 CREATE TABLE [danh_muc] (
   [Id_danh_muc] INT PRIMARY KEY IDENTITY(1,1),
@@ -68,19 +73,21 @@ CREATE TABLE [san_pham] (
   [Id_san_pham] INT PRIMARY KEY IDENTITY(1,1),
   [ten_san_pham] NVARCHAR(100) NOT NULL,
   [gia_ban] DECIMAL(18) NOT NULL,
+  [gia_khuyen_mai] DECIMAL(18),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [mo_ta] NVARCHAR(MAX),
   [Trang_thai] BIT DEFAULT 1,
   [id_danh_muc] INT,
-  [id_loai_voucher] INT,
-  CONSTRAINT [FK_san_pham_id_loai_voucher]
-    FOREIGN KEY ([id_loai_voucher])
-      REFERENCES [loai_voucher]([Id_loai_voucher]),
+  [id_voucher] INT, -- Thay đổi để liên kết với bảng voucher
+  CONSTRAINT [FK_san_pham_id_voucher]
+    FOREIGN KEY ([id_voucher])
+      REFERENCES [voucher]([Id_voucher]),
   CONSTRAINT [FK_san_pham_id_danh_muc]
     FOREIGN KEY ([id_danh_muc])
       REFERENCES [danh_muc]([Id_danh_muc])
 );
+
 go
 CREATE TABLE [danh_gia] (
   [Id_danh_gia] INT PRIMARY KEY IDENTITY(1,1),
@@ -203,6 +210,16 @@ CREATE TABLE [san_pham_chi_tiet] (
       REFERENCES [gio_hang_chi_tiet]([Id_gio_hang_chi_tiet])
 );
 go
+CREATE TABLE kho_hang (
+	[Id_kho_hang] INT PRIMARY KEY IDENTITY(1,1),
+    [id_san_pham_chi_tiet] INT,
+    [so_luong_them] INT,
+    [ngay_cap_nhat] INT,
+	CONSTRAINT [FK_kho_hang_id_san_pham_chi_tiet]
+    FOREIGN KEY ([id_san_pham_chi_tiet])
+    REFERENCES [san_pham_chi_tiet]([Id_san_pham_chi_tiet])
+);
+go
 CREATE TABLE [phi_van_chuyen] (
   [Id_phi_van_chuyen] INT PRIMARY KEY IDENTITY(1,1),
   [so_tien_van_chuyen] DECIMAL(18),
@@ -260,7 +277,7 @@ CREATE TABLE [hoa_don] (
   [Id_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
   [ma_hoa_don] NVARCHAR(50) NOT NULL UNIQUE,
   [id_nguoi_dung] INT,
-  [id_loai_voucher] INT,
+  [id_voucher] INT, -- Thay đổi từ id_loai_voucher thành id_voucher
   [Id_dia_chi_van_chuyen] INT,
   [id_trang_thai_hoa_don] INT,
   [ten_nguoi_nhan] NVARCHAR(100) NOT NULL,
@@ -269,6 +286,7 @@ CREATE TABLE [hoa_don] (
   [sdt_nguoi_nhan] NVARCHAR(15),
   [thanh_tien] DECIMAL(18),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [mo_ta] NVARCHAR(MAX),
   [trang_thai] BIT DEFAULT 1,
   [ngay_thanh_toan] DATETIME,
@@ -285,9 +303,9 @@ CREATE TABLE [hoa_don] (
   CONSTRAINT [FK_hoa_don_id_trang_thai_hoa_don]
     FOREIGN KEY ([id_trang_thai_hoa_don])
       REFERENCES [trang_thai_hoa_don]([Id_trang_thai_hoa_don]),
-  CONSTRAINT [FK_hoa_don_id_loai_voucher]
-    FOREIGN KEY ([id_loai_voucher])
-      REFERENCES [loai_voucher]([Id_loai_voucher])
+  CONSTRAINT [FK_hoa_don_id_voucher]
+    FOREIGN KEY ([id_voucher])
+      REFERENCES [voucher]([Id_voucher]) -- Thay đổi liên kết đến bảng voucher
 );
 
 go
@@ -368,21 +386,24 @@ INSERT INTO nguoi_dung (ten_nguoi_dung, ma_nguoi_dung, Email, sdt_nguoi_dung, Ng
 (N'Lê Đình Linh', 'user004', 'linhld@gmail.com', '0912679346', '2004-01-05', N'Hà Nội', N'Nam', '123456',4),
 (N'Hoàng Văn Hà', 'user005', 'hahv@gmail.com', '0918934754', '2004-01-06', N'Hà Nội', N'Nam', '123456',5);
 go
--- Insert data for voucher
-INSERT INTO voucher (ma_voucher, phan_tram_giam, so_luong, mo_ta) VALUES 
-(N'VOUCHER1', 10, 100, N'Giảm 10% cho đơn hàng trên 500k'),
-(N'VOUCHER2', 15, 50, N'Giảm 15% cho khách hàng mới'),
-(N'VOUCHER3', 20, 30, N'Giảm 20% vào dịp sinh nhật'),
-(N'VOUCHER4', 5, 200, N'Giảm 5% cho tất cả sản phẩm'),
-(N'VOUCHER5', 25, 10, N'Giảm 25% cho đơn hàng trên 1 triệu');
-go
 -- Insert data for loai_voucher
-INSERT INTO loai_voucher (ten_loai_voucher,mo_ta,id_voucher) VALUES 
-(N'Voucher Giảm Giá 10%', N'Áp dụng cho đơn hàng trên 500k', 1),
-(N'Voucher Khách Hàng Mới', N'Chỉ dành cho khách hàng mới', 2),
-(N'Voucher Sinh Nhật', N'Giảm giá đặc biệt vào dịp sinh nhật',3),
-(N'Voucher Toàn Sản Phẩm', N'Giảm giá cho tất cả sản phẩm',4),
-(N'Voucher Đơn Hàng Lớn', N'Áp dụng cho đơn hàng trên 1 triệu',5);
+INSERT INTO loai_voucher (ten_loai_voucher, mo_ta) VALUES 
+(N'Voucher Giảm Giá Theo %', N'Áp dụng cho sản phẩm'),
+(N'Voucher Giảm Giá Theo $', N'Áp dụng cho sản phẩm'),
+(N'Voucher Giảm Giá 10%', N'Áp dụng cho đơn hàng trên 500k'),
+(N'Voucher Khách Hàng Mới', N'Chỉ dành cho khách hàng mới'),
+(N'Voucher Sinh Nhật', N'Giảm giá đặc biệt vào dịp sinh nhật'),
+(N'Voucher Toàn Sản Phẩm', N'Giảm giá cho tất cả sản phẩm'),
+(N'Voucher Đơn Hàng Lớn', N'Áp dụng cho đơn hàng trên 1 triệu');
+go
+-- Insert data for voucher
+INSERT INTO voucher (ma_voucher, gia_tri_giam_gia, so_luong, mo_ta, id_loai_voucher) VALUES 
+(N'VOUCHER1', 0.10, 100, N'Giảm 10% cho đơn hàng trên 500k', 1),
+(N'VOUCHER2', 0.15, 50, N'Giảm 15% cho khách hàng mới', 2),
+(N'VOUCHER3', 0.20, 30, N'Giảm 20% vào dịp sinh nhật', 3),
+(N'VOUCHER4', 0.05, 200, N'Giảm 5% cho tất cả sản phẩm', 4),
+(N'VOUCHER5', 0.25, 10, N'Giảm 25% cho đơn hàng trên 1 triệu', 5),
+(N'VOUCHER6', 50, 100, N'Giảm $50 cho đơn hàng trên 1 triệu', 2); 
 go
 -- Insert data for danh_muc
 INSERT INTO danh_muc (ten_danh_muc, mo_ta) VALUES 
@@ -532,7 +553,7 @@ INSERT INTO trang_thai_hoa_don (ten_trang_thai, mo_ta) VALUES
 
 go
 -- Insert data for hoa_don
-INSERT INTO hoa_don (ma_hoa_don, id_nguoi_dung, id_loai_voucher, Id_dia_chi_van_chuyen, id_trang_thai_hoa_don, ten_nguoi_nhan, phi_ship, dia_chi, sdt_nguoi_nhan, thanh_tien, mo_ta, id_pt_thanh_toan_hoa_don) VALUES 
+INSERT INTO hoa_don (ma_hoa_don, id_nguoi_dung, id_voucher, Id_dia_chi_van_chuyen, id_trang_thai_hoa_don, ten_nguoi_nhan, phi_ship, dia_chi, sdt_nguoi_nhan, thanh_tien, mo_ta, id_pt_thanh_toan_hoa_don) VALUES 
 ('HD001', 1, 1, 1, 1, N'Trần Văn A', 30.00, N'Số 1, Đường A, Quận 1', N'0123456789', 500.00, N'Hoa đơn cho sản phẩm A', 1),
 ('HD002', 2, 2, 2, 1, N'Nguyễn Thị B', 20.00, N'Số 2, Đường B, Quận 2', N'0123456788', 750.00, N'Hoa đơn cho sản phẩm B', 2),
 ('HD003', 1, 3, 1, 1, N'Lê Văn C', 15.00, N'Số 3, Đường C, Quận 3', N'0123456787', 300.00, N'Hoa đơn cho sản phẩm C', 3),
@@ -550,7 +571,7 @@ go
 
 
 -- Insert data for san_pham
-INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc,id_loai_voucher,trang_thai) VALUES 
+INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc,id_voucher,trang_thai) VALUES 
 (N'Áo phông hình bàn tay',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
 (N'Áo phông butterfly',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
 (N'Áo phông cotton',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),

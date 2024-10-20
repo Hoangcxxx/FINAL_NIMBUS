@@ -28,8 +28,8 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     List<Object[]> getSanPhamCTByIdSanPham(@Param("idSanPhamCT") Integer idSanPhamCT);
     @Modifying
     @Transactional
-    @Query("DELETE FROM SanPhamChiTiet s WHERE s.idSanPhamChiTiet = :idSanPhamCT")
-    void deleteById(@Param("idSanPhamCT") Integer idSanPhamCT);
+    @Query("DELETE FROM SanPhamChiTiet s WHERE s.idSanPhamChiTiet IN :idSanPhamCTs")
+    void deleteByIds(@Param("idSanPhamCTs") List<Integer> idSanPhamCTs);
 
 
     @Modifying

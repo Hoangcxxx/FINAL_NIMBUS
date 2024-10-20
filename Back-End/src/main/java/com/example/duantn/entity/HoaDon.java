@@ -27,8 +27,8 @@ public class HoaDon {
     private NguoiDung nguoiDung;
 
     @ManyToOne
-    @JoinColumn(name = "id_loai_vocher")
-    private LoaiVoucher loaiVoucher;
+    @JoinColumn(name = "id_vocher")
+    private Voucher voucher;
 
     @ManyToOne
     @JoinColumn(name = "Id_dia_chi_van_chuyen")

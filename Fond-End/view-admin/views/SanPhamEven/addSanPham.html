@@ -76,31 +76,34 @@
             <div class="border border-3 rounded p-3 mb-5">
                 <label for="selectProduct" class="form-label">Chọn sản phẩm</label>
                 <select class="form-select" required ng-model="productData.idSanPham"
-                        ng-change="fetchProductDetails(productData.idSanPham)">
+                    ng-change="fetchProductDetails(productData.idSanPham)">
                     <option value="">Chọn sản phẩm...</option>
                     <option ng-repeat="item in dsSanPham track by $index" value="{{item.idSanPham}}">
                         {{item.tenSanPham}}
                     </option>
                 </select>
-            
+
                 <h3 class="mb-4 mt-3">Danh sách các sản phẩm cùng loại</h3>
-            
+
                 <div>
-                    <button class="btn btn-danger" ng-click="saveQuantities()">Lưu số lượng sản phẩm</button>
+                    <button class="btn btn-success" ng-click="saveQuantities()"><i class="fa-solid fa-check"></i> Lưu số
+                        lượng sản phẩm</button>
+                    <button class="btn btn-danger" ng-click="xoaNhieuSanPham()"><i class="fa-solid fa-xmark"></i> Xóa sản
+                        phẩm chi tiết đã chọn</button>
                 </div>
-            
+
                 <div id="show-product">
                     <div class="card shadow mb-4 mt-3" ng-if="filteredProducts.length > 0">
                         <div class="card-body">
-                            <h4 class="mb-4 mt-3 text-center">Tên sản phẩm: {{filteredProducts[0].colors[0].products[0].productName}}</h4>
-            
-                            <!-- Lặp qua từng nhóm sản phẩm -->
+                            <h4 class="mb-4 mt-3 text-center">Tên sản phẩm:
+                                {{filteredProducts[0].colors[0].products[0].productName}}</h4>
+
                             <div ng-repeat="materialGroup in filteredProducts">
                                 <h6>Chất liệu: {{materialGroup.material}}</h6>
-            
+
                                 <div ng-repeat="colorGroup in materialGroup.colors">
                                     <h7>{{colorGroup.color}}</h7>
-            
+
                                     <div class="table-responsive text-center">
                                         <table class="table table-hover">
                                             <thead>
@@ -108,7 +111,7 @@
                                                     <th scope="col">
                                                         <!-- Checkbox chọn tất cả -->
                                                         <input type="checkbox" ng-model="selectAll"
-                                                               ng-change="toggleSelectAll(selectAll, colorGroup.products[0].items)">
+                                                            ng-change="toggleSelectAll(selectAll, colorGroup.products[0].items)">
                                                     </th>
                                                     <th scope="col">Tên sản phẩm</th>
                                                     <th scope="col">Số lượng</th>
@@ -124,21 +127,21 @@
                                                     <th scope="row">
                                                         <!-- Checkbox chọn sản phẩm -->
                                                         <input type="checkbox" ng-model="item.selected"
-                                                               ng-change="updateSelectAll(colorGroup.products[0].items)">
+                                                            ng-change="updateSelectAll(colorGroup.products[0].items)">
                                                     </th>
                                                     <td>{{item.tenSanPham}}</td>
                                                     <td>
                                                         <!-- Input số lượng chung cho tất cả sản phẩm đã chọn -->
                                                         <input type="number" class="form-control"
-                                                               ng-model="item.soLuong"
-                                                               ng-change="updateSelectedQuantities()">
+                                                            ng-model="item.soLuong"
+                                                            ng-change="updateSelectedQuantities()">
                                                     </td>
                                                     <td>{{item.tenChatLieu}}</td>
                                                     <td>{{item.tenMauSac}}</td>
                                                     <td>{{item.tenKichThuoc}}</td>
                                                     <td>
                                                         <a href="#!Add_SP" class="btn btn-danger btn-sm"
-                                                           ng-click="xoaSanPhamCT(item.idSanPhamCT)">
+                                                            ng-click="xoaSanPhamCT(item.idSanPhamCT)">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                     </td>
@@ -153,8 +156,9 @@
                     <div ng-if="!filteredProducts.length">Không có sản phẩm nào phù hợp.</div>
                 </div>
             </div>
-            
-            
+
+
+
         </div>
     </div>
 </main>
@@ -229,14 +233,13 @@
 
 
 
-
 <!--Modal Chất liệu -->
 <div class="modal fade" id="materialModal" tabindex="-1" aria-labelledby="materialModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="materialModalLabel">Chọn chất liệu</h5>
-                <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
+                <button class="modal-close product-form" ng-click="hideModal('materialModal')">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -258,7 +261,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="colorModalLabel">Chọn Màu Sắc</h5>
-                <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
+                <button class="modal-close product-form" ng-click="hideModal('colorModal')">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -281,7 +284,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="sizeModalLabel">Chọn Kích Thước</h5>
-                <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
+                <button class="modal-close product-form" ng-click="hideModal('sizeModal')">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>

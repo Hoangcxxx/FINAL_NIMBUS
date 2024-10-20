@@ -623,7 +623,7 @@ thead td {
 
 tbody tr td {
     padding: 10px 15px;
-    text-align: center;
+    /* text-align: center; */
     white-space: nowrap;
 }
 

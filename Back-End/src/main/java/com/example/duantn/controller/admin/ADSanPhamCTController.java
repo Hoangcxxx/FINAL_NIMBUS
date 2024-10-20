@@ -17,11 +17,13 @@ public class ADSanPhamCTController {
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
 
-    @DeleteMapping("/{idSanPhamCT}")
-    public ResponseEntity<Void> deleteSanPham(@PathVariable Integer idSanPhamCT) {
-        sanPhamChiTietService.deleteById(idSanPhamCT);
+    // DELETE method để xóa nhiều sản phẩm chi tiết
+    @DeleteMapping
+    public ResponseEntity<Void> deleteSanPhams(@RequestBody List<Integer> idSanPhamCTs) {
+        sanPhamChiTietService.deleteByIds(idSanPhamCTs);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @PutMapping("/updateQuantities")
     public ResponseEntity<Void> updateSoLuongSanPhamCT(@RequestBody List<ProductDetailUpdateRequest> payload) throws IOException {
         // Gọi service để cập nhật số lượng cho từng sản phẩm chi tiết

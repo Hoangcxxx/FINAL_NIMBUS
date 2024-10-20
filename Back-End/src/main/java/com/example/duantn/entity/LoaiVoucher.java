@@ -14,26 +14,9 @@ public class LoaiVoucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_loai_voucher")
-    private Integer id;
-
-    @Column(name = "ten_loai_voucher", nullable = false)
-    private String tenLoaiVoucher;
-
+    private Integer idLoaiVoucher;
+    @Column(name = "ten_loai_voucher")
+    private String tenLoaiVoucher; // Tên loại voucher
     @Column(name = "mo_ta")
-    private String moTa;
-
-    @Column(name = "ngay_tao", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
-
-    @Column(name = "ngay_cap_nhat")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
-
-    @ManyToOne
-    @JoinColumn(name = "id_voucher")
-    private Voucher voucher;
-    @ManyToOne
-    @JoinColumn(name = "id_san_pham")
-    private SanPham sanPham;
+    private String moTa; // Mô tả chi tiết
 }

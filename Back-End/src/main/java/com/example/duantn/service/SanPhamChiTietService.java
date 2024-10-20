@@ -53,9 +53,10 @@ public class SanPhamChiTietService {
         return sanPhamChiTietRepository.save(sanPhamChiTiet);
     }
 
-    public void deleteById(Integer idSanPhamCT) {
-        sanPhamChiTietRepository.deleteById(idSanPhamCT);
+    public void deleteByIds(List<Integer> idSanPhamCTs) {
+        sanPhamChiTietRepository.deleteByIds(idSanPhamCTs);
     }
+
 
     // Giả sử bạn có một phương thức lưu cho ChatLieuChiTiet
 
@@ -87,7 +88,9 @@ public class SanPhamChiTietService {
             SanPham sanPham = new SanPham();
             sanPham.setIdSanPham(idSanPham); // Gán ID sản phẩm từ tham số
             spct.setSanPham(sanPham);
+            spct.setSoLuong(0);
             spct.setTrangThai(true); // Trạng thái là true
+            spct.setNgayTao(new Date()); // Ngày cập nhật là ngày hiện tại
             spct.setNgayCapNhat(new Date()); // Ngày cập nhật là ngày hiện tại
 
             // Lưu chatLieuChiTiet nếu cần
