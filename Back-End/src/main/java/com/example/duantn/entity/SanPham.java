@@ -41,8 +41,5 @@ public class SanPham {
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
 
-    @ManyToOne
-    @JoinColumn(name = "id_voucher")
-    private Voucher voucher;
 
 }

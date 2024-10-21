@@ -34,7 +34,4 @@ public class Voucher {
     private LocalDateTime ngayBatDau;
     @Column(name = "ngay_ket_thuc")
     private LocalDateTime ngayKetThuc;
-    @ManyToOne
-    @JoinColumn(name = "id_loai_voucher")
-    private LoaiVoucher loaiVoucher; // Liên kết với loại voucher
 }
