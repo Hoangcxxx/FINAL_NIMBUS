@@ -1,19 +1,21 @@
 window.TrangchuController = function ($scope, $http, $window) {
     // Initialize variables in scope
-    $scope.dsSanPham = [];
-    var userId  = $scope.userId
+    $scope.productList = [];
     $scope.email = '';
     $scope.password = '';
     $scope.successMessage = '';
     $scope.errorMessage = '';
     $scope.forgotPasswordEmail = '';
-    $scope.tenNguoiDung = localStorage.getItem('tenNguoiDung') || '';
+    $scope.username = localStorage.getItem('tenNguoiDung') || '';
     $scope.userInfo = {};
     $scope.registerEmail = '';
     $scope.registerPassword = '';
-    $scope.sdtNguoiDung = '';
-    $scope.diaChi = '';
-    $scope.gioiTinh = '';
+    $scope.userPhone = '';
+    $scope.userAddress = '';
+    $scope.userGender = '';
+
+    // Check if user is already logged in
+    $scope.isLoggedIn = !!localStorage.getItem('jwtToken');
 
     // Fetch product data from API
     function fetchData(url, target) {
@@ -26,103 +28,71 @@ window.TrangchuController = function ($scope, $http, $window) {
             });
     }
 
-
-    fetchData('http://localhost:8080/api/san_pham', 'dsSanPham');
-
-    // Open authentication modal
-    $scope.openAuthModal = function () {
-        if (localStorage.getItem('jwtToken')) {
-            alert('Bạn đã đăng nhập.');
-            return; // If already logged in, do not open modal
-        }
-   
-        $scope.email = '';
-        $scope.password = '';
-        $('#authModal').modal('show');
-    };
+    // Call the function to fetch product data
+    fetchData('http://localhost:8080/api/san_pham', 'productList');
 
     // Login function
     $scope.login = function () {
         const userCredentials = {
             email: $scope.email,
-            matKhau: $scope.password,
-            userId: $scope.userId
+            matKhau: $scope.password
         };
-    
+
+        console.log('Đang gửi thông tin đăng nhập:', userCredentials); // Log login credentials
+
         $http.post('http://localhost:8080/api/auth/login', userCredentials)
             .then(function (response) {
+                console.log('Phản hồi từ server:', response.data); // Log server response
                 const token = response.data.accessToken;
-                $scope.tenNguoiDung = response.data.tenNguoiDung || '';
-                localStorage.setItem('tenNguoiDung', $scope.tenNguoiDung);
+                $scope.username = response.data.tenNguoiDung || ''; // Update username
+                $scope.userId = response.data.idNguoiDung; // Update userId from response
+
+                // Store user information in localStorage
+                localStorage.setItem('tenNguoiDung', $scope.username);
                 localStorage.setItem('jwtToken', token);
+                localStorage.setItem('userId', $scope.userId); // Store userId
                 alert('Đăng nhập thành công!');
-    
+
+                // Redirect to home after login
+                window.location.href = '#!header'; 
+
+                // Fetch user information
                 return $http.get('http://localhost:8080/api/auth/user/' + $scope.userId, {
                     headers: { 'Authorization': 'Bearer ' + token }
-                });                
+                });
             })
             .then(function (response) {
-                $scope.userInfo = response.data; 
-                console.log('Thông tin người dùng:', $scope.userInfo);
-                $scope.tenNguoiDung = $scope.userInfo.tenNguoiDung || ''; 
-                $scope.email = ''; 
-                $scope.password = ''; 
-                $window.location.href = '/'; 
+                $scope.userInfo = response.data;
+                console.log('Thông tin người dùng:', $scope.userInfo); // Log user information
+                $scope.username = $scope.userInfo.tenNguoiDung || '';
+                $scope.email = '';
+                $scope.password = '';
+                $scope.isLoggedIn = true; // Update logged in status
+                
+                // Update the view to show the username in the header
+                $scope.updateUsername();
             })
             .catch(function (error) {
-                $scope.errorMessage = 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+                console.log('Lỗi đăng nhập:', error); // Log login error
+                $scope.errorMessage = error.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
                 localStorage.removeItem('tenNguoiDung');
             });
     };
-    
-    // Register function
-    $scope.register = function () {
-        const newUser = {
-            tenNguoiDung: $scope.tenNguoiDung,
-            email: $scope.registerEmail,
-            matKhau: $scope.registerPassword,
-            sdtNguoiDung: $scope.sdtNguoiDung,
-            diaChi: $scope.diaChi,
-            gioiTinh: $scope.gioiTinh
-        };
 
-        $http.post('http://localhost:8080/api/auth/register', newUser)
-            .then(function () {
-                $scope.successMessage = 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực.';
-                // Reset registration fields
-                $scope.tenNguoiDung = '';
-                $scope.registerEmail = '';
-                $scope.registerPassword = '';
-                $scope.sdtNguoiDung = '';
-                $scope.diaChi = '';
-                $scope.gioiTinh = '';
-            })
-            .catch(function (error) {
-                $scope.errorMessage = error.data?.message || 'Đăng ký thất bại.';
-            });
-    };
-
-    // Forgot password function
-    $scope.forgotPassword = function () {
-        const email = $scope.forgotPasswordEmail;
-
-        $http.post('http://localhost:8080/api/auth/forgot-password', { email: email })
-            .then(function () {
-                $scope.successMessage = 'Kiểm tra email để khôi phục mật khẩu.';
-                $scope.forgotPasswordEmail = ''; // Reset email
-            })
-            .catch(function (error) {
-                $scope.errorMessage = error.data?.message || 'Có lỗi khi gửi yêu cầu khôi phục mật khẩu.';
-            });
+    // Function to update username display in header
+    $scope.updateUsername = function() {
+        $scope.username = localStorage.getItem('tenNguoiDung') || '';
     };
 
     // Logout function
     $scope.logout = function () {
         localStorage.removeItem('tenNguoiDung');
         localStorage.removeItem('jwtToken');
-        $scope.tenNguoiDung = '';
+        localStorage.removeItem('userId'); // Clear userId from localStorage
+        $scope.username = '';
         $scope.userInfo = {};
+        $scope.isLoggedIn = false; // Update logged in status
         alert('Đăng xuất thành công!');
-        $window.location.href = '/';
+        $window.location.href = '/'; // Redirect after logout
     };
 };

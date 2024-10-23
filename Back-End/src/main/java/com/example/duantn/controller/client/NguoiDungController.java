@@ -1,118 +1,91 @@
-    package com.example.duantn.controller.client;
+package com.example.duantn.controller.client;
 
+import com.example.duantn.Response.LoginResponse;
+import com.example.duantn.dto.NguoiDungDTO;
+import com.example.duantn.entity.NguoiDung;
+import com.example.duantn.service.NguoiDungService;
+import com.example.duantn.TokenUser.RefreshToken;
+import com.example.duantn.TokenUser.Token;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.annotation.*;
 
-    import com.example.duantn.dto.GioHangChiTietDTO;
-    import com.example.duantn.dto.NguoiDungDTO;
-    import com.example.duantn.entity.GioHang;
-    import com.example.duantn.entity.NguoiDung;
-    import com.example.duantn.repository.NguoiDungRepository;
-    import com.example.duantn.service.NguoiDungService;
-    import com.example.duantn.service.OurUserDetailsService;
-    import com.example.duantn.TokenUser.RefreshToken;
-    import com.example.duantn.TokenUser.Token;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.http.HttpStatus;
-    import org.springframework.http.ResponseEntity;
-    import org.springframework.web.bind.annotation.*;
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
+public class NguoiDungController {
 
-    @RestController
-    @RequestMapping("/api/auth")
-    @CrossOrigin(origins = "http://127.0.0.1:5500")
-    public class NguoiDungController {
+    @Autowired
+    private NguoiDungService nguoiDungService;
 
-        @Autowired
-        private NguoiDungService nguoiDungService;
-
-        @Autowired
-        private NguoiDungRepository ndrp;
-        @Autowired
-        private OurUserDetailsService ourUserDetailsService;
-
-        // 1. Endpoint cho đăng ký người dùng
-        @PostMapping("/register")
-        public ResponseEntity<NguoiDung> registerUser(@RequestBody NguoiDungDTO nguoiDungDTO) {
-            try {
-                NguoiDung registeredUser = nguoiDungService.registerUser(nguoiDungDTO);
-                return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
-            } catch (RuntimeException e) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT); // 409 nếu người dùng đã tồn tại
-            } catch (Exception e) {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // 500 nếu có lỗi khác
-            }
+    @PostMapping("/register")
+    public ResponseEntity<NguoiDung> registerUser(@RequestBody NguoiDungDTO nguoiDungDTO) {
+        try {
+            NguoiDung registeredUser = nguoiDungService.registerUser(nguoiDungDTO);
+            return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        // 2. Endpoint cho đăng nhập người dùng
-        @PostMapping("/login")
-        public ResponseEntity<?> signIn(@RequestBody NguoiDungDTO nguoiDungDTO) {
-            try {
-                NguoiDung nguoiDung = new NguoiDung();
-                nguoiDung.setIdNguoiDung(nguoiDungDTO.getId());
-                nguoiDung.setEmail(nguoiDungDTO.getEmail());
-                nguoiDung.setMatKhau(nguoiDungDTO.getMatKhau());
-                nguoiDung.setTenNguoiDung(nguoiDungDTO.getTenNguoiDung());
-
-                Token token = nguoiDungService.signIn(nguoiDungDTO);
-                return new ResponseEntity<>(token, HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED); // 401 nếu xác thực thất bại
-            }
-        }
-    //
-    //    // 3. Endpoint cho yêu cầu đặt lại mật khẩu
-    //    @PostMapping("/forgot-password")
-    //    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO) {
-    //        try {
-    //            nguoiDungService.forgotPassword(forgotPasswordDTO.getEmail());
-    //            return new ResponseEntity<>("Email đã được gửi để đặt lại mật khẩu", HttpStatus.OK);
-    //        } catch (Exception e) {
-    //            return new ResponseEntity<>("Có lỗi xảy ra, vui lòng thử lại", HttpStatus.INTERNAL_SERVER_ERROR);
-    //        }
-    //    }
-
-        // 4. Endpoint để làm mới token
-        @PostMapping("/refresh-token")
-        public ResponseEntity<Token> refreshToken(@RequestBody RefreshToken refreshTokenRequest) {
-            try {
-                Token token = nguoiDungService.generateRefreshToken(refreshTokenRequest);
-                return new ResponseEntity<>(token, HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED); // 401 nếu refresh token không hợp lệ
-            }
-        }
-        // 3. Endpoint để lấy thông tin người dùng theo ID
-        @GetMapping("/user/{id}")
-        public ResponseEntity<?> getUserById(@PathVariable Integer id) {
-            try {
-                NguoiDung nguoiDung = nguoiDungService.getUserById(id);
-                NguoiDungDTO nguoiDungDTO = new NguoiDungDTO();
-                nguoiDungDTO.setId(nguoiDung.getIdNguoiDung());
-                nguoiDungDTO.setTenNguoiDung(nguoiDung.getTenNguoiDung());
-                nguoiDungDTO.setEmail(nguoiDung.getEmail());
-                nguoiDungDTO.setMatKhau(nguoiDung.getMatKhau()); // Mã hóa mật khẩu để hiển thị
-                nguoiDungDTO.setSdtNguoiDung(nguoiDung.getSdtNguoiDung());
-                nguoiDungDTO.setMaNguoiDung(nguoiDung.getMaNguoiDung());
-                nguoiDungDTO.setGioiTinh(nguoiDung.getGioiTinh());
-                nguoiDungDTO.setTrangThai(nguoiDung.getTrangThai());
-                nguoiDungDTO.setDiaChi(nguoiDung.getDiaChi());
-
-                return new ResponseEntity<>(nguoiDungDTO, HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>("Người dùng không tồn tại với ID: " + id, HttpStatus.NOT_FOUND);
-            }
-        }
-
-        // 1. Endpoint cho đăng ký người dùng
-        @PutMapping("/update/{userid}")
-        public ResponseEntity<NguoiDung> Update(@RequestParam Integer userid , @RequestBody  NguoiDungDTO nguoiDungDTO) {
-            try {
-                NguoiDung registeredUser = nguoiDungService.updateUser(userid, nguoiDungDTO);
-                return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
-            } catch (RuntimeException e) {
-                return new ResponseEntity<>(null, HttpStatus.CONFLICT); // 409 nếu người dùng đã tồn tại
-            } catch (Exception e) {
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // 500 nếu có lỗi khác
-            }
-        }
-
-
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> signIn(@RequestBody NguoiDungDTO nguoiDungDTO) {
+        try {
+            LoginResponse loginResponse = nguoiDungService.signIn(nguoiDungDTO);
+            return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<Token> refreshToken(@RequestBody RefreshToken refreshTokenRequest) {
+        try {
+            Token token = nguoiDungService.generateRefreshToken(refreshTokenRequest);
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<NguoiDungDTO> getUserById(@PathVariable Integer id) {
+        try {
+            NguoiDung nguoiDung = nguoiDungService.getUserById(id);
+
+            // Convert NguoiDung to NguoiDungDTO
+            NguoiDungDTO nguoiDungDTO = new NguoiDungDTO();
+            nguoiDungDTO.setId(nguoiDung.getIdNguoiDung());
+            nguoiDungDTO.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+            nguoiDungDTO.setEmail(nguoiDung.getEmail());
+            nguoiDungDTO.setSdtNguoiDung(nguoiDung.getSdtNguoiDung());
+            nguoiDungDTO.setDiaChi(nguoiDung.getDiaChi());
+            nguoiDungDTO.setGioiTinh(nguoiDung.getGioiTinh());
+            nguoiDungDTO.setTrangThai(nguoiDung.getTrangThai());
+            nguoiDungDTO.setMatKhau(nguoiDung.getMatKhau());
+
+            return new ResponseEntity<>(nguoiDungDTO, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @PutMapping("/update/{userid}")
+    public ResponseEntity<NguoiDung> updateUser(@PathVariable Integer userid, @RequestBody NguoiDungDTO nguoiDungDTO) {
+        try {
+            NguoiDung updatedUser = nguoiDungService.updateUser(userid, nguoiDungDTO);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+}
