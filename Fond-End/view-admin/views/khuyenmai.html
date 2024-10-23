@@ -1,0 +1,100 @@
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <h1 class="page-title">Quản lý đợt giảm giá</h1>
+            <div class="border border-3 rounded p-3 mb-5">
+                <!-- Form lọc khuyến mãi -->
+                <form class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label for="ma-khuyen-mai" class="form-label">Mã khuyến mãi</label>
+                        <input type="text" class="form-control" id="ma-khuyen-mai" placeholder="Tìm kiếm">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ten-khuyen-mai" class="form-label">Tên khuyến mãi</label>
+                        <input type="text" class="form-control" id="ten-khuyen-mai" placeholder="Tìm kiếm">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="gia-tri-giam" class="form-label">Giá trị giảm</label>
+                        <input type="text" class="form-control" id="gia-tri-giam" placeholder="Tìm kiếm">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="tu-ngay" class="form-label">Từ ngày</label>
+                        <input type="date" class="form-control" id="tu-ngay">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="den-ngay" class="form-label">Đến ngày</label>
+                        <input type="date" class="form-control" id="den-ngay">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="trang-thai" class="form-label">Trạng thái</label>
+                        <select class="form-select" id="trang-thai">
+                            <option selected>Tất cả</option>
+                            <option value="1">Đang kích hoạt</option>
+                            <option value="2">Đã kết thúc</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="trang-thai" class="form-label">Kiểu giảm giá</label>
+                        <select class="form-select" id="trang-thai">
+                            <option selected>Tất cả</option>
+                            <option value="1">%</option>
+                            <option value="2">$</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-danger">Làm mới</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-12">
+                <a href="#!Add_KM">
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#addProductModal">
+                        <i class="fa-light fa-plus"></i> Thêm
+                    </button>
+                </a>
+            </div>
+            <!-- Danh sách đợt giảm giá -->
+            <div id="show-product">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <div class="table-responsive text-center">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Mã</th>
+                                        <th scope="col">Tên đợt giảm giá</th>
+                                        <th scope="col">Giá trị giảm</th>
+                                        <th scope="col">Ngày bắt đầu</th>
+                                        <th scope="col">Ngày kết thúc</th>
+                                        <th scope="col">Ngày cập nhật</th>
+                                        <th scope="col">Trạng thái</th>
+                                        <th scope="col">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in dsSanPham">
+                                        <th scope="row">{{$index + 1}}</th>
+                                        <td>KM607321310</td>
+                                        <td>DUNG NA</td>
+                                        <td>80%</td>
+                                        <td>17-12-2023</td>
+                                        <td>21-12-2023</td>
+                                        <td>19-12-2023</td>
+                                        <td><span class="badge bg-success">Đang kích hoạt</span></td>
+                                        <td>
+                                            <button class="btn btn-warning">Sửa</button>
+                                            <button class="btn btn-danger">Xóa</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

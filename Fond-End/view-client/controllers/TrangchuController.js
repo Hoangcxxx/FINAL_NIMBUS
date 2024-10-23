@@ -1,5 +1,5 @@
 window.TrangchuController = function ($scope, $http, $window) {
-    // Khởi tạo các biến trong scope
+    // Initialize variables in scope
     $scope.dsSanPham = [];
     $scope.email = '';
     $scope.password = '';
@@ -7,67 +7,76 @@ window.TrangchuController = function ($scope, $http, $window) {
     $scope.errorMessage = '';
     $scope.forgotPasswordEmail = '';
     $scope.tenNguoiDung = localStorage.getItem('tenNguoiDung') || '';
+    $scope.userInfo = {};
+    $scope.registerEmail = '';
+    $scope.registerPassword = '';
+    $scope.sdtNguoiDung = '';
+    $scope.diaChi = '';
+    $scope.gioiTinh = '';
 
-    // Lấy dữ liệu sản phẩm từ API
+    // Fetch product data from API
     function fetchData(url, target) {
-        $http({
-            method: 'GET',
-            url: url
-        }).then(function (response) {
-            $scope[target] = response.data;
-        }).catch(function (error) {
-            $scope.errorMessage = 'Không thể tải dữ liệu sản phẩm.';
-        });
+        $http.get(url)
+            .then(function (response) {
+                $scope[target] = response.data;
+            })
+            .catch(function () {
+                $scope.errorMessage = 'Không thể tải dữ liệu sản phẩm.';
+            });
     }
 
-    // Gọi hàm lấy dữ liệu sản phẩm
+    // Call the function to fetch product data
     fetchData('http://localhost:8080/api/san_pham', 'dsSanPham');
 
-    // Mở modal đăng nhập/đăng ký
+    // Open authentication modal
     $scope.openAuthModal = function () {
         if (localStorage.getItem('jwtToken')) {
             alert('Bạn đã đăng nhập.');
-            return;
+            return; // If already logged in, do not open modal
         }
+        // Reset fields
         $scope.email = '';
         $scope.password = '';
         $('#authModal').modal('show');
     };
 
     $scope.login = function () {
-        var userCredentials = {
+        const userCredentials = {
             email: $scope.email,
             matKhau: $scope.password
         };
-
+    
         $http.post('http://localhost:8080/api/auth/login', userCredentials)
             .then(function (response) {
-                var token = response.data.accessToken;
-
-                if (response.data.tenNguoiDung) {
-                    $scope.tenNguoiDung = response.data.tenNguoiDung; // Cập nhật tên người dùng trong $scope
-                    localStorage.setItem('tenNguoiDung', $scope.tenNguoiDung);
-                } else {
-                    $scope.tenNguoiDung = '';
-                    localStorage.removeItem('tenNguoiDung');
-                }
-
+                const token = response.data.accessToken;
+                $scope.tenNguoiDung = response.data.tenNguoiDung || '';
+                localStorage.setItem('tenNguoiDung', $scope.tenNguoiDung);
                 localStorage.setItem('jwtToken', token);
                 alert('Đăng nhập thành công!');
-                $scope.email = '';
-                $scope.password = '';
-                $window.location.href = '/'; // Điều hướng về trang chủ
+                console.log("toekn:", token)
+                return $http.get('http://localhost:8080/api/auth/user/' + response.data.userId, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });                
+            })
+            .then(function (response) {
+                $scope.userInfo = response.data; // Store the user info
+                console.log('Thông tin người dùng:', $scope.userInfo); // For debugging
+                // Optionally set more user info to be displayed
+                $scope.tenNguoiDung = $scope.userInfo.tenNguoiDung || ''; // Update name to display
+                $scope.email = ''; // Clear email field
+                $scope.password = ''; // Clear password field
+                $window.location.href = '/'; // Redirect to home or desired page
             })
             .catch(function (error) {
                 $scope.errorMessage = 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
-                $scope.tenNguoiDung = '';
                 localStorage.removeItem('tenNguoiDung');
             });
     };
+    
 
-    // Đăng ký
+    // Register function
     $scope.register = function () {
-        var newUser = {
+        const newUser = {
             tenNguoiDung: $scope.tenNguoiDung,
             email: $scope.registerEmail,
             matKhau: $scope.registerPassword,
@@ -77,39 +86,42 @@ window.TrangchuController = function ($scope, $http, $window) {
         };
 
         $http.post('http://localhost:8080/api/auth/register', newUser)
-            .then(function (response) {
+            .then(function () {
                 $scope.successMessage = 'Đăng ký thành công! Vui lòng kiểm tra email để xác thực.';
+                // Reset registration fields
                 $scope.tenNguoiDung = '';
                 $scope.registerEmail = '';
                 $scope.registerPassword = '';
                 $scope.sdtNguoiDung = '';
                 $scope.diaChi = '';
                 $scope.gioiTinh = '';
-            }).catch(function (error) {
+            })
+            .catch(function (error) {
                 $scope.errorMessage = error.data?.message || 'Đăng ký thất bại.';
             });
     };
 
-    // Quên mật khẩu
+    // Forgot password function
     $scope.forgotPassword = function () {
-        var email = $scope.forgotPasswordEmail;
+        const email = $scope.forgotPasswordEmail;
 
         $http.post('http://localhost:8080/api/auth/forgot-password', { email: email })
-            .then(function (response) {
+            .then(function () {
                 $scope.successMessage = 'Kiểm tra email để khôi phục mật khẩu.';
-                $scope.forgotPasswordEmail = '';
-            }).catch(function (error) {
+                $scope.forgotPasswordEmail = ''; // Reset email
+            })
+            .catch(function (error) {
                 $scope.errorMessage = error.data?.message || 'Có lỗi khi gửi yêu cầu khôi phục mật khẩu.';
             });
     };
-    // dang xuất
+
+    // Logout function
     $scope.logout = function () {
         localStorage.removeItem('tenNguoiDung');
         localStorage.removeItem('jwtToken');
-        $scope.tenNguoiDung = ''; // Cập nhật lại trong $scope
+        $scope.tenNguoiDung = '';
+        $scope.userInfo = {};
         alert('Đăng xuất thành công!');
-        $window.location.href = '/'; // Điều hướng về trang chủ
+        $window.location.href = '/';
     };
-
-
 };

@@ -4,17 +4,18 @@
             <div class="header-middle-left">
                 <div class="header-logo">
                     <a href="">
-                        <img src="assets/image/favicon1.png" alt="" class="header-logo-image" style="width: 85px;">
+                        <img src="assets/image/favicon1.png" alt="" class="header-logo-image"
+                            style="width: 92px;padding-left: 0px;margin-left: 21px;">
                     </a>
                     <div class="hidden-sidebar your-channel">
-                        <img src="assets/image/admin/nb-fasion-title.png" style="height: 18px;" alt="">
+                        <img src="assets/image/admin/nb-fasion-title.png" style="height: 35px;" alt="">
                     </div>
                 </div>
             </div>
             <div class="header-middle-center">
-                <form action="" class="form-search">
+                <form class="form-search">
                     <span class="search-btn"><i class="fa-light fa-magnifying-glass"></i></span>
-                    <input type="text" class="form-search-input" placeholder="Tìm kiếm món ăn..."
+                    <input type="text" class="form-search-input" placeholder="Tìm kiếm sản phẩm..."
                         oninput="searchProducts()">
                     <button class="filter-btn" onclick="closeSearchAdvanced()"><i
                             class="fa-light fa-filter-list"></i><span>Lọc</span></button>
@@ -36,8 +37,6 @@
                         <i class="fa-light fa-user"></i>
                         <div class="auth-container">
                             <span class="text-dndk">Đăng nhập / Đăng ký</span>
-                        </div>
-                        <div ng-if="tenNguoiDung" class="auth-container">
                             <span class="text-tk">Tài khoản <i class="fa-sharp fa-solid fa-caret-down"></i></span>
                         </div>
                         <ul class="header-middle-right-menu">
@@ -52,17 +51,17 @@
                                 </button>
                             </li>
                         </ul>
+
                     </li>
-                    
                     <li class="header-middle-right-item open">
-                        <a href="#!san_pham" class="d-flex text-decoration-none">
+                        <a href="#!gio_hang" class="d-flex text-decoration-none">
                             <div class="cart-icon-menu">
-                                <i class="fa-light fa-basket-shopping"></i>
-                                <span class="count-product-cart">0</span>
+                                <i class="fa-solid fa-bag-shopping"></i>
+                                <span class="count-product-cart" id="productCount">0</span> <!-- This will dynamically update -->
                             </div>
-                            <span style="color: black;" onclick="openCart()">Giỏ hàng</span>
+                            <span style="color: black;">Giỏ hàng</span>
                         </a>
-                    </li>
+                    </li>    
                 </ul>
             </div>
         </div>

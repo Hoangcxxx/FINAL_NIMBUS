@@ -22,9 +22,9 @@ public class GioHang {
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
 
-    @Column(name = "ngay_tao", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
+//    @Column(name = "ngay_tao", updatable = false)
+//    @Temporal(TemporalType.TIMESTAMP)
+//    private Date ngayTao;
 
     @Column(name = "trang_thai")
     private Boolean trangThai;

@@ -1,4 +1,4 @@
-package com.example.duantn.DTO;
+package com.example.duantn.dto;
 
 import lombok.Data;
 
@@ -11,10 +11,6 @@ public class NguoiDungDTO {
         private String sdtNguoiDung;
         private String diaChi;
         private String gioiTinh;
-
-
-
-
         private String matKhau;
         private Integer vaiTro;  // e.g., "USER", "ADMIN"
         private Boolean trangThai; // User active status

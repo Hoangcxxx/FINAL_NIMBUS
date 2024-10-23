@@ -1,7 +1,7 @@
 <div class="container">
     <section class="py-5" style="margin-top: 100px;">
         <h5 class="fw-bold mb-5" style="color: #47357B;">
-            <a href="#!san_pham"><i class="fas fa-angle-left me-2"></i>Back to shopping</a>
+            <a href="#!san_pham" class="text-decoration-none"><i class="fas fa-angle-left me-2"></i>Back to shopping</a>
         </h5>
 
         <div class="container my-5">
@@ -10,7 +10,7 @@
                     <div class="align-items-start mb-2">
                         <div class="mb-3" ng-repeat="anh in anhSanPham track by $index">
                             <img class="d-block w-100" ng-src="{{anh.urlAnh}}" alt="Ảnh sản phẩm"
-                                style="cursor:pointer;" ng-click="currentDiv($index + 1)">
+                                style="cursor:pointer;" ng-click="showProductDetail($index)">
                         </div>
                     </div>
                 </div>
@@ -30,17 +30,84 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5 d-flex flex-column" style="padding-left: 0px;padding-right: 0px;">
+                <div class="col-md-5 d-flex flex-column" style="padding-left: 0px;padding-right: 0px;"
+                    ng-repeat="sanPhamChiTiet in sanPhamChiTiet track by $index">
                     <h1 class="display-5 fw-bolder">{{sanPhamChiTiet.tenSanPham}}</h1>
                     <div class="fs-5">
-                        <h3><span>{{sanPhamChiTiet.giaBan | currency}}</span></h3>
+                        <h3><span>{{ sanPhamChiTiet.giaBan/1 | currency: '$': 0 }}</span> VND</h3>
                     </div>
-                    <div>
-                        <p class="lead"> <b>Thông Tin Sản Phẩm</b>
-                            <br> - Kích thước: {{sanPhamChiTiet.kichThuoc}}
-                            <br> - Màu sắc: {{sanPhamChiTiet.mauSac}}
-                            <br> - Mô tả: {{sanPhamChiTiet.moTa}}
-                        </p>
+                    <div class="product-details">
+                        <div class="product-details">
+                            <div>
+                                <p><strong>Tên sản phẩm:</strong> {{sanPhamChiTiet.tenSanPham}}</p>
+                                <!-- Chọn màu sắc -->
+                                <p><strong>Màu sắc:</strong>
+                                <div class="swatch-attribute color">
+                                    <div class="swatch-attribute-options clearfix">
+                                        <div class="swatch-option" ng-repeat="mauSac in mauSacChiTiet track by $index"
+                                            ng-click="chonMauSac(mauSac)"
+                                            ng-class="{'selected': selectedColor === mauSac.idMauSac}">
+                                            {{mauSac.tenMauSac}}
+                                        </div>
+                                    </div>
+                                </div>
+                                </p>
+
+                                <!-- Chọn kích thước -->
+                                <p><strong>Kích thước:</strong>
+                                <div class="swatch-attribute size">
+                                    <div class="swatch-attribute-options clearfix">
+                                        <div class="swatch-option"
+                                            ng-repeat="kichThuoc in kichThuocChiTiet track by $index"
+                                            ng-click="chonKichThuoc(kichThuoc)"
+                                            ng-class="{'selected': selectedSize === kichThuoc.idKichThuoc}">
+                                            {{kichThuoc.tenKichThuoc}}
+                                        </div>
+                                    </div>
+                                </div>
+                                </p>
+
+                                <!-- Chọn chất liệu -->
+                                <p><strong>Chất liệu:</strong>
+                                <div class="swatch-attribute material">
+                                    <div class="swatch-attribute-options clearfix">
+                                        <div class="swatch-option"
+                                            ng-repeat="chatLieu in chatLieuChiTiet track by $index"
+                                            ng-click="chonChatLieu(chatLieu)"
+                                            ng-class="{'selected': selectedMaterial === chatLieu.idChatLieu}">
+                                            {{chatLieu.tenChatLieu}}
+                                        </div>
+                                    </div>
+                                </div>
+                                </p>
+
+                                <p><strong>Mô tả:</strong> {{sanPhamChiTiet.moTa}}</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Buttons for adding to cart and checkout -->
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center btn btn-danger" ng-click="addToCart(sanPhamChiTiet)">
+                                <div class="cart-icon-menu me-2" style="position: relative;">
+                                    <i class="fa-solid fa-bag-shopping" style="font-size: 24px; color: #ffffff;"></i>
+                                </div>
+                                <span style="color: #fbfbfb; font-weight: 500; cursor: pointer;padding-left: 15px;">Giỏ
+                                    hàng</span>
+                            </div>
+                            <div>
+                                <a href="#!thanh_toan" class="text-decoration-none">
+                                    <button class="btn btn-danger ms-2"
+                                        style="background-color: rgb(52, 186, 148); border: none; padding: 10px 20px; font-size: 23px;"
+                                        ng-click="checkout(sanPhamChiTiet)">
+                                        <i class="fa-solid fa-bolt"></i> Mua ngay
+                                    </button>
+                                </a>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,80 @@
+<div class="container">
+    <section class="py-5">
+        <h2 class="cart-title text-center">Giỏ hàng của bạn</h2>
+        
+        <section class="py-5" style="margin-top: 50px;">
+            <h5 class="fw-bold mb-4" style="color: #47357B;">
+                <a href="#!san_pham" class="text-decoration-none">
+                    <i class="fas fa-angle-left me-2"></i>Trở về cửa hàng
+                </a>
+            </h5>
+
+            <form id="cartForm" novalidate>
+                <table class="table table-bordered table-sm">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col" class="text-center">Xóa</th>
+                            <th scope="col" class="text-center">Hình ảnh</th>
+                            <th scope="col">Thông tin sản phẩm</th>
+                            <th scope="col" class="text-center">Giá tiền</th>
+                            <th scope="col" class="text-center">Số lượng</th>
+                            <th scope="col" class="text-center">Thành Tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in cart track by item.idspct">
+                            <td class="text-center">
+                                <button type="button" class="btn btn-link" aria-label="Xóa sản phẩm" ng-click="removeFromCart(item.idspct)">
+                                    <i class="fa-regular fa-circle-xmark"></i>
+                                </button>
+                            </td>
+                            <td class="text-center">
+                                <img ng-src="{{item.urlAnh}}" alt="Hình sản phẩm" class="cart-item-image" style="max-width: 100px; max-height: 100px;">
+                            </td>
+                            <td>
+                                <strong>
+                                    <a href="#!san_pham_chi_tiet/{{item.idSanPhamChiTiet}}" class="text-decoration-none">{{item.tenSanPham}}</a>
+                                </strong><br>
+                                <small>Màu sắc: {{item.tenmausac}}</small><br>
+                                <small>Chất liệu: {{item.tenchatlieu}}</small><br>
+                                <small>Kích thước: {{item.tenkichthuoc}}</small>
+                            </td>
+                            <td class="text-center">{{item.giaTien | currency}}</td>
+                            <td class="text-center">
+                                <input type="number" ng-model="item.soLuong" min="1" class="form-control form-control-sm cart-quantity-input" ng-blur="updateCart(item)" aria-label="Số lượng sản phẩm">
+                            </td>
+                            <td class="text-center">{{item.soLuong * item.giaTien | currency}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <section id="cart-add" class="section-p1 mt-4">
+                    <div class="subtotal">
+                        <h4>Tổng cộng giỏ hàng</h4>
+                        <table class="table table-sm table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td>Tổng phụ</td>
+                                    <td>{{getTotal() | currency}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Phí vận chuyển</td>
+                                    <td>Miễn phí</td>
+                                </tr>
+                                <tr class="font-weight-bold">
+                                    <td><strong>Tổng cộng</strong></td>
+                                    <td><strong>{{getTotal() | currency}}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center mt-3">
+                            <button type="button" class="btn btn-success" ng-click="checkout()">
+                                <i class="fas fa-check me-2"></i>Thanh toán
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </form>
+        </section>
+    </section>
+</div>

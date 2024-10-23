@@ -20,8 +20,12 @@ public class GioHangChiTiet {
     private Integer idGioHangChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_gio_hang")
+    @JoinColumn(name = "id_gio_hang", nullable = false)
     private GioHang gioHang;
+
+    @ManyToOne
+    @JoinColumn(name = "id_san_pham_chi_tiet", nullable = false)
+    private SanPhamChiTiet sanPhamChiTiet;
 
     @Column(name = "so_luong")
     private Integer soLuong;

@@ -3,6 +3,7 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -27,6 +28,9 @@ public class DiaChiVanChuyen {
     @Column(name = "xa")
     private String xa;
 
+    @Column(name = "so_tien_van_chuyen")
+    private BigDecimal soTienVanChuyen; // Chỉnh sửa kiểu dữ liệu cho so_tien_van_chuyen
+
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
@@ -35,9 +39,13 @@ public class DiaChiVanChuyen {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
 
+    @Column(name = "trang_thai")
+    private Boolean trangThai; // Chỉnh sửa kiểu dữ liệu cho trang_thai
+
     @Column(name = "mo_ta")
     private String moTa;
 
+    // Nếu cần thiết, thêm mối quan hệ với phi_van_chuyen
     @ManyToOne
     @JoinColumn(name = "id_phi_van_chuyen")
     private PhiVanChuyen phiVanChuyen;

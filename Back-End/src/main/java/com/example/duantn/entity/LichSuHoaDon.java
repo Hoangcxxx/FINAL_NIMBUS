@@ -3,6 +3,7 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
