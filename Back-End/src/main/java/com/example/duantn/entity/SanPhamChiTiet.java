@@ -3,6 +3,7 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -20,6 +21,9 @@ public class SanPhamChiTiet {
 
     @Column(name = "so_luong", nullable = false)
     private Integer soLuong;
+    @Column(name = "ngay_tao")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao;
 
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
@@ -29,22 +33,19 @@ public class SanPhamChiTiet {
     private Boolean trangThai;
 
     @ManyToOne
-    @JoinColumn(name = "id_kich_thuoc_chi_tiet")
+    @JoinColumn(name = "id_kich_thuoc_chi_tiet", referencedColumnName = "Id_kich_thuoc_chi_tiet")
     private KichThuocChiTiet kichThuocChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_mau_sac_chi_tiet")
+    @JoinColumn(name = "id_mau_sac_chi_tiet", referencedColumnName = "Id_mau_sac_chi_tiet")
     private MauSacChiTiet mauSacChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_chat_lieu_chi_tiet")
+    @JoinColumn(name = "id_chat_lieu_chi_tiet", referencedColumnName = "Id_chat_lieu_tiet")
     private ChatLieuChiTiet chatLieuChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_gio_hang_chi_tiet")
-    private GioHangChiTiet gioHangChiTiet;
-
-    @ManyToOne
-    @JoinColumn(name = "id_san_pham")
+    @JoinColumn(name = "Id_san_pham", referencedColumnName = "Id_san_pham")
     private SanPham sanPham;
+
 }

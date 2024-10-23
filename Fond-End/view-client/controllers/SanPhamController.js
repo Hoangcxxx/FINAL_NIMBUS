@@ -17,16 +17,21 @@ window.SanPhamController = function ($scope, $http) {
     // Hàm click vào danh mục
     $scope.onclickDanhMuc = function (idDanhMuc) {
         console.log("Danh mục được click: " + idDanhMuc);
-        $scope.selectedCategoryId = idDanhMuc;
-        // Lấy danh sách sản phẩm theo danh mục đã chọn
-        $scope.fetchData('http://localhost:8080/api/san_pham/findDanhMuc/' + idDanhMuc, 'dsSanPham', "Dữ liệu API trả về:");
+        if (idDanhMuc === "null") {
+            // Nếu chọn "Tất cả", lấy tất cả sản phẩm
+            $scope.fetchData('http://localhost:8080/api/san_pham', 'dsSanPham', "Dữ liệu API trả về:");
+        } else {
+            $scope.selectedCategoryId = idDanhMuc;
+            // Lấy danh sách sản phẩm theo danh mục đã chọn
+            $scope.fetchData('http://localhost:8080/api/san_pham/findDanhMuc/' + idDanhMuc, 'dsSanPham', "Dữ liệu API trả về:");
+        }
     };
 
     // Hàm click vào sản phẩm
     $scope.onclickSanPham = function (idSanPham) {
         console.log('ID sản phẩm:', idSanPham);
         // Lấy chi tiết sản phẩm đã chọn
-        $http.get('http://localhost:8080/api/san_pham/findSanPham/' + idSanPham).then(function (response) {
+        $http.get('http://localhost:8080/api/san_pham_chi_tiet/' + idSanPham).then(function (response) {
             $scope.dsSanPham = response.data; // Gán dữ liệu sản phẩm chi tiết vào biến selectedProduct
             console.log("Dữ liệu sản phẩm chi tiết:", response.data);
             window.location.href = '#!/san_pham_ct/' + idSanPham;
@@ -35,13 +40,12 @@ window.SanPhamController = function ($scope, $http) {
         });
     };
 
-
     // Hàm lấy dữ liệu sản phẩm và danh mục khi khởi tạo controller
     function initializeData() {
         // Lấy danh sách sản phẩm
         $scope.fetchData('http://localhost:8080/api/san_pham', 'dsSanPham');
         // Lấy danh sách danh mục
-        $scope.fetchData('http://localhost:8080/api/danh_muc', 'dsDanhMuc');
+        $scope.fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc');
     }
 
     // Gọi hàm khởi tạo

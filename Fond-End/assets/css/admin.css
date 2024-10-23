@@ -1,9 +1,44 @@
-@font-face {font-family: "SFProDisplay";src: url("../font/SFPRODISPLAY/SFProDisplay-Regular.ttf") format("truetype");font-weight: 400;font-display: fallback;}
-@font-face {font-family: "SFProDisplay";src: url("../font/SFPRODISPLAY/SFProDisplay-Light.ttf") format("truetype");font-weight: 300;font-display: fallback;}
-@font-face {font-family: "SFProDisplay";src: url("../font/SFPRODISPLAY/SFProDisplay-Medium.ttf") format("truetype");font-weight: 500;font-display: fallback;}
-@font-face {font-family: "SFProDisplay";src: url("../font/SFPRODISPLAY/SFProDisplay-Bold.ttf") format("truetype");font-weight: bold;font-display: fallback;}
-@font-face {font-family: "SFProDisplay";src: url("../font/SFPRODISPLAY/SFProDisplay-Semibold.ttf") format("truetype");font-weight: 600;font-display: fallback;}
-@font-face {font-family: "SFProDisplay";src: url("../font/SFPRODISPLAY/SFProDisplay-Heavy.ttf") format("truetype");font-weight: 800;font-display: fallback;}
+@font-face {
+    font-family: "SFProDisplay";
+    src: url("../font/SFPRODISPLAY/SFProDisplay-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: "SFProDisplay";
+    src: url("../font/SFPRODISPLAY/SFProDisplay-Light.ttf") format("truetype");
+    font-weight: 300;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: "SFProDisplay";
+    src: url("../font/SFPRODISPLAY/SFProDisplay-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: "SFProDisplay";
+    src: url("../font/SFPRODISPLAY/SFProDisplay-Bold.ttf") format("truetype");
+    font-weight: bold;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: "SFProDisplay";
+    src: url("../font/SFPRODISPLAY/SFProDisplay-Semibold.ttf") format("truetype");
+    font-weight: 600;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: "SFProDisplay";
+    src: url("../font/SFPRODISPLAY/SFProDisplay-Heavy.ttf") format("truetype");
+    font-weight: 800;
+    font-display: fallback;
+}
 
 *,
 *::before,
@@ -14,6 +49,7 @@
     list-style-type: none;
     text-decoration: none;
 }
+
 :root {
     --red: #b5292f;
     --lightest-gray: rgb(249, 249, 249);
@@ -72,7 +108,11 @@ select {
     cursor: pointer;
 }
 
-body,input,button,textarea,pre {
+body,
+input,
+button,
+textarea,
+pre {
     font-family: SFProDisplay, sans-serif;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
@@ -107,11 +147,11 @@ body,input,button,textarea,pre {
     display: none;
 }
 
-.switch-input:checked + .switch {
+.switch-input:checked+.switch {
     background-color: var(--red);
 }
 
-.switch-input:checked + .switch:after {
+.switch-input:checked+.switch:after {
     transform: translateX(20px);
     background-color: #fff;
 }
@@ -558,7 +598,7 @@ body,input,button,textarea,pre {
 
 .setting {
     position: absolute;
-    top:-50%;
+    top: -50%;
     left: 50%;
     transform: translate(-50%, 50%);
 }
@@ -599,13 +639,13 @@ tbody tr td {
     padding: 20px 80px;
 }
 
-.btn-control-large{
+.btn-control-large {
     background-color: var(--red);
     height: 40px;
     color: #fff;
     border-radius: 5px;
     padding: 0 20px;
-    width: auto!important;
+    width: auto !important;
 }
 
 .admin-control-right i {
@@ -740,23 +780,6 @@ tbody tr td {
     background-color: var(--red);
     color: white;
 }
-
-/* Modal
-.modal {
-    background-color: rgba(0, 0, 0, 0.6);
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-} */
 
 .modal.open {
     pointer-events: auto;
@@ -908,14 +931,21 @@ input[type="file"] {
     cursor: pointer;
 }
 
-.upload-image-preview {
-    width: 350px;
-    border-radius: 5px;
-    position: relative;
-    transform: translateX(-50%);
-    left: 50%;
-    margin-top: 20px;
+.image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* Cho phép các phần tử xuống hàng khi không còn chỗ */
+    gap: 10px;
+    /* Khoảng cách giữa các hình ảnh */
 }
+
+.upload-image-preview {
+    max-width: calc(50% - 10px);
+    /* Chiều rộng tối đa 50% trừ khoảng cách */
+    height: auto;
+    /* Giữ tỉ lệ hình ảnh */
+}
+
 
 .add-product-form {
     display: flex;
@@ -927,7 +957,7 @@ input[type="file"] {
 }
 
 .modal-content-left {
-    border-right: 1px solid #eee;
+    border: 1px solid #eee;
 }
 
 /* Account  */
@@ -955,7 +985,7 @@ label a {
     color: var(--red);
 }
 
-#btn-add-account{
+#btn-add-account {
     background-color: var(--red);
     height: 30px;
     color: #fff;
@@ -989,7 +1019,7 @@ label a {
 
 .admin-control-right button:hover {
     background-color: var(--red);
-    color:#fff
+    color: #fff
 }
 
 .form-search {
@@ -1298,56 +1328,57 @@ label a {
 
 /* order-statistical */
 
-.order-statistical{
+.order-statistical {
     display: flex;
     margin: 30px 0;
     column-gap: 20px;
 }
 
-.order-statistical-item{
+.order-statistical-item {
     box-shadow: 0px 1px 5px 2px #f1f1f1;
-    width: 32.1%;   
+    width: 32.1%;
     display: flex;
     padding: 20px 40px;
     align-items: center;
     justify-content: space-between;
 }
 
-.order-statistical-item-icon i{
+.order-statistical-item-icon i {
     font-size: 45px;
     margin-right: 25px;
     color: var(--red);
 }
 
-.order-statistical-item-content-desc{
+.order-statistical-item-content-desc {
     margin-bottom: 6px;
     font-size: 14px;
-    color:#888
+    color: #888
 }
 
-.access-denied-section{
+.access-denied-section {
     position: absolute;
-    top:50%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
 }
 
-.access-denied-img{
+.access-denied-img {
     width: 100%;
 }
 
-.no-result{
+.no-result {
     width: 100%;
     text-align: center;
     margin: 10px 0;
 }
 
-.no-result-h{
+.no-result-h {
     font-size: 20px;
     margin: 10px
 }
-.no-result i{
+
+.no-result i {
     color: #757575;
     font-size: 80px;
     margin-top: 30px;
