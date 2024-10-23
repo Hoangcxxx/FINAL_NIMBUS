@@ -1,40 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nimbus Project</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .header-img {
-            width: 100px;
-        }
-        .tech-icon {
-            width: 40px;
-            height: 40px;
-            margin: 0 10px;
-        }
-        .team-member {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .team-member img {
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .section-title {
-            margin-top: 40px;
-            font-weight: bold;
-            color: #007bff;
-        }
-    </style>
-</head>
-<body>
-<div class="container text-center my-5">
+  <div class="container text-center my-5">
         <div id="header">
             <img src="https://media.giphy.com/media/M9gbBd9nbDrOTu1Mqx/giphy.gif" class="header-img" alt="Nimbus Logo"/>
         </div>
@@ -42,7 +6,7 @@
         <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="Welcome Emoji">
         <h1 class="my-4">☁️ Project Name: Nimbus</h1>
         <h1>💻 <img src="https://media2.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="5%" alt="Tech Stack"></h1>
-<h3 class="section-title">Languages and Tools:</h3>
+        <h3 class="section-title">Languages and Tools:</h3>
         <div class="d-flex justify-content-center flex-wrap">
             <a href="https://spring.io/" target="_blank" rel="noreferrer">
                 <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg" class="tech-icon" alt="Java" />
@@ -66,7 +30,7 @@
                 <img src="https://www.vectorlogo.zone/logos/restapi/restapi-icon.svg" class="tech-icon" alt="REST API" />
             </a>
         </div>
-<h3 class="section-title">👥 TEAM DATN:</h3>
+        <h3 class="section-title">👥 TEAM DATN:</h3>
         <ul class="list-unstyled text-start mx-auto" style="max-width: 300px;">
             <li class="team-member">
                 <img src="https://via.placeholder.com/40" alt="Hoàng" /> 
@@ -86,7 +50,3 @@
             </li>
         </ul>
     </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
