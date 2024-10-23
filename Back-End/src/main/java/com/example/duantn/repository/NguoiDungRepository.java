@@ -3,11 +3,11 @@ package com.example.duantn.repository;
 import com.example.duantn.entity.NguoiDung;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
-    Optional<NguoiDung> findByEmail(String email);
-
-    Optional<NguoiDung> findByTenNguoiDung(String tenNguoiDung);
-
+    NguoiDung findById(long id);
+    List<NguoiDung> findByVaiTro_IdVaiTro(Integer idVaiTro);
+    NguoiDung findByMaNguoiDung(String maNguoiDung);
+    boolean existsByMaNguoiDung(String maNguoiDung);
 }

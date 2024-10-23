@@ -1,47 +1,44 @@
-package com.example.duantn.entity;
+    package com.example.duantn.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+    import jakarta.persistence.*;
+    import lombok.AllArgsConstructor;
+    import lombok.Getter;
+    import lombok.NoArgsConstructor;
+    import lombok.Setter;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+    import java.math.BigDecimal;
+    import java.util.Date;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Entity
-@Table(name = "pt_thanh_toan")
-public class PhuongThucThanhToan {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_pt_thanh_toan")
-    private Integer idPtThanhToan;
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Entity
+    @Table(name = "pt_thanh_toan")
+    public class PhuongThucThanhToan {
 
-    @Column(name = "ma_thanh_toan", nullable = false, unique = true)
-    private String maThanhToan;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "Id_pt_thanh_toan")
+        private Integer id;
 
-    @Column(name = "ten_phuong_thuc", nullable = false)
-    private String tenPhuongThuc;
+        @Column(name = "ma_thanh_toan", nullable = false, unique = true)
+        private String maThanhToan;
 
-    @Column(name = "noi_dung_thanh_toan")
-    private String noiDungThanhToan;
+        @Column(name = "ten_phuong_thuc", nullable = false)
+        private String tenPhuongThuc;
 
-    @Column(name = "ngay_thanh_toan")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayThanhToan;
+        @Column(name = "ngay_tao")
+        @Temporal(TemporalType.TIMESTAMP)
+        private Date ngayTao;
 
-    @Column(name = "trang_thai_thanh_toan", nullable = false)
-    private Boolean trangThaiThanhToan;
+        @Column(name = "ngay_cap_nhat")
+        @Temporal(TemporalType.TIMESTAMP)
+        private Date ngayCapNhat;
 
-    @Column(name = "phi_giao_dich")
-    private BigDecimal phiGiaoDich;
+        @Column(name = "trang_thai")
+        private boolean trangThai;
 
-    @Column(name = "thong_tin_them")
-    private String thongTinThem;
-
-    @OneToMany(mappedBy = "phuongThucThanhToan") // Sửa ở đây
-    private List<PhuongThucThanhToanHoaDon> phuongThucThanhToanHoas; // Tên danh sách cũng cần thay đổi
-}
+        @Column(name = "mo_ta", columnDefinition = "NVARCHAR(MAX)")
+        private String moTa;
+    }

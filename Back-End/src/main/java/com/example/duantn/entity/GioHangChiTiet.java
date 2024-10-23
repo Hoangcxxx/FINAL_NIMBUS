@@ -18,7 +18,9 @@ public class GioHangChiTiet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_gio_hang_chi_tiet")
     private Integer idGioHangChiTiet;
-
+    @ManyToOne
+    @JoinColumn(name = "id_san_pham_chi_tiet", referencedColumnName = "Id_san_pham_chi_tiet")
+    private SanPhamChiTiet sanPhamChiTiet;
     @ManyToOne
     @JoinColumn(name = "id_gio_hang")
     private GioHang gioHang;
@@ -27,10 +29,10 @@ public class GioHangChiTiet {
     private Integer soLuong;
 
     @Column(name = "don_gia")
-    private BigDecimal donGia;
+    private Double donGia;
 
     @Column(name = "thanh_tien")
-    private BigDecimal thanhTien;
+    private Double thanhTien;
 
     @Column(name = "trang_thai")
     private Boolean trangThai;
@@ -42,4 +44,5 @@ public class GioHangChiTiet {
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
+
 }

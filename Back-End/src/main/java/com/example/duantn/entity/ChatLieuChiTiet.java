@@ -29,4 +29,5 @@ public class ChatLieuChiTiet {
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
+
 }
