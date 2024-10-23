@@ -1,31 +1,92 @@
-<h3 align="center">
-    <div id="header" align="center">
-        <img src="https://media.giphy.com/media/M9gbBd9nbDrOTu1Mqx/giphy.gif" width="100"/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nimbus Project</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .header-img {
+            width: 100px;
+        }
+        .tech-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 10px;
+        }
+        .team-member {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .team-member img {
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .section-title {
+            margin-top: 40px;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<div class="container text-center my-5">
+        <div id="header">
+            <img src="https://media.giphy.com/media/M9gbBd9nbDrOTu1Mqx/giphy.gif" class="header-img" alt="Nimbus Logo"/>
+        </div>
+        <h2>Welcome to Nimbus - SPRING BOOT</h2>
+        <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="Welcome Emoji">
+        <h1 class="my-4">☁️ Project Name: Nimbus</h1>
+        <h1>💻 <img src="https://media2.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif" width="5%" alt="Tech Stack"></h1>
+<h3 class="section-title">Languages and Tools:</h3>
+        <div class="d-flex justify-content-center flex-wrap">
+            <a href="https://spring.io/" target="_blank" rel="noreferrer">
+                <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg" class="tech-icon" alt="Java" />
+            </a>
+            <a href="https://angular.io/" target="_blank" rel="noreferrer">
+                <img src="https://angular.io/assets/images/logos/angular/angular.png" class="tech-icon" alt="Angular" />
+            </a>
+            <a href="https://getbootstrap.com/" target="_blank" rel="noreferrer">
+                <img src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg" class="tech-icon" alt="Bootstrap" />
+            </a>
+            <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer">
+                <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg" class="tech-icon" alt="HTML" />
+            </a>
+            <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer">
+                <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg" class="tech-icon" alt="CSS" />
+            </a>
+            <a href="https://www.javascript.com/" target="_blank" rel="noreferrer">
+                <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" class="tech-icon" alt="JavaScript" />
+            </a>
+            <a href="https://www.restapitutorial.com/" target="_blank" rel="noreferrer">
+                <img src="https://www.vectorlogo.zone/logos/restapi/restapi-icon.svg" class="tech-icon" alt="REST API" />
+            </a>
+        </div>
+<h3 class="section-title">👥 TEAM DATN:</h3>
+        <ul class="list-unstyled text-start mx-auto" style="max-width: 300px;">
+            <li class="team-member">
+                <img src="https://via.placeholder.com/40" alt="Hoàng" /> 
+                <span>Member 1: Hoàng</span>
+            </li>
+            <li class="team-member">
+                <img src="https://via.placeholder.com/40" alt="Linh" /> 
+                <span>Member 2: Linh</span>
+            </li>
+            <li class="team-member">
+                <img src="https://via.placeholder.com/40" alt="Hiếu" /> 
+                <span>Member 3: Hiếu</span>
+            </li>
+            <li class="team-member">
+                <img src="https://via.placeholder.com/40" alt="Dương" /> 
+                <span>Member 4: Dương</span>
+            </li>
+        </ul>
     </div>
-    Welcome to the nimbus - SPRING BOOT
-    <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28">
-</h3>
-<h1 id="project-name" align="center">☁️ Project Name: Nimbus</h1>
-<h1 id="tech-stack-" align="center">💻  <img src="https://media2.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif?cid=ecf05e47a0n3gi1bfqntqmob8g9aid1oyj2wr3ds3mg700bl&rid=giphy.gif" width="5%"></h1>
-<h3 align="left">Languages and Tools:</h3>
-<p align="left">
-    <a href="https://www.microsoft.com/en-us/sql-server" target="_blank" rel="noreferrer"> 
-        <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/microsoftsqlserver/microsoftsqlserver-plain.svg" alt="sqlserver" width="40" height="40"/> 
-    </a>
-    <a href="https://www.jetbrains.com/idea/" target="_blank" rel="noreferrer"> 
-        <img src="https://www.vectorlogo.zone/logos/jetbrains/jetbrains-icon.svg" alt="intellij" width="40" height="40"/> 
-    </a>
-    <a href="https://code.visualstudio.com/" target="_blank" rel="noreferrer"> 
-        <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vscode/vscode-original.svg" alt="vscode" width="40" height="40"/> 
-    </a>
-    <a href="https://spring.io/" target="_blank" rel="noreferrer"> 
-        <img src="https://www.vectorlogo.zone/logos/springio/springio-icon.svg" alt="spring" width="40" height="40"/> 
-    </a> 
-</p>
-<h3 align="left">👥 TEAM DATN:</h3>
-<ul align="left">
-    <li>Member 1: [Hoàng]</li>
-    <li>Member 2: [Linh]</li>
-    <li>Member 3: [Hiếu]</li>
-    <li>Member 4: [Dương]</li>
-</ul>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
