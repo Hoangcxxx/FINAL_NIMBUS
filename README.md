@@ -2,18 +2,13 @@
     <div id="header" align="center">
         <img src="https://media.giphy.com/media/M9gbBd9nbDrOTu1Mqx/giphy.gif" width="100"/>
     </div>
-    Welcome to the DOCKER COMPOSE - SPRING BOOT
+    Welcome to the nimbus - SPRING BOOT
     <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28">
 </h3>
-<h1 id="tech-stack-" align="center">💻Tech Stack <img src="https://media2.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif?cid=ecf05e47a0n3gi1bfqntqmob8g9aid1oyj2wr3ds3mg700bl&rid=giphy.gif" width="5%"></h1>
+<h1 id="project-name" align="center">☁️ Project Name: Nimbus</h1>
+<h1 id="tech-stack-" align="center">💻  <img src="https://media2.giphy.com/media/QssGEmpkyEOhBCb7e1/giphy.gif?cid=ecf05e47a0n3gi1bfqntqmob8g9aid1oyj2wr3ds3mg700bl&rid=giphy.gif" width="5%"></h1>
 <h3 align="left">Languages and Tools:</h3>
 <p align="left">
-    <a href="https://www.docker.com/" target="_blank" rel="noreferrer"> 
-        <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" alt="docker" width="40" height="40"/> 
-    </a> 
-    <a href="https://www.java.com" target="_blank" rel="noreferrer"> 
-        <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg" alt="java" width="40" height="40"/> 
-    </a> 
     <a href="https://www.microsoft.com/en-us/sql-server" target="_blank" rel="noreferrer"> 
         <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/microsoftsqlserver/microsoftsqlserver-plain.svg" alt="sqlserver" width="40" height="40"/> 
     </a>
@@ -27,3 +22,10 @@
         <img src="https://www.vectorlogo.zone/logos/springio/springio-icon.svg" alt="spring" width="40" height="40"/> 
     </a> 
 </p>
+<h3 align="left">👥 TEAM DATN:</h3>
+<ul align="left">
+    <li>Member 1: [Hoàng]</li>
+    <li>Member 2: [Linh]</li>
+    <li>Member 3: [Hiếu]</li>
+    <li>Member 4: [Dương]</li>
+</ul>
