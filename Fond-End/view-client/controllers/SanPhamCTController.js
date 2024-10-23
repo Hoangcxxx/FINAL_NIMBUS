@@ -99,7 +99,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
         $http.post(`http://localhost:8080/api/giohang/add?idUser=${idGioHang}`, cartItem)
             .then(function (response) {
                 alert("Sản phẩm đã được thêm vào giỏ hàng.");
-                window.location.href = '#!gio_hang'; // Chuyển hướng đến trang giỏ hàng
+                window.location.href = '#!gio_hang'; 
             })
             .catch(function (error) {
                 console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);

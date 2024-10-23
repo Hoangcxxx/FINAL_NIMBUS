@@ -146,7 +146,6 @@ public class NguoiDungService {
         nguoiDung.setEmail(nguoiDungDTO.getEmail());
         nguoiDung.setSdtNguoiDung(nguoiDungDTO.getSdtNguoiDung());
         nguoiDung.setDiaChi(nguoiDungDTO.getDiaChi());
-        nguoiDung.setGioiTinh(nguoiDungDTO.getGioiTinh());
 
         // Chỉ cập nhật mật khẩu nếu nó được cung cấp
         if (nguoiDungDTO.getMatKhau() != null && !nguoiDungDTO.getMatKhau().isEmpty()) {
