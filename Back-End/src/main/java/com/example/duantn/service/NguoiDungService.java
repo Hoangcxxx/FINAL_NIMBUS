@@ -96,6 +96,7 @@ public class NguoiDungService {
         newUser.setTrangThai(true); // Đánh dấu người dùng là đã xác thực
         newUser.setSdtNguoiDung(nguoiDungDTO.getSdtNguoiDung());
         newUser.setDiaChi(nguoiDungDTO.getDiaChi());
+        newUser.setGioiTinh(nguoiDungDTO.getGioiTinh());
 
         // Lưu người dùng mới vào cơ sở dữ liệu
         return nguoiDungRepository.save(newUser);
@@ -145,6 +146,7 @@ public class NguoiDungService {
         nguoiDung.setEmail(nguoiDungDTO.getEmail());
         nguoiDung.setSdtNguoiDung(nguoiDungDTO.getSdtNguoiDung());
         nguoiDung.setDiaChi(nguoiDungDTO.getDiaChi());
+        nguoiDung.setGioiTinh(nguoiDungDTO.getGioiTinh());
 
         // Chỉ cập nhật mật khẩu nếu nó được cung cấp
         if (nguoiDungDTO.getMatKhau() != null && !nguoiDungDTO.getMatKhau().isEmpty()) {

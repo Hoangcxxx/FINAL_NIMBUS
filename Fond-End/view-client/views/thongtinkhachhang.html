@@ -1,0 +1,87 @@
+<div class="container" ng-app="myApp" ng-controller="ThongtinkhachhangController">
+    <section class="py-5">
+        <h2 class="cart-title text-center" style="margin-top: 90px;">Thông Tin Tài Khoản</h2>
+        
+        <section class="py-5" style="margin-top: 50px;">
+            <h5 class="fw-bold mb-4" style="color: #47357B;">
+                <a href="#!san_pham" class="text-decoration-none">
+                    <i class="fas fa-angle-left me-2"></i>Trở về cửa hàng
+                </a>
+            </h5>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="dashboard_tab_button">
+                        <ul role="tablist" class="nav flex-column dashboard-list">
+                            <li class="nav-item">
+                                <a href="#dashboard" data-bs-toggle="tab" class="nav-link active">Thông Tin Cá Nhân</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#orders" data-bs-toggle="tab" class="nav-link">Đơn hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#downloads" data-bs-toggle="tab" class="nav-link">Lịch Sử Mua Hàng</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#address" data-bs-toggle="tab" class="nav-link">Địa chỉ</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#account-details" data-bs-toggle="tab" class="nav-link">Chi tiết tài khoản</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#!dang_nhap.html" class="nav-link">Đăng xuất</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="dashboard">
+                            <h3>Bảng điều khiển</h3>
+                            <p>Đây là thông tin tổng quan về tài khoản của bạn.</p>
+                        </div>
+                        <div class="tab-pane fade" id="orders">
+                            <h3>Đơn hàng</h3>
+                            <p>Danh sách đơn hàng của bạn sẽ được hiển thị ở đây.</p>
+                        </div>
+                        <div class="tab-pane fade" id="downloads">
+                            <h3>Tải về</h3>
+                            <p>Danh sách các tệp mà bạn đã tải về sẽ được hiển thị ở đây.</p>
+                        </div>
+                        <div class="tab-pane fade" id="address">
+                            <h3>Địa chỉ</h3>
+                            <form ng-submit="updateAddress()">
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Địa chỉ</label>
+                                    <input type="text" class="form-control" id="address" ng-model="customerAddress" placeholder="Nhập địa chỉ của bạn" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">Thành phố</label>
+                                    <input type="text" class="form-control" id="city" ng-model="customerCity" placeholder="Nhập thành phố" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Lưu địa chỉ</button>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="account-details">
+                            <h3>Chi tiết tài khoản</h3>
+                            <form ng-submit="updateCustomerDetails()">
+                                <div class="mb-3">
+                                    <label for="customerName" class="form-label">Tên Khách Hàng</label>
+                                    <input type="text" class="form-control" id="customerName" ng-model="customerName" placeholder="Nhập tên của bạn" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="customerEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="customerEmail" ng-model="customerEmail" placeholder="Nhập email của bạn" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+</div>
+
+

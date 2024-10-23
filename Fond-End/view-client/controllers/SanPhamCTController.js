@@ -1,6 +1,6 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
     var idSanPham = $routeParams.id;
-    var idGioHang = 1; // Thay đổi theo nhu cầu của bạn
+    var idGioHang = 2; // Thay đổi theo nhu cầu của bạn
     $scope.dsSanPhamChiTiet = [];
     $scope.mauSacChiTiet = [];
     $scope.kichThuocChiTiet = [];

@@ -40,28 +40,29 @@ window.TrangchuController = function ($scope, $http, $window) {
         $('#authModal').modal('show');
     };
 
+    // Login function
     $scope.login = function () {
         const userCredentials = {
             email: $scope.email,
             matKhau: $scope.password
         };
-    
+
         $http.post('http://localhost:8080/api/auth/login', userCredentials)
             .then(function (response) {
                 const token = response.data.accessToken;
+                const userId = response.data.userId; 
                 $scope.tenNguoiDung = response.data.tenNguoiDung || '';
                 localStorage.setItem('tenNguoiDung', $scope.tenNguoiDung);
                 localStorage.setItem('jwtToken', token);
                 alert('Đăng nhập thành công!');
-                console.log("toekn:", token)
-                return $http.get('http://localhost:8080/api/auth/user/' + response.data.userId, {
+
+                return $http.get('http://localhost:8080/api/auth/user/' + userId, {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });                
             })
             .then(function (response) {
                 $scope.userInfo = response.data; // Store the user info
                 console.log('Thông tin người dùng:', $scope.userInfo); // For debugging
-                // Optionally set more user info to be displayed
                 $scope.tenNguoiDung = $scope.userInfo.tenNguoiDung || ''; // Update name to display
                 $scope.email = ''; // Clear email field
                 $scope.password = ''; // Clear password field
@@ -72,7 +73,6 @@ window.TrangchuController = function ($scope, $http, $window) {
                 localStorage.removeItem('tenNguoiDung');
             });
     };
-    
 
     // Register function
     $scope.register = function () {

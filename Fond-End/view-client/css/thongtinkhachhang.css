@@ -1,0 +1,91 @@
+.settings-container {
+    max-width: 800px; /* Maximum width of the container */
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Padding around the content */
+    background-color: #f8f9fa; /* Light background color for contrast */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+}
+
+.settings-header {
+    font-weight: bold; /* Bold header */
+    font-size: 24px; /* Increase font size for better visibility */
+    margin-bottom: 10px; /* Space below the header */
+}
+
+.settings-subtitle {
+    font-size: 16px; /* Subtitle font size */
+    color: #6c757d; /* Gray color for subtitle */
+    margin-bottom: 20px; /* Space below subtitle */
+}
+
+.settings-reminder {
+    background-color: #fffbdd; /* Light yellow background */
+    padding: 15px; /* Increased padding for better spacing */
+    margin-bottom: 20px; /* Space below reminder box */
+    border-left: 4px solid #f0ad4e; /* Left border */
+    border-radius: 4px; /* Slightly rounded corners */
+}
+
+.settings-reminder-title {
+    font-size: 18px; /* Title font size */
+    font-weight: bold; /* Bold title */
+    margin-bottom: 5px; /* Space below title */
+}
+
+.settings-reminder-content {
+    font-size: 14px; /* Content font size */
+    color: #212529; /* Darker text color for better readability */
+}
+
+.card {
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    margin-bottom: 20px; /* Space below cards */
+    background-color: #fff; /* White background for cards */
+    padding: 15px; /* Padding inside cards */
+    transition: box-shadow 0.3s; /* Smooth transition for hover effect */
+}
+
+.card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Shadow effect on hover */
+}
+
+.card-header {
+    display: flex; /* Flex layout for header */
+    justify-content: space-between; /* Space between items */
+    align-items: center; /* Center items vertically */
+    margin-bottom: 10px; /* Space below header */
+}
+
+.card-header h2 {
+    font-size: 18px; /* Card header font size */
+    font-weight: bold; /* Bold header */
+}
+
+.edit-link {
+    font-size: 14px; /* Edit link font size */
+    color: #007bff; /* Bootstrap primary color */
+    text-decoration: none; /* Remove underline */
+}
+
+.edit-link:hover {
+    text-decoration: underline; /* Underline on hover for clarity */
+}
+
+.card-body {
+    font-size: 14px; /* Card body font size */
+    color: #495057; /* Dark gray for readability */
+}
+
+.security-list {
+    list-style: none; /* Remove bullet points */
+    padding: 0; /* Remove padding */
+}
+
+.security-list li {
+    margin-bottom: 10px; /* Space between list items */
+    padding: 8px; /* Padding for list items */
+    background-color: #f1f1f1; /* Light background for better visibility */
+    border-radius: 4px; /* Rounded corners */
+}

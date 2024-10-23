@@ -1,7 +1,9 @@
     package com.example.duantn.controller.client;
 
 
+    import com.example.duantn.dto.GioHangChiTietDTO;
     import com.example.duantn.dto.NguoiDungDTO;
+    import com.example.duantn.entity.GioHang;
     import com.example.duantn.entity.NguoiDung;
     import com.example.duantn.repository.NguoiDungRepository;
     import com.example.duantn.service.NguoiDungService;
@@ -44,6 +46,7 @@
         public ResponseEntity<?> signIn(@RequestBody NguoiDungDTO nguoiDungDTO) {
             try {
                 NguoiDung nguoiDung = new NguoiDung();
+                nguoiDung.setIdNguoiDung(nguoiDungDTO.getId());
                 nguoiDung.setEmail(nguoiDungDTO.getEmail());
                 nguoiDung.setMatKhau(nguoiDungDTO.getMatKhau());
                 nguoiDung.setTenNguoiDung(nguoiDungDTO.getTenNguoiDung());
@@ -82,10 +85,14 @@
             try {
                 NguoiDung nguoiDung = nguoiDungService.getUserById(id);
                 NguoiDungDTO nguoiDungDTO = new NguoiDungDTO();
+                nguoiDungDTO.setId(nguoiDung.getIdNguoiDung());
                 nguoiDungDTO.setTenNguoiDung(nguoiDung.getTenNguoiDung());
                 nguoiDungDTO.setEmail(nguoiDung.getEmail());
                 nguoiDungDTO.setMatKhau(nguoiDung.getMatKhau()); // Mã hóa mật khẩu để hiển thị
                 nguoiDungDTO.setSdtNguoiDung(nguoiDung.getSdtNguoiDung());
+                nguoiDungDTO.setMaNguoiDung(nguoiDung.getMaNguoiDung());
+                nguoiDungDTO.setGioiTinh(nguoiDung.getGioiTinh());
+                nguoiDungDTO.setTrangThai(nguoiDung.getTrangThai());
                 nguoiDungDTO.setDiaChi(nguoiDung.getDiaChi());
 
                 return new ResponseEntity<>(nguoiDungDTO, HttpStatus.OK);
@@ -93,5 +100,19 @@
                 return new ResponseEntity<>("Người dùng không tồn tại với ID: " + id, HttpStatus.NOT_FOUND);
             }
         }
+
+        // 1. Endpoint cho đăng ký người dùng
+        @PutMapping("/update/{userid}")
+        public ResponseEntity<NguoiDung> Update(@RequestParam Integer userid , @RequestBody  NguoiDungDTO nguoiDungDTO) {
+            try {
+                NguoiDung registeredUser = nguoiDungService.updateUser(userid, nguoiDungDTO);
+                return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+            } catch (RuntimeException e) {
+                return new ResponseEntity<>(null, HttpStatus.CONFLICT); // 409 nếu người dùng đã tồn tại
+            } catch (Exception e) {
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // 500 nếu có lỗi khác
+            }
+        }
+
 
     }

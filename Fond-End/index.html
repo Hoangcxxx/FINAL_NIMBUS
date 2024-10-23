@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="view-client/css/sanphamct.css">
     <link rel="stylesheet" href="view-client/css/hoadon.css">
     <link rel="stylesheet" href="view-client/css/thanhtoan.css">
+    <link rel="stylesheet" href="view-client/css/thongtinkhachhang.css">
+    <!-- <link rel="stylesheet" href="view-client/css/Login.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href='assets/image/favicon1.png' rel='icon' type='image/x-icon' />
     <link rel="stylesheet" href="assets/css/main.css">
@@ -43,6 +45,8 @@
     <script src="view-client/controllers/BlogController.js"></script>
     <script src="view-client/controllers/ContactController.js"></script>
     <script src="view-client/controllers/GiohangController.js"></script>
+    <script src="view-client/controllers/LoginController.js"></script>
+    <script src="view-client/controllers/ThongtinkhachhangController.js"></script>
 </head>
 
 <body ng-app="myApp">
@@ -85,6 +89,10 @@
                     templateUrl: "view-client/views/hoadon.html",
                     controller: HoadonController
                 })
+                .when("/thong_tin_khach_hang", {
+                    templateUrl: "view-client/views/thongtinkhachhang.html",
+                    controller: ThongtinkhachhangController
+                })
                 .when("/gio_hang", {
                     templateUrl: "view-client/views/giohang.html",
                     controller: GiohangController
@@ -92,6 +100,10 @@
                 .when("/thanh_toan", {
                     templateUrl: "view-client/views/thanhtoan.html",
                     controller: ThanhtoanController
+                })
+                .when("/dang_nhap", {
+                      templateUrl:"view-client/views/login.html",
+                      controller: LoginController
                 })
                 .otherwise({
                     redirectTo: "/"

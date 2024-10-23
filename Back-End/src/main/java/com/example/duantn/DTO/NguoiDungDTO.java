@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class NguoiDungDTO {
-
+        private Integer id;
         private String tenNguoiDung;
         private String email;
         private String maNguoiDung;

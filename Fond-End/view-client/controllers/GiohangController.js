@@ -1,7 +1,7 @@
 window.GiohangController = function ($scope, $http) {
   $scope.cart = []; // Initialize an empty cart array
-  const userId = 3; // Replace with actual user ID or fetch dynamically
-  const cartId = 1;
+  const userId = 8; // Replace with actual user ID or fetch dynamically
+  const cartId = 2;
   $scope.getCartItems = function () {
     // Replace with the actual cart ID if needed
     $http
