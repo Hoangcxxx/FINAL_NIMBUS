@@ -45,7 +45,6 @@
     <script src="view-client/controllers/BlogController.js"></script>
     <script src="view-client/controllers/ContactController.js"></script>
     <script src="view-client/controllers/GiohangController.js"></script>
-    <script src="view-client/controllers/LoginController.js"></script>
     <script src="view-client/controllers/ThongtinListController.js"></script>
 </head>
 
@@ -100,10 +99,6 @@
                 .when("/thanh_toan", {
                     templateUrl: "view-client/views/thanhtoan.html",
                     controller: ThanhtoanController
-                })
-                .when("/dang_nhap", {
-                      templateUrl:"view-client/views/login.html",
-                      controller: LoginController
                 })
                 .otherwise({
                     redirectTo: "/"
