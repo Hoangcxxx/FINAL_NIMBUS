@@ -46,7 +46,7 @@
     <script src="view-client/controllers/ContactController.js"></script>
     <script src="view-client/controllers/GiohangController.js"></script>
     <script src="view-client/controllers/LoginController.js"></script>
-    <script src="view-client/controllers/ThongtinkhachhangController.js"></script>
+    <script src="view-client/controllers/ThongtinListController.js"></script>
 </head>
 
 <body ng-app="myApp">
@@ -91,7 +91,7 @@
                 })
                 .when("/thong_tin_khach_hang", {
                     templateUrl: "view-client/views/thongtinkhachhang.html",
-                    controller: ThongtinkhachhangController
+                    controller: ThongtinListController
                 })
                 .when("/gio_hang", {
                     templateUrl: "view-client/views/giohang.html",

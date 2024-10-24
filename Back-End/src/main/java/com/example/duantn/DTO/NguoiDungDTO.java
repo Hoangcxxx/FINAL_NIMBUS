@@ -2,10 +2,13 @@ package com.example.duantn.dto;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class NguoiDungDTO {
         private Integer id;
         private String tenNguoiDung;
+//        private LocalDate ngaytao;
         private String email;
         private String maNguoiDung;
         private String sdtNguoiDung;

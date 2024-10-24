@@ -63,6 +63,7 @@ public class NguoiDungController {
             NguoiDungDTO nguoiDungDTO = new NguoiDungDTO();
             nguoiDungDTO.setId(nguoiDung.getIdNguoiDung());
             nguoiDungDTO.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+            nguoiDungDTO.setMaNguoiDung(nguoiDung.getMaNguoiDung());
             nguoiDungDTO.setEmail(nguoiDung.getEmail());
             nguoiDungDTO.setSdtNguoiDung(nguoiDung.getSdtNguoiDung());
             nguoiDungDTO.setDiaChi(nguoiDung.getDiaChi());
@@ -80,8 +81,19 @@ public class NguoiDungController {
     @PutMapping("/update/{userid}")
     public ResponseEntity<NguoiDung> updateUser(@PathVariable Integer userid, @RequestBody NguoiDungDTO nguoiDungDTO) {
         try {
-            NguoiDung updatedUser = nguoiDungService.updateUser(userid, nguoiDungDTO);
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+            NguoiDung nguoiDung = nguoiDungService.updateUser(userid, nguoiDungDTO);
+
+//
+//            nguoiDungDTO.setId(nguoiDung.getIdNguoiDung());
+//            nguoiDungDTO.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+//            nguoiDungDTO.setMaNguoiDung(nguoiDung.getMaNguoiDung());
+//            nguoiDungDTO.setEmail(nguoiDung.getEmail());
+//            nguoiDungDTO.setSdtNguoiDung(nguoiDung.getSdtNguoiDung());
+//            nguoiDungDTO.setDiaChi(nguoiDung.getDiaChi());
+//            nguoiDungDTO.setGioiTinh(nguoiDung.getGioiTinh());
+//            nguoiDungDTO.setTrangThai(nguoiDung.getTrangThai());
+//            nguoiDungDTO.setMatKhau(nguoiDung.getMatKhau());
+            return new ResponseEntity<>(nguoiDung, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } catch (Exception e) {

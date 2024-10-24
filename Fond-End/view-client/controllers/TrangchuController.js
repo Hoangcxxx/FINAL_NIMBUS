@@ -53,8 +53,7 @@ window.TrangchuController = function ($scope, $http, $window) {
                 localStorage.setItem('userId', $scope.userId); // Store userId
                 alert('Đăng nhập thành công!');
 
-                // Redirect to home after login
-                window.location.href = '#!header'; 
+                window.location.href = ''; 
 
                 // Fetch user information
                 return $http.get('http://localhost:8080/api/auth/user/' + $scope.userId, {
