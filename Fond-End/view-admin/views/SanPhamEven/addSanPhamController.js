@@ -497,6 +497,89 @@ window.addSanPhamController = function ($scope, $http) {
         }
     };
 
+    $scope.ChatLieu = {
+        tenChatLieu: "",
+        moTa: ""
+    };
+    $scope.onCreateChatLieu = function () {
+        $http({
+            method: 'POST',
+            url: "http://localhost:8080/api/ad_chat_lieu",
+            data: $scope.ChatLieu
+        }).then(function (response) {
+            alert('Chúc mừng bạn tạo mới thành công');
+            $scope.onRefresh(); // Refresh the data
+            $scope.resetModal(); // Reset the modal
 
+            // Hide the "Add Material" modal and show the "Select Material" modal
+            $('#addChatLieuModal').modal('hide');
+            $('#materialModal').modal('show');
+        });
+    };
+
+    // Hàm để lấy danh sách chất liệu
+    $scope.MauSac = {
+        tenMauSac: "",
+        moTa: ""
+    };
+    $scope.onCreateMauSac = function () {
+        $http({
+            method: 'POST',
+            url: "http://localhost:8080/api/ad_mau_sac",
+            data: $scope.MauSac
+        }).then(function (response) {
+            alert('Chúc mừng bạn tạo mới thành công');
+            $scope.onRefresh(); // Refresh the data
+            $scope.resetModal(); // Reset the modal
+
+            // Hide the "Add Color" modal and show the "Select Color" modal
+            $('#addMauSacModal').modal('hide');
+            $('#colorModal').modal('show');
+        });
+    };
+
+    $scope.KichThuoc = {
+        tenKichThuoc: "",
+        moTa: ""
+    };
+    $scope.onCreateKichThuoc = function () {
+        $http({
+            method: 'POST',
+            url: "http://localhost:8080/api/ad_kich_thuoc",
+            data: $scope.KichThuoc
+        }).then(function (response) {
+            alert('Chúc mừng bạn tạo mới thành công');
+            $scope.onRefresh(); // Refresh the data
+            $scope.resetModal(); // Reset the modal
+
+            // Hide the "Add Size" modal and show the "Select Size" modal
+            $('#addKichThuocModal').modal('hide');
+            $('#sizeModal').modal('show');
+        });
+    };
+    $scope.onRefresh = function () {
+        // Refresh Chat Lieu
+        $scope.onRefreshChatLieu();
+
+        // Refresh Mau Sac
+        $scope.onRefreshMauSac();
+
+        // Refresh Kich Thuoc
+        $scope.onRefreshKichThuoc();
+    };
+
+    $scope.onRefreshChatLieu = function () {
+        fetchData('http://localhost:8080/api/ad_chat_lieu', 'dsChatLieu');
+    };
+
+    $scope.onRefreshMauSac = function () {
+        fetchData('http://localhost:8080/api/ad_mau_sac', 'dsMauSac');
+    };
+
+    $scope.onRefreshKichThuoc = function () {
+        fetchData('http://localhost:8080/api/ad_kich_thuoc', 'dsKichThuoc');
+    };
+
+    
 
 };

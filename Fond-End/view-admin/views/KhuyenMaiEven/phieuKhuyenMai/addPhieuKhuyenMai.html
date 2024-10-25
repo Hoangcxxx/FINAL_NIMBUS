@@ -1,0 +1,171 @@
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <h1 class="page-title">Thêm Phiếu Giảm Giá Mới</h1>
+            <div class="admin-control">
+                <a href="#!phieu_giam_gia">
+                    <button type="button" class="btn btn-secondary">Quay Lại</button>
+                </a>
+            </div>
+            <div class="admin-control">
+                <div class="row" style="padding-left: 14px;">
+                    <!-- Form Thêm Phiếu -->
+                    <div class="col-md-5 border border-3 rounded pb-3 pt-3">
+                        <form>
+                            <!-- Mã Phiếu -->
+                            <div class="mb-3">
+                                <label for="maPhieu" class="form-label">Mã Phiếu</label>
+                                <input type="text" class="form-control" id="maPhieu"
+                                    placeholder="Tự động tạo nếu bỏ trống">
+                            </div>
+
+                            <!-- Tên Phiếu -->
+                            <div class="mb-3">
+                                <label for="tenPhieu" class="form-label">Tên Phiếu</label>
+                                <input type="text" class="form-control" id="tenPhieu"
+                                    placeholder="Phiếu giảm tháng mới">
+                            </div>
+
+                            <!-- Kiểu -->
+                            <div class="mb-3">
+                                <label class="form-label">Kiểu</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="kieu" id="kieuPhanTram"
+                                            value="phantram" checked>
+                                        <label class="form-check-label" for="kieuPhanTram">%</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="kieu" id="kieuTienMat"
+                                            value="tienmat">
+                                        <label class="form-check-label" for="kieuTienMat">Tiền Mặt</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Loại -->
+                            <div class="mb-3">
+                                <label class="form-label">Loại</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="loai" id="loaiCongKhai"
+                                            value="congkhai" checked>
+                                        <label class="form-check-label" for="loaiCongKhai">Công Khai</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="loai" id="loaiCaNhan"
+                                            value="canhan">
+                                        <label class="form-check-label" for="loaiCaNhan">Cá Nhân</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Số % Chiết Khấu và Giá Trị Tối Đa -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="chietKhau" class="form-label">% Chiết Khấu</label>
+                                    <input type="number" class="form-control" id="chietKhau" placeholder="Giá trị">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="giaTriToiDa" class="form-label">Giá Trị Tối Đa</label>
+                                    <input type="number" class="form-control" id="giaTriToiDa" placeholder="VND">
+                                </div>
+                            </div>
+
+                            <!-- Lượt Sử Dụng và Số Tiền Chi Tối Thiểu -->
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    <label for="luotSuDung" class="form-label">Lượt Sử Dụng</label>
+                                    <input type="number" class="form-control" id="luotSuDung" placeholder="0">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="soTienToiThieu" class="form-label">Số Tiền Chi Tối Thiểu</label>
+                                    <input type="number" class="form-control" id="soTienToiThieu" placeholder="VND">
+                                </div>
+                            </div>
+
+                            <!-- Ngày Bắt Đầu và Ngày Kết Thúc -->
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    <label for="ngayBatDau" class="form-label">Ngày Bắt Đầu</label>
+                                    <input type="datetime-local" class="form-control" id="ngayBatDau">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="ngayKetThuc" class="form-label">Ngày Kết Thúc</label>
+                                    <input type="datetime-local" class="form-control" id="ngayKetThuc">
+                                </div>
+                            </div>
+
+                            <!-- Gửi Mail Cho Khách Hàng -->
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" type="checkbox" id="guiMail">
+                                <label class="form-check-label" for="guiMail">
+                                    Gửi Mail Cho Khách Hàng
+                                </label>
+                            </div>
+
+                            <!-- Nút Tạo Mới và Quay Lại -->
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">Tạo mới</button>
+
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Bảng Khách Hàng -->
+                    <div class="col-md-7">
+                        <h5>Danh Sách Khách Hàng</h5>
+                        <div id="show-product">
+                            <div class="card shadow mb-4">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Tên</th>
+                                                    <th scope="col">SĐT</th>
+                                                    <th scope="col">Giới Tính</th>
+                                                    <th scope="col">Email</th>
+                                                    <th scope="col">Ngày Sinh</th>
+                                                    <th scope="col">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">1</th>
+                                                    <td>Nguyễn Văn A</td>
+                                                    <td>0123456789</td>
+                                                    <td>Nam</td>
+                                                    <td>a@gmail.com</td>
+                                                    <td>01/01/1990</td>
+                                                    <td>
+                                                        <button class="btn btn-warning btn-sm">Sửa</button>
+                                                        <button class="btn btn-danger btn-sm">Xóa</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">2</th>
+                                                    <td>Trần Thị B</td>
+                                                    <td>0987654321</td>
+                                                    <td>Nữ</td>
+                                                    <td>b@gmail.com</td>
+                                                    <td>02/02/1992</td>
+                                                    <td>
+                                                        <button class="btn btn-warning btn-sm">Sửa</button>
+                                                        <button class="btn btn-danger btn-sm">Xóa</button>
+                                                    </td>
+                                                </tr>
+                                                <!-- Thêm nhiều khách hàng khác nếu cần -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,3 @@
+window.UserController = function ($scope) {
+    
+}

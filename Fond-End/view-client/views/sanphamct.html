@@ -1,5 +1,5 @@
 <div class="container">
-    <section class="py-5" style="margin-top: 100px;">
+    <section class="py-5">
         <h5 class="fw-bold mb-5" style="color: #47357B;">
             <a href="#!san_pham" class="text-decoration-none"><i class="fas fa-angle-left me-2"></i>Back to shopping</a>
         </h5>
@@ -39,37 +39,31 @@
                     <div class="product-details">
                         <div>
                             <p><strong>Tên sản phẩm:</strong> {{sanPhamChiTiet.tenSanPham}}</p>
-                            <p><strong>Màu sắc:</strong>
-                            <ul class="menu-list">
-                                <li class="menu-list-item">
-                                    <a href="" class="menu-link text-dark text-decoration-none"
-                                        ng-repeat="mauSacChiTiet in mauSacChiTiet track by $index"
-                                        ng-click="onclickMauSac(mauSacChiTiet.idMauSacCT)">
-                                        {{mauSacChiTiet.tenMauSac}}
-                                    </a>
-                                </li>
-                            </ul>
-                            </p>
                             <p><strong>Chất liệu:</strong>
                             <ul class="menu-list">
-                                <li class="menu-list-item">
-                                    <a href="" class="menu-link text-dark text-decoration-none"
-                                        ng-repeat="chatLieuChiTiet in chatLieuChiTiet track by $index"
-                                        ng-click="onclickKichThuoc(chatLieuChiTiet.idChatLieuCT)">
-                                        {{chatLieuChiTiet.tenChatLieu}}
-                                    </a>
-                                </li>
+                                <a href="" class="menu-link text-dark text-decoration-none me-2"
+                                    ng-repeat="chatLieuChiTiet in chatLieuChiTiet track by $index"
+                                    ng-click="onclickKichThuoc(chatLieuChiTiet.idChatLieuCT)">
+                                    {{chatLieuChiTiet.tenChatLieu}}
+                                </a>
+                            </ul>
+                            </p>
+                            <p><strong>Màu sắc:</strong>
+                            <ul class="menu-list">
+                                <a href="" class="menu-link text-dark text-decoration-none me-2"
+                                    ng-repeat="mauSacChiTiet in mauSacChiTiet track by $index"
+                                    ng-click="onclickMauSac(mauSacChiTiet.idMauSacCT)">
+                                    {{mauSacChiTiet.tenMauSac}}
+                                </a>
                             </ul>
                             </p>
                             <p><strong>Kích thước:</strong>
                             <ul class="menu-list">
-                                <li class="menu-list-item">
-                                    <a href="" class="menu-link text-dark text-decoration-none"
-                                        ng-repeat="kichThuocChiTiet in kichThuocChiTiet track by $index"
-                                        ng-click="onclickKichThuoc(kichThuocChiTiet.idKichThuocCT)">
-                                        {{kichThuocChiTiet.tenKichThuoc}}
-                                    </a>
-                                </li>
+                                <a href="" class="menu-link text-dark text-decoration-none me-2"
+                                    ng-repeat="kichThuocChiTiet in kichThuocChiTiet track by $index"
+                                    ng-click="onclickKichThuoc(kichThuocChiTiet.idKichThuocCT)">
+                                    {{kichThuocChiTiet.tenKichThuoc}}
+                                </a>
                             </ul>
                             </p>
                             <p><strong>Mô tả:</strong> {{sanPhamChiTiet.moTa}}</p>

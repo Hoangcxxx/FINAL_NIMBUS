@@ -3,8 +3,9 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -18,20 +19,43 @@ public class Voucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_voucher")
     private Integer idVoucher;
-    @Column(name = "ma_voucher")
+
+    @Column(name = "ma_voucher", unique = true, nullable = false)
     private String maVoucher;
+
     @Column(name = "gia_tri_giam_gia")
     private BigDecimal giaTriGiamGia;
+
     @Column(name = "so_luong")
     private Integer soLuong;
+
     @Column(name = "gia_toi_thieu")
     private BigDecimal giaToiThieu;
+
     @Column(name = "trang_thai")
     private Boolean trangThai;
+
     @Column(name = "mo_ta")
     private String moTa;
+
     @Column(name = "ngay_bat_dau")
-    private LocalDateTime ngayBatDau;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayBatDau;
+
     @Column(name = "ngay_ket_thuc")
-    private LocalDateTime ngayKetThuc;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayKetThuc;
+
+    @Column(name = "ngay_tao", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao;
+
+    @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayCapNhat;
+
+    @ManyToOne
+    @JoinColumn(name = "id_loai_voucher")
+    private LoaiVoucher loaiVoucher;
 }
+

@@ -5,29 +5,28 @@ public class SanPhamQuery {
             "    sp.Id_san_pham AS idSanPham, \n" +
             "    sp.ten_san_pham AS tenSanPham, \n" +
             "    sp.trang_thai AS trangThai, \n" +
-            "    sp.gia_ban AS giaBan,       -- Giá bán trung bình\n" +
-            "    MAX(sp.mo_ta) AS moTa,           -- Mô tả sản phẩm\n" +
+            "    sp.gia_ban AS giaBan, \n" +
+            "    MAX(sp.mo_ta) AS moTa, \n" +
             "    dc.ten_danh_muc AS tenDanhMuc, \n" +
-            "    SUM(spct.so_luong) AS soLuong, \n" +
-            "    MAX(hl.url_anh) AS urlAnh,       -- Lấy URL ảnh\n" +
-            "    MAX(hl.thu_tu) AS thuTu           -- Lấy thứ tự ảnh tối đa\n" +
+            "    MAX(hl.url_anh) AS urlAnh, \n" +
+            "    MAX(hl.thu_tu) AS thuTu \n" +
             "FROM \n" +
             "    san_pham sp \n" +
             "JOIN \n" +
             "    san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham \n" +
             "LEFT JOIN \n" +
-            "    hinh_anh_san_pham hl ON spct.Id_san_pham = hl.id_san_pham \n" +
+            "    (SELECT DISTINCT id_san_pham, url_anh, thu_tu FROM hinh_anh_san_pham) hl ON spct.Id_san_pham = hl.id_san_pham \n" +
             "LEFT JOIN \n" +
             "    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc \n" +
             "WHERE \n" +
-            "    hl.thu_tu = 1 AND sp.trang_thai = 1 \n" +  // Thêm điều kiện trạng thái
+            "    hl.thu_tu = 1 AND sp.trang_thai = 1 \n" +
             "GROUP BY \n" +
             "    sp.Id_san_pham, \n" +
             "    sp.ten_san_pham, \n" +
-            "    sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY\n" +
+            "    sp.trang_thai, \n" +
             "    dc.ten_danh_muc,\n" +
             "    sp.gia_ban,\n" +
-            "    spct.so_luong\n" +
+            "    sp.mo_ta \n" +
             "ORDER BY \n" +
             "    sp.Id_san_pham ASC;";
 

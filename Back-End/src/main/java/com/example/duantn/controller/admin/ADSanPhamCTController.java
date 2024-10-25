@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ad_san_pham_ct")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class ADSanPhamCTController {
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
@@ -30,8 +30,5 @@ public class ADSanPhamCTController {
         sanPhamChiTietService.updateSoLuongSanPhamCT(payload);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
-
 
 }

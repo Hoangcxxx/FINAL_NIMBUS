@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/san_pham")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
@@ -25,9 +25,8 @@ public class SanPhamController {
         map.put("giaBan", row[3]);  // Cập nhật chỉ số cho giá bán
         map.put("moTa", row[4]);    // Cập nhật chỉ số cho mô tả
         map.put("tenDanhMuc", row[5]); // Cập nhật chỉ số cho trạng thái
-        map.put("soLuong", row[6]);   // Cập nhật chỉ số cho URL ảnh
-        map.put("urlAnh", row[7]);    // Cập nhật chỉ số cho thứ tự
-        map.put("thuTu", row[8]);       // Danh sách kích thước
+        map.put("urlAnh", row[6]);    // Cập nhật chỉ số cho thứ tự
+        map.put("thuTu", row[7]);       // Danh sách kích thước
         return map;
     }
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {

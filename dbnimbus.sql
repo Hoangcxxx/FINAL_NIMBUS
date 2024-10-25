@@ -32,23 +32,32 @@ CREATE TABLE [nguoi_dung] (
 );
 -- Insert data for vai_tro
 go
-
+CREATE TABLE [loai_voucher] (
+  [Id_loai_voucher] INT PRIMARY KEY IDENTITY(1,1),
+  [ten_loai_voucher] NVARCHAR(100) NOT NULL,
+  [mo_ta] NVARCHAR(MAX),
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+);
 go
 CREATE TABLE [voucher] (
   [Id_voucher] INT PRIMARY KEY IDENTITY(1,1),
   [ma_voucher] NVARCHAR(50) NOT NULL UNIQUE,
   [gia_tri_giam_gia] DECIMAL(18),
   [so_luong] INT,
-  [gia_toi_thieu] DECIMAL(18),
+  [gia_tri_toi_da] DECIMAL(18),
+  [so_tien_toi_thieu] DECIMAL(18),
   [trang_thai] BIT DEFAULT 1,
   [mo_ta] NVARCHAR(MAX),
   [ngay_bat_dau] DATETIME,
   [ngay_ket_thuc] DATETIME,
   [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+  [id_loai_voucher] int,
+  CONSTRAINT [FK_loai_voucher_id_loai_voucher]
+    FOREIGN KEY ([id_loai_voucher])
+      REFERENCES [loai_voucher]([Id_loai_voucher])
 );
-
-
 go
 CREATE TABLE [danh_muc] (
   [Id_danh_muc] INT PRIMARY KEY IDENTITY(1,1),
@@ -62,11 +71,10 @@ CREATE TABLE [san_pham] (
   [Id_san_pham] INT PRIMARY KEY IDENTITY(1,1),
   [ten_san_pham] NVARCHAR(100) NOT NULL,
   [gia_ban] DECIMAL(18) NOT NULL,
-  [gia_khuyen_mai] DECIMAL(18),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [mo_ta] NVARCHAR(MAX),
-  [Trang_thai] BIT DEFAULT 1,
+  [trang_thai] BIT DEFAULT 1,
   [id_danh_muc] INT,
   CONSTRAINT [FK_san_pham_id_danh_muc]
     FOREIGN KEY ([id_danh_muc])
@@ -74,18 +82,29 @@ CREATE TABLE [san_pham] (
 );
 go
 
-CREATE TABLE [loai_voucher] (
-  [Id_loai_voucher] INT PRIMARY KEY IDENTITY(1,1),
-  [ten_loai_voucher] NVARCHAR(100) NOT NULL,
+CREATE TABLE [dot_giam_gia] (
+  [Id_dot_giam_gia] INT PRIMARY KEY IDENTITY(1,1),
+  [ten_dot_giam_gia] NVARCHAR(100) NOT NULL,
+  [gia_tri_giam_gia] DECIMAL(18),
+  [trang_thai] BIT DEFAULT 1,
+  [mo_ta] NVARCHAR(MAX),
+  [ngay_bat_dau] DATETIME DEFAULT GETDATE(),
+  [ngay_ket_thuc] DATETIME DEFAULT GETDATE(),
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+);
+go
+CREATE TABLE [giam_gia_san_pham] (
+  [Id_giam_gia_san_pham] INT PRIMARY KEY IDENTITY(1,1),
   [mo_ta] NVARCHAR(MAX),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
-  [id_voucher] INT,
+  [Id_dot_giam_gia] INT,
   [id_san_pham] INT, -- Thêm id_san_pham vào loai_voucher
-  CONSTRAINT [FK_loai_voucher_id_voucher]
-    FOREIGN KEY ([id_voucher])
-      REFERENCES [voucher]([Id_voucher]),
-  CONSTRAINT [FK_loai_voucher_id_san_pham]
+  CONSTRAINT [FK_giam_gia_san_pham_id_dot_giam_gia]
+    FOREIGN KEY ([id_dot_giam_gia])
+      REFERENCES [dot_giam_gia]([Id_dot_giam_gia]),
+  CONSTRAINT [FK_giam_gia_san_pham_id_san_pham]
     FOREIGN KEY ([id_san_pham])
       REFERENCES [san_pham]([Id_san_pham])
 );
@@ -312,8 +331,6 @@ CREATE TABLE pt_thanh_toan_hoa_don (
 );
 
 
-
-
 go
 CREATE TABLE [hinh_anh_san_pham] (
   [Id_hinh_anh_san_pham] INT PRIMARY KEY IDENTITY(1,1),
@@ -392,15 +409,23 @@ INSERT INTO nguoi_dung (ten_nguoi_dung, ma_nguoi_dung, Email, sdt_nguoi_dung, Ng
 (N'Lê Đình Linh', 'user004', 'linhld@gmail.com', '0912679346', '2004-01-05', N'Hà Nội', N'Nam', '123456',4),
 (N'Hoàng Văn Hà', 'user005', 'hahv@gmail.com', '0918934754', '2004-01-06', N'Hà Nội', N'Nam', '123456',5);
 go
+INSERT INTO loai_voucher (ten_loai_voucher, mo_ta) VALUES
+(N'Giảm giá theo phần trăm', N'Giảm giá theo tỷ lệ phần trăm của giá sản phẩm.'),
+(N'Giảm giá theo số tiền', N'Giảm giá một số tiền cụ thể cho sản phẩm.'),
+(N'Miễn phí vận chuyển', N'Miễn phí vận chuyển cho đơn hàng trên một mức giá nhất định.'),
+(N'Quà tặng kèm', N'Tặng kèm sản phẩm miễn phí khi mua sản phẩm khác.'),
+(N'Khuyến mãi theo gói', N'Giảm giá khi mua theo gói sản phẩm.'),
+(N'Khuyến mãi theo mùa', N'Giảm giá đặc biệt cho các dịp lễ tết.');
 
 -- Insert data for voucher
-INSERT INTO voucher (ma_voucher, gia_tri_giam_gia, so_luong, mo_ta) VALUES 
-(N'VOUCHER1', 0.10, 100, N'Giảm 10% cho đơn hàng trên 500k'),
-(N'VOUCHER2', 0.15, 50, N'Giảm 15% cho khách hàng mới'),
-(N'VOUCHER3', 0.20, 30, N'Giảm 20% vào dịp sinh nhật'),
-(N'VOUCHER4', 0.05, 200, N'Giảm 5% cho tất cả sản phẩm'),
-(N'VOUCHER5', 0.25, 10, N'Giảm 25% cho đơn hàng trên 1 triệu'),
-(N'VOUCHER6', 50, 100, N'Giảm $50 cho đơn hàng trên 1 triệu'); 
+INSERT INTO voucher (ma_voucher, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc, id_loai_voucher) VALUES
+(N'KM10', 10, 100, 500000,2000000, N'Giảm 10% cho đơn hàng từ 50k', '2024-01-01', '2024-01-31', 1),
+(N'KM20K', 20000, 50,500000,2000000, N'Giảm 20.000đ cho đơn hàng từ 100k', '2024-02-01', '2024-02-28', 2),
+(N'FREE_SHIP', 0, 200,500000,2000000, N'Miễn phí vận chuyển cho đơn hàng từ 150k', '2024-03-01', '2024-03-31', 3),
+(N'GIFT1', 0, 100, 500000,2000000, N'Tặng kèm sản phẩm A khi mua sản phẩm B', '2024-04-01', '2024-04-30', 4),
+(N'PACKAGE5', 50, 30, 500000,2000000, N'Giảm 50.000đ khi mua gói 5 sản phẩm', '2024-05-01', '2024-05-31', 5),
+(N'SUMMER2024', 30, 150, 500000,2000000, N'Giảm 30% cho các sản phẩm mùa hè', '2024-06-01', '2024-06-30', 6);
+
 go
 -- Insert data for danh_muc
 INSERT INTO danh_muc (ten_danh_muc, mo_ta) VALUES 
@@ -629,16 +654,6 @@ INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc,trang_thai) VALU
 (N'Quần sort tây nam', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
 (N'Quần suông dài basic', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1);
 go
--- Insert data for loai_voucher
-INSERT INTO loai_voucher (ten_loai_voucher, mo_ta,id_voucher,id_san_pham) VALUES 
-(N'Voucher Giảm Giá Theo %', N'Áp dụng cho sản phẩm',1,1),
-(N'Voucher Giảm Giá Theo $', N'Áp dụng cho sản phẩm',2,2),
-(N'Voucher Giảm Giá 10%', N'Áp dụng cho đơn hàng trên 500k',3,3),
-(N'Voucher Khách Hàng Mới', N'Chỉ dành cho khách hàng mới',4,4),
-(N'Voucher Sinh Nhật', N'Giảm giá đặc biệt vào dịp sinh nhật',5,5),
-(N'Voucher Toàn Sản Phẩm', N'Giảm giá cho tất cả sản phẩm',6,6),
-(N'Voucher Đơn Hàng Lớn', N'Áp dụng cho đơn hàng trên 1 triệu',6,7);
-go
 INSERT INTO danh_gia (id_nguoi_dung, id_san_pham, noi_dung, diem) VALUES 
 (1, 1, N'Sản phẩm đẹp như trên mô tả', 5),
 (2, 2, N'Sản phẩm chất lượng', 4),
@@ -646,7 +661,24 @@ INSERT INTO danh_gia (id_nguoi_dung, id_san_pham, noi_dung, diem) VALUES
 (4, 4, N'Chất vải tốt, mặc rất thoải mái', 4),
 (5, 5, N'Áo chất lượng, đáng tiền', 4);
 go
+-- Giả sử bạn đã có các bản ghi trong bảng dot_giam_gia
+INSERT INTO dot_giam_gia (ten_dot_giam_gia, gia_tri_giam_gia, mo_ta, ngay_bat_dau, ngay_ket_thuc)
+VALUES 
+(N'Khuyến mãi mùa hè', 20000, N'Giảm giá cho các sản phẩm mùa hè', GETDATE(), DATEADD(DAY, 30, GETDATE()));
 
+-- Lấy Id_dot_giam_gia vừa tạo
+DECLARE @Id_dot_giam_gia INT = SCOPE_IDENTITY();
+
+-- Chèn dữ liệu vào bảng giam_gia_san_pham
+INSERT INTO giam_gia_san_pham (mo_ta, Id_dot_giam_gia, id_san_pham)
+VALUES
+(N'Áo thun nam được giảm giá 10%', @Id_dot_giam_gia, 1),
+(N'Smartphone XYZ áp dụng giảm 20.000đ', @Id_dot_giam_gia, 2),
+(N'Miễn phí vận chuyển cho Bình nước giữ nhiệt', @Id_dot_giam_gia, 3),
+(N'Sách hay được tặng kèm sản phẩm khác', @Id_dot_giam_gia, 4),
+(N'Giảm giá cho Bánh kẹo nhập khẩu', @Id_dot_giam_gia, 5),
+(N'Son môi ABC giảm giá 50.000đ', @Id_dot_giam_gia, 6);
+go
 -- Insert data for san_pham_chi_tiet
 INSERT INTO san_pham_chi_tiet (so_luong, id_kich_thuoc_chi_tiet, id_mau_sac_chi_tiet, id_chat_lieu_chi_tiet, id_san_pham)
 VALUES 
@@ -1241,9 +1273,9 @@ VALUES
 (100, 3,2,1, 54),
 (100, 4,2,1, 54),
 (100, 1,3,1, 54),
-(4, 2,3,1,54),
-(1, 3,3,1,54),
-(12, 4,3,1,54);
+(100, 2,3,1,54),
+(100, 3,3,1,54),
+(100, 4,3,1,54);
 go
 -- Insert data for gio_hang_chi_tiet
 INSERT INTO gio_hang_chi_tiet (id_san_pham_chi_tiet, id_gio_hang, so_luong, don_gia, thanh_tien) VALUES 
@@ -1458,3 +1490,5 @@ select * from san_pham_chi_tiet
 select * from gio_hang_chi_tiet
 select * from gio_hang
 select * from hinh_anh_san_pham
+select * from dot_giam_gia
+select * from giam_gia_san_pham
