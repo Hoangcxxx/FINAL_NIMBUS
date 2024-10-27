@@ -38,6 +38,6 @@
   <li>Lê Khả Hoàng</li>   
   <li>Nguyễn Trung Hiếu</li>   
   <li>Lê Đình Linh</li>   
-  <li>Nguyễn Thùy Dương</li>   
+  <li>Phạm Thùy Dương</li>   
 </ul>  
 
