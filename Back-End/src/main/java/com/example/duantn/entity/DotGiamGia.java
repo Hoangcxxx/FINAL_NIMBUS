@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,27 +13,18 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "voucher")
-public class Voucher {
+@Table(name = "dot_giam_gia")
+public class DotGiamGia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_voucher")
-    private Integer idVoucher;
+    @Column(name = "Id_dot_giam_gia")
+    private Integer idDotGiamGia;
 
-    @Column(name = "ma_voucher", unique = true, nullable = false)
-    private String maVoucher;
+    @Column(name = "ten_dot_giam_gia", nullable = false)
+    private String tenDotGiamGia;
 
     @Column(name = "gia_tri_giam_gia")
     private BigDecimal giaTriGiamGia;
-
-    @Column(name = "so_luong")
-    private Integer soLuong;
-
-    @Column(name = "gia_tri_toi_da")
-    private BigDecimal giaTriToiDa;
-
-    @Column(name = "so_tien_toi_thieu")
-    private BigDecimal soTienToiThieu;
 
     @Column(name = "trang_thai")
     private Boolean trangThai;
@@ -50,24 +42,12 @@ public class Voucher {
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao = new Date();
+    private Date ngayTao;
 
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat = new Date();
+    private Date ngayCapNhat;
 
-    @ManyToOne
-    @JoinColumn(name = "id_loai_voucher")
-    private LoaiVoucher loaiVoucher;
-
-    @PrePersist
-    protected void onCreate() {
-        ngayTao = new Date();
-        ngayCapNhat = new Date();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        ngayCapNhat = new Date();
-    }
+    @OneToMany(mappedBy = "dotGiamGia")
+    private List<GiamGiaSanPham> giamGiaSanPhams;
 }

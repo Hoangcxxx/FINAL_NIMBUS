@@ -26,9 +26,20 @@ public class LoaiVoucher {
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
+    private Date ngayTao = new Date();
 
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
+    private Date ngayCapNhat = new Date();
+
+    @PrePersist
+    protected void onCreate() {
+        ngayTao = new Date();
+        ngayCapNhat = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        ngayCapNhat = new Date();
+    }
 }

@@ -455,6 +455,25 @@ footer .logo {
     margin-bottom: 30px;
 }
 
+.logo {
+    width: 150px;
+    /* Đặt kích thước logo */
+    height: auto;
+    /* Tự động điều chỉnh chiều cao để giữ tỷ lệ */
+    transition: transform 0.3s ease;
+    /* Hiệu ứng chuyển động khi di chuột */
+}
+
+.logo:hover {
+    transform: scale(1.1);
+    /* Phóng to logo khi di chuột */
+}
+
+.logo {
+    border-radius: 10px;
+    /* Bo góc logo */
+}
+
 footer h4 {
     font-size: 14px;
     padding-bottom: 20px;

@@ -28,8 +28,8 @@ public class SanPhamService {
     public List<Object[]> getAllSanPhamAD() {
         return sanPhamRepository.getAllSanPhamAD();
     }
-    public List<Object[]> getSanPhamById(String idSanPham) {
-        return sanPhamRepository.getSanPhamById(idSanPham);
+    public SanPham getSanPhamById(Integer idSanPham) {
+        return sanPhamRepository.findById(idSanPham).orElse(null);
     }
 
     public List<Object[]> getSanPhamsByDanhMuc(Integer idDanhMuc) {

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/ad_san_pham")
-@CrossOrigin(origins = "http://127.0.0.1:5501")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ADSanPhamController {
 
     @Autowired
@@ -93,7 +93,15 @@ public class ADSanPhamController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-
+    @GetMapping("/findSanPham/{id}")
+    public ResponseEntity<SanPham> getSanPhamById(@PathVariable Integer id) {
+        SanPham sanPham = sanPhamService.getSanPhamById(id);
+        if (sanPham != null) {
+            return new ResponseEntity<>(sanPham, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
     // Cập nhật sản phẩm
     @PutMapping("/{id}")
     public ResponseEntity<SanPham> updateSanPham(@PathVariable Integer id, @RequestBody SanPham sanPham) {

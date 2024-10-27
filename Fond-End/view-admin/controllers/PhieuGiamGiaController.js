@@ -10,6 +10,6 @@ window.PhieuGiamGiaController = function ($scope, $http) {
         });
     };
 
-    $scope.fetchData('http://localhost:8080/api/ad_voucher/list', 'dsKhuyenMai', 'Fetched Voucher:');
+    $scope.fetchData('http://localhost:8080/api/ad_vouchers', 'dsKhuyenMai', 'Fetched Voucher:');
 
 }

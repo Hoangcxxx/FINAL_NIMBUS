@@ -1,29 +1,41 @@
 package com.example.duantn.service;
 
 import com.example.duantn.entity.LoaiVoucher;
-import com.example.duantn.repository.LoaiVocherRepository;
+import com.example.duantn.repository.LoaiVoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LoaiVoucherService {
     @Autowired
-    private LoaiVocherRepository loaiVocherRepository;
+    private LoaiVoucherRepository loaiVoucherRepository;
+
     public List<LoaiVoucher> getAllLoaiVouchers() {
-        return loaiVocherRepository.findAll();
+        return loaiVoucherRepository.findAll();
     }
 
-    public LoaiVoucher addLoaiVoucher(LoaiVoucher loaiVoucher) {
-        Date now = new Date();
-        loaiVoucher.setNgayTao(now);
-        loaiVoucher.setNgayCapNhat(now);
-        System.out.println("Ngày tạo: " + loaiVoucher.getNgayTao());
-        System.out.println("Ngày cập nhật: " + loaiVoucher.getNgayCapNhat());
-        return loaiVocherRepository.save(loaiVoucher);
+    public Optional<LoaiVoucher> getLoaiVoucherById(Integer id) {
+        return loaiVoucherRepository.findById(id);
     }
 
+    public LoaiVoucher createLoaiVoucher(LoaiVoucher loaiVoucher) {
+        return loaiVoucherRepository.save(loaiVoucher);
+    }
 
+    public LoaiVoucher updateLoaiVoucher(Integer id, LoaiVoucher loaiVoucherDetails) {
+        LoaiVoucher loaiVoucher = loaiVoucherRepository.findById(id).orElseThrow();
+        loaiVoucher.setTenLoaiVoucher(loaiVoucherDetails.getTenLoaiVoucher());
+        loaiVoucher.setMoTa(loaiVoucherDetails.getMoTa());
+        loaiVoucher.setNgayCapNhat(new Date());
+        loaiVoucher.setNgayTao(new Date());
+        return loaiVoucherRepository.save(loaiVoucher);
+    }
+
+    public void deleteLoaiVoucher(Integer id) {
+        loaiVoucherRepository.deleteById(id);
+    }
 }

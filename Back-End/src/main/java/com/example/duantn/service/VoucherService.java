@@ -7,21 +7,41 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
 
-    public List<Object[]> getAllVouchers() {
-        return voucherRepository.getAllVoucher();
+    public List<Voucher> getAllVouchers() {
+        return voucherRepository.findAll();
     }
-    public Voucher addVoucher(Voucher voucher) {
-        Date now = new Date();
-        voucher.setNgayTao(now);
-        voucher.setNgayCapNhat(now);
-        System.out.println("Ngày tạo: " + voucher.getNgayTao());
-        System.out.println("Ngày cập nhật: " + voucher.getNgayCapNhat());
+
+    public Optional<Voucher> getVoucherById(Integer id) {
+        return voucherRepository.findById(id);
+    }
+
+    public Voucher createVoucher(Voucher voucher) {
         return voucherRepository.save(voucher);
     }
-}
 
+    public Voucher updateVoucher(Integer id, Voucher voucherDetails) {
+        Voucher voucher = voucherRepository.findById(id).orElseThrow();
+        voucher.setMaVoucher(voucherDetails.getMaVoucher());
+        voucher.setGiaTriGiamGia(voucherDetails.getGiaTriGiamGia());
+        voucher.setSoLuong(voucherDetails.getSoLuong());
+        voucher.setGiaTriToiDa(voucherDetails.getGiaTriToiDa());
+        voucher.setSoTienToiThieu(voucherDetails.getSoTienToiThieu());
+        voucher.setTrangThai(voucherDetails.getTrangThai());
+        voucher.setMoTa(voucherDetails.getMoTa());
+        voucher.setNgayBatDau(voucherDetails.getNgayBatDau());
+        voucher.setNgayKetThuc(voucherDetails.getNgayKetThuc());
+        voucher.setNgayCapNhat(new Date());
+        return voucherRepository.save(voucher);
+    }
+
+    public void deleteVoucher(Integer id) {
+        voucherRepository.deleteById(id);
+    }
+}

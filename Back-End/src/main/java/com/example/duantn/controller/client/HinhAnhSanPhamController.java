@@ -11,14 +11,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/hinh_anh")
-@CrossOrigin(origins = "http://127.0.0.1:5501")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class HinhAnhSanPhamController {
 
     @Autowired
     private HinhAnhSanPhamService hinhAnhSanPhamService;
-
-    @Autowired
-    private SanPhamRepository sanPhamRepository;
 
     @GetMapping("/{idSanPham}")
     public ResponseEntity<List<HinhAnhSanPham>> getHinhAnhBySanPhamId(@PathVariable Integer idSanPham) {

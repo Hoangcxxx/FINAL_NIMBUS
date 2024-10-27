@@ -1,4 +1,4 @@
-window.addSanPhamController = function ($scope, $http) {
+window.addSanPhamController = function ($scope, $http, $routeParams) {
     $scope.dsSanPham = [];
     $scope.dsSanPhamCT = [];
     $scope.dsDanhMuc = [];
@@ -25,6 +25,10 @@ window.addSanPhamController = function ($scope, $http) {
         idSanPham: null
     };
 
+    $scope.dsSanPham = [];
+    $scope.filteredProducts = [];
+    $scope.productData = { idSanPham: null, tenSanPham: "" };
+
     // Fetch data function
     const fetchData = (url, target, logMessage) => {
         $http.get(url).then(response => {
@@ -34,6 +38,7 @@ window.addSanPhamController = function ($scope, $http) {
     };
 
     // Fetch product details based on selected product ID
+
     $scope.fetchProductDetails = function (idSanPham) {
         if (!idSanPham) {
             $scope.filteredProducts = []; // Reset if no product selected
@@ -43,44 +48,48 @@ window.addSanPhamController = function ($scope, $http) {
         $http.get(url)
             .then(response => {
                 const products = response.data; // Assuming the response returns an array of product details
-                const materialMap = {};
+                if (products.length > 0) {
+                    // Update productData with the first product's information
+                    $scope.productData.tenSanPham = products[0].tenSanPham; // Update other fields as necessary
+                    const materialMap = {};
 
-                products.forEach(item => {
-                    // Initialize material group if it doesn't exist
-                    if (!materialMap[item.tenChatLieu]) {
-                        materialMap[item.tenChatLieu] = {};
-                    }
-                    // Initialize color group if it doesn't exist
-                    if (!materialMap[item.tenChatLieu][item.tenMauSac]) {
-                        materialMap[item.tenChatLieu][item.tenMauSac] = {};
-                    }
-                    // Initialize product group if it doesn't exist
-                    if (!materialMap[item.tenChatLieu][item.tenMauSac][item.tenSanPham]) {
-                        materialMap[item.tenChatLieu][item.tenMauSac][item.tenSanPham] = [];
-                    }
-                    // Push the item into the respective product group
-                    materialMap[item.tenChatLieu][item.tenMauSac][item.tenSanPham].push(item);
-                });
+                    products.forEach(item => {
+                        // Initialize material group if it doesn't exist
+                        if (!materialMap[item.tenChatLieu]) {
+                            materialMap[item.tenChatLieu] = {};
+                        }
+                        // Initialize color group if it doesn't exist
+                        if (!materialMap[item.tenChatLieu][item.tenMauSac]) {
+                            materialMap[item.tenChatLieu][item.tenMauSac] = {};
+                        }
+                        // Initialize product group if it doesn't exist
+                        if (!materialMap[item.tenChatLieu][item.tenMauSac][item.tenSanPham]) {
+                            materialMap[item.tenChatLieu][item.tenMauSac][item.tenSanPham] = [];
+                        }
+                        // Push the item into the respective product group
+                        materialMap[item.tenChatLieu][item.tenMauSac][item.tenSanPham].push(item);
+                    });
 
-                // Convert the grouped object into an array format
-                $scope.filteredProducts = Object.keys(materialMap).map(material => {
-                    return {
-                        material,
-                        colors: Object.keys(materialMap[material]).map(color => {
-                            return {
-                                color,
-                                products: Object.keys(materialMap[material][color]).map(productName => {
-                                    return {
-                                        productName,
-                                        items: materialMap[material][color][productName]
-                                    };
-                                })
-                            };
-                        })
-                    };
-                });
+                    // Convert the grouped object into an array format
+                    $scope.filteredProducts = Object.keys(materialMap).map(material => {
+                        return {
+                            material,
+                            colors: Object.keys(materialMap[material]).map(color => {
+                                return {
+                                    color,
+                                    products: Object.keys(materialMap[material][color]).map(productName => {
+                                        return {
+                                            productName,
+                                            items: materialMap[material][color][productName]
+                                        };
+                                    })
+                                };
+                            })
+                        };
+                    });
 
-                console.log('Fetched and grouped product details:', $scope.filteredProducts);
+                    console.log('Fetched and grouped product details:', $scope.filteredProducts);
+                }
             })
             .catch(error => {
                 console.error('Error fetching product details:', error);
@@ -88,6 +97,14 @@ window.addSanPhamController = function ($scope, $http) {
             });
     };
 
+    // Watch for changes in product ID and fetch details accordingly
+    $scope.$watch('productData.idSanPham', function (newVal) {
+        if (newVal) {
+            $scope.fetchProductDetails(newVal);
+        } else {
+            $scope.filteredProducts = []; // Reset if no product ID
+        }
+    });
 
     $scope.xoaNhieuSanPham = function () {
         // Tạo danh sách các idSanPhamCT được chọn
@@ -132,10 +149,6 @@ window.addSanPhamController = function ($scope, $http) {
 
 
 
-
-
-
-
     // Initialize data
     const initializeData = () => {
         const urls = [
@@ -171,6 +184,7 @@ window.addSanPhamController = function ($scope, $http) {
     // Update selected size
     $scope.updateSize = item => $scope.selectedSizes = updateSelection($scope.dsKichThuoc, item, $scope.selectedSizes, 'size');
 
+    // Save or edit a product
     // Save or edit a product
     $scope.saveProduct = function () {
         if (!$scope.productData.idSanPham) {
@@ -216,12 +230,27 @@ window.addSanPhamController = function ($scope, $http) {
                 console.log(response.data);
                 $scope.resetSelections();
                 $scope.resetForm();
+
+                // Reload the product details to refresh the table
+                $scope.fetchProductDetails(idSanPham); // Reload the table with the latest data
             })
             .catch(error => {
                 alert("Có lỗi xảy ra khi thêm sản phẩm chi tiết.");
                 console.error("Error details:", error);
             });
     };
+
+
+
+    console.log($routeParams.id)
+
+    $http({
+        method: 'GET',
+        url: 'http://localhost:8080/api/ad_san_pham/findSanPham' + "/" + $routeParams.id,
+    }).then(function (response) {
+        $scope.productData = response.data;
+        console.log("log thử giá trị biến $scope.sanpham", response.data);
+    })
 
     // Edit a product
     $scope.chinhSuaSanPham = function (item) {
@@ -264,8 +293,7 @@ window.addSanPhamController = function ($scope, $http) {
     // Reset the form
     $scope.resetForm = function () {
         $scope.resetSelections();
-        $scope.productData = { idSanPham: null };
-        $('#addProductModal').modal('hide');
+        // $scope.productData = { idSanPham: null };
         $('#materialModal').modal('hide');
         $('#colorModal').modal('hide');
         $('#sizeModal').modal('hide');
@@ -308,107 +336,6 @@ window.addSanPhamController = function ($scope, $http) {
         $scope.hideModal('colorModal');      // Đóng modal colorModal
         $scope.hideModal('sizeModal');       // Đóng modal sizeModal
     };
-    // Handle product creation
-    $scope.onCreate = function () {
-        $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
-        $scope.SanPham.giaBan = parseInt($scope.SanPham.giaBan, 10);
-
-        if (!$scope.SanPham.idDanhMuc || !$scope.SanPham.tenSanPham || !$scope.SanPham.giaBan || !$scope.SanPham.moTa) {
-            alert('Vui lòng điền đầy đủ thông tin sản phẩm.');
-            return;
-        }
-
-        const images = document.getElementById('up-hinh-anh').files;
-        $scope.SanPham.hinhAnh = [];
-        const categoryFolder = getCategoryFolder($scope.SanPham.idDanhMuc);
-
-        Promise.all(Array.from(images).map(image => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const imagePath = `images/${categoryFolder}/${image.name}`;
-                $scope.SanPham.hinhAnh.push(imagePath);
-                resolve();
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(image);
-        })))
-            .then(() => {
-                $http.post("http://localhost:8080/api/ad_san_pham", $scope.SanPham, {
-                    headers: { 'Content-Type': 'application/json' },
-                }).then(response => {
-                    $scope.SanPham.idSanPham = response.data.idSanPham;
-                    if ($scope.SanPham.hinhAnh.length > 0) {
-                        $scope.SanPham.hinhAnh.forEach((url, index) => {
-                            $http.post("http://localhost:8080/api/ad_hinh_anh_san_pham", {
-                                idSanPham: $scope.SanPham.idSanPham,
-                                urlAnh: url,
-                                thuTu: index + 1,
-                                loaiHinhAnh: "loai_hinh_anh"
-                            });
-                        });
-                    }
-                    alert('Chúc mừng bạn tạo mới thành công');
-                    initializeData();
-                    $scope.resetModal();
-                }).catch(error => {
-                    console.error('Error creating product:', error);
-                    alert('Có lỗi xảy ra. Vui lòng thử lại.');
-                });
-            }).catch(error => {
-                console.error('Error reading images:', error);
-                alert('Có lỗi xảy ra khi đọc hình ảnh.');
-            });
-    };
-
-    // Get category folder name
-    const getCategoryFolder = idDanhMuc => {
-        const category = $scope.dsDanhMuc.find(danhMuc => danhMuc.idDanhMuc === idDanhMuc);
-        return category ? convertToFolderName(category.tenDanhMuc) : 'others';
-    };
-
-    // Chuyển đổi tên danh mục thành tên thư mục
-    const convertToFolderName = name => {
-        return name
-            .normalize('NFD') // Chuyển đổi ký tự Unicode
-            .replace(/[\u0300-\u036f]/g, '') // Loại bỏ dấu
-            .toLowerCase() // Chuyển thành chữ thường
-            .replace(/\s+/g, '_'); // Thay thế khoảng trắng bằng dấu gạch dưới
-    };
-
-
-    // Handle image uploads
-    $scope.uploadImages = function (el) {
-        if (!el || !el.files) {
-            console.error("No file input element or files found.");
-            return;
-        }
-
-        const files = el.files;
-        const maxFiles = 4;
-
-        if (files.length > maxFiles) {
-            alert(`Bạn chỉ có thể chọn tối đa ${maxFiles} hình ảnh.`);
-            el.value = '';
-            return;
-        }
-
-        const previewContainer = document.querySelector(".image-preview-container");
-        previewContainer.innerHTML = '';
-        $scope.SanPham.hinhAnh = [];
-
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const img = document.createElement("img");
-                img.setAttribute("src", e.target.result);
-                img.classList.add("upload-image-preview");
-                previewContainer.appendChild(img);
-                $scope.SanPham.hinhAnh.push(`${file.name}`);
-            };
-            reader.readAsDataURL(file);
-        });
-    };
-
 
     $scope.selectAll = false; // Tình trạng chọn tất cả
 
@@ -580,6 +507,7 @@ window.addSanPhamController = function ($scope, $http) {
         fetchData('http://localhost:8080/api/ad_kich_thuoc', 'dsKichThuoc');
     };
 
-    
+
+
 
 };

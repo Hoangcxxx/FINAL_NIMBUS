@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/san_pham")
-@CrossOrigin(origins = "http://127.0.0.1:5501")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
@@ -53,18 +53,6 @@ public class SanPhamController {
         List<Object[]> sanPhams = sanPhamService.getAllSanPhams();
         List<Map<String, Object>> filteredProducts = mapSanPhams(sanPhams);
         return ResponseEntity.ok(filteredProducts);
-    }
-
-
-    @GetMapping("/findSanPham/{idSanPham}")
-    public ResponseEntity<List<Map<String, Object>>> getSanPhamById(@PathVariable String idSanPham) {
-        List<Object[]> sanPhamDetails = sanPhamService.getSanPhamById(idSanPham);
-        if (sanPhamDetails.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        // Trả về tất cả các sản phẩm chi tiết
-        List<Map<String, Object>> productDetails = mapSanPhams(sanPhamDetails);
-        return ResponseEntity.ok(productDetails);
     }
 
 

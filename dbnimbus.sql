@@ -71,6 +71,7 @@ CREATE TABLE [san_pham] (
   [Id_san_pham] INT PRIMARY KEY IDENTITY(1,1),
   [ten_san_pham] NVARCHAR(100) NOT NULL,
   [gia_ban] DECIMAL(18) NOT NULL,
+  [gia_khuyen_mai] DECIMAL(18),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [mo_ta] NVARCHAR(MAX),
