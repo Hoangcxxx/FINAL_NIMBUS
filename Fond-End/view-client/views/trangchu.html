@@ -1,142 +1,230 @@
-<nav class="header-bottom" style="margin-top: 137px;">
+<section id="hero">
+    <h4>Trade-in-offer</h4>
+    <h2>Super value deals</h2>
+    <h1>On all products</h1>
+    <p>Save more with coupons & up to 70% off!</p>
+    <button>Shop Now</button>
+</section>
+
+<section id="features" class="section-p1">
     <div class="container">
-        <ul class="menu-list" style="margin-bottom: 0px;">
-            <li class="menu-list-item"><a href="#!trang_chu" class="menu-link text-decoration-none">Trang chủ</a></li>
-            <li class="menu-list-item"><a href="#!san_pham" class="menu-link text-decoration-none">Shop</a></li>
-            <li class="menu-list-item"><a href="#!blog" class="menu-link text-decoration-none">Blog</a></li>
-            <li class="menu-list-item"><a href="#!about" class="menu-link text-decoration-none">About</a></li>
-            <li class="menu-list-item"><a href="#!contact" class="menu-link text-decoration-none">Contact</a></li>
-            <li class="menu-list-item"><a href="#!thong_tin_khach_hang" class="menu-link text-decoration-none">thongtinkhachhang</a></li>
-            <li class="menu-list-item"><a href="#!dang_nhap" class="menu-link text-decoration-none">dangnhap</a></li>
-        </ul>
-    </div>
-</nav>
-
-<main class="main-wrapper">
-    <div class="container" id="trangchu">
-        <div class="home-slider">
-            <img src="/image/02.jpg" alt="" style="margin-top: 128px;">
+        <div class="fe-box">
+            <img src="/view-client/assets/img/features/f1.png" alt="">
+            <h6>Free Shipping</h6>
         </div>
-
-        <div class="home-service" id="home-service">
-            <div class="home-service-item" ng-repeat="service in services">
-                <div class="home-service-item-icon">
-                    <i class="fa-light {{service.icon}}"></i>
-                </div>
-                <div class="home-service-item-content">
-                    <h4 class="home-service-item-content-h">{{service.title}}</h4>
-                    <p class="home-service-item-content-desc">{{service.description}}</p>
-                </div>
-            </div>
+        <div class="fe-box">
+            <img src="/view-client/assets/img/features/f2.png" alt="">
+            <h6>Online Order</h6>
         </div>
-
-        <div class="container" style="margin-top: 60px;">
-            <div class="home-title-block" id="home-title">
-                <h2 class="home-title mb-4">KHÁM PHÁ CỬA HÀNG CỦA CHÚNG TÔI</h2>
-                <div class="menu-container">
-                    <div class="menu-item" ng-repeat="item in dsSanPham">
-                        <img ng-src="{{item.urlAnh}}" alt="image" class="menu-image">
-                        <h3 class="menu-name"><strong>{{item.tenSanPham}}</strong></h3>
-                        <p class="menu-description"><span style="font-size: 90%">{{item.moTa}}</span></p>
-                        <p class="menu-price"><span>{{ item.giaBan / 1 | currency: '$': 0 }}</span> VND</p>
-                        <a href="#!san_pham_ct/{{item.idSanPham}}" class="order-btn text-decoration-none"
-                           ng-click="onclickSanPham(item.idSanPham)" data-bs-toggle="modal"
-                           data-bs-target="#exampleModal">
-                            <i class="fa-solid fa-cart-shopping"></i> ĐẶT HÀNG
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="fe-box">
+            <img src="/view-client/assets/img/features/f3.png" alt="">
+            <h6>Save Money</h6>
+        </div>
+        <div class="fe-box">
+            <img src="/view-client/assets/img/features/f4.png" alt="">
+            <h6>Promotions</h6>
+        </div>
+        <div class="fe-box">
+            <img src="/view-client/assets/img/features/f5.png" alt="">
+            <h6>Happy Sell</h6>
+        </div>
+        <div class="fe-box">
+            <img src="/view-client/assets/img/features/f6.png" alt="">
+            <h6>F24/7 Support</h6>
         </div>
     </div>
-</main>
+</section>
 
-<!-- Modal structure for authentication -->
-<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="authModalLabel">Đăng nhập</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <ul class="nav nav-tabs" id="authTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="login-tab" data-bs-toggle="tab" href="#login" role="tab" aria-controls="login" aria-selected="true">Đăng nhập</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="register-tab" data-bs-toggle="tab" href="#register" role="tab" aria-controls="register" aria-selected="false">Đăng ký</a>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="forgot-password-tab" data-bs-toggle="tab" href="#forgot-password" role="tab" aria-controls="forgot-password" aria-selected="false">Quên mật khẩu</a>
-                    </li>
-                </ul>
-                <div class="tab-content" id="authTabContent">
-                    <!-- Login tab -->
-                    <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
-                        <form ng-submit="login()">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" ng-model="email" class="form-control" id="email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Mật khẩu</label>
-                                <input type="password" ng-model="password" class="form-control" id="password" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Đăng nhập</button>
-                            <div ng-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
-                        </form>
-                    </div>
-                    <!-- Register tab -->
-                    <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
-                        <form ng-submit="register()">
-                            <div class="mb-3">
-                                <label for="tenNguoiDung" class="form-label">Tên người dùng</label>
-                                <input type="text" ng-model="tenNguoiDung" class="form-control" id="tenNguoiDung" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerEmail" class="form-label">Email</label>
-                                <input type="email" ng-model="registerEmail" class="form-control" id="registerEmail" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="registerPassword" class="form-label">Mật khẩu</label>
-                                <input type="password" ng-model="registerPassword" class="form-control" id="registerPassword" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="sdtNguoiDung" class="form-label">SĐT</label>
-                                <input type="text" ng-model="sdtNguoiDung" class="form-control" id="sdtNguoiDung" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="diaChi" class="form-label">Địa chỉ</label>
-                                <input type="text" ng-model="diaChi" class="form-control" id="diaChi" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="gioiTinh" class="form-label">Giới tính</label>
-                                <select ng-model="gioiTinh" class="form-control" id="gioiTinh" required>
-                                    <option value="">Chọn giới tính</option>
-                                    <option value="Nam">Nam</option>
-                                    <option value="Nữ">Nữ</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Đăng ký</button>
-                            <div ng-if="successMessage" class="text-success">{{ successMessage }}</div>
-                            <div ng-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
-                        </form>
-                    </div>
-                    <!-- Forgot password tab -->
-                    <div class="tab-pane fade" id="forgot-password" role="tabpanel" aria-labelledby="forgot-password-tab">
-                        <form ng-submit="forgotPassword()">
-                            <div class="mb-3">
-                                <label for="forgotPasswordEmail" class="form-label">Email</label>
-                                <input type="email" ng-model="forgotPasswordEmail" class="form-control" id="forgotPasswordEmail" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Gửi yêu cầu</button>
-                            <div ng-if="successMessage" class="text-success">{{ successMessage }}</div>
-                            <div ng-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
-                        </form>
-                    </div>
+<section id="product1" class="section-p1">
+    <h2>Featured Products</h2>
+    <p>Summer Collection New Morden Design</p>
+    <div class="prod-cont text-dark">
+        <div class="prod" onclick="window.location.href='sproduct.html';" ng-repeat="item in dsSanPham">
+            <img ng-src="{{item.urlAnh}}" alt="">
+            <div class="des">
+                <span>{{item.tenSanPham}}</span>
+                <h5>{{item.moTa}}</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
                 </div>
+                <h4>{{ item.giaBan/1 | currency: '$': 0 }}</span> VND</h4>
             </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
         </div>
     </div>
-</div>
+</section>
+
+<section id="banner" class="section-m1">
+    <h4>Repair Services</h4>
+    <h2>Up to <span>70% Off</span> - All t-Shirts & Accessories</h2>
+    <button class="normal">Expore More</button>
+</section>
+
+<section id="product1" class="section-p1">
+    <h2>New Arrivals</h2>
+    <p>Summer Collection New Morden Design</p>
+    <div class="prod-cont">
+        <div class="prod">
+            <img src="/view-client/assets/img/products/n1.jpg" alt="">
+            <div class="des">
+                <span>adidas</span>
+                <h5>Cartoon Astronaut T-Shirts</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>$78</h4>
+            </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+        <div class="prod">
+            <img src="/view-client/assets/img/products/n2.jpg" alt="">
+            <div class="des">
+                <span>adidas</span>
+                <h5>Cartoon Astronaut T-Shirts</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>$78</h4>
+            </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+        <div class="prod">
+            <img src="/view-client/assets/img/products/n3.jpg" alt="">
+            <div class="des">
+                <span>adidas</span>
+                <h5>Cartoon Astronaut T-Shirts</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>$78</h4>
+            </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+        <div class="prod">
+            <img src="/view-client/assets/img/products/n4.jpg" alt="">
+            <div class="des">
+                <span>adidas</span>
+                <h5>Cartoon Astronaut T-Shirts</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>$78</h4>
+            </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+        <div class="prod">
+            <img src="/view-client/assets/img/products/n5.jpg" alt="">
+            <div class="des">
+                <span>adidas</span>
+                <h5>Cartoon Astronaut T-Shirts</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>$78</h4>
+            </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+        <div class="prod">
+            <img src="/view-client/assets/img/products/n6.jpg" alt="">
+            <div class="des">
+                <span>adidas</span>
+                <h5>Cartoon Astronaut T-Shirts</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>$78</h4>
+            </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+        <div class="prod">
+            <img src="/view-client/assets/img/products/n7.jpg" alt="">
+            <div class="des">
+                <span>adidas</span>
+                <h5>Cartoon Astronaut T-Shirts</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>$78</h4>
+            </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+        <div class="prod">
+            <img src="/view-client/assets/img/products/n8.jpg" alt="">
+            <div class="des">
+                <span>adidas</span>
+                <h5>Cartoon Astronaut T-Shirts</h5>
+                <div class="star">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4>$78</h4>
+            </div>
+            <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
+        </div>
+    </div>
+</section>
+
+<section id="sm-banner" class="section-p1">
+    <div class="banner-box">
+        <h4>crazy deals</h4>
+        <h2>buy 1 get 1 free</h2>
+        <span>The best classic dress is on sale at cara</span>
+        <button class="white">Learn More</button>
+    </div>
+    <div class="banner-box banner-box2">
+        <h4>spring/summer</h4>
+        <h2>upcomming season</h2>
+        <span>The best classic dress is on sale at cara</span>
+        <button class="white">Collection</button>
+    </div>
+</section>
+
+<section id="l-banner">
+    <div class="banner-box">
+        <h2>SEASONAL SALE</h2>
+        <h3>Winter Collection -50% OFF</h3>
+    </div>
+    <div class="banner-box banner-box2">
+        <h2>NEW FOOTWEAR COLLECTION</h2>
+        <h3>Spring / Summer 2022</h3>
+    </div>
+    <div class="banner-box banner-box3">
+        <h2>T-SHIRTS</h2>
+        <h3>New Trendy Prints</h3>
+    </div>
+</section>

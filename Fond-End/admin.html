@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href='./assets/image/favicon1.png' rel='icon' type='image/x-icon' />
-    <link rel="stylesheet" href="assets/css/admin.css">
-    <link rel="stylesheet" href="./assets/css/toast-message.css">
-    <link href="./assets/font/font-awesome-pro-v6-6.2.0/css/all.min.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="./assets/css/admin-responsive.css">
+    <link href='/view-admin/assets/image/favicon1.png' rel='icon' type='image/x-icon' />
+    <link rel="stylesheet" href="/view-admin/assets/css/admin.css">
+    <link rel="stylesheet" href="/view-admin/assets/css/toast-message.css">
+    <link href="/view-admin/assets/font/font-awesome-pro-v6-6.2.0/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/view-admin/assets/css/admin-responsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="lib/angular.js"></script>
     <script src="lib/angular-route.js"></script>
@@ -26,16 +26,17 @@
     <script src="view-admin/controllers/MauSacController.js"></script>
     <script src="view-admin/controllers/DanhMucController.js"></script>
     <script src="view-admin/controllers/KhoHangController.js"></script>
-    <script src="view-admin/controllers/KhuyenMaiController.js"></script>
+    <script src="view-admin/controllers/PhieuGiamGiaController.js"></script>
+    <script src="view-admin/controllers/DotGiamGiaController.js"></script>
     <script src="view-admin/views/SanPhamEven/addSanPhamController.js"></script>
-    <script src="view-admin/views/KhuyenMaiEven/addKhuyenMaiController.js"></script>
+    <script src="view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMaiController.js"></script>
+    <script src="view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMaiController.js"></script>
     <title>Quản lý cửa hàng</title>
 </head>
 
 <body id="page-top" ng-app="myApp">
     <div class="container-fluid" ng-controller="ngController">
         <div ng-include="'view-admin/layouts/_header.html'"></div>
-        <div ng-include="'view-admin/layouts/_modal.html'"></div>
     </div>
     <script>
         var app = angular.module("myApp", ["ngRoute"]);
@@ -54,9 +55,13 @@
                     templateUrl: 'view-admin/views/khohang.html',
                     controller: KhoHangController
                 })
-                .when('/khuyen_mai', {
-                    templateUrl: 'view-admin/views/khuyenmai.html',
-                    controller: KhuyenMaiController
+                .when('/phieu_giam_gia', {
+                    templateUrl: 'view-admin/views/phieugiamgia.html',
+                    controller: PhieuGiamGiaController
+                })
+                .when('/dot_giam_gia', {
+                    templateUrl: 'view-admin/views/dotgiamgia.html',
+                    controller: DotGiamGiaController
                 })
                 .when('/don_hang', {
                     templateUrl: 'view-admin/views/donhang.html',
@@ -66,13 +71,17 @@
                     templateUrl: 'view-admin/views/sanpham.html',
                     controller: SanPhamController
                 })
-                .when('/Add_SP', {
+                .when('/add_sp', {
                     templateUrl: 'view-admin/views/SanPhamEven/addSanPham.html',
                     controller: addSanPhamController
                 })
-                .when('/Add_KM', {
-                    templateUrl: 'view-admin/views/KhuyenMaiEven/addKhuyenMai.html',
-                    controller: addSanPhamController
+                .when('/add_dot_km', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMai.html',
+                    controller: addDotKhuyenMaiController
+                })
+                .when('/add_phieu_km', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMai.html',
+                    controller: addPhieuKhuyenMaiController
                 })
                 .when('/kich_thuoc', {
                     templateUrl: 'view-admin/views/kichthuoc.html',

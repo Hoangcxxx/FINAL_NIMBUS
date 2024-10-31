@@ -5492,7 +5492,7 @@ fieldset:disabled .btn {
     --bs-badge-padding-y: 0.35em;
     --bs-badge-font-size: 0.75em;
     --bs-badge-font-weight: 700;
-    --bs-badge-color: #fff;
+    --bs-badge-color: #1f1f1f;;
     --bs-badge-border-radius: var(--bs-border-radius);
     display: inline-block;
     padding: var(--bs-badge-padding-y) var(--bs-badge-padding-x);
@@ -7674,7 +7674,7 @@ fieldset:disabled .btn {
     right: 0;
     left: 0;
     height: var(--bs-offcanvas-height);
-    max-height: 100%;
+    max-height: 12%;
     border-bottom: var(--bs-offcanvas-border-width) solid var(--bs-offcanvas-border-color);
     transform: translateY(-100%)
 }

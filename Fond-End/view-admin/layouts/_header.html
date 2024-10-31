@@ -10,53 +10,60 @@
         <aside class="sidebar open">
             <div class="top-sidebar">
                 <a href="#" class="channel-logo">
-                    <image src="./assets/image/favicon1.png" alt="Channel Logo">
+                    <image src="/view-admin//assets/image/favicon1.png" alt="Channel Logo">
                 </a>
                 <div class="hidden-sidebar your-channel">
-                    <image src="assets/image/admin/nb-fasion-title.png" style="height: 44px;" alt="">
+                    <image src="/view-admin/assets/image/admin/nb-fasion-title.png" style="height: 44px;" alt="">
                 </div>
             </div>
             <div class="middle-sidebar">
                 <ul class="sidebar-list">
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'trang_chu'}">
                         <a href="#!trang_chu" class="sidebar-link" ng-click="setActiveTab('trang_chu')">
-                            <div class="sidebar-icon"><i class="fa-light fa-house"></i></div>
+                            <img class="sidebar-icon" src="../../images/icon_home.png" alt=""
+                                style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Trang tổng quan</div>
                         </a>
                     </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'kho_hang'}">
                         <a href="#!kho_hang" class="sidebar-link" ng-click="setActiveTab('kho_hang')">
-                            <div class="sidebar-icon"><i class="fa-solid fa-store"></i></div>
+                            <img class="sidebar-icon" src="../../images/icon_kho_hang.png" alt=""
+                                style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Quản lý kho hàng</div>
                         </a>
                     </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'san_pham'}">
                         <a href="#!san_pham" class="sidebar-link" ng-click="setActiveTab('san_pham')">
-                            <div class="sidebar-icon"><i class="fa-light fa-tshirt"></i></div>
+                            <img class="sidebar-icon" src="../../images/icon_san_pham.png" alt=""
+                                style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Quản lý sản phẩm</div>
                         </a>
                     </li>
-                    <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'khuyen_mai'}">
-                        <a href="#!khuyen_mai" class="sidebar-link" ng-click="setActiveTab('khuyen_mai')">
-                            <div class="sidebar-icon"><i class="fa-solid fa-gift"></i></div>
+                    <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'dot_giam_gia'}">
+                        <a href="#!phieu_giam_gia" class="sidebar-link" ng-click="setActiveTab('dot_giam_gia')">
+                            <img class="sidebar-icon" src="../../images/icon_dot_giam_gia.png" alt=""
+                                style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Khuyến mãi</div>
                         </a>
                     </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'ban_hang'}">
                         <a href="#!ban_hang" class="sidebar-link" ng-click="setActiveTab('ban_hang')">
-                            <div class="sidebar-icon"><i class="fas fa-shopping-cart"></i></div>
+                            <img class="sidebar-icon" src="../../images/icon_ban_hang.png" alt=""
+                                style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Bán hàng</div>
                         </a>
                     </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'don_hang'}">
                         <a href="#!don_hang" class="sidebar-link" ng-click="setActiveTab('don_hang')">
-                            <div class="sidebar-icon"><i class="fa-light fa-basket-shopping"></i></div>
+                            <img class="sidebar-icon" src="../../images/icon_don_hang.png" alt=""
+                                style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Đơn hàng</div>
                         </a>
                     </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'thong_ke'}">
                         <a href="#!thong_ke" class="sidebar-link" ng-click="setActiveTab('thong_ke')">
-                            <div class="sidebar-icon"><i class="fa-light fa-chart-simple"></i></div>
+                            <img class="sidebar-icon" src="../../images/icon_thong_ke.png" alt=""
+                                style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Thống kê</div>
                         </a>
                     </li>
