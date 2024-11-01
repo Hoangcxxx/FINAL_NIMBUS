@@ -1,9 +1,6 @@
 package com.example.duantn.dto;
 
-import com.example.duantn.entity.ChatLieuChiTiet;
-import com.example.duantn.entity.KichThuocChiTiet;
-import com.example.duantn.entity.MauSacChiTiet;
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class NguoiDungController {
 
     @Autowired
@@ -36,6 +36,9 @@ public class NguoiDungController {
     public ResponseEntity<LoginResponse> signIn(@RequestBody NguoiDungDTO nguoiDungDTO) {
         try {
             LoginResponse loginResponse = nguoiDungService.signIn(nguoiDungDTO);
+            if (loginResponse.getTenNguoiDung() == null || loginResponse.getTenNguoiDung().isEmpty()) {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);

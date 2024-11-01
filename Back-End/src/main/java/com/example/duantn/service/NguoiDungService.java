@@ -68,8 +68,7 @@
             if (!nguoiDung1.getTrangThai()) throw new Exception("Chưa xác thực");
             UserDetails userDetails = ourUserDetailsService.loadUserByUsername(nguoiDung.getEmail());
             String accessToken = jwtTokenUtil.generateToken(userDetails);
-            String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
-            return new LoginResponse(nguoiDung1.getIdNguoiDung() , nguoiDung1.getTenNguoiDung(), accessToken, refreshToken);
+            return new LoginResponse(nguoiDung1.getIdNguoiDung() , nguoiDung1.getTenNguoiDung(), accessToken);
         }
     
         public Token generateRefreshToken(RefreshToken token) {

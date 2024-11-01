@@ -1,3 +1,4 @@
+
 window.ThanhtoanController = function ($scope, $http) {
     // Khởi tạo các thông tin giao hàng và giỏ hàng
     $scope.shippingInfo = {
@@ -10,7 +11,9 @@ window.ThanhtoanController = function ($scope, $http) {
         ward: "",
         note: ""
     };
-    
+    $scope.provinces = [];
+    $scope.districts = [];
+    $scope.wards = [];
     $scope.cart = []; // Danh sách sản phẩm trong giỏ hàng
     $scope.totalAmount = 0; // Tổng tiền
     
@@ -53,25 +56,66 @@ window.ThanhtoanController = function ($scope, $http) {
         $scope.totalAmount = $scope.cart.reduce((total, item) => total + item.soLuong * item.giaTien, 0);
     };
 
-    // Xử lý khi bấm nút 'Đặt hàng'
-    $scope.placeOrder = function() {
-        const orderData = {
-            shippingInfo: $scope.shippingInfo,
-            cartItems: $scope.cart,
-            totalAmount: $scope.totalAmount,
-            paymentMethod: "COD" // Có thể cho phép chọn phương thức thanh toán
-        };
+    // // Xử lý khi bấm nút 'Đặt hàng'
+    // $scope.placeOrder = function() {
+    //     const orderData = {
+    //         shippingInfo: $scope.shippingInfo,
+    //         cartItems: $scope.cart,
+    //         totalAmount: $scope.totalAmount,
+    //         paymentMethod: "COD" // Có thể cho phép chọn phương thức thanh toán
+    //     };
         
-        $http.post("http://localhost:8080/api/donhang", orderData)
-            .then(function(response) {
-                alert("Đơn hàng đã được đặt thành công!");
-                // Xử lý các bước tiếp theo, ví dụ như điều hướng sang trang cảm ơn
-            })
-            .catch(function(error) {
-                console.error("Lỗi khi đặt hàng:", error);
-            });
-    };
+    //     $http.post("http://localhost:8080/api/donhang", orderData)
+    //         .then(function(response) {
+    //             alert("Đơn hàng đã được đặt thành công!");
+    //             // Xử lý các bước tiếp theo, ví dụ như điều hướng sang trang cảm ơn
+    //         })
+    //         .catch(function(error) {
+    //             console.error("Lỗi khi đặt hàng:", error);
+    //         });
+    // };
 
     // Khởi chạy hàm lấy dữ liệu giỏ hàng khi vào trang
     $scope.getCartItems();
+
+
+     $scope.getProvinces = function () {
+        $http.get("http://localhost:8080/api/dia-chi/all")
+            .then(function (response) {
+                $scope.provinces = response.data;
+            })
+            .catch(function (error) {
+                console.error("Error fetching provinces:", error);
+            });
+    };
+    
+
+    $scope.$watch("shippingInfo.province", function (newProvince) {
+        if (newProvince) {
+            $http.get(`http://localhost:8080/api/dia-chi/tinh/${newProvince}`)
+                .then(function (response) {
+                    $scope.districts = response.data;
+                    $scope.wards = []; // Reset wards when a new province is selected
+                })
+                .catch(function (error) {
+                    console.error("Error fetching districts:", error);
+                });
+        }
+    });
+    
+  
+    $scope.$watch("shippingInfo.district", function (newDistrict) {
+        if (newDistrict) {
+            $http.get(`http://localhost:8080/api/dia-chi/huyen/${newDistrict}`)
+                .then(function (response) {
+                    $scope.wards = response.data;
+                })
+                .catch(function (error) {
+                    console.error("Error fetching wards:", error);
+                });
+        }
+    });
+
+    // Initialize provinces data on page load
+    $scope.getProvinces();
 };

@@ -52,11 +52,15 @@ public class WebSecurityConfiguration {
                                 "/api/ad_chat_lieu/**",
                                 "/api/ad_kich_thuoc/**",
                                 "/api/ad_san_pham/**",
+                                "/api/payment/**",
                                 "/api/ad_danh_muc",
                                 "/api/hinh_anh/**",
                                 "/api/vai-tro/**",
                                 "/api/xac-thuc/**",
                                 "/api/san_pham/**",
+                                "/api/dia-chi/**",
+                                "/api/hoa-don-chi-tiet/**",
+                                "/api/hoadon/**",
                                 "/api/ad_san_pham/**").permitAll() // Các đường dẫn này được cho phép truy cập mà không cần xác thực
                         // Bỏ chú thích các dòng bên dưới để hạn chế quyền truy cập dựa trên vai trò
                         //.requestMatchers("/api/admin/login/**").hasRole("admin")

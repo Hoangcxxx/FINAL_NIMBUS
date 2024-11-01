@@ -1,24 +1,42 @@
-package com.example.duantn.controller;
+package com.example.duantn.controller.client;
 
 import com.example.duantn.dto.HoaDonDTO;
 import com.example.duantn.service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/api/hoadon")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class HoaDonController {
 
     @Autowired
     private HoaDonService hoaDonService;
 
-    // Lấy danh sách hóa đơn theo ID người dùng
-    @GetMapping("/user/{idNguoiDung}")
-    public ResponseEntity<List<HoaDonDTO>> getHoaDonByNguoiDungId(@PathVariable Integer idNguoiDung) {
-        List<HoaDonDTO> hoaDonDTOs = hoaDonService.layHoaDonTheoNguoiDungId(idNguoiDung);
-        return ResponseEntity.ok(hoaDonDTOs);
+
+    @PostMapping("/them_thong_tin_nhan_hang")
+    public ResponseEntity<String> placeOrder(@RequestBody HoaDonDTO hoaDonDTO) {
+        hoaDonService.createOrder(hoaDonDTO);
+        return ResponseEntity.ok("Đơn hàng đã được đặt thành công!");
     }
+
+
+    @GetMapping("/{maHoaDon}")
+    public ResponseEntity<List<HoaDonDTO>> getAllHoaDons(@PathVariable String maHoaDon) {
+        List<HoaDonDTO> hoaDons;
+        if (maHoaDon != null && !maHoaDon.trim().isEmpty()) {
+            hoaDons = hoaDonService.getHoaDonsByMaHoaDon(maHoaDon);
+        } else {
+            hoaDons = hoaDonService.getAllHoaDons();
+        }
+        return ResponseEntity.ok(hoaDons);
+    }
+
+
+
 }

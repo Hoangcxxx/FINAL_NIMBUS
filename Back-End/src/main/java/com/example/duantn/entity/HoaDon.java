@@ -1,10 +1,10 @@
 package com.example.duantn.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
-
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ import java.util.Date;
 public class HoaDon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_hoa_don")
+    @Column(name = "id_hoa_don")
     private Integer idHoaDon;
 
     @Column(name = "ma_hoa_don", nullable = false, unique = true)
@@ -27,11 +27,11 @@ public class HoaDon {
     private NguoiDung nguoiDung;
 
     @ManyToOne
-    @JoinColumn(name = "id_loai_vocher")
+    @JoinColumn(name = "id_voucher")
     private LoaiVoucher loaiVoucher;
 
     @ManyToOne
-    @JoinColumn(name = "Id_dia_chi_van_chuyen")
+    @JoinColumn(name = "id_dia_chi_van_chuyen")
     private DiaChiVanChuyen diaChiVanChuyen;
 
     @ManyToOne
@@ -50,6 +50,9 @@ public class HoaDon {
     @Column(name = "sdt_nguoi_nhan")
     private String sdtNguoiNhan;
 
+    @Column(name = "thanh_tien")
+    private BigDecimal thanhTien;
+
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
@@ -67,4 +70,7 @@ public class HoaDon {
     @ManyToOne
     @JoinColumn(name = "id_pt_thanh_toan_hoa_don")
     private PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon;
+
+    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<HoaDonChiTiet> hoaDonChiTiets;
 }

@@ -45,7 +45,7 @@ public class GioHangService {
 		if (gioHang == null) {
 			gioHang = new GioHang();
 
-			// Lấy đối tượng NguoiDung từ database dựa trên idUser
+
 			NguoiDung nguoiDung = nguoiDungRepository.findById(idUser)
 					.orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + idUser));
 

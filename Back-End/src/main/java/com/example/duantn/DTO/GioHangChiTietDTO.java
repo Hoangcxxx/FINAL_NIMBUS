@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@ToString
+@Data
 @Setter
 public class GioHangChiTietDTO {
 	private Integer idGioHangChiTiet;

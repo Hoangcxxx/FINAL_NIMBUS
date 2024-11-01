@@ -45,8 +45,5 @@ public class DiaChiVanChuyen {
     @Column(name = "mo_ta")
     private String moTa;
 
-    // Nếu cần thiết, thêm mối quan hệ với phi_van_chuyen
-    @ManyToOne
-    @JoinColumn(name = "id_phi_van_chuyen")
-    private PhiVanChuyen phiVanChuyen;
+
 }

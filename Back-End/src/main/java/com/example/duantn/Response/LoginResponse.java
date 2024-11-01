@@ -8,9 +8,7 @@ import lombok.*;
 @Getter @Setter
 public class LoginResponse {
     private Integer idNguoiDung;  // ID người dùng
-    private String tennguoidung;
+    private String tenNguoiDung;   // Thay đổi tên thuộc tính ở đây
     private String accessToken;     // Token truy cập
-    private String refreshToken;    // Token làm mới
-
 
 }

@@ -1,0 +1,42 @@
+[
+  {
+    "idDiaChiVanChuyen": 1,
+    "tinh": "Hà Nội",
+    "huyen": "Hoàn Kiếm",
+    "xa": "Phan Chu Trinh",
+    "soTienVanChuyen": 30000,
+    "moTa": "Địa chỉ giao hàng tại Hà Nội."
+  },
+  {
+    "idDiaChiVanChuyen": 2,
+    "tinh": "TP. Hồ Chí Minh",
+    "huyen": "Quận 1",
+    "xa": "Nguyễn Thái Bình",
+    "soTienVanChuyen": 50000,
+    "moTa": "Địa chỉ giao hàng tại TP. Hồ Chí Minh."
+  },
+  {
+    "idDiaChiVanChuyen": 3,
+    "tinh": "Hà Nội",
+    "huyen": "Ba Đình",
+    "xa": "Trần Phú",
+    "soTienVanChuyen": 20000,
+    "moTa": "Địa chỉ giao hàng cho các đơn hàng nhỏ."
+  },
+  {
+    "idDiaChiVanChuyen": 4,
+    "tinh": "Đà Nẵng",
+    "huyen": "Hải Châu",
+    "xa": "Hải Châu 1",
+    "soTienVanChuyen": 10000,
+    "moTa": "Địa chỉ giao hàng tại Đà Nẵng."
+  },
+  {
+    "idDiaChiVanChuyen": 5,
+    "tinh": "Bắc Ninh",
+    "huyen": "Thuận Thành",
+    "xa": "Thị trấn Hồ",
+    "soTienVanChuyen": 100000,
+    "moTa": "Địa chỉ giao hàng tại Bắc Ninh."
+  }
+]
