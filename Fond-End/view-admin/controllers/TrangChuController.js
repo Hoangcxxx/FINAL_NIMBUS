@@ -1,3 +1,0 @@
-window.TrangChuController = function ($scope) {
-    
-}

@@ -1,0 +1,560 @@
+<main class="content" xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <div class="section active">
+        <div class="container-fluid">
+            <!-- Page Heading -->
+
+            <h1 class="page-title">Bán hàng tại quầy</h1>
+            <div class="container-fluid my-4">
+                <div class="row">
+                    <!-- Left Column (Invoice List, Cart, Product List) -->
+                    <div class="col-md-8">
+                        <!-- Invoice List -->
+                        <div id="show-product" class="me-3">
+
+                            <div class="me-3"> <!-- Chứa nút tạo hóa đơn -->
+                                <h4 class="border-bottom pb-2">Hóa Đơn</h4>
+                                <div class="me-3">
+                                    <button class="btn btn-dark" ng-click="createInvoice()">
+                                        <i class="fas fa-plus"></i> Tạo hóa đơn
+                                    </button>
+                                    <!-- <div ng-repeat="invoice in unpaidInvoices" style="color: #090909;">
+                                        <button class="btn btn-dark" ng-click="selectInvoice(invoice)"
+                                            style="color: #f9f9f8; text-align: left;">
+                                            {{ invoice.maHoaDon }}
+                                        </button>
+                                        <i class="fas fa-times text-danger" style="cursor: pointer;"
+                                            ng-click="openDeleteModal(invoice.idHoaDon)" title="Xóa hóa đơn"></i>
+                                    </div> -->
+                                </div>
+
+                            </div>
+
+
+                            <div class="card shadow mb-4">
+                                <div class="card-body">
+                                    <div class="table-responsive text-center">
+                                        <table class="table table-hover" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Mã HD</th>
+                                                    <th scope="col">Tên NV</th>
+                                                    <th scope="col">Tên KH</th>
+                                                    <th scope="col">Trạng thái</th>
+                                                    <th scope="col">Ngày Tạo</th>
+                                                    <th scope="col">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="invoice in unpaidInvoices">
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ invoice.maHoaDon }}</td>
+                                                    <td>{{ selectednv ? selectednv.tenNguoiDung : 'Chưa chọn' }}</td>
+                                                    <td>{{ invoice.nguoiDung.tenNguoiDung }}</td>
+                                                    <td>
+                                                        <span ng-if="!invoice.trangThai" class="status-pending">Chưa
+                                                            thanh toán</span>
+                                                        <span ng-if="invoice.trangThai" class="status-paid">Đã thanh
+                                                            toán</span>
+                                                    </td>
+                                                    <td>{{ invoice.ngayTao | date: 'yyyy-MM-dd' }}</td>
+                                                    <td class="control control-table">
+                                                        <button class="btn btn-dark" ng-click="selectInvoice(invoice)">
+                                                            <i class="fa-regular fa-circle-check"></i> Chọn
+                                                        </button>
+                                                        <button class="btn btn-danger"
+                                                            ng-click="openDeleteModal(invoice.idHoaDon)">
+                                                            <i class="fa-solid fa-trash"></i> Xóa
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- The Modal -->
+                        <div id="myModal" ng-show="invoiceToDelete !== null"
+                            style="display: block; position:fixed; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000; justify-content: center; align-items: center; display: flex;">
+                            <div
+                                style="background-color:white; border-radius:8px; padding:20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 300px; text-align: center;">
+                                <h2 style="margin: 0 0 15px;">Xác Nhận Xóa</h2>
+                                <p style="margin-bottom: 20px;">Bạn có muốn xóa?</p>
+                                <button ng-click="confirmDelete()"
+                                    style="padding: 10px 15px; background-color: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; margin-right: 10px;">
+                                    Xóa
+                                </button>
+                                <button ng-click="invoiceToDelete = null"
+                                    style="padding: 10px 15px; background-color: #ccc; color: black; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
+                                    Đóng
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="show-cart">
+                            <h4 class="border-bottom pb-2">
+                                <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                            </h4>
+                            <div class="card shadow mb-4">
+                                <div class="card-body">
+                                    <div class="table-responsive text-center">
+                                        <table class="table table-hover table-bordered"
+                                            style="width: 100%; border-radius: 8px; overflow: hidden;">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Tên sản phẩm</th>
+                                                    <th scope="col">Màu sắc</th>
+                                                    <th scope="col">Kích thước</th>
+                                                    <th scope="col">Số lượng</th>
+                                                    <th scope="col">Giá bán</th>
+                                                    <th scope="col">Thao Tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in cartItems"
+                                                    style="transition: background-color 0.2s;">
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ item.tenSanPham }}</td>
+                                                    <td>{{ item.mauSac }}</td>
+                                                    <td>{{ item.kichThuoc }}</td>
+                                                    <td>
+                                                        <div
+                                                            style="display: flex; align-items: center; justify-content: center;">
+                                                            <!-- Nút giảm số lượng -->
+                                                            <button type="button" class="btn btn-secondary btn-sm"
+                                                                ng-click="item.soLuong = item.soLuong > 1 ? item.soLuong - 1 : 1; updateQuantity(item)">
+                                                                <i class="fa-solid fa-minus"></i>
+                                                            </button>
+
+                                                            <!-- Ô nhập số lượng -->
+                                                            <input type="number" ng-model="item.soLuong" min="1"
+                                                                ng-change="updateQuantity(item)"
+                                                                style="width: 60px; text-align: center; margin: 0 5px; border-radius: 5px; border: 1px solid #ccc;" />
+
+                                                            <!-- Nút tăng số lượng -->
+                                                            <button type="button" class="btn btn-secondary btn-sm"
+                                                                ng-click="item.soLuong = item.soLuong + 1; updateQuantity(item)">
+                                                                <i class="fa-solid fa-plus"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{ item.giaBan | currency: '' : 0 }} ₫</td>
+                                                    <td>
+                                                        <button class="btn btn-danger btn-sm"
+                                                            ng-click="deleteCartItem(item.idSanPhamChiTiet)">
+                                                            <i class="fa-solid fa-trash"></i> Xóa
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Product List Section -->
+                        <h4 class="border-bottom pb-2">
+                            <i class="fas fa-tshirt"></i> Sản phẩm
+                        </h4>
+
+                        <div id="show-product">
+                            <div class="card shadow mb-4">
+                                <div class="card-body">
+                                    <!-- Tìm kiếm sản phẩm -->
+                                    <div class="row">
+                                        <!-- Tìm theo tên sản phẩm -->
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-weight: bold;">
+                                                <i class="fas fa-search"></i> Tên sản phẩm
+                                            </label>
+                                            <input type="text" class="form-control" ng-model="search.tenSanPham"
+                                                placeholder="Tìm theo tên sản phẩm..." style="border-radius: 10px;">
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-weight: bold;">
+                                                <i class="fas fa-list"></i> Danh mục
+                                            </label>
+                                            <select class="form-control" ng-model="search.danhMuc"
+                                                style="border-radius: 10px;">
+                                                <option value="">Chọn danh mục</option>
+                                                <optgroup label="Áo">
+                                                    <option value="Áo phông"><i class="fas fa-tshirt"></i> Áo phông
+                                                    </option>
+                                                    <option value="Áo sơ mi"><i class="fas fa-user-tie"></i> Áo sơ mi
+                                                    </option>
+                                                    <option value="Áo phao"><i class="fas fa-jacket"></i> Áo phao
+                                                    </option>
+                                                    <option value="Áo chống nắng"><i class="fas fa-sun"></i> Áo chống
+                                                        nắng</option>
+                                                </optgroup>
+                                                <optgroup label="Quần">
+                                                    <option value="Quần kaki"><i class="fas fa-trousers"></i> Quần kaki
+                                                    </option>
+                                                    <option value="Quần sort & jean"><i class="fas fa-jeans"></i> Quần
+                                                        sort & jean</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-weight: bold;">
+                                                <i class="fas fa-box"></i> Chất liệu
+                                            </label>
+                                            <select class="form-control" ng-model="search.tenChatLieu"
+                                                style="border-radius: 10px;">
+                                                <option value="">Chọn chất liệu</option>
+                                                <optgroup label="Vải tự nhiên">
+                                                    <option value="Cotton"><i class="fas fa-fabric"></i> Cotton</option>
+                                                    <option value="Linen"><i class="fas fa-leaf"></i> Linen</option>
+                                                    <option value="Tencel"><i class="fas fa-tree"></i> Tencel</option>
+                                                </optgroup>
+                                                <optgroup label="Vải tổng hợp">
+                                                    <option value="Polyester"><i class="fas fa-industry"></i> Polyester
+                                                    </option>
+                                                    <option value="Nylon"><i class="fas fa-wind"></i> Nylon</option>
+                                                    <option value="Denim"><i class="fas fa-jeans"></i> Denim</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-weight: bold;">
+                                                <i class="fas fa-ruler"></i> Kích thước
+                                            </label>
+                                            <select class="form-control" ng-model="search.tenKichThuoc"
+                                                style="border-radius: 10px;">
+                                                <option value="">Chọn kích thước</option>
+                                                <optgroup label="Nhỏ">
+                                                    <option value="S"><i class="fas fa-ruler"></i> S</option>
+                                                    <option value="M"><i class="fas fa-ruler"></i> M</option>
+                                                </optgroup>
+                                                <optgroup label="Lớn">
+                                                    <option value="L"><i class="fas fa-ruler"></i> L</option>
+                                                    <option value="XL"><i class="fas fa-ruler"></i> XL</option>
+                                                    <option value="XXL"><i class="fas fa-ruler"></i> XXL</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bảng hiển thị sản phẩm -->
+                                    <div class="table-responsive text-center mt-4"
+                                        style="max-height: 575px; overflow-y: auto;">
+                                        <table class="table table-hover" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Tên sản phẩm</th>
+                                                    <th scope="col">Thể loại</th>
+                                                    <th scope="col">Chất liệu</th>
+                                                    <th scope="col">Kích thước</th>
+                                                    <th scope="col">Màu sắc</th>
+                                                    <th scope="col">Số lượng</th>
+                                                    <th scope="col">Đơn giá</th>
+                                                    <th scope="col">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="show-user">
+                                                <tr ng-repeat="sp in sanPhamChiTietList | filter:search">
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ sp.tenSanPham }}</td>
+                                                    <td>{{ sp.danhMuc }}</td>
+                                                    <td>{{ sp.tenChatLieu }}</td>
+                                                    <td>{{ sp.tenKichThuoc }}</td>
+                                                    <td>{{ sp.tenMauSac }}</td>
+                                                    <td>{{ sp.soLuong }}</td>
+                                                    <td>{{ sp.giaBan | currency: '' : 0 }} ₫</td>
+                                                    <td>
+                                                        <button class="btn btn-dark"
+                                                            ng-click="addToCart(sp.idSanPhamChiTiet)">
+                                                            <i class="fa fa-shopping-cart"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4">
+                        <h4 class="border-bottom pb-2 text-center"
+                            style="font-size: 1.5rem; font-weight: 600; margin-bottom: 20px;">
+                            <i class="fa-solid fa-receipt"></i> Thanh Toán Hóa Đơn
+                        </h4>
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="searchUser" class="form-label" style="font-weight: 600;">
+                                        Tìm kiếm người dùng
+                                    </label>
+                                    <div class="d-flex position-relative">
+                                        <!-- Ô tìm kiếm -->
+                                        <input type="text" class="form-control me-2" ng-model="searchTerm"
+                                            placeholder="Nhập tên hoặc SĐT" ng-change="filterUsers()"
+                                            ng-focus="filterUsers()" style="width: 75%;">
+                                        <button class="btn btn-dark" ng-click="openAddCustomerModal()">
+                                            <i class="fa-solid fa-plus"></i> Thêm
+                                        </button>
+                                    </div>
+
+                                    <!-- Danh sách khách hàng đã lọc, hiển thị ngay dưới ô tìm kiếm khi có từ khóa -->
+                                    <ul class="list-group position-absolute w-100 mt-1" style="z-index: 8800;"
+                                        ng-show="showDropdown && filteredUsers.length">
+                                        <li ng-repeat="user in filteredUsers" ng-click="selectUser(user)"
+                                            class="list-group-item list-group-item-action">
+                                            <strong>{{user.tenNguoiDung}}</strong> - {{user.sdtNguoiDung}}
+                                        </li>
+                                    </ul>
+                                </div>
+
+
+                                <div class="mb-3">
+                                    <label for="nhanVien" class="form-label" style="font-weight: 600;">
+                                        <i class="fa-solid fa-user-tie"></i> Nhân viên
+                                    </label>
+                                    <div class="input-group">
+                                        <select ng-model="selectednv" ng-options="nv as nv.tenNguoiDung for nv in nvs"
+                                            ng-change="userSelected()" class="form-control"
+                                            style="font-size: 1rem; border-radius: 5px;">
+                                            <option value="" disabled>-- Chọn Nhân Viên --</option>
+                                        </select>
+                                    </div>
+                                    <div ng-if="!selectednv" style="color:red; margin-top: 5px; font-size: 0.9rem;">
+                                        Vui lòng chọn Nhân Viên để tạo hóa đơn!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="border: 1px solid #090909; margin: 10px 0;">
+                        <!-- Chi tiết thanh toán -->
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="invoiceCode" class="form-label" style="font-weight: 600;">
+                                    <i class="fa-solid fa-barcode"></i> Mã hóa đơn
+                                </label>
+                                <input type="text" class="form-control" id="invoiceCode" placeholder="0" readonly
+                                    style="font-size: 1rem;" ng-model="selectedInvoice.maHoaDon" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="totalPrice" class="form-label" style="font-weight: 600;">
+                                    <i class="fa-solid fa-money-bill-wave"></i> Tổng tiền hàng
+                                </label>
+                                <input type="text" class="form-control" ng-value="totalPrice" placeholder="0" readonly
+                                    style="font-size: 1rem;">
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label" style="font-weight: 600;">
+                                    <i class="fa-solid fa-comments"></i>Mô tả
+                                </label>
+                                <textarea class="form-control" id="description" ng-model="description"
+                                    placeholder="Nhập mô tả tại đây..."
+                                    style="font-size: 1rem; border-radius: 5px; height: 100px;"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="paymentMethod" class="form-label" style="font-weight: 600;">
+                                    <i class="fa-solid fa-credit-card"></i> Phương thức Thanh toán
+                                </label>
+                                <select id="paymentMethod" ng-model="selectedPhuongThucThanhToan"
+                                    ng-options="pt.id as pt.tenPhuongThuc for pt in phuongThucThanhToan"
+                                    class="form-control" style="font-size: 1rem; border-radius: 5px;">
+                                    <option value="" disabled>Chọn phương thức thanh toán</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <div class="voucher-info"
+                                    style="border-radius: 10px; padding: 20px; background-color: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); margin: 20px 0; transition: transform 0.2s;">
+                                    <div class="voucher-header"
+                                        style="display: flex; align-items: center; border-bottom: 2px solid #ff0000; padding-bottom: 10px; margin-bottom: 10px;">
+                                        <i class="fas fa-tags"
+                                            style="font-size: 1.5em; color: #ff0000; margin-right: 10px;"></i>
+                                        <h2 style="font-size: 1.5em; color: #333;">Voucher áp dụng: <strong>{{
+                                                selectedVoucher.maVoucher }}</strong></h2>
+                                    </div>
+                                    <div class="voucher-details"
+                                        style="background-color: #f9f9f9; border-radius: 5px; padding: 15px; border-left: 5px solid #ff0000;">
+                                        <p class="voucher-description" style="font-size: 1em; color: #666; margin: 0;">
+                                            {{ selectedVoucher.mo_ta }}</p>
+                                    </div>
+                                </div>
+
+                                <!-- <i class="fas fa-plus-circle ml-2" id="show-discount-modal" style="cursor:pointer;"
+                                        ng-click="openDiscountModal()"></i> -->
+
+
+                                <!-- Modal giảm giá -->
+                                <div class="modal fade" id="discountModal" tabindex="-1"
+                                    aria-labelledby="discountModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="discountModalLabel">Nhập mã giảm giá</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p id="discount-description">Thông tin phiếu giảm giá:</p>
+                                                <input type="text" class="form-control" id="discount-code"
+                                                    placeholder="Nhập mã giảm giá tại đây" />
+                                                <div class="text-danger" id="discount-error" style="display: none;">Mã
+                                                    giảm giá không hợp lệ.</div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Đóng</button>
+                                                <button type="button" class="btn btn-primary" id="apply-discount"
+                                                    onclick="applyDiscount()">Áp dụng</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="customerPaid" class="form-label" style="font-weight: 600;">
+                                    <i class="fa-solid fa-hand-holding-dollar"></i> Tiền khách đưa
+                                </label>
+                                <input type="text" class="form-control" ng-model="tienKhachDua"
+                                    ng-change="calculateChange()" placeholder="0" style="font-size: 1rem;">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="changeDue" class="form-label" style="font-weight: 600;">
+                                    <i class="fa-solid fa-money-bill-wave-alt"></i> Tiền thừa
+                                </label>
+                                <input type="text" class="form-control" ng-value="tienThua" placeholder="0" readonly
+                                    style="font-size: 1rem;">
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-dark"
+                                    style="font-size: 1.1rem; padding: 10px 20px; border-radius: 5px;"
+                                    ng-click="createHoaDonChiTiet()">
+                                    <i class="fa-solid fa-check"></i> Thanh toán
+                                </button>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-dark"
+                                        style="font-size: 1.1rem; padding: 10px 20px; border-radius: 5px;"
+                                        ng-click="printInvoice()">
+                                        <i class="fa-solid fa-check"></i>Thanh toán và In hóa đơn
+                                    </button>
+                                </div>
+                                </button>
+                            </div>
+                            <!-- Modal In Hóa Đơn -->
+                            <div class="modal fade" id="invoicePrintModal" tabindex="-1" role="dialog"
+                                aria-labelledby="invoicePrintModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <div class="store-info">
+                                                <h4>Tên Cửa Hàng: NB Fasion</h4>
+                                                <p>Địa Chỉ: 32 Cổ nhuế 2 - Bắc Từ Liêm - Hà Nội</p>
+                                                <p>Số Điện Thoại: 0989899999</p>
+                                            </div>
+                                            <hr>
+                                            <h6>Thông Tin Hóa Đơn</h6>
+                                            <div>
+                                                <p><strong>Mã Hóa Đơn:</strong> {{selectedInvoice.maHoaDon}}</p>
+                                                <p><strong>Tên Người Nhận:</strong> {{selectedInvoice.tenNguoiNhan}}
+                                                </p>
+                                                <p><strong>Ngày Tạo:</strong> {{selectedInvoice.ngayTao |
+                                                    date:'dd/MM/yyyy'}}</p>
+                                                <p><strong>Sản phẩm mua:</strong></p>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Sản Phẩm</th>
+                                                            <th>Màu Sắc</th>
+                                                            <th>Kích Thước</th>
+                                                            <th>Số Lượng</th>
+                                                            <th>Đơn Giá</th>
+                                                            <th>Tổng Tiền</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat="item in cartItems">
+                                                            <td>{{ $index + 1 }}</td>
+                                                            <td>{{ item.tenSanPham }}</td>
+                                                            <td>{{ item.mauSac }}</td>
+                                                            <td>{{ item.kichThuoc }}</td>
+                                                            <td>{{ item.soLuong }}</td>
+                                                            <td>{{ item.giaBan | currency: '' : 0 }} ₫</td>
+                                                            <td>{{ item.soLuong * item.giaBan | currency: '' : 0 }}
+                                                                ₫</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="total-price text-right">
+                                                <h5 style="font-weight: bold;">Tổng Tiền Hàng:</h5>
+                                                <label class="form-control"
+                                                    style="font-size: 1.5rem; font-weight: bold; text-align: right;">
+                                                    {{ totalPrice | currency: '' : 0 }} ₫
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="signature">
+                                            <p style="font-weight: bold;">Người Lập Hóa Đơn</p>
+                                            <p>(Ký và ghi rõ họ tên)</p>
+                                            <p>Nhân viên </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Modal Thêm Khách Hàng -->
+                    <div id="addCustomerModal" ng-show="isAddCustomerModalOpen"
+                        style="position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+                        <div
+                            style="background-color: white; border-radius: 8px; padding: 30px; width: 400px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);">
+                            <h3 style="text-align: center; margin-bottom: 20px;">
+                                <i class="fa-solid fa-user-plus"></i> Thêm nhanh Khách Hàng Mới
+                            </h3>
+                            <div class="mb-3">
+                                <label for="newCustomerName" style="font-weight: bold;">Tên Khách Hàng:</label>
+                                <input type="text" id="newCustomerName" ng-model="newCustomer.tenNguoiDung"
+                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="newCustomerPhone" style="font-weight: bold;">SĐT:</label>
+                                <input type="text" id="newCustomerPhone" ng-model="newCustomer.sdtNguoiDung"
+                                    style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;" />
+                            </div>
+                            <div style="text-align: center;">
+                                <button class="btn btn-success" ng-click="addCustomer()"
+                                    style="padding: 10px 20px; border-radius: 5px; font-size: 16px; margin-right: 10px;">
+                                    <i class="fa-solid fa-plus"></i> Thêm
+                                </button>
+                                <button class="btn btn-danger" ng-click="closeAddCustomerModal()"
+                                    style="padding: 10px 20px; border-radius: 5px; font-size: 16px;">
+                                    <i class="fa-solid fa-times"></i> Đóng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+</main>

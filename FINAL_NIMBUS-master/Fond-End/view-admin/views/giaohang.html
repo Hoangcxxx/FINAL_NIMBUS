@@ -1,0 +1,26 @@
+<div class="tab-pane fade" id="giao-hang" role="tabpanel" aria-labelledby="giao-hang-tab">
+    <!-- Nội dung giao hàng -->
+    <h2>Thông tin giao hàng</h2>
+    <form ng-submit="submitShipping()">
+        <div class="mb-3">
+            <label for="customerName" class="form-label">Tên khách hàng</label>
+            <input type="text" class="form-control" id="customerName" ng-model="shipping.customerName" required>
+        </div>
+        <div class="mb-3">
+            <label for="customerPhone" class="form-label">Số điện thoại</label>
+            <input type="text" class="form-control" id="customerPhone" ng-model="shipping.customerPhone" required>
+        </div>
+        <div class="mb-3">
+            <label for="address" class="form-label">Địa chỉ giao hàng</label>
+            <input type="text" class="form-control" id="address" ng-model="shipping.address" required>
+        </div>
+        <div class="mb-3">
+            <label for="deliveryFee" class="form-label">Phí giao hàng</label>
+            <input type="number" class="form-control" id="deliveryFee" ng-model="shipping.deliveryFee" required>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Gửi thông tin giao hàng</button>
+            <button type="button" class="btn btn-secondary" ng-click="showShippingForm = false">Quay lại</button>
+        </div>
+    </form>
+</div>
