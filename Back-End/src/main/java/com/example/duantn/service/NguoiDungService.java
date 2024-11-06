@@ -59,20 +59,23 @@
             }
             public LoginResponse signIn(NguoiDungDTO nguoiDung) throws Exception {
                 try {
-                    // Kiểm tra thông tin xác thực
+
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(nguoiDung.getEmail(), nguoiDung.getMatKhau()));
                 } catch (BadCredentialsException e) {
                     throw new Exception("Tên người dùng hoặc mật khẩu không đúng", e);
                 }
 
-                // Lấy thông tin người dùng từ cơ sở dữ liệu
+
                 NguoiDung nguoiDung1 = nguoiDungRepository.findByEmail(nguoiDung.getEmail()).orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
                 if (!nguoiDung1.getTrangThai()) throw new Exception("Chưa xác thực");
 
                 UserDetails userDetails = ourUserDetailsService.loadUserByUsername(nguoiDung.getEmail());
                 String accessToken = jwtTokenUtil.generateToken(userDetails);
+
+
                 return new LoginResponse(nguoiDung1.getIdNguoiDung(), nguoiDung1.getTenNguoiDung(), accessToken);
             }
+
 
 
             public Token generateRefreshToken(RefreshToken token) {

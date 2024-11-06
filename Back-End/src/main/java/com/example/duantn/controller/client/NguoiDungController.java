@@ -31,23 +31,23 @@ public class NguoiDungController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping("/login")
     public ResponseEntity<?> signIn(@RequestBody NguoiDungDTO nguoiDungDTO) {
         try {
             LoginResponse loginResponse = nguoiDungService.signIn(nguoiDungDTO);
 
-            // Check if the user name is not null or empty
+
             if (loginResponse == null || loginResponse.getTenNguoiDung() == null || loginResponse.getTenNguoiDung().isEmpty()) {
                 return new ResponseEntity<>("Tên người dùng không tồn tại", HttpStatus.UNAUTHORIZED);
             }
-
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>("Tên người dùng hoặc mật khẩu không đúng", HttpStatus.UNAUTHORIZED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>("Người dùng không tồn tại hoặc chưa được xác thực", HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            e.printStackTrace(); // Log the stack trace for debugging
+            e.printStackTrace(); // Log lỗi để dễ debug
             return new ResponseEntity<>("Có lỗi xảy ra trong quá trình đăng nhập", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -86,22 +86,10 @@ public class NguoiDungController {
         }
     }
 
-
     @PutMapping("/update/{userid}")
     public ResponseEntity<NguoiDung> updateUser(@PathVariable Integer userid, @RequestBody NguoiDungDTO nguoiDungDTO) {
         try {
             NguoiDung nguoiDung = nguoiDungService.updateUser(userid, nguoiDungDTO);
-
-//
-//            nguoiDungDTO.setId(nguoiDung.getIdNguoiDung());
-//            nguoiDungDTO.setTenNguoiDung(nguoiDung.getTenNguoiDung());
-//            nguoiDungDTO.setMaNguoiDung(nguoiDung.getMaNguoiDung());
-//            nguoiDungDTO.setEmail(nguoiDung.getEmail());
-//            nguoiDungDTO.setSdtNguoiDung(nguoiDung.getSdtNguoiDung());
-//            nguoiDungDTO.setDiaChi(nguoiDung.getDiaChi());
-//            nguoiDungDTO.setGioiTinh(nguoiDung.getGioiTinh());
-//            nguoiDungDTO.setTrangThai(nguoiDung.getTrangThai());
-//            nguoiDungDTO.setMatKhau(nguoiDung.getMatKhau());
             return new ResponseEntity<>(nguoiDung, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -110,3 +98,4 @@ public class NguoiDungController {
         }
     }
 }
+

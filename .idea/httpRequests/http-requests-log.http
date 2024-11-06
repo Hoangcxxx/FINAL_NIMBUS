@@ -1,3 +1,31 @@
+GET http://localhost:8080/api/vnpay/payment-url
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 0
+
+<> 2024-11-06T150347.200.json
+
+###
+
+GET http://localhost:8080/api/vnpay/payment-url
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 0
+
+<> 2024-11-06T145940.200.json
+
+###
+
+GET http://localhost:8080/lich-su-hoa-don
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 0
+
+###
+
 GET http://localhost:8080/api/voucher/hienthi
 User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
 Accept-Encoding: br, deflate, gzip, x-gzip

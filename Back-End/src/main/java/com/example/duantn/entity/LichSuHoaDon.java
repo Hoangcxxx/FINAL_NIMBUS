@@ -20,13 +20,14 @@ public class LichSuHoaDon {
     @Column(name = "Id_lich_su_hoa_don")
     private Integer idLichSuHoaDon;
 
+
+    @Column(name = "so_tien_thanh_toan")
+    private BigDecimal SoTienThanhToan;
+
     @Column(name = "ngay_giao_dich")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayGiaoDich;
 
-    @ManyToOne
-    @JoinColumn(name = "id_hoa_don_chi_tiet")
-    private HoaDonChiTiet hoaDonChiTiet;
 
     @ManyToOne
     @JoinColumn(name = "id_nguoi_dung")
