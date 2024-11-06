@@ -3,6 +3,7 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -20,6 +21,9 @@ public class SanPhamChiTiet {
 
     @Column(name = "so_luong", nullable = false)
     private Integer soLuong;
+    @Column(name = "ngay_tao")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao;
 
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
@@ -39,10 +43,6 @@ public class SanPhamChiTiet {
     @ManyToOne
     @JoinColumn(name = "id_chat_lieu_chi_tiet")
     private ChatLieuChiTiet chatLieuChiTiet;
-
-    @ManyToOne
-    @JoinColumn(name = "id_gio_hang_chi_tiet")
-    private GioHangChiTiet gioHangChiTiet;
 
     @ManyToOne
     @JoinColumn(name = "id_san_pham")

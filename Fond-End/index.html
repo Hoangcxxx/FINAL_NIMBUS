@@ -5,41 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NB Fasion</title>
-    <link rel="stylesheet" href="view-client/css/home.css">
-    <link rel="stylesheet" href="view-client/css/header.css">
-    <link rel="stylesheet" href="view-client/css/footer.css">
-    <link rel="stylesheet" href="view-client/css/sanphamct.css">
-    <link rel="stylesheet" href="view-client/css/hoadon.css">
-    <link rel="stylesheet" href="view-client/css/thanhtoan.css">
-    <link rel="stylesheet" href="view-client/css/trangchu.css">
-    <link rel="stylesheet" href="view-client/css/dangky.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/view-client/assets/css/style.css">
+    <link rel="stylesheet" href="lib/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href='assets/image/favicon1.png' rel='icon' type='image/x-icon' />
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="lib/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/home-responsive.css">
-    <link rel="stylesheet" href="assets/css/toast-message.css">
-    <link rel="stylesheet" href="assets/font/font-awesome-pro-v6-6.2.0/css/all.min.css" />
     <!-- Bootstrap CSS -->
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="lib/all.min.css">
-    <link rel="stylesheet" href="assets/css/w3.css">
-    <script src="lib/bootstrap.js"></script>
-    <script src="lib/font-fontawesome-ae333ffef2.js"></script>
     <script src="lib/angular.js"></script>
     <script src="lib/angular-route.js"></script>
-    <script src="view-client/controllers/HoadonController.js"></script>
     <script src="view-client/controllers/SanPhamController.js"></script>
     <script src="view-client/controllers/ThanhtoanController.js"></script>
     <script src="view-client/controllers/TrangchuController.js"></script>
     <script src="view-client/controllers/SanPhamCTController.js"></script>
-    <script src="view-client/controllers/LoginController.js"></script>
+    <script src="view-client/controllers/AboutController.js"></script>
+    <script src="view-client/controllers/BlogController.js"></script>
+    <script src="view-client/controllers/ContactController.js"></script>
+    <script src="view-client/controllers/GiohangController.js"></script>
+    <script src="view-client/controllers/UserController.js"></script>
 </head>
 
 <body ng-app="myApp">
     <div class="container-fluid" ng-controller="ngController">
         <div ng-include="'view-client/layouts/_header.html'"></div>
-        <div ng-include="'view-client/layouts/_modal.html'"></div>
         <div ng-view></div>
         <div ng-include="'view-client/layouts/_footer.html'"></div>
     </div>
@@ -52,6 +41,22 @@
                     templateUrl: "view-client/views/trangchu.html",
                     controller: TrangchuController
                 })
+                .when("/about", {
+                    templateUrl: "view-client/views/about.html",
+                    controller: AboutController
+                })
+                .when("/user", {
+                    templateUrl: "view-client/views/user.html",
+                    controller: UserController
+                })
+                .when("/blog", {
+                    templateUrl: "view-client/views/blog.html",
+                    controller: BlogController
+                })
+                .when("/contact", {
+                    templateUrl: "view-client/views/contact.html",
+                    controller: ContactController
+                })
                 .when("/san_pham", {
                     templateUrl: "view-client/views/sanpham.html",
                     controller: SanPhamController
@@ -60,9 +65,9 @@
                     templateUrl: "view-client/views/sanphamct.html",
                     controller: SanPhamCTController
                 })
-                .when("/hoa_don", {
-                    templateUrl: "view-client/views/hoadon.html",
-                    controller: HoadonController
+                .when("/gio_hang", {
+                    templateUrl: "view-client/views/cart.html",
+                    controller: GiohangController
                 })
                 .when("/thanh_toan", {
                     templateUrl: "view-client/views/thanhtoan.html",
@@ -80,9 +85,9 @@
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/toast-message.js"></script>
+    <script src="lib/bootstrap.js"></script>
+     <!-- Nội dung HTML khác -->
+     <script src="view-client/assets/javascript/script.js"></script>
 </body>
 
 </html>

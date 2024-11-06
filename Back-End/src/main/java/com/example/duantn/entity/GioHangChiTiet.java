@@ -22,7 +22,9 @@ public class GioHangChiTiet {
     @ManyToOne
     @JoinColumn(name = "id_gio_hang")
     private GioHang gioHang;
-
+    @ManyToOne
+    @JoinColumn(name = "id_san_pham_chi_tiet")
+    private SanPhamChiTiet sanPhamChiTiet;
     @Column(name = "so_luong")
     private Integer soLuong;
 

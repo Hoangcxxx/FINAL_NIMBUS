@@ -1,6 +1,7 @@
 package com.example.duantn.service;
 
 import com.example.duantn.entity.ChatLieu;
+import com.example.duantn.entity.ChatLieu;
 import com.example.duantn.repository.ChatLieuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,9 @@ public class ChatLieuService {
     public List<ChatLieu> getAllChatLieu() {
         return chatLieuRepository.findAll();
     }
-
+    public List<ChatLieu> searchChatLieuByTen(String tenChatLieu) {
+        return chatLieuRepository.findByTenChatLieuContaining(tenChatLieu);
+    }
     public ChatLieu createChatLieu(ChatLieu chatLieu) {
         // Thiết lập ngày tạo là thời điểm hiện tại
         chatLieu.setNgayTao(new Date());
