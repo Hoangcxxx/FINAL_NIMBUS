@@ -2,33 +2,28 @@ package com.example.duantn.query;
 
 public class SanPhamQuery {
     public static final String BASE_QUERY = "SELECT \n" +
-            "    sp.Id_san_pham AS idSanPham, \n" +
-            "    sp.ten_san_pham AS tenSanPham, \n" +
-            "    sp.trang_thai AS trangThai, \n" +
-            "    sp.gia_ban AS giaBan, \n" +
-            "    MAX(sp.mo_ta) AS moTa, \n" +
-            "    dc.ten_danh_muc AS tenDanhMuc, \n" +
-            "    MAX(hl.url_anh) AS urlAnh, \n" +
-            "    MAX(hl.thu_tu) AS thuTu \n" +
+            "    sp.Id_san_pham,\n" +
+            "    sp.ten_san_pham,\n" +
+            "    sp.trang_thai,\n" +
+            "    sp.gia_ban,\n" +
+            "    sp.mo_ta,\n" +
+            "    dc.ten_danh_muc, \n" +
+            "    ha.url_anh,\n" +
+            "    ha.thu_tu\n" +
             "FROM \n" +
-            "    san_pham sp \n" +
-            "JOIN \n" +
-            "    san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham \n" +
+            "    san_pham sp\n" +
             "LEFT JOIN \n" +
-            "    (SELECT DISTINCT id_san_pham, url_anh, thu_tu FROM hinh_anh_san_pham) hl ON spct.Id_san_pham = hl.id_san_pham \n" +
+            "    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham\n" +
             "LEFT JOIN \n" +
             "    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc \n" +
+            "LEFT JOIN \n" +
+            "    giam_gia_san_pham ggs ON sp.Id_san_pham = ggs.id_san_pham\n" +
             "WHERE \n" +
-            "    hl.thu_tu = 1 AND sp.trang_thai = 1 \n" +
-            "GROUP BY \n" +
-            "    sp.Id_san_pham, \n" +
-            "    sp.ten_san_pham, \n" +
-            "    sp.trang_thai, \n" +
-            "    dc.ten_danh_muc,\n" +
-            "    sp.gia_ban,\n" +
-            "    sp.mo_ta \n" +
+            "    ha.thu_tu = 1 -- Chọn hình ảnh đầu tiên\n" +
+            "    AND sp.trang_thai = 1 -- Sản phẩm đang hoạt động\n" +
+            "    AND ggs.Id_giam_gia_san_pham IS NULL -- Sản phẩm chưa được giảm giá\n" +
             "ORDER BY \n" +
-            "    sp.Id_san_pham ASC;";
+            "    sp.Id_san_pham;";
 
 
     public static final String GET_SAN_PHAM_BY_DANH_MUC = "SELECT \n" +
@@ -112,7 +107,29 @@ public class SanPhamQuery {
             "    sp.ngay_cap_nhat DESC;";
 
 
-
-
+    public static final String GET_SAN_PHAM_GIAM_GIA = "SELECT \n" +
+            "    sp.Id_san_pham,\n" +
+            "    sp.ten_san_pham,\n" +
+            "    sp.gia_ban,\n" +
+            "    ggs.gia_khuyen_mai,\n" +
+            "    dgg.gia_tri_giam_gia,\n" +
+            "    dgg.kieu_giam_gia,\n" +
+            "    dgg.ten_dot_giam_gia,\n" +
+            "    dgg.ngay_bat_dau,\n" +
+            "    dgg.ngay_ket_thuc,\n" +
+            "\tsp.mo_ta,\n" +
+            "    dc.ten_danh_muc,\n" +
+            "    ha.url_anh\n" +
+            "FROM \n" +
+            "    san_pham AS sp\n" +
+            "LEFT JOIN giam_gia_san_pham AS ggs ON sp.Id_san_pham = ggs.id_san_pham\n" +
+            "LEFT JOIN dot_giam_gia AS dgg ON ggs.id_dot_giam_gia = dgg.Id_dot_giam_gia\n" +
+            "LEFT JOIN danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc \n" +
+            "LEFT JOIN hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham\n" +
+            "WHERE \n" +
+            "    sp.trang_thai = 1\n" +
+            "    AND ggs.gia_khuyen_mai IS NOT NULL AND ha.thu_tu = 1\n" +
+            "ORDER BY \n" +
+            "    sp.ten_san_pham;";
 
 }

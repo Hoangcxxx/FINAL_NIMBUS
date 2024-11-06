@@ -88,7 +88,9 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Mã</th>
+                                        <th scope="col">Tên giảm giá</th>
                                         <th scope="col">Loại giảm giá</th>
+                                        <th scope="col">Kiểu giảm giá</th>
                                         <th scope="col">Giá trị giảm</th>
                                         <th scope="col">Số lượng</th>
                                         <th scope="col">Ngày bắt đầu</th>
@@ -98,27 +100,32 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in dsKhuyenMai">
+                                    <tr ng-repeat="item in dsKhuyenMai"
+                                        ng-class="getRowClass(item.trangThaiGiamGia.tenTrangThaiGiamGia)">
                                         <th scope="row">{{$index + 1}}</th>
                                         <td>{{item.maVoucher}}</td>
-                                        <td>{{item.tenLoaiGiamGia}}</td>
-                                        <td>{{item.giaTriGiamGia}}</td>
+                                        <td>{{item.tenVoucher}}</td>
+                                        <td>{{item.loaiVoucher.tenLoaiVoucher}}</td>
+                                        <td>
+                                            {{ item.kieuGiamGia ? '$' : '%' }}
+                                        </td>
+                                        <td>
+                                            {{ item.kieuGiamGia ? formatCurrency(item.giaTriGiamGia) :
+                                            item.giaTriGiamGia + ' %' }}
+                                        </td>
                                         <td>{{item.soLuong}}</td>
                                         <td>{{item.ngayBatDau | date:'dd/MM/yyyy'}}</td>
                                         <td>{{item.ngayKetThuc | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{item.trangThaiGiamGia.tenTrangThaiGiamGia}}</td>
                                         <td>
-                                            <input type="checkbox" ng-model="item.trangThai"
-                                                ng-change="updateTrangThai(item.idVoucher, item.trangThai)"
-                                                id="user-status-{{$index}}" class="switch-input">
-                                            <label for="user-status-{{$index}}" class="switch"></label>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-warning">Sửa</button>
-                                            <button class="btn btn-danger">Xóa</button>
+                                            <a href="#!add_phieu_km/{{item.idVoucher}}" class="text-decoration-none">
+                                                <button class="btn btn-warning"><i class="fas fa-edit"></i></button>
+                                            </a>
+                                            <button class="btn btn-danger" ng-click="deleteVoucher(item.idVoucher)"><i
+                                                    class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
-
                             </table>
                         </div>
                     </div>

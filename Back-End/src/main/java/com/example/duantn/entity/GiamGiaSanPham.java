@@ -3,6 +3,7 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -16,12 +17,10 @@ public class GiamGiaSanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_giam_gia_san_pham")
-    private Integer idGiamGiaSanPham;
-
-    @Column(name = "mo_ta")
-    private String moTa;
-
-    @Column(name = "ngay_tao", updatable = false)
+    private Integer idVoucherSanPham;
+    @Column(name = "gia_khuyen_mai", nullable = false)
+    private BigDecimal giaKhuyenMai;
+    @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
 
@@ -30,10 +29,11 @@ public class GiamGiaSanPham {
     private Date ngayCapNhat;
 
     @ManyToOne
-    @JoinColumn(name = "Id_dot_giam_gia")
+    @JoinColumn(name = "id_dot_giam_gia")
     private DotGiamGia dotGiamGia;
 
     @ManyToOne
     @JoinColumn(name = "id_san_pham")
-    private SanPham sanPham;  // Thêm entity SanPham nếu chưa có
+    private SanPham sanPham;
+
 }

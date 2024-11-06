@@ -21,6 +21,8 @@ public class Voucher {
 
     @Column(name = "ma_voucher", unique = true, nullable = false)
     private String maVoucher;
+    @Column(name = "ten_voucher")
+    private String  tenVoucher;
 
     @Column(name = "gia_tri_giam_gia")
     private BigDecimal giaTriGiamGia;
@@ -31,11 +33,11 @@ public class Voucher {
     @Column(name = "gia_tri_toi_da")
     private BigDecimal giaTriToiDa;
 
+    @Column(name = "kieu_giam_gia")
+    private Boolean kieuGiamGia;
+
     @Column(name = "so_tien_toi_thieu")
     private BigDecimal soTienToiThieu;
-
-    @Column(name = "trang_thai")
-    private Boolean trangThai;
 
     @Column(name = "mo_ta")
     private String moTa;
@@ -59,6 +61,9 @@ public class Voucher {
     @ManyToOne
     @JoinColumn(name = "id_loai_voucher")
     private LoaiVoucher loaiVoucher;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_trang_thai_giam_gia")
+    private TrangThaiGiamGia trangThaiGiamGia;
 
     @PrePersist
     protected void onCreate() {

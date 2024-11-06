@@ -32,6 +32,25 @@ public class SanPhamController {
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {
         return results.stream().map(this::mapSanPhamDetail).collect(Collectors.toList());
     }
+    private Map<String, Object> mapSanPhamGiamGiaDetail(Object[] row) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("idSanPham", row[0]);
+        map.put("tenSanPham", row[1]);
+        map.put("giaBan", row[2]);
+        map.put("giaKhuyenMai", row[3]);  // Cập nhật chỉ số cho giá bán
+        map.put("giaTriKhuyenMai", row[4]);  // Cập nhật chỉ số cho giá bán
+        map.put("kieuGiamGia", row[5]);  // Cập nhật chỉ số cho giá bán
+        map.put("tenDotGiamGia", row[6]);  // Cập nhật chỉ số cho giá bán
+        map.put("ngayBatDau", row[7]);  // Cập nhật chỉ số cho giá bán
+        map.put("ngayKetThuc", row[8]);  // Cập nhật chỉ số cho giá bán
+        map.put("moTa", row[9]);    // Cập nhật chỉ số cho mô tả
+        map.put("tenDanhMuc", row[10]); // Cập nhật chỉ số cho trạng thái
+        map.put("urlAnh", row[11]);    // Cập nhật chỉ số cho thứ tự
+        return map;
+    }
+    private List<Map<String, Object>> mapSanPhamGiamGias(List<Object[]> results) {
+        return results.stream().map(this::mapSanPhamGiamGiaDetail).collect(Collectors.toList());
+    }
     private Map<String, Object> mapDanhMucDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -54,7 +73,12 @@ public class SanPhamController {
         List<Map<String, Object>> filteredProducts = mapSanPhams(sanPhams);
         return ResponseEntity.ok(filteredProducts);
     }
-
+    @GetMapping("/san_pham_giam_gia")
+    public ResponseEntity<List<Map<String, Object>>> getAllSanPhamGiamGias() {
+        List<Object[]> sanPhams = sanPhamService.getAllSanPhamGiamGia();
+        List<Map<String, Object>> filteredProducts = mapSanPhamGiamGias(sanPhams);
+        return ResponseEntity.ok(filteredProducts);
+    }
 
     @GetMapping("/findDanhMuc/{idDanhMuc}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamsByDanhMuc(@PathVariable Integer idDanhMuc) {

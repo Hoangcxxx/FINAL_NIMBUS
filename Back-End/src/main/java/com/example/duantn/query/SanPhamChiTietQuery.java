@@ -50,7 +50,7 @@ public class SanPhamChiTietQuery {
                     "JOIN chat_lieu cl ON clc.id_chat_lieu = cl.id_chat_lieu\n" +
                     "JOIN kich_thuoc_chi_tiet kcc ON spc.id_kich_thuoc_chi_tiet = kcc.id_kich_thuoc_chi_tiet\n" +
                     "JOIN kich_thuoc kc ON kcc.id_kich_thuoc = kc.id_kich_thuoc\n" +
-                    "WHERE sp.id_san_pham = :idSanPhamCT and (spc.so_luong=0 or spc.so_luong<0)";
+                    "WHERE sp.id_san_pham = :idSanPhamCT ";
 
 
 

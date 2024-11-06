@@ -2,21 +2,22 @@
     <h2>#stayhome</h2>
     <p>Save more with coupons & up to 70% off!</p>
 </section>
-<div class="offcanvas offcanvas-top" id="demo">
-    <div class="offcanvas-body">
-        <div class="text-center">
-            <a href="" class="menu-link text-dark text-decoration-none me-5" ng-repeat="item in dsDanhMuc"
-                ng-click="onclickDanhMuc(item.idDanhMuc)">{{item.tenDanhMuc}}</a>
+<section id="product1" class="section-p1">
+    <h2>Sản Phẩm Đang Giảm Giá</h2>
+    <p>Bộ sưu tập những sản phẩm đang được giảm giá</p>
+    <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#demo">
+        Danh Mục Sản Phẩm
+        <i class="fa-solid fa-angle-down"></i>
+    </button>
+
+    <div id="demo" class="collapse mt-3">
+        <div class="alert alert-info" role="alert">
+            <div class="text-center">
+                <a href="" class="menu-link text-dark text-decoration-none me-5" ng-repeat="item in dsDanhMuc"
+                    ng-click="onclickDanhMuc(item.idDanhMuc)">{{item.tenDanhMuc}}</a>
+            </div>
         </div>
     </div>
-</div>
-
-<div class="container-fluid mt-3">
-    <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#demo">
-        <i class="fa-solid fa-filter"></i> Lọc sản phẩm
-    </button>
-</div>
-<section id="product1" class="section-p1">
     <div class="prod-cont">
         <div class="prod" ng-repeat="item in dsSanPham">
             <a href="#!san_pham_ct/{{item.idSanPham}}" class="text-decoration-none text-dark">

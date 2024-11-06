@@ -1,5 +1,6 @@
 window.TrangchuController = function ($scope, $http) {
     $scope.dsSanPham = [];
+    $scope.dsSanPhamGiamGia = [];
 
     // Hàm lấy dữ liệu sản phẩm từ API
     function fetchData(url, target) {
@@ -15,6 +16,7 @@ window.TrangchuController = function ($scope, $http) {
         });
     }
     fetchData('http://localhost:8080/api/san_pham', 'dsSanPham');
+    fetchData('http://localhost:8080/api/san_pham/san_pham_giam_gia', 'dsSanPhamGiamGia');
 
 
     $scope.login = function() {

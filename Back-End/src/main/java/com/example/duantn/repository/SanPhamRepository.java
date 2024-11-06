@@ -24,6 +24,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
     @Query(value = SanPhamQuery.GET_SAN_PHAM_AD, nativeQuery = true)
     List<Object[]> getAllSanPhamAD();
+    @Query(value = SanPhamQuery.GET_SAN_PHAM_GIAM_GIA, nativeQuery = true)
+    List<Object[]> getAllSanPhamGiamGia();
 
     @Modifying
     @Transactional

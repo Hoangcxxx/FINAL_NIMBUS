@@ -26,9 +26,6 @@ public class DotGiamGia {
     @Column(name = "gia_tri_giam_gia")
     private BigDecimal giaTriGiamGia;
 
-    @Column(name = "trang_thai")
-    private Boolean trangThai;
-
     @Column(name = "mo_ta")
     private String moTa;
 
@@ -48,6 +45,9 @@ public class DotGiamGia {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
 
-    @OneToMany(mappedBy = "dotGiamGia")
-    private List<GiamGiaSanPham> giamGiaSanPhams;
+    @Column(name = "kieu_giam_gia", nullable = false)
+    private Boolean kieuGiamGia; // Mặc định là phần trăm (%)
+    @ManyToOne
+    @JoinColumn(name = "id_trang_thai_giam_gia")
+    private TrangThaiGiamGia trangThaiGiamGia;  // Thêm entity SanPham nếu chưa có
 }

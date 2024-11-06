@@ -11,15 +11,15 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "voucher_san_pham")
-public class VoucherSanPham {
+@Table(name = "trang_thai_giam_gia")
+public class TrangThaiGiamGia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_voucher_san_pham")
-    private Integer idVoucherSanPham;
+    @Column(name = "Id_trang_thai_giam_gia")
+    private Integer idTrangThaiGiamGia;
 
-    @Column(name = "trang_thai")
-    private Boolean trangThai;
+    @Column(name = "ten_trang_thai_giam_gia", nullable = false)
+    private String tenTrangThaiGiamGia;
 
     @Column(name = "mo_ta")
     private String moTa;
@@ -32,11 +32,10 @@ public class VoucherSanPham {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
 
-    @ManyToOne
-    @JoinColumn(name = "id_voucher")
-    private Voucher voucher;
-
-    @ManyToOne
-    @JoinColumn(name = "id_san_pham")
-    private SanPham sanPham;
+    // Add a constructor for status without date fields
+    public TrangThaiGiamGia(Integer id, String ten, String moTa) {
+        this.idTrangThaiGiamGia = id;
+        this.tenTrangThaiGiamGia = ten;
+        this.moTa = moTa;
+    }
 }

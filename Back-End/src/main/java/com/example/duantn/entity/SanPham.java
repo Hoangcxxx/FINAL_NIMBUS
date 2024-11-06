@@ -22,8 +22,6 @@ public class SanPham {
     private String tenSanPham;
     @Column(name = "gia_ban", nullable = false)
     private BigDecimal giaBan;
-    @Column(name = "gia_khuyen_mai", nullable = false)
-    private BigDecimal giaKhuyenMai;
     @Column(name = "mo_ta")
     private String moTa;
     @Column(name = "trang_thai", nullable = false)

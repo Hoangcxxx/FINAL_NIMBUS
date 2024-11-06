@@ -28,6 +28,9 @@ public class SanPhamService {
     public List<Object[]> getAllSanPhamAD() {
         return sanPhamRepository.getAllSanPhamAD();
     }
+    public List<Object[]> getAllSanPhamGiamGia() {
+        return sanPhamRepository.getAllSanPhamGiamGia();
+    }
     public SanPham getSanPhamById(Integer idSanPham) {
         return sanPhamRepository.findById(idSanPham).orElse(null);
     }
