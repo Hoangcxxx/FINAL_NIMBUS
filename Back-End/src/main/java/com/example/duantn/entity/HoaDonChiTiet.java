@@ -2,21 +2,19 @@ package com.example.duantn.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
 @Entity
 @Table(name = "hoa_don_chi_tiet")
 public class HoaDonChiTiet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_hoa_don_chi_tiet")
+    @Column(name = "id_hoa_don_chi_tiet")
     private Integer idHoaDonChiTiet;
 
     @ManyToOne
@@ -25,7 +23,7 @@ public class HoaDonChiTiet {
 
     @ManyToOne
     @JoinColumn(name = "id_hoa_don", nullable = false)
-    private HoaDon hoaDon; // Khai báo quan hệ với hóa đơn
+    private HoaDon hoaDon;
 
     @Column(name = "so_luong", nullable = false)
     private Integer soLuong;
@@ -40,6 +38,11 @@ public class HoaDonChiTiet {
     @Column(name = "trang_thai", nullable = false)
     private Boolean trangThai;
 
-    @Column(name = "mo_ta", nullable = true)
+    @Column(name = "mo_ta")
     private String moTa;
+
+
+    public void calculateTotal() {
+        this.tongTien = sanPhamChiTiet.getSanPham().getGiaBan().multiply(BigDecimal.valueOf(soLuong));
+    }
 }

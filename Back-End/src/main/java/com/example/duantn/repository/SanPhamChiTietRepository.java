@@ -17,6 +17,8 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 	@Query(value = SanPhamChiTietQuery.GET_SAN_PHAM_BY_ID, nativeQuery = true)
 	List<Object[]> getSanPhamById(@Param("idSanPhamCT") Integer idSanPhamCT);
 
+	Optional<SanPhamChiTiet> findById(Integer id);
+
 	@Query(value = SanPhamChiTietQuery.GET_MAU_SAC_BY_ID_SAN_PHAM, nativeQuery = true)
 	List<Object[]> getMauSacByIdSanPham(@Param("idSanPhamCT") Integer idSanPhamCT);
 

@@ -47,7 +47,20 @@ public class DiaChiVanChuyenService {
         return convertToDTOs(addresses);
     }
 
-    // Phương thức hỗ trợ để chuyển đổi từ Entity sang DTO
+    // Lấy địa chỉ theo id
+    public DiaChiVanChuyenDTO getDiaChiById(Integer idDiaChiVanChuyen) {
+        DiaChiVanChuyen address = diaChiVanChuyenRepository.findById(idDiaChiVanChuyen)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ"));
+        return new DiaChiVanChuyenDTO(
+                address.getIdDiaChiVanChuyen(),
+                address.getTinh(),
+                address.getHuyen(),
+                address.getXa(),
+                address.getSoTienVanChuyen(),
+                address.getMoTa()
+        );
+    }
+
     private List<DiaChiVanChuyenDTO> convertToDTOs(List<DiaChiVanChuyen> addresses) {
         return addresses.stream()
                 .map(address -> new DiaChiVanChuyenDTO(
@@ -61,4 +74,3 @@ public class DiaChiVanChuyenService {
                 .collect(Collectors.toList());
     }
 }
-

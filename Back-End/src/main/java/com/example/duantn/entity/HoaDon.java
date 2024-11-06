@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "hoa_don")
 public class HoaDon {
@@ -28,7 +27,7 @@ public class HoaDon {
 
     @ManyToOne
     @JoinColumn(name = "id_voucher")
-    private LoaiVoucher loaiVoucher;
+    private Voucher voucher;
 
     @ManyToOne
     @JoinColumn(name = "id_dia_chi_van_chuyen")
@@ -73,4 +72,6 @@ public class HoaDon {
 
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HoaDonChiTiet> hoaDonChiTiets;
+
+
 }

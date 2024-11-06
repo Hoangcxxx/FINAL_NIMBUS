@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "voucher")
 public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer IdVoucher;
+    @Column(name = "Id_voucher") // Update to match the actual column name
+    private Integer idVoucher;
 
     @Column(name = "ma_voucher", nullable = false, unique = true)
     private String maVoucher;
 
-    @Column(name = "phan_tram_giam")
+    @Column(name = "gia_tri_giam_gia") // Adjusted name based on SQL query
     private Double phanTramGiamGia;
 
     @Column(name = "so_luong")
@@ -43,4 +43,7 @@ public class Voucher {
 
     @Column(name = "ngay_cap_nhat", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime ngayCapNhat;
+
+    @Column(name = "id_loai_voucher") // Added field for id_loai_voucher based on SQL query
+    private Integer idLoaiVoucher; // Assuming this is an Integer type, adjust as necessary
 }

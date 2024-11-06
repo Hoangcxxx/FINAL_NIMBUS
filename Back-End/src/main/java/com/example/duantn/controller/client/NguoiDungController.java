@@ -31,21 +31,27 @@ public class NguoiDungController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> signIn(@RequestBody NguoiDungDTO nguoiDungDTO) {
+    public ResponseEntity<?> signIn(@RequestBody NguoiDungDTO nguoiDungDTO) {
         try {
             LoginResponse loginResponse = nguoiDungService.signIn(nguoiDungDTO);
-            if (loginResponse.getTenNguoiDung() == null || loginResponse.getTenNguoiDung().isEmpty()) {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+
+            // Check if the user name is not null or empty
+            if (loginResponse == null || loginResponse.getTenNguoiDung() == null || loginResponse.getTenNguoiDung().isEmpty()) {
+                return new ResponseEntity<>("Tên người dùng không tồn tại", HttpStatus.UNAUTHORIZED);
             }
+
             return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Tên người dùng hoặc mật khẩu không đúng", HttpStatus.UNAUTHORIZED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>("Người dùng không tồn tại hoặc chưa được xác thực", HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace(); // Log the stack trace for debugging
+            return new ResponseEntity<>("Có lỗi xảy ra trong quá trình đăng nhập", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PostMapping("/refresh-token")
     public ResponseEntity<Token> refreshToken(@RequestBody RefreshToken refreshTokenRequest) {

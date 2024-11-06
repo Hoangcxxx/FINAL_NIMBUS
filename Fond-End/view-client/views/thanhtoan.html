@@ -15,24 +15,24 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="email" ng-model="shippingInfo.email"
+                        <input type="email" class="form-control" id="email" ng-model="userInfo.email"
                             placeholder="Nhập email" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" ng-model="shippingInfo.name"
+                        <input type="text" class="form-control" id="name" ng-model="userInfo.tenNguoiDung"
                             placeholder="Nhập họ và tên" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label">Số điện thoại (tùy chọn)</label>
-                        <input type="text" class="form-control" id="phone" ng-model="shippingInfo.phone"
+                        <input type="text" class="form-control" id="phone" ng-model="userInfo.sdtNguoiDung"
                             placeholder="Nhập số điện thoại">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="address" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="address" ng-model="shippingInfo.address"
+                        <input type="text" class="form-control" id="address" ng-model="userInfo.diaChi"
                             placeholder="Nhập địa chỉ" required>
                     </div>
                 </div>
@@ -59,10 +59,9 @@
                             <option selected disabled>Chọn phường xã</option>
                         </select>
                     </div>
-
                 </div>
                 <div class="mb-3">
-                    <label for="note" class="form-label">Ghi chú </label>
+                    <label for="note" class="form-label">Ghi chú</label>
                     <textarea class="form-control" id="note" ng-model="shippingInfo.note" rows="2"
                         placeholder="Ghi chú"></textarea>
                 </div>
@@ -82,28 +81,26 @@
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="payment" id="cod" value="cod" checked>
                     <label class="form-check-label d-flex align-items-center" for="cod">
-                        <i class="fas fa-money-bill-wave me-2" style="color: #28a745;"></i> <!-- Màu xanh lá -->
+                        <i class="fas fa-money-bill-wave me-2" style="color: #28a745;"></i>
                         Thanh toán khi giao hàng (COD)
                     </label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="payment" id="zalopay" value="zalopay">
                     <label class="form-check-label d-flex align-items-center" for="zalopay">
-                        <i class="fab fa-zhihu me-2" style="color: #4CAF50;"></i> <!-- Màu xanh lá đậm -->
+                        <i class="fab fa-zhihu me-2" style="color: #4CAF50;"></i>
                         ZaloPay
                     </label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="payment" id="vnpay" value="vnpay">
                     <label class="form-check-label d-flex align-items-center" for="vnpay">
-                        <i class="fab fa-cc-visa me-2" style="color: #003DA5;"></i> <!-- Màu xanh dương -->
+                        <i class="fab fa-cc-visa me-2" style="color: #003DA5;"></i>
                         VNPay
                     </label>
                 </div>
-                <div class="text-muted mt-2">Bạn chỉ phải thanh toán khi nhận được hàng với COD, hoặc thanh toán qua ứng
-                    dụng ZaloPay và VNPay.</div>
+                <div class="text-muted mt-2">Bạn chỉ phải thanh toán khi nhận được hàng với COD, hoặc thanh toán qua ứng dụng ZaloPay và VNPay.</div>
             </div>
-
         </div>
 
         <!-- Right Column: Đơn hàng -->
@@ -125,12 +122,10 @@
                 <!-- Voucher và mã khuyến mãi -->
                 <div class="mb-3">
                     <label for="voucher" class="form-label">Chọn voucher</label>
-                    <select class="form-select" id="voucher" ng-model="selectedVoucher">
+                    <select class="form-select" id="voucher" ng-model="selectedVoucher" ng-options="voucher.code as (voucher.name + ' - Giảm ' + voucher.discount + '%') for voucher in vouchers">
                         <option selected disabled>Chọn voucher (nếu có)</option>
-                        <option ng-repeat="voucher in vouchers" value="{{voucher.code}}">{{voucher.name}} - Giảm
-                            {{voucher.discount}}%</option>
                     </select>
-                </div>
+                </div>                
                 <div class="mb-3">
                     <label for="promoCode" class="form-label">Mã khuyến mãi</label>
                     <input type="text" class="form-control" id="promoCode" ng-model="promoCode"
