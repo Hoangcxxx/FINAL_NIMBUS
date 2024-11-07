@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, Integer> {
 
@@ -41,6 +42,12 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Query(value = "SELECT so_luong FROM san_pham_chi_tiet WHERE Id_san_pham_chi_tiet = :idSanPhamCT", nativeQuery = true)
     Integer findQuantityById(@Param("idSanPhamCT") Integer idSanPhamCT);
 
+    @Query(value = "SELECT * FROM san_pham_chi_tiet " + "WHERE id_mau_sac_chi_tiet = :idMauSac "
+            + "AND id_kich_thuoc_chi_tiet = :idKichThuoc " + "AND id_chat_lieu_chi_tiet = :idChatLieu "
+            + "AND id_san_pham = :idSanPham", nativeQuery = true)
+    Optional<SanPhamChiTiet> findByAttributes(@Param("idMauSac") Integer idMauSac,
+                                              @Param("idKichThuoc") Integer idKichThuoc, @Param("idChatLieu") Integer idChatLieu,
+                                              @Param("idSanPham") Integer idSanPham);
 
 
 }

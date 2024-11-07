@@ -1,13 +1,14 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
-
+    var idSanPham = $routeParams.id;
+    var idMauSacCT = $routeParams.id; // Initialize idMauSacCT to null
+    var idGioHang = 3; // Thay đổi theo nhu cầu của bạn
     $scope.dsSanPhamChiTiet = [];
     $scope.dsMauSacChiTiet = [];
     $scope.dsKichThuocChiTiet = [];
     $scope.anhSanPham = [];
     $scope.kichThuocChiTiet = [];
     $scope.selectedColor = null;
-    var idSanPham = $routeParams.id;
-    var idMauSacCT = $routeParams.id; // Initialize idMauSacCT to null
+    $scope.soluong = 1;
     $scope.slideIndex = 1;
 
     function fetchAnhSanPham() {
@@ -84,22 +85,56 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
     fetchKichThuocChiTiet();
     fetchChatLieuChiTiet();
 
-
-
-
-
-    $scope.addToCart = function (sanPham) {
-        // Logic để thêm sản phẩm vào giỏ hàng
-        console.log("Đã thêm vào giỏ hàng:", sanPham);
-        // Ví dụ: Thêm sản phẩm vào local storage hoặc gọi API để lưu giỏ hàng
+    // Hàm chọn chất liệu
+    $scope.chonChatLieu = function (chatLieu) {
+        $scope.selectedMaterial = chatLieu.idChatLieu;
+        console.log("Chọn chất liệu:", chatLieu);
     };
 
-    $scope.checkout = function (sanPham) {
-        // Logic để chuyển đến trang thanh toán
-        console.log("Thanh toán cho sản phẩm:", sanPham);
-        // Ví dụ: Chuyển hướng đến trang thanh toán với thông tin sản phẩm
+    // Hàm chọn màu sắc
+    $scope.chonMauSac = function (mauSac) {
+        $scope.selectedColor = mauSac.idMauSac;
+        console.log("Chọn màu sắc:", mauSac);
     };
 
+    // Hàm chọn kích thước
+    $scope.chonKichThuoc = function (kichThuoc) {
+        $scope.selectedSize = kichThuoc.idKichThuoc;
+        console.log("Chọn kích thước:", kichThuoc);
+    };
+
+
+    $scope.addToCart = function () {
+        if (!$scope.selectedColor || !$scope.selectedSize || !$scope.selectedMaterial) {
+            alert("Vui lòng chọn đầy đủ màu sắc, kích thước và chất liệu trước khi thêm vào giỏ hàng.");
+            return;
+        }
+
+        // Chuẩn bị dữ liệu sản phẩm để gửi lên backend
+        let cartItem = {
+            idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
+            idMauSac: $scope.selectedColor,  // ID màu sắc
+            idKichThuoc: $scope.selectedSize, // ID kích thước
+            idChatLieu: $scope.selectedMaterial, // ID chất liệu
+            soLuong: $scope.soluong // Số lượng mà người dùng chọn
+        };
+        // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
+        $http.post(`http://localhost:8080/api/gio_hang/add?idUser=${idGioHang}`, cartItem)
+            .then(function (response) {
+                alert("Sản phẩm đã được thêm vào giỏ hàng.");
+                window.location.href = '#!gio_hang';
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+                alert(error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
+            });
+    };
+
+
+    $scope.checkout = function () {
+        console.log("Đang thanh toán cho sản phẩm:", $scope.sanPhamChiTiet);
+        // Thực hiện logic thanh toán tại đây
+    };
 
     $scope.currentDiv = currentDiv;
 

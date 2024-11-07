@@ -4,45 +4,6 @@
         <div class="container-fluid">
             <!-- Page Heading -->
             <h1 class="page-title">Danh Sách Sản Phẩm</h1>
-            <div class="admin-control">
-                <div class="admin-control-left">
-                    <select name="the-loai-tk" id="the-loai-tk" onchange="thongKe()">
-                        <option>Tất cả</option>
-                        <option>Món chay</option>
-                        <option>Món mặn</option>
-                        <option>Món lẩu</option>
-                        <option>Món ăn vặt</option>
-                        <option>Món tráng miệng</option>
-                        <option>Nước uống</option>
-                        <option>Món khác</option>
-                    </select>
-                </div>
-                <div class="admin-control-center">
-                    <form action="" class="form-search">
-                        <span class="search-btn"><i class="fa-light fa-magnifying-glass"></i></span>
-                        <input id="form-search-tk" type="text" class="form-search-input"
-                            placeholder="Tìm kiếm tên món..." oninput="thongKe()">
-                    </form>
-                </div>
-                <div class="admin-control-right">
-                    <form action="" class="fillter-date">
-                        <div>
-                            <label for="time-start">Từ</label>
-                            <input type="date" class="form-control-date" id="time-start-tk" onchange="thongKe()">
-                        </div>
-                        <div>
-                            <label for="time-end">Đến</label>
-                            <input type="date" class="form-control-date" id="time-end-tk" onchange="thongKe()">
-                        </div>
-                    </form>
-                    <button class="btn-reset-order" onclick="thongKe(1)"><i
-                            class="fa-regular fa-arrow-up-short-wide"></i></button>
-                    <button class="btn-reset-order" onclick="thongKe(2)"><i
-                            class="fa-regular fa-arrow-down-wide-short"></i></button>
-                    <button class="btn-reset-order" onclick="thongKe(0)"><i
-                            class="fa-light fa-arrow-rotate-right"></i></button>
-                </div>
-            </div>
             <div class="order-statistical" id="order-statistical">
                 <div class="order-statistical-item">
                     <div class="order-statistical-item-content">
@@ -72,8 +33,6 @@
                     </div>
                 </div>
             </div>
-
-
 
             <!-- Modal body -->
             <div class="modal-body border border-3 rounded p-2">
@@ -176,7 +135,7 @@
                         <h4 class="d-flex justify-content-between">Đã Hoàn Thành <span
                                 class="badge bg-light text-success ms-2"
                                 id="donHangHoanThanh">{{donHangHoanThanh}}</span></h4>
-                        <p>Đơn hàng của bạn đã hoàn thành thành công.</p>
+                        <p>Đơn hàng của bạn đã được giao đến địa chỉ của bạn thành công.</p>
                     </div>
                 </div>
 
