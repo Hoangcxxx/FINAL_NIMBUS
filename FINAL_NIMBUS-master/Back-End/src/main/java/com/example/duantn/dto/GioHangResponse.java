@@ -15,4 +15,5 @@ public class GioHangResponse {
     private String kichThuoc;
     private Integer soLuong;
     private BigDecimal giaBan;
+    private String urlAnh;
 }

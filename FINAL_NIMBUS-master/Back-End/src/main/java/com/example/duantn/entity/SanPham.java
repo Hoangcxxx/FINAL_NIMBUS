@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -39,4 +40,12 @@ public class SanPham {
     @ManyToOne
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
+    @OneToMany(mappedBy = "sanPham")
+    private List<HinhAnhSanPham> hinhAnhSanPham;
+    public String getUrlAnh() {
+        if (hinhAnhSanPham != null && !hinhAnhSanPham.isEmpty()) {
+            return hinhAnhSanPham.get(0).getUrlAnh();
+        }
+        return null;  // Trả về null nếu không có hình ảnh
+    }
 }

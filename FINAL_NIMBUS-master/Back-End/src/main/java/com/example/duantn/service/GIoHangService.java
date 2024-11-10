@@ -84,6 +84,8 @@ public class GIoHangService {
         response.setKichThuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
         response.setSoLuong(chiTiet.getSoLuong());
         response.setGiaBan(BigDecimal.valueOf(chiTiet.getDonGia()));
+        String urlAnh = chiTiet.getSanPhamChiTiet().getSanPham().getUrlAnh();
+        response.setUrlAnh(urlAnh);
         return response;
     }
     @Transactional

@@ -42,25 +42,31 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Query(value = "SELECT so_luong FROM san_pham_chi_tiet WHERE Id_san_pham_chi_tiet = :idSanPhamCT", nativeQuery = true)
     Integer findQuantityById(@Param("idSanPhamCT") Integer idSanPhamCT);
 
-        @Query("SELECT new com.example.duantn.dto.SanPhamChiTietDTO(" +
-                "spct.idSanPhamChiTiet, " +
-                "spct.soLuong, " +
-                "sp.danhMuc.tenDanhMuc, " +
-                "m.mauSac.tenMauSac, " +
-                "kkt.tenKichThuoc, " +
-                "c.chatLieu.tenChatLieu, " +
-                "sp.tenSanPham, " +
-                "sp.giaBan, " +
-                "spct.trangThai, " +
-                "spct.ngayTao, " +
-                "spct.ngayCapNhat) " +
-                "FROM SanPhamChiTiet spct " +
-                "JOIN spct.mauSacChiTiet m " +
-                "JOIN spct.kichThuocChiTiet k " +
-                "JOIN k.kichThuoc kkt " +
-                "JOIN spct.chatLieuChiTiet c " +
-                "JOIN spct.sanPham sp")
-        List<SanPhamChiTietDTO> findAllSanPhamChiTietDetails();
+    @Query("SELECT new com.example.duantn.dto.SanPhamChiTietDTO(" +
+            "spct.idSanPhamChiTiet, " +
+            "spct.soLuong, " +
+            "sp.danhMuc.tenDanhMuc, " +
+            "m.mauSac.tenMauSac, " +
+            "kkt.tenKichThuoc, " +
+            "c.chatLieu.tenChatLieu, " +
+            "sp.tenSanPham, " +
+            "sp.giaBan, " +
+            "spct.trangThai, " +
+            "spct.ngayTao, " +
+            "spct.ngayCapNhat, " +
+            "ha.urlAnh) " +
+            "FROM SanPhamChiTiet spct " +
+            "JOIN spct.mauSacChiTiet m " +
+            "JOIN spct.kichThuocChiTiet k " +
+            "JOIN k.kichThuoc kkt " +
+            "JOIN spct.chatLieuChiTiet c " +
+            "JOIN spct.sanPham sp " +
+            "JOIN sp.hinhAnhSanPham ha " +
+            "WHERE ha.trangThai = true " + // Lọc hình ảnh có trạng thái active
+            "AND ha.thuTu = 1 " + // Chỉ lấy hình ảnh đầu tiên
+            "ORDER BY ha.thuTu ASC" // Nếu cần sắp xếp theo thứ tự
+    )
+    List<SanPhamChiTietDTO> findAllSanPhamChiTietDetails();
     @Modifying
     @Transactional
     @Query("UPDATE SanPhamChiTiet spct SET spct.soLuong = spct.soLuong - :soLuong WHERE spct.idSanPhamChiTiet = :idSanPhamChiTiet AND spct.soLuong >= :soLuong")
