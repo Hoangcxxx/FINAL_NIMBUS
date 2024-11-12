@@ -23,6 +23,7 @@ CREATE TABLE [nguoi_dung] (
   [Mat_Khau] NVARCHAR(255) NOT NULL,
   [Anh_Dai_Dien] NVARCHAR(255),
   [Trang_thai] BIT DEFAULT 1,
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [id_vai_tro] INT,
   CONSTRAINT [FK_nguoi_dung_id_vai_tro]
@@ -30,30 +31,32 @@ CREATE TABLE [nguoi_dung] (
       REFERENCES [vai_tro]([Id_vai_tro])
 );
 -- Insert data for vai_tro
-
-CREATE TABLE [voucher] (
-  [Id_voucher] INT PRIMARY KEY IDENTITY(1,1),
-  [ma_voucher] NVARCHAR(50) NOT NULL UNIQUE,
-  [phan_tram_giam] DECIMAL(5),
-  [so_luong] INT,
-  [trang_thai] BIT DEFAULT 1,
-  [mo_ta] NVARCHAR(MAX),
-  [ngay_bat_dau] DATETIME,
-  [ngay_ket_thuc] DATETIME,
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
-);
 go
 CREATE TABLE [loai_voucher] (
   [Id_loai_voucher] INT PRIMARY KEY IDENTITY(1,1),
   [ten_loai_voucher] NVARCHAR(100) NOT NULL,
   [mo_ta] NVARCHAR(MAX),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+);
+go
+CREATE TABLE [voucher] (
+  [Id_voucher] INT PRIMARY KEY IDENTITY(1,1),
+  [ma_voucher] NVARCHAR(50) NOT NULL UNIQUE,
+  [gia_tri_giam_gia] DECIMAL(18),
+  [so_luong] INT,
+  [gia_tri_toi_da] DECIMAL(18),
+  [so_tien_toi_thieu] DECIMAL(18),
+  [trang_thai] BIT DEFAULT 1,
+  [mo_ta] NVARCHAR(MAX),
+  [ngay_bat_dau] DATETIME,
+  [ngay_ket_thuc] DATETIME,
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
-  [id_voucher] INT,
-  CONSTRAINT [FK_loai_voucher_id_voucher]
-    FOREIGN KEY ([id_voucher])
-      REFERENCES [voucher]([Id_voucher])
+  [id_loai_voucher] int,
+  CONSTRAINT [FK_loai_voucher_id_loai_voucher]
+    FOREIGN KEY ([id_loai_voucher])
+      REFERENCES [loai_voucher]([Id_loai_voucher])
 );
 go
 CREATE TABLE [danh_muc] (
@@ -71,15 +74,39 @@ CREATE TABLE [san_pham] (
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [mo_ta] NVARCHAR(MAX),
-  [Trang_thai] BIT DEFAULT 1,
+  [trang_thai] BIT DEFAULT 1,
   [id_danh_muc] INT,
-  [id_loai_voucher] INT,
-  CONSTRAINT [FK_san_pham_id_loai_voucher]
-    FOREIGN KEY ([id_loai_voucher])
-      REFERENCES [loai_voucher]([Id_loai_voucher]),
   CONSTRAINT [FK_san_pham_id_danh_muc]
     FOREIGN KEY ([id_danh_muc])
       REFERENCES [danh_muc]([Id_danh_muc])
+);
+go
+
+CREATE TABLE [dot_giam_gia] (
+  [Id_dot_giam_gia] INT PRIMARY KEY IDENTITY(1,1),
+  [ten_dot_giam_gia] NVARCHAR(100) NOT NULL,
+  [gia_tri_giam_gia] DECIMAL(18),
+  [trang_thai] BIT DEFAULT 1,
+  [mo_ta] NVARCHAR(MAX),
+  [ngay_bat_dau] DATETIME DEFAULT GETDATE(),
+  [ngay_ket_thuc] DATETIME DEFAULT GETDATE(),
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+);
+go
+CREATE TABLE [giam_gia_san_pham] (
+  [Id_giam_gia_san_pham] INT PRIMARY KEY IDENTITY(1,1),
+  [mo_ta] NVARCHAR(MAX),
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+  [Id_dot_giam_gia] INT,
+  [id_san_pham] INT, -- Thêm id_san_pham vào loai_voucher
+  CONSTRAINT [FK_giam_gia_san_pham_id_dot_giam_gia]
+    FOREIGN KEY ([id_dot_giam_gia])
+      REFERENCES [dot_giam_gia]([Id_dot_giam_gia]),
+  CONSTRAINT [FK_giam_gia_san_pham_id_san_pham]
+    FOREIGN KEY ([id_san_pham])
+      REFERENCES [san_pham]([Id_san_pham])
 );
 go
 CREATE TABLE [danh_gia] (
@@ -161,20 +188,6 @@ CREATE TABLE [gio_hang] (
     FOREIGN KEY ([id_nguoi_dung]) REFERENCES nguoi_dung(Id_nguoi_dung)
 );
 go
-CREATE TABLE [gio_hang_chi_tiet] (
-  [Id_gio_hang_chi_tiet] INT PRIMARY KEY IDENTITY(1,1),
-  [id_gio_hang] INT,
-  [so_luong] INT,
-  [don_gia] DECIMAL(18),
-  [thanh_tien] DECIMAL(18),
-  [Trang_Thai] BIT DEFAULT 1,
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
-  CONSTRAINT [FK_gio_hang_chi_tiet_id_gio_hang]
-    FOREIGN KEY ([id_gio_hang])
-      REFERENCES [gio_hang]([Id_gio_hang])
-);
-go
 CREATE TABLE [san_pham_chi_tiet] (
   [Id_san_pham_chi_tiet] INT PRIMARY KEY IDENTITY(1,1),
   [so_luong] INT NULL,
@@ -184,7 +197,6 @@ CREATE TABLE [san_pham_chi_tiet] (
   [id_kich_thuoc_chi_tiet] INT,
   [id_mau_sac_chi_tiet] INT,
   [id_chat_lieu_chi_tiet] INT,
-  [id_gio_hang_chi_tiet] INT,
   [id_san_pham] INT,
   CONSTRAINT [FK_san_pham_chi_tiet_id_chat_lieu_chi_tiet]
     FOREIGN KEY ([id_chat_lieu_chi_tiet])
@@ -197,98 +209,127 @@ CREATE TABLE [san_pham_chi_tiet] (
       REFERENCES [san_pham]([Id_san_pham]),
   CONSTRAINT [FK_san_pham_chi_tiet_id_mau_sac_chi_tiet]
     FOREIGN KEY ([id_mau_sac_chi_tiet])
-      REFERENCES [mau_sac_chi_tiet]([Id_mau_sac_chi_tiet]),
-  CONSTRAINT [FK_san_pham_chi_tiet_id_gio_hang_chi_tiet]
-    FOREIGN KEY ([id_gio_hang_chi_tiet])
-      REFERENCES [gio_hang_chi_tiet]([Id_gio_hang_chi_tiet])
+      REFERENCES [mau_sac_chi_tiet]([Id_mau_sac_chi_tiet])
 );
 go
-CREATE TABLE [phi_van_chuyen] (
-  [Id_phi_van_chuyen] INT PRIMARY KEY IDENTITY(1,1),
-  [so_tien_van_chuyen] DECIMAL(18),
-  [mo_ta] NVARCHAR(MAX),
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
-);
-go
-CREATE TABLE [dia_chi_van_chuyen] (
-  [Id_dia_chi_van_chuyen] INT PRIMARY KEY IDENTITY(1,1),
-  [id_phi_van_chuyen] INT,
-  [tinh] NVARCHAR(100),
-  [huyen] NVARCHAR(100),
-  [xa] NVARCHAR(100),
+CREATE TABLE [gio_hang_chi_tiet] (
+  [Id_gio_hang_chi_tiet] INT PRIMARY KEY IDENTITY(1,1),
+  [id_san_pham_chi_tiet] INT ,
+  [id_gio_hang] INT,
+  [so_luong] INT,
+  [don_gia] DECIMAL(18),
+  [thanh_tien] DECIMAL(18),
+  [trang_thai] BIT DEFAULT 1,
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
-  [mo_ta] NVARCHAR(MAX),
-  CONSTRAINT [FK_dia_chi_van_chuyen_id_phi_van_chuyen]
-    FOREIGN KEY ([id_phi_van_chuyen])
-      REFERENCES [phi_van_chuyen]([Id_phi_van_chuyen])
+  CONSTRAINT [FK_gio_hang_chi_tiet_id_gio_hang]
+    FOREIGN KEY ([id_gio_hang])
+      REFERENCES [gio_hang]([Id_gio_hang]),
+	  CONSTRAINT [FK_san_pham_chi_tiet_id_san_pham_chi_tiet]
+    FOREIGN KEY ([id_san_pham_chi_tiet])
+      REFERENCES [san_pham_chi_tiet]([Id_san_pham_chi_tiet])
 );
 go
-CREATE TABLE [pt_thanh_toan] (
-  [Id_pt_thanh_toan] INT PRIMARY KEY IDENTITY(1,1),
-  [ma_thanh_toan] NVARCHAR(50) NOT NULL UNIQUE,
-  [ten_phuong_thuc] NVARCHAR(100) NOT NULL,
-  [noi_dung_thanh_toan] NVARCHAR(MAX),
-  [ngay_thanh_toan] DATETIME,
-  [trang_thai_thanh_toan] BIT DEFAULT 1,
-  [phi_giao_dich] DECIMAL(18),
-  [thong_tin_them] NVARCHAR(MAX)
+CREATE TABLE kho_hang (
+    [Id_kho_hang] INT PRIMARY KEY IDENTITY(1,1),
+    [so_luong_them] INT,
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE() -- Đổi kiểu dữ liệu từ INT sang DATETIME
 );
-go
-CREATE TABLE [pt_thanh_toan_hoa_don] (
-  [Id_thanh_toan_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
-  [id_pt_thanh_toan] INT,
-  [so_tien_thanh_toan] DECIMAL(18),
-  [ngay_giao_dich] DATETIME,
-  [ghi_chu] NVARCHAR(MAX),
-  [id_giao_dich_thanh_toan] NVARCHAR(50),
-  CONSTRAINT [FK_pt_thanh_toan_hoa_don_id_pt_thanh_toan]
-    FOREIGN KEY ([id_pt_thanh_toan])
-      REFERENCES [pt_thanh_toan]([Id_pt_thanh_toan])
+GO
+CREATE TABLE trang_thai_hoa_don (
+    [Id_trang_thai_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
+    [ten_trang_thai] NVARCHAR(100) NOT NULL,
+    [mo_ta] NVARCHAR(MAX),
+    [ngay_tao] DATETIME DEFAULT GETDATE(),
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
 );
-go
-CREATE TABLE [trang_thai_hoa_don] (
-  [Id_trang_thai_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
-  [ten_trang_thai] NVARCHAR(100) NOT NULL,
-  [mo_ta] NVARCHAR(MAX),
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+GO
+
+CREATE TABLE hoa_don (
+    [Id_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
+    [ma_hoa_don] NVARCHAR(50) NOT NULL UNIQUE,
+    [id_nguoi_dung] INT,
+    [id_voucher] INT,
+    [id_dia_chi_van_chuyen] INT,
+    [id_trang_thai_hoa_don] INT,
+    [ten_nguoi_nhan] NVARCHAR(100) NOT NULL,
+    [phi_ship] DECIMAL(18),
+    [dia_chi] NVARCHAR(255) NOT NULL,
+    [sdt_nguoi_nhan] NVARCHAR(15),
+    [thanh_tien] DECIMAL(18),
+    [ngay_tao] DATETIME DEFAULT GETDATE(),
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+    [mo_ta] NVARCHAR(MAX),
+    [trang_thai] BIT DEFAULT 1,
+    [ngay_thanh_toan] DATETIME,
+    [id_pt_thanh_toan_hoa_don] INT,
+    CONSTRAINT [FK_hoa_don_id_nguoi_dung]
+        FOREIGN KEY ([id_nguoi_dung])
+            REFERENCES nguoi_dung([id_nguoi_dung]),
+    CONSTRAINT [FK_hoa_don_id_trang_thai_hoa_don]
+        FOREIGN KEY ([id_trang_thai_hoa_don])
+            REFERENCES trang_thai_hoa_don([Id_trang_thai_hoa_don]),
+    CONSTRAINT [FK_hoa_don_id_voucher]
+        FOREIGN KEY ([id_voucher])
+            REFERENCES voucher([id_voucher])
 );
-go
-CREATE TABLE [hoa_don] (
-  [Id_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
-  [ma_hoa_don] NVARCHAR(50) NOT NULL UNIQUE,
-  [id_nguoi_dung] INT,
-  [id_loai_voucher] INT,
-  [Id_dia_chi_van_chuyen] INT,
-  [id_trang_thai_hoa_don] INT,
-  [ten_nguoi_nhan] NVARCHAR(100) NOT NULL,
-  [phi_ship] DECIMAL(18),
-  [dia_chi] NVARCHAR(255) NOT NULL,
-  [sdt_nguoi_nhan] NVARCHAR(15),
-  [thanh_tien] DECIMAL(18),
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [mo_ta] NVARCHAR(MAX),
-  [trang_thai] BIT DEFAULT 1,
-  [ngay_thanh_toan] DATETIME,
-  [id_pt_thanh_toan_hoa_don] INT,
-  CONSTRAINT [FK_hoa_don_id_nguoi_dung]
-    FOREIGN KEY ([id_nguoi_dung])
-      REFERENCES [nguoi_dung]([Id_nguoi_dung]),
-  CONSTRAINT [FK_hoa_don_Id_dia_chi_van_chuyen]
-    FOREIGN KEY ([Id_dia_chi_van_chuyen])
-      REFERENCES [dia_chi_van_chuyen]([Id_dia_chi_van_chuyen]),
-  CONSTRAINT [FK_hoa_don_id_pt_thanh_toan_hoa_don]
-    FOREIGN KEY ([id_pt_thanh_toan_hoa_don])
-      REFERENCES [pt_thanh_toan_hoa_don]([Id_thanh_toan_hoa_don]),
-  CONSTRAINT [FK_hoa_don_id_trang_thai_hoa_don]
-    FOREIGN KEY ([id_trang_thai_hoa_don])
-      REFERENCES [trang_thai_hoa_don]([Id_trang_thai_hoa_don]),
-  CONSTRAINT [FK_hoa_don_id_loai_voucher]
-    FOREIGN KEY ([id_loai_voucher])
-      REFERENCES [loai_voucher]([Id_loai_voucher])
+GO
+CREATE TABLE dia_chi_van_chuyen (
+    [Id_dia_chi_van_chuyen] INT PRIMARY KEY IDENTITY(1,1),
+    [tinh] NVARCHAR(100),
+    [huyen] NVARCHAR(100),
+    [xa] NVARCHAR(100),
+    [so_tien_van_chuyen] DECIMAL(18),
+    [ngay_tao] DATETIME DEFAULT GETDATE(),
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+    [trang_thai] BIT DEFAULT 1,
+    [mo_ta] NVARCHAR(MAX)
 );
+GO
+
+CREATE TABLE phi_van_chuyen (
+    [Id_phi_van_chuyen] INT PRIMARY KEY IDENTITY(1,1),
+    [id_dia_chi_van_chuyen] INT,
+    [id_hoa_don] INT,
+    [ngay_tao] DATETIME DEFAULT GETDATE(),
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+    [trang_thai] BIT DEFAULT 1,
+    [mo_ta] NVARCHAR(MAX),
+    CONSTRAINT [FK_phi_van_chuyen_id_dia_chi_van_chuyen]
+        FOREIGN KEY ([id_dia_chi_van_chuyen])
+            REFERENCES dia_chi_van_chuyen([Id_dia_chi_van_chuyen]),
+    CONSTRAINT [FK_phi_van_chuyen_id_hoa_don]
+        FOREIGN KEY ([id_hoa_don])
+            REFERENCES hoa_don([Id_hoa_don])
+);
+GO
+CREATE TABLE pt_thanh_toan (
+    [Id_pt_thanh_toan] INT PRIMARY KEY IDENTITY(1,1),
+    [ma_thanh_toan] NVARCHAR(50) NOT NULL UNIQUE,
+    [ten_phuong_thuc] NVARCHAR(100) NOT NULL,
+    [ngay_tao] DATETIME DEFAULT GETDATE(),
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+    [trang_thai] BIT DEFAULT 1,
+    [mo_ta] NVARCHAR(MAX)
+);
+GO
+
+CREATE TABLE pt_thanh_toan_hoa_don (
+    [Id_thanh_toan_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
+    [id_pt_thanh_toan] INT,
+    [ngay_giao_dich] DATETIME,
+    [mo_ta] NVARCHAR(MAX),
+    [trang_thai] NVARCHAR(MAX),
+    [noi_dung_thanh_toan] NVARCHAR(MAX),
+    [id_hoa_don] INT,
+    CONSTRAINT [FK_pt_thanh_toan_hoa_don_id_pt_thanh_toan]
+        FOREIGN KEY ([id_pt_thanh_toan])
+            REFERENCES pt_thanh_toan([Id_pt_thanh_toan]),
+    CONSTRAINT [FK_pt_thanh_toan_hoa_don_id_hoa_don]
+        FOREIGN KEY ([id_hoa_don])
+            REFERENCES hoa_don([Id_hoa_don])
+);
+
 
 go
 CREATE TABLE [hinh_anh_san_pham] (
@@ -368,21 +409,23 @@ INSERT INTO nguoi_dung (ten_nguoi_dung, ma_nguoi_dung, Email, sdt_nguoi_dung, Ng
 (N'Lê Đình Linh', 'user004', 'linhld@gmail.com', '0912679346', '2004-01-05', N'Hà Nội', N'Nam', '123456',4),
 (N'Hoàng Văn Hà', 'user005', 'hahv@gmail.com', '0918934754', '2004-01-06', N'Hà Nội', N'Nam', '123456',5);
 go
+INSERT INTO loai_voucher (ten_loai_voucher, mo_ta) VALUES
+(N'Giảm giá theo phần trăm', N'Giảm giá theo tỷ lệ phần trăm của giá sản phẩm.'),
+(N'Giảm giá theo số tiền', N'Giảm giá một số tiền cụ thể cho sản phẩm.'),
+(N'Miễn phí vận chuyển', N'Miễn phí vận chuyển cho đơn hàng trên một mức giá nhất định.'),
+(N'Quà tặng kèm', N'Tặng kèm sản phẩm miễn phí khi mua sản phẩm khác.'),
+(N'Khuyến mãi theo gói', N'Giảm giá khi mua theo gói sản phẩm.'),
+(N'Khuyến mãi theo mùa', N'Giảm giá đặc biệt cho các dịp lễ tết.');
+
 -- Insert data for voucher
-INSERT INTO voucher (ma_voucher, phan_tram_giam, so_luong, mo_ta) VALUES 
-(N'VOUCHER1', 10, 100, N'Giảm 10% cho đơn hàng trên 500k'),
-(N'VOUCHER2', 15, 50, N'Giảm 15% cho khách hàng mới'),
-(N'VOUCHER3', 20, 30, N'Giảm 20% vào dịp sinh nhật'),
-(N'VOUCHER4', 5, 200, N'Giảm 5% cho tất cả sản phẩm'),
-(N'VOUCHER5', 25, 10, N'Giảm 25% cho đơn hàng trên 1 triệu');
-go
--- Insert data for loai_voucher
-INSERT INTO loai_voucher (ten_loai_voucher,mo_ta,id_voucher) VALUES 
-(N'Voucher Giảm Giá 10%', N'Áp dụng cho đơn hàng trên 500k', 1),
-(N'Voucher Khách Hàng Mới', N'Chỉ dành cho khách hàng mới', 2),
-(N'Voucher Sinh Nhật', N'Giảm giá đặc biệt vào dịp sinh nhật',3),
-(N'Voucher Toàn Sản Phẩm', N'Giảm giá cho tất cả sản phẩm',4),
-(N'Voucher Đơn Hàng Lớn', N'Áp dụng cho đơn hàng trên 1 triệu',5);
+INSERT INTO voucher (ma_voucher, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc, id_loai_voucher) VALUES
+(N'KM10', 10, 100, 500000,2000000, N'Giảm 10% cho đơn hàng từ 50k', '2024-01-01', '2024-01-31', 1),
+(N'KM20K', 20000, 50,500000,2000000, N'Giảm 20.000đ cho đơn hàng từ 100k', '2024-02-01', '2024-02-28', 2),
+(N'FREE_SHIP', 0, 200,500000,2000000, N'Miễn phí vận chuyển cho đơn hàng từ 150k', '2024-03-01', '2024-03-31', 3),
+(N'GIFT1', 0, 100, 500000,2000000, N'Tặng kèm sản phẩm A khi mua sản phẩm B', '2024-04-01', '2024-04-30', 4),
+(N'PACKAGE5', 50, 30, 500000,2000000, N'Giảm 50.000đ khi mua gói 5 sản phẩm', '2024-05-01', '2024-05-31', 5),
+(N'SUMMER2024', 30, 150, 500000,2000000, N'Giảm 30% cho các sản phẩm mùa hè', '2024-06-01', '2024-06-30', 6);
+
 go
 -- Insert data for danh_muc
 INSERT INTO danh_muc (ten_danh_muc, mo_ta) VALUES 
@@ -479,47 +522,11 @@ INSERT INTO gio_hang (id_nguoi_dung) VALUES
 go
 
 -- Insert data for gio_hang_chi_tiet
-INSERT INTO gio_hang_chi_tiet (id_gio_hang, so_luong, don_gia, thanh_tien) VALUES 
-(1, 1, 200000, 200000),
-(2, 2, 300000, 600000),
-(3, 1, 500000, 500000),
-(4, 1, 100000, 100000),
-(5, 1, 1500000, 1500000);
 
-go
--- Insert data for phi_van_chuyen
-INSERT INTO phi_van_chuyen (so_tien_van_chuyen, mo_ta) VALUES 
-(30000, N'Phí vận chuyển cho đơn hàng nội tỉnh.'),
-(50000, N'Phí vận chuyển cho đơn hàng liên tỉnh.'),
-(20000, N'Phí vận chuyển cho đơn hàng dưới 1kg.'),
-(10000, N'Phí vận chuyển cho đơn hàng trên 1kg.'),
-(100000, N'Phí vận chuyển cho đơn hàng đặc biệt.');
-go
 
--- Insert data for dia_chi_van_chuyen
-INSERT INTO dia_chi_van_chuyen (id_phi_van_chuyen, tinh, huyen, xa, mo_ta) VALUES 
-(1, N'Hà Nội', N'Hoàn Kiếm', N'Phan Chu Trinh', N'Địa chỉ giao hàng tại Hà Nội.'),
-(2, N'TP. Hồ Chí Minh', N'Quận 1', N'Nguyễn Thái Bình', N'Địa chỉ giao hàng tại TP. Hồ Chí Minh.'),
-(3, N'Hà Nội', N'Ba Đình', N'Trần Phú', N'Địa chỉ giao hàng cho các đơn hàng nhỏ.'),
-(4, N'Đà Nẵng', N'Hải Châu', N'Hải Châu 1', N'Địa chỉ giao hàng tại Đà Nẵng.'),
-(5, N'Bắc Ninh', N'Thuận Thành', N'Thị trấn Hồ', N'Địa chỉ giao hàng tại Bắc Ninh.');
-go
 
--- Insert data for pt_thanh_toan
-INSERT INTO pt_thanh_toan (ma_thanh_toan, ten_phuong_thuc, noi_dung_thanh_toan, phi_giao_dich, thong_tin_them) VALUES 
-(N'TT001', N'Transfer Ngân Hàng', N'Transfer qua ngân hàng cho đơn hàng.', 0.00, N'Không có phí.'),
-(N'TT002', N'Thanh Toán Qua Thẻ', N'Sử dụng thẻ tín dụng để thanh toán.', 1.50, N'Phí giao dịch thẻ tín dụng.'),
-(N'TT003', N'Ví Điện Tử', N'Sử dụng ví điện tử để thanh toán.', 0.00, N'Không có phí.'),
-(N'TT004', N'Thu Tiền Tận Nơi', N'Nhân viên sẽ đến thu tiền tại địa chỉ giao hàng.', 10.00, N'Phí thu tiền tận nơi.'),
-(N'TT005', N'Thanh Toán Trực Tiếp', N'Khách hàng thanh toán trực tiếp tại cửa hàng.', 0.00, N'Không có phí.');
-go
--- Insert data for pt_thanh_toan
-INSERT INTO pt_thanh_toan_hoa_don (id_pt_thanh_toan, so_tien_thanh_toan, ghi_chu, id_giao_dich_thanh_toan) VALUES 
-(1, 500.00, N'Thanh toán đơn hàng 001', N'GD001'),
-(2, 750.00, N'Thanh toán đơn hàng 002', N'GD002'),
-(3, 300.00, N'Thanh toán đơn hàng 003', N'GD003'),
-(4, 1200.00, N'Thanh toán đơn hàng 004', N'GD004'),
-(5, 150.00, N'Thanh toán đơn hàng 005', N'GD005');
+
+
 
 go
 -- Insert data for trang_thai_hoa_don
@@ -532,12 +539,44 @@ INSERT INTO trang_thai_hoa_don (ten_trang_thai, mo_ta) VALUES
 
 go
 -- Insert data for hoa_don
-INSERT INTO hoa_don (ma_hoa_don, id_nguoi_dung, id_loai_voucher, Id_dia_chi_van_chuyen, id_trang_thai_hoa_don, ten_nguoi_nhan, phi_ship, dia_chi, sdt_nguoi_nhan, thanh_tien, mo_ta, id_pt_thanh_toan_hoa_don) VALUES 
+INSERT INTO hoa_don (ma_hoa_don, id_nguoi_dung, id_voucher, Id_dia_chi_van_chuyen, id_trang_thai_hoa_don, ten_nguoi_nhan, phi_ship, dia_chi, sdt_nguoi_nhan, thanh_tien, mo_ta, id_pt_thanh_toan_hoa_don) VALUES 
 ('HD001', 1, 1, 1, 1, N'Trần Văn A', 30.00, N'Số 1, Đường A, Quận 1', N'0123456789', 500.00, N'Hoa đơn cho sản phẩm A', 1),
 ('HD002', 2, 2, 2, 1, N'Nguyễn Thị B', 20.00, N'Số 2, Đường B, Quận 2', N'0123456788', 750.00, N'Hoa đơn cho sản phẩm B', 2),
 ('HD003', 1, 3, 1, 1, N'Lê Văn C', 15.00, N'Số 3, Đường C, Quận 3', N'0123456787', 300.00, N'Hoa đơn cho sản phẩm C', 3),
 ('HD004', 3, 4, 2, 1, N'Trần Thị D', 25.00, N'Số 4, Đường D, Quận 4', N'0123456786', 1200.00, N'Hoa đơn cho sản phẩm D', 4),
 ('HD005', 2, 5, 1, 1, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5);
+go
+
+
+-- Insert data for dia_chi_van_chuyen
+INSERT INTO dia_chi_van_chuyen ( so_tien_van_chuyen, tinh, huyen, xa, trang_thai, mo_ta) VALUES 
+(30000, N'Hà Nội', N'Hoàn Kiếm', N'Phan Chu Trinh',1, N'Địa chỉ giao hàng tại Hà Nội.'),
+(50000, N'TP. Hồ Chí Minh', N'Quận 1', N'Nguyễn Thái Bình',1, N'Địa chỉ giao hàng tại TP. Hồ Chí Minh.'),
+(20000, N'Hà Nội', N'Ba Đình', N'Trần Phú',1, N'Địa chỉ giao hàng cho các đơn hàng nhỏ.'),
+(10000, N'Đà Nẵng', N'Hải Châu', N'Hải Châu 1',1, N'Địa chỉ giao hàng tại Đà Nẵng.'),
+(100000, N'Bắc Ninh', N'Thuận Thành', N'Thị trấn Hồ',1, N'Địa chỉ giao hàng tại Bắc Ninh.');
+
+go
+-- Insert data for pt_thanh_toan
+INSERT INTO pt_thanh_toan (ma_thanh_toan, ten_phuong_thuc, mo_ta) VALUES 
+(N'TT001', N'Tiền mặt', N'Thanh toán bằng tiền mặt.'),
+(N'TT002', N'Chuyển khoản', N'Sử dụng thẻ tín dụng để thanh toán.');
+-- Insert data for phi_van_chuyen
+INSERT INTO phi_van_chuyen (id_dia_chi_van_chuyen,id_hoa_don, mo_ta) VALUES 
+(1,1, N'Phí vận chuyển cho đơn hàng nội tỉnh.'),
+(2,2, N'Phí vận chuyển cho đơn hàng liên tỉnh.'),
+(3,3, N'Phí vận chuyển cho đơn hàng dưới 1kg.'),
+(4,4, N'Phí vận chuyển cho đơn hàng trên 1kg.'),
+(5,5, N'Phí vận chuyển cho đơn hàng đặc biệt.');
+go
+
+-- Insert data for pt_thanh_toan_hoa_don
+INSERT INTO pt_thanh_toan_hoa_don (id_pt_thanh_toan, ngay_giao_dich, mo_ta, trang_thai, noi_dung_thanh_toan, id_hoa_don) VALUES 
+(1, GETDATE(), N'Thanh toán đơn hàng 001', N'Hoàn Thành', N'Thanh toán đơn hàng 001', 1),
+(2, GETDATE(), N'Thanh toán đơn hàng 002', N'Hoàn Thành', N'Thanh toán đơn hàng 002', 2),
+(3, GETDATE(), N'Thanh toán đơn hàng 003', N'Hoàn Thành', N'Thanh toán đơn hàng 003', 3),
+(4, GETDATE(), N'Thanh toán đơn hàng 004', N'Hoàn Thành', N'Thanh toán đơn hàng 004', 4),
+(5, GETDATE(), N'Thanh toán đơn hàng 005', N'Hoàn Thành', N'Thanh toán đơn hàng 005', 5);
 
 go
 INSERT INTO xac_thuc (ma_xac_thuc, id_nguoi_dung, mo_ta) VALUES 
@@ -550,67 +589,67 @@ go
 
 
 -- Insert data for san_pham
-INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc,id_loai_voucher,trang_thai) VALUES 
-(N'Áo phông hình bàn tay',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông butterfly',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông cotton',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông ENJOYABLE',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông loang',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông holiday 1961', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông nam nữ 1984', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông nam nữ oversize',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông tay lỡ',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông thể thao',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
-(N'Áo phông SPORT FASHION', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 4,1),
+INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc,trang_thai) VALUES 
+(N'Áo phông hình bàn tay',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông butterfly',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1,1),
+(N'Áo phông cotton',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông ENJOYABLE',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông loang',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông holiday 1961', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông nam nữ 1984', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông nam nữ oversize',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông tay lỡ',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông thể thao',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+(N'Áo phông SPORT FASHION', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
 
-(N'Áo sơ mi đũi nơ thắt eo', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4,1),
-(N'Áo sơ mi nam kẻ sọc', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4,1),
-(N'Áo sơ mi lụa công sở', 120000 , N'Áo sơ mi được làm từ lụa mềm mại, thoáng khí', 2, 4,1),
-(N'Áo sơ mi nam loang', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4,1),
-(N'Áo sơ mi ngắn siết eo',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4,1),
-(N'Áo sơ mi tay ngắn túi hộp', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4,1),
-(N'Áo sơ mi thắt cà vạt', 120000 , N'Áo sơ mi được làm theo phong cách Nhật', 2, 4,1),
-(N'Áo sơ mi sọc đơn giản',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4,1),
-(N'Áo sơ mi tay ngắn', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4,1),
-(N'Áo sơ mi trơn',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 4,1),
+(N'Áo sơ mi đũi nơ thắt eo', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+(N'Áo sơ mi nam kẻ sọc', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+(N'Áo sơ mi lụa công sở', 120000 , N'Áo sơ mi được làm từ lụa mềm mại, thoáng khí', 2, 1),
+(N'Áo sơ mi nam loang', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+(N'Áo sơ mi ngắn siết eo',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+(N'Áo sơ mi tay ngắn túi hộp', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+(N'Áo sơ mi thắt cà vạt', 120000 , N'Áo sơ mi được làm theo phong cách Nhật', 2,1),
+(N'Áo sơ mi sọc đơn giản',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+(N'Áo sơ mi tay ngắn', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2,1),
+(N'Áo sơ mi trơn',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
 
-(N'Áo ấm lông cừu', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
-(N'Áo béo buộc nơ', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
-(N'Áo phao bông',  120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
-(N'Áo phao cài khuy', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
-(N'Áo phao gile', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
-(N'Áo phao cài khuy cổ', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
-(N'Áo phao cài lửng thời trang', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
-(N'Áo phao nhung cừu', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
-(N'Áo phao cài NIKE',  120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 4,1),
+(N'Áo ấm lông cừu', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+(N'Áo béo buộc nơ', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+(N'Áo phao bông',  120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
+(N'Áo phao cài khuy', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+(N'Áo phao gile', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+(N'Áo phao cài khuy cổ', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
+(N'Áo phao cài lửng thời trang', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+(N'Áo phao nhung cừu', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
+(N'Áo phao cài NIKE',  120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
 
-(N'Áo chống nắng viền tròn', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4,1),
-(N'Áo chống nắng toàn thân',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4,1),
-(N'Áo chống nắng thông hơi', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4,1),
-(N'Áo chống nắng thời trang', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4,1),
-(N'Áo chống nắng thể thao', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4,1),
-(N'Áo chống nắng LV',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4,1),
-(N'Áo chống nắng dài xoe',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 4,1),
+(N'Áo chống nắng viền tròn', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+(N'Áo chống nắng toàn thân',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+(N'Áo chống nắng thông hơi', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4,1),
+(N'Áo chống nắng thời trang', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+(N'Áo chống nắng thể thao', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+(N'Áo chống nắng LV',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+(N'Áo chống nắng dài xoe',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
 
 
-(N'Quần baggy kaki',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4,1),
-(N'Quần đũi dài nam',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4,1),
-(N'Quần đũi dài nữ', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4,1),
-(N'Quần ống rộng cạp cao',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4,1),
-(N'Quần ống rộng nam',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4,1),
-(N'Quần đũi rộng túi hộp', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4,1),
-(N'Quần suông đơn giản', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4,1),
-(N'Quần suông rộng', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 4,1),
+(N'Quần baggy kaki',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5,1),
+(N'Quần đũi dài nam',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+(N'Quần đũi dài nữ', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+(N'Quần ống rộng cạp cao',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+(N'Quần ống rộng nam',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+(N'Quần đũi rộng túi hộp', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+(N'Quần suông đơn giản', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+(N'Quần suông rộng', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
 
-(N'Quần ống rộng suông',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4,1),
-(N'Quần sort nữ cá tính', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 4,1),
-(N'Quần sort nữ đũi', 120000 , N'Quần sort chất liệu đũi mềm mại, co giãn nhẹ', 6, 4,1),
-(N'Quần đùi túi hộp đứng', 120000 , N'Quần dài dáng suông, chất liệu đũi mềm mại, co giãn nhẹ', 6, 4,1),
-(N'Quần jean cạp trễ',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4,1),
-(N'Quần jean thời trang', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4,1),
-(N'Quần sort bò rộng',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4,1),
-(N'Quần sort tây nam', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 4,1),
-(N'Quần suông dài basic', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 4,1);
+(N'Quần ống rộng suông',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
+(N'Quần sort nữ cá tính', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
+(N'Quần sort nữ đũi', 120000 , N'Quần sort chất liệu đũi mềm mại, co giãn nhẹ', 6, 1),
+(N'Quần đùi túi hộp đứng', 120000 , N'Quần dài dáng suông, chất liệu đũi mềm mại, co giãn nhẹ', 6, 1),
+(N'Quần jean cạp trễ',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1),
+(N'Quần jean thời trang', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
+(N'Quần sort bò rộng',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1),
+(N'Quần sort tây nam', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
+(N'Quần suông dài basic', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1);
 go
 INSERT INTO danh_gia (id_nguoi_dung, id_san_pham, noi_dung, diem) VALUES 
 (1, 1, N'Sản phẩm đẹp như trên mô tả', 5),
@@ -619,604 +658,630 @@ INSERT INTO danh_gia (id_nguoi_dung, id_san_pham, noi_dung, diem) VALUES
 (4, 4, N'Chất vải tốt, mặc rất thoải mái', 4),
 (5, 5, N'Áo chất lượng, đáng tiền', 4);
 go
+-- Giả sử bạn đã có các bản ghi trong bảng dot_giam_gia
+INSERT INTO dot_giam_gia (ten_dot_giam_gia, gia_tri_giam_gia, mo_ta, ngay_bat_dau, ngay_ket_thuc)
+VALUES 
+(N'Khuyến mãi mùa hè', 20000, N'Giảm giá cho các sản phẩm mùa hè', GETDATE(), DATEADD(DAY, 30, GETDATE()));
 
+-- Lấy Id_dot_giam_gia vừa tạo
+DECLARE @Id_dot_giam_gia INT = SCOPE_IDENTITY();
+
+-- Chèn dữ liệu vào bảng giam_gia_san_pham
+INSERT INTO giam_gia_san_pham (mo_ta, Id_dot_giam_gia, id_san_pham)
+VALUES
+(N'Áo thun nam được giảm giá 10%', @Id_dot_giam_gia, 1),
+(N'Smartphone XYZ áp dụng giảm 20.000đ', @Id_dot_giam_gia, 2),
+(N'Miễn phí vận chuyển cho Bình nước giữ nhiệt', @Id_dot_giam_gia, 3),
+(N'Sách hay được tặng kèm sản phẩm khác', @Id_dot_giam_gia, 4),
+(N'Giảm giá cho Bánh kẹo nhập khẩu', @Id_dot_giam_gia, 5),
+(N'Son môi ABC giảm giá 50.000đ', @Id_dot_giam_gia, 6);
+go
 -- Insert data for san_pham_chi_tiet
-INSERT INTO san_pham_chi_tiet (so_luong, id_kich_thuoc_chi_tiet, id_mau_sac_chi_tiet, id_chat_lieu_chi_tiet, id_gio_hang_chi_tiet, id_san_pham)
+INSERT INTO san_pham_chi_tiet (so_luong, id_kich_thuoc_chi_tiet, id_mau_sac_chi_tiet, id_chat_lieu_chi_tiet, id_san_pham)
 VALUES 
 /* Áo phông */
-(100,  1, 3, 1, 1, 1),
-(100, 2, 3, 1, 1, 1),
-(100,  3, 3, 1, 1, 1),
-(100,  4, 3, 1, 1, 1),
-(100,  1, 6, 1, 1, 1),
-(100,  2, 6, 1, 1, 1),
-(100,  3, 6, 1, 1, 1),
-(100,  4, 6, 1, 1, 1),
-(100,  1, 4, 1, 1, 1),
-(100,  2, 4, 1, 1, 1),
-(100,  3, 4, 1, 1, 1),
-(100,  4, 4, 1, 1, 1),
-(100,  1, 2, 1, 2, 2),
-(100,  2, 2, 1, 2, 2),
-(100,  3, 2, 1, 2, 2),
-(100,  4, 2, 1, 2, 2),
-(100,  1, 13, 1, 2, 2),
-(100,  2, 13, 1, 2, 2),
-(100,  3, 13, 1, 2, 2),
-(100,  4, 13, 1, 2, 2),
-(100,   1, 6, 1, 2, 2),
-(100,  2, 6, 1, 2, 2),
-(100,  3, 6, 1, 2, 2),
-(100,  4, 6, 1, 2, 2),
-(100,   1, 9, 1, 3, 3),
-(100,  2, 9, 1, 3, 3),
-(100,   3, 9, 1, 3, 3),
-(100,   4, 9, 1, 3, 3),
-(100,   1, 5, 1, 3, 3),
-(100,  2, 5, 1, 3, 3),
-(100, 3, 5, 1, 3, 3),
-(100,   4, 5, 1, 3, 3),
-(100,    1, 4, 1, 3, 3),
-(100,   2, 4, 1, 3, 3),
-(100,    3, 4, 1, 3, 3),
-(100,   4, 4, 1, 3, 3),
-(100,    1, 10, 1, 4, 4),
-(100,    2, 10, 1, 4, 4),
-(100,    3, 10, 1, 4, 4),
-(100,    4, 10, 1, 4, 4),
-(100,  1, 11, 1, 4, 4),
-(100,    2, 11, 1, 4, 4),
-(100,    3, 11, 1, 4, 4),
-(100,    4, 11, 1, 4, 4),
-(100,   1, 4, 1, 4, 4),
-(100,   2, 4, 1, 4, 4),
-(100,   3, 4, 1, 4, 4),
-(100,   4, 4, 1, 4, 4),
-(100,   1, 8, 1, 5, 5),
-(100,   2, 8, 1, 5, 5),
-(100,   3, 8, 1, 5, 5),
-(100,  4, 8, 1, 5, 5),
-(100,    1, 10, 1, 5, 5),
-(100,    2, 10, 1, 5, 5),
-(100,    3, 10, 1, 5, 5),
-(100,    4, 10, 1, 5, 5),
-(100,   1, 1, 1, 5, 6),
-(100,   2, 1, 1, 5, 6),
-(100,   3, 1, 1, 5, 6),
-(100,   4, 1, 1, 5, 6),
-(100,   1, 10, 1, 5, 6),
-(100,   2, 10, 1, 5, 6),
-(100,   3, 10, 1, 5, 6),
-(100,   4, 10, 1, 5, 6),
-(100,    1, 12, 1, 5, 6),
-(100,    2, 12, 1, 5, 6),
-(100,    3, 12, 1, 5, 6),
-(100,    4, 12, 1, 5, 6),
-(100,    1, 1, 1, 5, 7),
-(100,    2, 1, 1, 5, 7),
-(100,    3, 1, 1, 5, 7),
-(100,    4, 1, 1, 5, 7),
-(100,    1, 10, 1, 5, 7),
-(100,    2, 10, 1, 5, 7),
-(100,    3, 10, 1, 5, 7),
-(100,    4, 10, 1, 5, 7),
-(100,  1,9, 1, 5, 7),
-(100,  2,9, 1, 5, 7),
-(100,  3,9, 1, 5, 7),
-(100,  4,9, 1, 5, 7),
-(100,   1, 9, 1, 5, 8),
-(100,  2, 9, 1, 5, 8),
-(100,   3, 9, 1, 5, 8),
-(100,   4, 9, 1, 5, 8),
-(100,    1, 10, 1, 5, 8),
-(100,    2, 10, 1, 5, 8),
-(100,  3, 10, 1, 5, 8),
-(100,    4, 10, 1, 5, 8),
-(100,   1, 9, 1, 5, 9),
-(100,   2, 9, 1, 5, 9),
-(100,   3, 9, 1, 5, 9),
-(100,   4, 9, 1, 5, 9),
-(100,    1, 8, 1, 5, 9),
-(100,    2, 8, 1, 5, 9),
-(100,    3, 8, 1, 5, 9),
-(100,    4, 8, 1, 5, 9),
-(100,   1, 4, 1, 5, 9),
-(100,   2, 4, 1, 5, 9),
-(100,   3, 4, 1, 5, 9),
-(100,   4, 4, 1, 5, 9),
-(100,   1, 1, 1, 5, 10),
-(100,   2, 1, 1, 5, 10),
-(100,   3, 1, 1, 5, 10),
-(100,   4, 1, 1, 5, 10),
-(100,   1, 3, 1, 5, 10),
-(100,   2, 3, 1, 5, 10),
-(100,   3, 3, 1, 5, 10),
-(100,   4, 3, 1, 5, 10),
-(100,  1, 6, 1, 5, 10),
-(100,  2, 6, 1, 5, 10),
-(100,  3, 6, 1, 5, 10),
-(100,  4, 6, 1, 5, 10),
-(100,   1, 1, 1, 5, 11),
-(100,   2, 1, 1, 5, 11),
-(100,   3, 1, 1, 5, 11),
-(100,   4, 1, 1, 5, 11),
-(100,  1, 6, 1, 5, 11),
-(100,  2, 6, 1, 5, 11),
-(100,  3, 6, 1, 5, 11),
-(100,  4, 6, 1, 5, 11),
-(100,  1, 9, 1, 5, 11),
-(100,  2, 9, 1, 5, 11),
-(100,  3, 9, 1, 5, 11),
-(100,  4, 9, 1, 5, 11),
+(100,  1, 3, 1, 1),
+(100, 2, 3, 1,  1),
+(100,  3, 3, 1,  1),
+(100,  4, 3, 1, 1),
+(100,  1, 6, 1,  1),
+(100,  2, 6, 1,  1),
+(100,  3, 6, 1,  1),
+(100,  4, 6, 1,  1),
+(100,  1, 4, 1,  1),
+(100,  2, 4, 1,  1),
+(100,  3, 4, 1,1),
+(100,  4, 4, 1, 1),
+(100,  1, 2, 1, 2),
+(100,  2, 2, 1, 2),
+(100,  3, 2, 1,  2),
+(100,  4, 2, 1,  2),
+(100,  1, 13, 1, 2),
+(100,  2, 13, 1, 2),
+(100,  3, 13, 1, 2),
+(100,  4, 13, 1,  2),
+(100,   1, 6, 1,  2),
+(100,  2, 6, 1,  2),
+(100,  3, 6, 1,  2),
+(100,  4, 6, 1,  2),
+(100,   1, 9, 1,  3),
+(100,  2, 9, 1,  3),
+(100,   3, 9, 1,  3),
+(100,   4, 9, 1,  3),
+(100,   1, 5, 1,  3),
+(100,  2, 5, 1,  3),
+(100, 3, 5, 1,  3),
+(100,   4, 5, 1,  3),
+(100,    1, 4, 1, 3),
+(100,   2, 4, 1, 3),
+(100,    3, 4, 1, 3),
+(100,   4, 4, 1, 3),
+(100,    1, 10, 1, 4),
+(100,    2, 10, 1, 4),
+(100,    3, 10, 1, 4),
+(100,    4, 10, 1, 4),
+(100,  1, 11, 1, 4),
+(100,    2, 11, 1, 4),
+(100,    3, 11, 1, 4),
+(100,    4, 11, 1, 4),
+(100,   1, 4, 1, 4),
+(100,   2, 4, 1, 4),
+(100,   3, 4, 1, 4),
+(100,   4, 4, 1, 4),
+(100,   1, 8, 1, 5),
+(100,   2, 8, 1, 5),
+(100,   3, 8, 1, 5),
+(100,  4, 8, 1, 5),
+(100,    1, 10, 1, 5),
+(100,    2, 10, 1, 5),
+(100,    3, 10, 1, 5),
+(100,    4, 10, 1, 5),
+(100,   1, 1, 1, 6),
+(100,   2, 1, 1, 6),
+(100,   3, 1, 1, 6),
+(100,   4, 1, 1, 6),
+(100,   1, 10, 1, 6),
+(100,   2, 10, 1, 6),
+(100,   3, 10, 1, 6),
+(100,   4, 10, 1, 6),
+(100,    1, 12, 1, 6),
+(100,    2, 12, 1, 6),
+(100,    3, 12, 1, 6),
+(100,    4, 12, 1, 6),
+(100,    1, 1, 1, 7),
+(100,    2, 1, 1, 7),
+(100,    3, 1, 1, 7),
+(100,    4, 1, 1, 7),
+(100,    1, 10, 1, 7),
+(100,    2, 10, 1, 7),
+(100,    3, 10, 1, 7),
+(100,    4, 10, 1, 7),
+(100,  1,9, 1,  7),
+(100,  2,9, 1,  7),
+(100,  3,9, 1,  7),
+(100,  4,9, 1, 7),
+(100,   1, 9, 1,  8),
+(100,  2, 9, 1, 8),
+(100,   3, 9, 1, 8),
+(100,   4, 9, 1,  8),
+(100,    1, 10, 1,  8),
+(100,    2, 10, 1,  8),
+(100,  3, 10, 1,  8),
+(100,    4, 10, 1, 8),
+(100,   1, 9, 1,  9),
+(100,   2, 9, 1, 9),
+(100,   3, 9, 1,  9),
+(100,   4, 9, 1,  9),
+(100,    1, 8, 1,  9),
+(100,    2, 8, 1, 9),
+(100,    3, 8, 1,  9),
+(100,    4, 8, 1,  9),
+(100,   1, 4, 1,  9),
+(100,   2, 4, 1,  9),
+(100,   3, 4, 1,  9),
+(100,   4, 4, 1, 9),
+(100,   1, 1, 1, 10),
+(100,   2, 1, 1,  10),
+(100,   3, 1, 1,  10),
+(100,   4, 1, 1, 10),
+(100,   1, 3, 1,  10),
+(100,   2, 3, 1, 10),
+(100,   3, 3, 1, 10),
+(100,   4, 3, 1,  10),
+(100,  1, 6, 1,  10),
+(100,  2, 6, 1,  10),
+(100,  3, 6, 1,  10),
+(100,  4, 6, 1,  10),
+(100,   1, 1, 1, 11),
+(100,   2, 1, 1,  11),
+(100,   3, 1, 1, 11),
+(100,   4, 1, 1, 11),
+(100,  1, 6, 1,  11),
+(100,  2, 6, 1,  11),
+(100,  3, 6, 1, 11),
+(100,  4, 6, 1,  11),
+(100,  1, 9, 1,  11),
+(100,  2, 9, 1,  11),
+(100,  3, 9, 1, 11),
+(100,  4, 9, 1,  11),
 /* Áo sơ mi */
-(100,   1, 11, 1, 4, 12),
-(100,   2, 11, 1, 4, 12),
-(100,   3, 11, 1, 4, 12),
-(100,   4, 11, 1, 4, 12),
-(100,    1, 10, 1, 4, 12),
-(100,    2, 10, 1, 4, 12),
-(100,    3, 10, 1, 4, 12),
-(100,    4, 10, 1, 4, 12),
-(100,   1, 2, 1, 4, 13),
-(100,   2, 2, 1, 4, 13),
-(100,   3, 2, 1, 4, 13),
-(100,   4, 2, 1, 4, 13),
-(100,   1, 1, 1, 4, 13),
-(100,   2, 1, 1, 4, 13),
-(100,   3, 1, 1, 4, 13),
-(100,   4, 1, 1, 4, 13),
+(100,   1, 11, 1,  12),
+(100,   2, 11, 1,  12),
+(100,   3, 11, 1, 12),
+(100,   4, 11, 1,  12),
+(100,    1, 10, 1,  12),
+(100,    2, 10, 1,  12),
+(100,    3, 10, 1,  12),
+(100,    4, 10, 1,  12),
+(100,   1, 2, 1,  13),
+(100,   2, 2, 1,  13),
+(100,   3, 2, 1,  13),
+(100,   4, 2, 1,  13),
+(100,   1, 1, 1,  13),
+(100,   2, 1, 1,  13),
+(100,   3, 1, 1,  13),
+(100,   4, 1, 1,  13),
 
-(100,  1, 2, 2, 4, 14),
-(100,   2, 2, 2, 4, 14),
-(100,   3, 2, 2, 4, 14),
-(100,   4, 2, 2, 4, 14),
-(100,    1, 3, 2, 4, 14),
-(100,    2, 3, 2, 4, 14),
-(100,  3, 3, 2, 4, 14),
-(100,4, 3, 2, 4, 14),
-(100,1, 2, 1, 4, 15),
-(100,2, 2, 1, 4, 15),
-(100,3, 2, 1, 4, 15),
-(100,4, 2, 1, 4, 15),
-(100, 1, 1, 1, 4, 15),
-(100, 2, 1, 1, 4, 15),
-(100, 3, 1, 1, 4, 15),
-(100, 4, 1, 1, 4, 15),
-(100, 1, 2, 1, 4, 16),
-(100, 2, 2, 1, 4, 16),
-(100, 3, 2, 1, 4, 16),
-(100, 4, 2, 1, 4, 16),
-(100, 1, 3, 1, 4, 16),
-(100, 2, 3, 1, 4, 16),
-(100, 3, 3, 1, 4, 16),
-(100, 4, 3, 1, 4, 16),
-(100,1, 2, 1, 4, 17),
-(100,2, 2, 1, 4, 17),
-(100,3, 2, 1, 4, 17),
-(100,4, 2, 1, 4, 17),
-(100,1, 10, 1, 4, 17),
-(100,2, 10, 1, 4, 17),
-(100,3, 10, 1, 4, 17),
-(100,4, 10, 1, 4, 17),
-(100,1, 7, 1, 4, 17),
-(100,2, 7, 1, 4, 17),
-(100,3, 7, 1, 4, 17),
-(100,4, 7, 1, 4, 17),
-(100, 1, 9, 1, 4, 18),
-(100, 2, 9, 1, 4, 18),
-(100, 3, 9, 1, 4, 18),
-(100, 4, 9, 1, 4, 18),
-(100,1, 12, 1, 4, 18),
-(100,2, 12, 1, 4, 18),
-(100,3, 12, 1, 4, 18),
-(100,4, 12, 1, 4, 18),
-(100, 1, 3, 1, 4, 18),
-(100, 2, 3, 1, 4, 18),
-(100, 3, 3, 1, 4, 18),
-(100, 4, 3, 1, 4, 18),
-(100,1, 3, 1, 4, 19),
-(100,2, 3, 1, 4, 19),
-(100,3, 3, 1, 4, 19),
-(100,4, 3, 1, 4, 19),
-(100, 1,8, 1, 4, 19),
-(100, 2,8, 1, 4, 19),
-(100, 3,8, 1, 4, 19),
-(100, 4,8, 1, 4, 19),
-(100, 1,2, 1, 4, 20),
-(100, 2,2, 1, 4, 20),
-(100, 3,2, 1, 4, 20),
-(100, 4,2, 1, 4, 20),
-(100,1,7, 1, 4, 20),
-(100,2,7, 1, 4, 20),
-(100,3,7, 1, 4, 20),
-(100,4,7, 1, 4, 20),
-(100,1,4, 1, 4, 21),
-(100,2,4, 1, 4, 21),
-(100,3,4, 1, 4, 21),
-(100,4,4, 1, 4, 21),
-(100,1,8, 1, 4, 21),
-(100,2,8, 1, 4, 21),
-(100,3,8, 1, 4, 21),
-(100,4,8, 1, 4, 21),
-(100, 1,3, 1, 4, 21),
-(100, 2,3, 1, 4, 21),
-(100, 3,3, 1, 4, 21),
-(100, 4,3, 1, 4, 21),
+(100,  1, 2, 2,  14),
+(100,   2, 2, 2,  14),
+(100,   3, 2, 2,  14),
+(100,   4, 2, 2, 14),
+(100,    1, 3, 2,  14),
+(100,    2, 3, 2, 14),
+(100,  3, 3, 2,  14),
+(100,4, 3, 2,  14),
+(100,1, 2, 1,  15),
+(100,2, 2, 1,  15),
+(100,3, 2, 1,  15),
+(100,4, 2, 1,  15),
+(100, 1, 1, 1, 15),
+(100, 2, 1, 1,  15),
+(100, 3, 1, 1, 15),
+(100, 4, 1, 1,  15),
+(100, 1, 2, 1, 16),
+(100, 2, 2, 1, 16),
+(100, 3, 2, 1,  16),
+(100, 4, 2, 1,  16),
+(100, 1, 3, 1,  16),
+(100, 2, 3, 1,  16),
+(100, 3, 3, 1,  16),
+(100, 4, 3, 1,  16),
+(100,1, 2, 1, 17),
+(100,2, 2, 1, 17),
+(100,3, 2, 1, 17),
+(100,4, 2, 1,  17),
+(100,1, 10, 1,  17),
+(100,2, 10, 1,  17),
+(100,3, 10, 1,  17),
+(100,4, 10, 1,  17),
+(100,1, 7, 1,  17),
+(100,2, 7, 1,  17),
+(100,3, 7, 1, 17),
+(100,4, 7, 1,  17),
+(100, 1, 9, 1,  18),
+(100, 2, 9, 1,  18),
+(100, 3, 9, 1, 18),
+(100, 4, 9, 1,  18),
+(100,1, 12, 1,  18),
+(100,2, 12, 1,  18),
+(100,3, 12, 1, 18),
+(100,4, 12, 1,  18),
+(100, 1, 3, 1,  18),
+(100, 2, 3, 1,  18),
+(100, 3, 3, 1,18),
+(100, 4, 3, 1, 18),
+(100,1, 3, 1, 19),
+(100,2, 3, 1,  19),
+(100,3, 3, 1, 19),
+(100,4, 3, 1, 19),
+(100, 1,8, 1,  19),
+(100, 2,8, 1,  19),
+(100, 3,8, 1,  19),
+(100, 4,8, 1,   19),
+(100, 1,2, 1,  20),
+(100, 2,2, 1,  20),
+(100, 3,2, 1, 20),
+(100, 4,2, 1, 20),
+(100,1,7, 1, 20),
+(100,2,7, 1, 20),
+(100,3,7, 1, 20),
+(100,4,7, 1, 20),
+(100,1,4, 1, 21),
+(100,2,4, 1, 21),
+(100,3,4, 1, 21),
+(100,4,4, 1, 21),
+(100,1,8, 1, 21),
+(100,2,8, 1, 21),
+(100,3,8, 1, 21),
+(100,4,8, 1, 21),
+(100, 1,3, 1, 21),
+(100, 2,3, 1, 21),
+(100, 3,3, 1, 21),
+(100, 4,3, 1, 21),
 
-(100,1, 12, 1, 4, 22),
-(100,2, 12, 1, 4, 22),
-(100,3, 12, 1, 4, 22),
-(100,4, 12, 1, 4, 22),
-(100,  1, 8, 1, 4, 22),
-(100,  2, 8, 1, 4, 22),
-(100,  3, 8, 1, 4, 22),
-(100,  4, 8, 1, 4, 22),
-(100, 1, 1, 1, 4, 22),
-(100, 2, 1, 1, 4, 22),
-(100, 3, 1, 1, 4, 22),
-(100, 4, 1, 1, 4, 22),
+(100,1, 12, 1, 22),
+(100,2, 12, 1, 22),
+(100,3, 12, 1, 22),
+(100,4, 12, 1, 22),
+(100,  1, 8, 1, 22),
+(100,  2, 8, 1, 22),
+(100,  3, 8, 1, 22),
+(100,  4, 8, 1, 22),
+(100, 1, 1, 1, 22),
+(100, 2, 1, 1, 22),
+(100, 3, 1, 1, 22),
+(100, 4, 1, 1, 22),
 
-(100,  1, 1, 1, 4, 23),
-(100,  2, 1, 1, 4, 23),
-(100,  3, 1, 1, 4, 23),
-(100,  4, 1, 1, 4, 23),
-(100,1, 9, 1, 4, 23),
-(100,2, 9, 1, 4, 23),
-(100,3, 9, 1, 4, 23),
-(100,4, 9, 1, 4, 23),
-(100,1, 12, 1, 4, 23),
-(100,2, 12, 1, 4, 23),
-(100,3, 12, 1, 4, 23),
-(100,4, 12, 1, 4, 23),
-(100,1, 1, 1, 4, 24),
-(100,2, 1, 1, 4, 24),
-(100,3, 1, 1, 4, 24),
-(100,4, 1, 1, 4, 24),
-(100,  1, 8, 1, 4, 24),
-(100,  2, 8, 1, 4, 24),
-(100,  3, 8, 1, 4, 24),
-(100,  4, 8, 1, 4, 24),
-(100,  1, 2, 1, 4, 24),
-(100,  2, 2, 1, 4, 24),
-(100,  3, 2, 1, 4, 24),
-(100,  4, 2, 1, 4, 24),
-(100,  1, 1, 1, 4, 25),
-(100,  2, 1, 1, 4, 25),
-(100,  3, 1, 1, 4, 25),
-(100,  4, 1, 1, 4, 25),
-(100,  1, 7, 1, 4, 25),
-(100,  2, 7, 1, 4, 25),
-(100,  3, 7, 1, 4, 25),
-(100,  4, 7, 1, 4, 25),
-(100, 1, 12, 1, 4, 25),
-(100, 2, 12, 1, 4, 25),
-(100, 3, 12, 1, 4, 25),
-(100, 4, 12, 1, 4, 25),
-(100, 1, 1, 1, 4, 26),
-(100, 2, 1, 1, 4, 26),
-(100, 3, 1, 1, 4, 26),
-(100, 4, 1, 1, 4, 26),
-(100, 2, 5, 1, 4, 26),
-(100, 2, 5, 1, 4, 26),
-(100, 2, 5, 1, 4, 26),
-(100, 2, 5, 1, 4, 26),
-(100,  1, 2, 1, 4, 26),
-(100,  2, 2, 1, 4, 26),
-(100,  3, 2, 1, 4, 26),
-(100,  4, 2, 1, 4, 26),
-(100,  1, 8, 1, 4, 27),
-(100,  2, 8, 1, 4, 27),
-(100,  3, 8, 1, 4, 27),
-(100,  4, 8, 1, 4, 27),
-(100, 1, 7, 1, 4, 27),
-(100, 2, 7, 1, 4, 27),
-(100, 3, 7, 1, 4, 27),
-(100, 4, 7, 1, 4, 27),
-(100, 1, 1, 1, 4, 27),
-(100, 2, 1, 1, 4, 27),
-(100, 3, 1, 1, 4, 27),
-(100, 4, 1, 1, 4, 27),
-(100, 1, 2, 1, 4, 28),
-(100, 2, 2, 1, 4, 28),
-(100, 3, 2, 1, 4, 28),
-(100, 4, 2, 1, 4, 28),
-(100,1, 9, 1, 4, 28),
-(100,2, 9, 1, 4, 28),
-(100,3, 9, 1, 4, 28),
-(100,4, 9, 1, 4, 28),
-(100, 1, 1, 1, 4, 28),
-(100, 2, 1, 1, 4, 28),
-(100, 3, 1, 1, 4, 28),
-(100, 4, 1, 1, 4, 28),
+(100,  1, 1, 1,  23),
+(100,  2, 1, 1,  23),
+(100,  3, 1, 1,  23),
+(100,  4, 1, 1,  23),
+(100,1, 9, 1, 23),
+(100,2, 9, 1, 23),
+(100,3, 9, 1, 23),
+(100,4, 9, 1, 23),
+(100,1, 12, 1, 23),
+(100,2, 12, 1, 23),
+(100,3, 12, 1, 23),
+(100,4, 12, 1, 23),
+(100,1, 1, 1, 24),
+(100,2, 1, 1, 24),
+(100,3, 1, 1, 24),
+(100,4, 1, 1, 24),
+(100,  1, 8, 1, 24),
+(100,  2, 8, 1, 24),
+(100,  3, 8, 1, 24),
+(100,  4, 8, 1, 24),
+(100,  1, 2, 1, 24),
+(100,  2, 2, 1, 24),
+(100,  3, 2, 1, 24),
+(100,  4, 2, 1, 24),
+(100,  1, 1, 1, 25),
+(100,  2, 1, 1, 25),
+(100,  3, 1, 1, 25),
+(100,  4, 1, 1, 25),
+(100,  1, 7, 1, 25),
+(100,  2, 7, 1, 25),
+(100,  3, 7, 1, 25),
+(100,  4, 7, 1, 25),
+(100, 1, 12, 1, 25),
+(100, 2, 12, 1, 25),
+(100, 3, 12, 1, 25),
+(100, 4, 12, 1, 25),
+(100, 1, 1, 1, 26),
+(100, 2, 1, 1, 26),
+(100, 3, 1, 1, 26),
+(100, 4, 1, 1, 26),
+(100, 2, 5, 1, 26),
+(100, 2, 5, 1, 26),
+(100, 2, 5, 1, 26),
+(100, 2, 5, 1, 26),
+(100,  1, 2, 1, 26),
+(100,  2, 2, 1, 26),
+(100,  3, 2, 1, 26),
+(100,  4, 2, 1, 26),
+(100,  1, 8, 1, 27),
+(100,  2, 8, 1, 27),
+(100,  3, 8, 1, 27),
+(100,  4, 8, 1, 27),
+(100, 1, 7, 1,  27),
+(100, 2, 7, 1,  27),
+(100, 3, 7, 1,  27),
+(100, 4, 7, 1,  27),
+(100, 1, 1, 1,  27),
+(100, 2, 1, 1,  27),
+(100, 3, 1, 1,  27),
+(100, 4, 1, 1,  27),
+(100, 1, 2, 1,  28),
+(100, 2, 2, 1,  28),
+(100, 3, 2, 1,  28),
+(100, 4, 2, 1,  28),
+(100,1, 9, 1, 28),
+(100,2, 9, 1, 28),
+(100,3, 9, 1, 28),
+(100,4, 9, 1, 28),
+(100, 1, 1, 1,  28),
+(100, 2, 1, 1,  28),
+(100, 3, 1, 1,  28),
+(100, 4, 1, 1,  28),
 
-(100,1, 1, 1, 4, 29),
-(100,2, 1, 1, 4, 29),
-(100,3, 1, 1, 4, 29),
-(100,4, 1, 1, 4, 29),
-(100, 1, 1, 1, 4, 29),
-(100, 2, 1, 1, 4, 29),
-(100, 3, 1, 1, 4, 29),
-(100, 4, 1, 1, 4, 29),
-(100, 1, 1, 1, 4, 29),
-(100, 2, 1, 1, 4, 29),
-(100, 3, 1, 1, 4, 29),
-(100, 4, 1, 1, 4, 29),
-(100,1, 1, 1, 4, 30),
-(100,2, 1, 1, 4, 30),
-(100,3, 1, 1, 4, 30),
-(100,4, 1, 1, 4, 30),
-(100, 1, 14, 1, 4, 30),
-(100, 2, 14, 1, 4, 30),
-(100, 3, 14, 1, 4, 30),
-(100, 4, 14, 1, 4, 30),
-(100,1, 2, 1, 4, 30),
-(100,2, 2, 1, 4, 30),
-(100,3, 2, 1, 4, 30),
-(100,4, 2, 1, 4, 30),
+(100,1, 1, 1, 29),
+(100,2, 1, 1, 29),
+(100,3, 1, 1, 29),
+(100,4, 1, 1, 29),
+(100, 1, 1, 1, 29),
+(100, 2, 1, 1, 29),
+(100, 3, 1, 1, 29),
+(100, 4, 1, 1, 29),
+(100, 1, 1, 1, 29),
+(100, 2, 1, 1, 29),
+(100, 3, 1, 1, 29),
+(100, 4, 1, 1, 29),
+(100,1, 1, 1,  30),
+(100,2, 1, 1,  30),
+(100,3, 1, 1,  30),
+(100,4, 1, 1,  30),
+(100, 1, 14, 1, 30),
+(100, 2, 14, 1, 30),
+(100, 3, 14, 1, 30),
+(100, 4, 14, 1, 30),
+(100,1, 2, 1, 30),
+(100,2, 2, 1, 30),
+(100,3, 2, 1, 30),
+(100,4, 2, 1, 30),
 
-(100,  1, 8, 2, 4, 31),
-(100,  2, 8, 2, 4, 31),
-(100,  3, 8, 2, 4, 31),
-(100,  4, 8, 2, 4, 31),
-(100, 1, 1, 2, 4, 31),
-(100, 2, 1, 2, 4, 31),
-(100, 3, 1, 2, 4, 31),
-(100, 4, 1, 2, 4, 31),
-(100,1, 10, 2, 4, 31),
-(100,2, 10, 2, 4, 31),
-(100,3, 10, 2, 4, 31),
-(100,4, 10, 2, 4, 31),
-(100, 1, 3, 2, 4, 32),
-(100, 2, 3, 2, 4, 32),
-(100, 3, 3, 2, 4, 32),
-(100, 4, 3, 2, 4, 32),
-(100,  1, 10, 2, 4, 32),
-(100,  2, 10, 2, 4, 32),
-(100,  3, 10, 2, 4, 32),
-(100,  4, 10, 2, 4, 32),
-(100,1, 2, 2, 4, 32),
-(100,2, 2, 2, 4, 32),
-(100,3, 2, 2, 4, 32),
-(100,4, 2, 2, 4, 32),
-(100, 1, 8, 2, 4, 33),
-(100, 2, 8, 2, 4, 33),
-(100, 3, 8, 2, 4, 33),
-(100, 4, 8, 2, 4, 33),
-(100, 1, 3, 2, 4, 33),
-(100, 2, 3, 2, 4, 33),
-(100, 3, 3, 2, 4, 33),
-(100, 4, 3, 2, 4, 33),
-(100, 1, 1, 2, 4, 33),
-(100, 2, 1, 2, 4, 33),
-(100, 3, 1, 2, 4, 33),
-(100, 4, 1, 2, 4, 33),
-(100, 1, 2, 2, 4, 34),
-(100, 2, 2, 2, 4, 34),
-(100, 3, 2, 2, 4, 34),
-(100, 4, 2, 2, 4, 34),
-(100,1, 8, 2, 4, 34),
-(100,2, 8, 2, 4, 34),
-(100,3, 8, 2, 4, 34),
-(100,4, 8, 2, 4, 34),
-(100,  1, 10, 2, 4, 35),
-(100,  2, 10, 2, 4, 35),
-(100,  3, 10, 2, 4, 35),
-(100,  4, 10, 2, 4, 35),
-(100, 1, 1, 2, 4, 35),
-(100, 2, 1, 2, 4, 35),
-(100, 3, 1, 2, 4, 35),
-(100, 4, 1, 2, 4, 35),
-(100, 1, 11, 2, 4, 36),
-(100, 2, 11, 2, 4, 36),
-(100, 3, 11, 2, 4, 36),
-(100, 4, 11, 2, 4, 36),
-(100,1, 10, 2, 4, 36),
-(100,2, 10, 2, 4, 36),
-(100,3, 10, 2, 4, 36),
-(100,4, 10, 2, 4, 36),
-(100,1, 1, 2, 4, 36),
-(100,2, 1, 2, 4, 36),
-(100,3, 1, 2, 4, 36),
-(100,4, 1, 2, 4, 36),
-(100,1, 8, 2, 4, 37),
-(100,2, 8, 2, 4, 37),
-(100,3, 8, 2, 4, 37),
-(100,4, 8, 2, 4, 37),
-(100, 1, 14, 2, 4, 37),
-(100, 2, 14, 2, 4, 37),
-(100, 3, 14, 2, 4, 37),
-(100, 4, 14, 2, 4, 37),
-(100,1, 1, 2, 4, 37),
-(100,2, 1, 2, 4, 37),
-(100,3, 1, 2, 4, 37),
-(100,4, 1, 2, 4, 37),
-
-
-(100,  1, 7, 2, 4, 38),
-(100,2, 7, 2, 4, 38),
-(100,  3, 7, 2, 4, 38),
-(100,  4, 7, 2, 4, 38),
-(100,  1, 1, 2, 4, 38),
-(100,  2, 1, 2, 4, 38),
-(100,  3, 1, 2, 4, 38),
-(100,  4, 1, 2, 4, 38),
-(100,1, 10, 2, 4, 38),
-(100,2, 10, 2, 4, 38),
-(100,3, 10, 2, 4, 38),
-(100,4, 10, 2, 4, 38),
-(100, 1, 1, 2, 4, 39),
-(100, 2, 1, 2, 4, 39),
-(100, 3, 1, 2, 4, 39),
-(100, 4, 1, 2, 4, 39),
-(100,1, 12, 2, 4, 39),
-(100,2, 12, 2, 4, 39),
-(100,3, 12, 2, 4, 39),
-(100,4, 12, 2, 4, 39),
-(100,  1, 3, 2, 4, 40),
-(100,  2, 3, 2, 4, 40),
-(100,  3, 3, 2, 4, 40),
-(100,  4, 3, 2, 4, 40),
-(100,1, 1, 2, 4, 40),
-(100,2, 1, 2, 4, 40),
-(100,3, 1, 2, 4, 40),
-(100,4, 1, 2, 4, 40),
-(100, 1, 8, 2, 4, 40),
-(100, 2, 8, 2, 4, 40),
-(100, 3, 8, 2, 4, 40),
-(100, 4, 8, 2, 4, 40),
-(100,1, 2, 2, 4, 41),
-(100,2, 2, 2, 4, 41),
-(100,3, 2, 2, 4, 41),
-(100,4, 2, 2, 4, 41),
-(100,1, 1, 2, 4, 41),
-(100,2, 1, 2, 4, 41),
-(100,3, 1, 2, 4, 41),
-(100,4, 1, 2, 4, 41),
-(100,1, 12, 2, 4, 41),
-(100,2, 12, 2, 4, 41),
-(100,3, 12, 2, 4, 41),
-(100,4, 12, 2, 4, 41),
-(100,1, 1, 2, 4, 42),
-(100,2, 1, 2, 4, 42),
-(100,3, 1, 2, 4, 42),
-(100,4, 1, 2, 4, 42),
-(100,1, 12, 2, 4, 42),
-(100,2, 12, 2, 4, 42),
-(100,3, 12, 2, 4, 42),
-(100,4, 12, 2, 4, 42),
-
-(100,1, 5, 2, 4, 43),
-(100,1, 5, 2, 4, 43),
-(100,1, 5, 2, 4, 43),
-(100,1, 5, 2, 4, 43),
-(100,1,1, 2, 4, 43),
-(100,2,1, 2, 4, 43),
-(100,3,1, 2, 4, 43),
-(100,4,1, 2, 4, 43),
-(100,  1,2, 2, 4, 43),
-(100,  2,2, 2, 4, 43),
-(100,  3,2, 2, 4, 43),
-(100,  4,2, 2, 4, 43),
-
-(100,1,1, 2, 4, 44),
-(100,2,1, 2, 4, 44),
-(100,3,1, 2, 4, 44),
-(100,4,1, 2, 4, 44),
-(100,1,12, 2, 4, 44),
-(100,2,12, 2, 4, 44),
-(100,3,12, 2, 4, 44),
-(100,4,12, 2, 4, 44),
-(100,1,2, 2, 4, 44),
-(100,2,2, 2, 4, 44),
-(100,3,2, 2, 4, 44),
-(100,4,2, 2, 4, 44),
-(100,1,9, 2, 4, 45),
-(100,2,9, 2, 4, 45),
-(100,3,9, 2, 4, 45),
-(100,4,9, 2, 4, 45),
-(100,1,7, 2, 4, 45),
-(100,2,7, 2, 4, 45),
-(100,3,7, 2, 4, 45),
-(100,4,7, 2, 4, 45),
+(100,  1, 8, 2, 31),
+(100,  2, 8, 2, 31),
+(100,  3, 8, 2, 31),
+(100,  4, 8, 2, 31),
+(100, 1, 1, 2, 31),
+(100, 2, 1, 2, 31),
+(100, 3, 1, 2, 31),
+(100, 4, 1, 2, 31),
+(100,1, 10, 2, 31),
+(100,2, 10, 2, 31),
+(100,3, 10, 2, 31),
+(100,4, 10, 2, 31),
+(100, 1, 3, 2, 32),
+(100, 2, 3, 2, 32),
+(100, 3, 3, 2, 32),
+(100, 4, 3, 2, 32),
+(100,  1, 10, 2, 32),
+(100,  2, 10, 2, 32),
+(100,  3, 10, 2, 32),
+(100,  4, 10, 2, 32),
+(100,1, 2, 2, 32),
+(100,2, 2, 2, 32),
+(100,3, 2, 2, 32),
+(100,4, 2, 2, 32),
+(100, 1, 8, 2, 33),
+(100, 2, 8, 2, 33),
+(100, 3, 8, 2, 33),
+(100, 4, 8, 2, 33),
+(100, 1, 3, 2, 33),
+(100, 2, 3, 2, 33),
+(100, 3, 3, 2, 33),
+(100, 4, 3, 2, 33),
+(100, 1, 1, 2, 33),
+(100, 2, 1, 2, 33),
+(100, 3, 1, 2, 33),
+(100, 4, 1, 2, 33),
+(100, 1, 2, 2, 34),
+(100, 2, 2, 2, 34),
+(100, 3, 2, 2, 34),
+(100, 4, 2, 2, 34),
+(100,1, 8, 2, 34),
+(100,2, 8, 2, 34),
+(100,3, 8, 2, 34),
+(100,4, 8, 2, 34),
+(100,  1, 10, 2, 35),
+(100,  2, 10, 2, 35),
+(100,  3, 10, 2, 35),
+(100,  4, 10, 2, 35),
+(100, 1, 1, 2, 35),
+(100, 2, 1, 2, 35),
+(100, 3, 1, 2, 35),
+(100, 4, 1, 2, 35),
+(100, 1, 11, 2, 36),
+(100, 2, 11, 2, 36),
+(100, 3, 11, 2, 36),
+(100, 4, 11, 2, 36),
+(100,1, 10, 2,  36),
+(100,2, 10, 2,  36),
+(100,3, 10, 2,  36),
+(100,4, 10, 2,  36),
+(100,1, 1, 2, 36),
+(100,2, 1, 2, 36),
+(100,3, 1, 2, 36),
+(100,4, 1, 2, 36),
+(100,1, 8, 2, 37),
+(100,2, 8, 2, 37),
+(100,3, 8, 2, 37),
+(100,4, 8, 2, 37),
+(100, 1, 14, 2,  37),
+(100, 2, 14, 2,  37),
+(100, 3, 14, 2,  37),
+(100, 4, 14, 2,  37),
+(100,1, 1, 2, 37),
+(100,2, 1, 2, 37),
+(100,3, 1, 2, 37),
+(100,4, 1, 2, 37),
 
 
-(100, 1, 7, 2, 4, 46),
-(100, 2, 7, 2, 4, 46),
-(100, 3, 7, 2, 4, 46),
-(100, 4, 7, 2, 4, 46),
-(100, 1, 11, 2, 4, 46),
-(100, 2, 11, 2, 4, 46),
-(100, 3, 11, 2, 4, 46),
-(100, 4, 11, 2, 4, 46),
-(100,1, 10, 2, 4, 46),
-(100,2, 10, 2, 4, 46),
-(100,3, 10, 2, 4, 46),
-(100,4, 10, 2, 4, 46),
+(100,  1, 7, 2, 38),
+(100,2, 7, 2, 38),
+(100,  3, 7, 2, 38),
+(100,  4, 7, 2, 38),
+(100,  1, 1, 2, 38),
+(100,  2, 1, 2, 38),
+(100,  3, 1, 2, 38),
+(100,  4, 1, 2, 38),
+(100,1, 10, 2, 38),
+(100,2, 10, 2, 38),
+(100,3, 10, 2, 38),
+(100,4, 10, 2, 38),
+(100, 1, 1, 2, 39),
+(100, 2, 1, 2, 39),
+(100, 3, 1, 2, 39),
+(100, 4, 1, 2, 39),
+(100,1, 12, 2, 39),
+(100,2, 12, 2, 39),
+(100,3, 12, 2, 39),
+(100,4, 12, 2, 39),
+(100,  1, 3, 2, 40),
+(100,  2, 3, 2, 40),
+(100,  3, 3, 2, 40),
+(100,  4, 3, 2, 40),
+(100,1, 1, 2, 40),
+(100,2, 1, 2, 40),
+(100,3, 1, 2, 40),
+(100,4, 1, 2, 40),
+(100, 1, 8, 2, 40),
+(100, 2, 8, 2, 40),
+(100, 3, 8, 2, 40),
+(100, 4, 8, 2, 40),
+(100,1, 2, 2, 41),
+(100,2, 2, 2, 41),
+(100,3, 2, 2, 41),
+(100,4, 2, 2, 41),
+(100,1, 1, 2, 41),
+(100,2, 1, 2, 41),
+(100,3, 1, 2, 41),
+(100,4, 1, 2, 41),
+(100,1, 12, 2, 41),
+(100,2, 12, 2, 41),
+(100,3, 12, 2, 41),
+(100,4, 12, 2, 41),
+(100,1, 1, 2, 42),
+(100,2, 1, 2, 42),
+(100,3, 1, 2, 42),
+(100,4, 1, 2, 42),
+(100,1, 12, 2, 42),
+(100,2, 12, 2, 42),
+(100,3, 12, 2, 42),
+(100,4, 12, 2, 42),
 
-(100, 1, 9, 2, 4, 47),
-(100, 2, 9, 2, 4, 47),
-(100, 3, 9, 2, 4, 47),
-(100, 4, 9, 2, 4, 47),
-(100,  1, 1, 2, 4, 47),
-(100,  2, 1, 2, 4, 47),
-(100,  3, 1, 2, 4, 47),
-(100,  4, 1, 2, 4, 47),
-(100,1, 2, 3, 4, 48),
-(100,2, 2, 3, 4, 48),
-(100,3, 2, 3, 4, 48),
-(100,4, 2, 3, 4, 48),
-(100, 1, 1, 3, 4, 48),
-(100, 2, 1, 3, 4, 48),
-(100, 3, 1, 3, 4, 48),
-(100, 4, 1, 3, 4, 48),
-(100,1, 8, 3, 4, 48),
-(100,2, 8, 3, 4, 48),
-(100,3, 8, 3, 4, 48),
-(100,4, 8, 3, 4, 48),
-(100, 1, 5, 3, 4, 49),
-(100, 2, 5, 3, 4, 49),
-(100, 3, 5, 3, 4, 49),
-(100, 4, 5, 3, 4, 49),
-(100,1, 2, 3, 4, 49),
-(100,2, 2, 3, 4, 49),
-(100,3, 2, 3, 4, 49),
-(100,4, 2, 3, 4, 49),
-(100, 1, 3, 2, 4, 50),
-(100, 2, 3, 2, 4, 50),
-(100, 3, 3, 2, 4, 50),
-(100, 4, 3, 2, 4, 50),
-(100, 1, 10, 2, 4, 50),
-(100, 2, 10, 2, 4, 50),
-(100, 3, 10, 2, 4, 50),
-(100, 4, 10, 2, 4, 50),
-(100, 1, 8, 2, 4, 50),
-(100, 2, 8, 2, 4, 50),
-(100, 3, 8, 2, 4, 50),
-(100, 4, 8, 2, 4, 50),
-(100, 1, 8, 2, 4, 51),
-(100, 2, 8, 2, 4, 51),
-(100, 3, 8, 2, 4, 51),
-(100, 4, 8, 2, 4, 51),
-(100,1, 9, 2, 4, 51),
-(100,2, 9, 2, 4, 51),
-(100,3, 9, 2, 4, 51),
-(100,4, 9, 2, 4, 51),
-(100,1, 1, 2, 4, 51),
-(100,2, 1, 2, 4, 51),
-(100,3, 1, 2, 4, 51),
-(100,4, 1, 2, 4, 51),
-(100,1, 1, 2, 4, 52),
-(100,2, 1, 2, 4, 52),
-(100,3, 1, 2, 4, 52),
-(100,4, 1, 2, 4, 52),
-(100, 1, 1, 2, 4, 52),
-(100, 2, 1, 2, 4, 52),
-(100, 3, 1, 2, 4, 52),
-(100, 4, 1, 2, 4, 52),
-(100,1,12,2, 4, 53),
-(100,2,12,2, 4, 53),
-(100,3,12,2, 4, 53),
-(100,4,12,2, 4, 53),
-(100, 1,9,2, 4, 53),
-(100, 2,9,2, 4, 53),
-(100, 3,9,2, 4, 53),
-(100, 4,9,2, 4, 53),
-(100,1,1,1, 4, 53),
-(100,2,1,1, 4, 53),
-(100,3,1,1, 4, 53),
-(100,4,1,1, 4, 53),
-(100,1,1,1, 4,54),
-(100,2,1,1, 4,54),
-(100,3,1,1, 4,54),
-(100,4,1,1, 4,54),
-(100, 1,2,1, 4,54),
-(100, 2,2,1, 4,54),
-(100, 3,2,1, 4,54),
-(100, 4,2,1, 4,54),
-(100, 1,3,1, 4,54),
-(4, 2,3,1, 4,54),
-(1, 3,3,1, 4,54),
-(12, 4,3,1, 4,54);
+(100,1, 5, 2, 43),
+(100,1, 5, 2, 43),
+(100,1, 5, 2, 43),
+(100,1, 5, 2, 43),
+(100,1,1, 2, 43),
+(100,2,1, 2, 43),
+(100,3,1, 2, 43),
+(100,4,1, 2, 43),
+(100,  1,2, 2, 43),
+(100,  2,2, 2, 43),
+(100,  3,2, 2, 43),
+(100,  4,2, 2, 43),
+
+(100,1,1, 2, 44),
+(100,2,1, 2, 44),
+(100,3,1, 2, 44),
+(100,4,1, 2, 44),
+(100,1,12, 2, 44),
+(100,2,12, 2, 44),
+(100,3,12, 2, 44),
+(100,4,12, 2, 44),
+(100,1,2, 2, 44),
+(100,2,2, 2, 44),
+(100,3,2, 2, 44),
+(100,4,2, 2, 44),
+(100,1,9, 2, 45),
+(100,2,9, 2, 45),
+(100,3,9, 2, 45),
+(100,4,9, 2, 45),
+(100,1,7, 2, 45),
+(100,2,7, 2, 45),
+(100,3,7, 2, 45),
+(100,4,7, 2, 45),
+
+
+(100, 1, 7, 2,46),
+(100, 2, 7, 2,46),
+(100, 3, 7, 2,46),
+(100, 4, 7, 2,46),
+(100, 1, 11, 2, 46),
+(100, 2, 11, 2 ,46),
+(100, 3, 11, 2, 46),
+(100, 4, 11, 2 ,46),
+(100,1, 10, 2,46),
+(100,2, 10, 2,46),
+(100,3, 10, 2,46),
+(100,4, 10, 2,46),
+
+(100, 1, 9, 2, 47),
+(100, 2, 9, 2, 47),
+(100, 3, 9, 2, 47),
+(100, 4, 9, 2, 47),
+(100,  1, 1, 2, 47),
+(100,  2, 1, 2, 47),
+(100,  3, 1, 2, 47),
+(100,  4, 1, 2, 47),
+(100,1, 2, 3,  48),
+(100,2, 2, 3, 48),
+(100,3, 2, 3, 48),
+(100,4, 2, 3, 48),
+(100, 1, 1, 3, 48),
+(100, 2, 1, 3, 48),
+(100, 3, 1, 3, 48),
+(100, 4, 1, 3, 48),
+(100,1, 8, 3, 48),
+(100,2, 8, 3, 48),
+(100,3, 8, 3, 48),
+(100,4, 8, 3, 48),
+(100, 1, 5, 3, 49),
+(100, 2, 5, 3, 49),
+(100, 3, 5, 3, 49),
+(100, 4, 5, 3, 49),
+(100,1, 2, 3, 49),
+(100,2, 2, 3, 49),
+(100,3, 2, 3, 49),
+(100,4, 2, 3, 49),
+(100, 1, 3, 2, 50),
+(100, 2, 3, 2, 50),
+(100, 3, 3, 2, 50),
+(100, 4, 3, 2, 50),
+(100, 1, 10, 2, 50),
+(100, 2, 10, 2, 50),
+(100, 3, 10, 2, 50),
+(100, 4, 10, 2, 50),
+(100, 1, 8, 2, 50),
+(100, 2, 8, 2, 50),
+(100, 3, 8, 2, 50),
+(100, 4, 8, 2, 50),
+(100, 1, 8, 2, 51),
+(100, 2, 8, 2, 51),
+(100, 3, 8, 2, 51),
+(100, 4, 8, 2, 51),
+(100,1, 9, 2, 51),
+(100,2, 9, 2, 51),
+(100,3, 9, 2, 51),
+(100,4, 9, 2, 51),
+(100,1, 1, 2, 51),
+(100,2, 1, 2, 51),
+(100,3, 1, 2, 51),
+(100,4, 1, 2, 51),
+(100,1, 1, 2, 52),
+(100,2, 1, 2, 52),
+(100,3, 1, 2, 52),
+(100,4, 1, 2, 52),
+(100, 1, 1, 2, 52),
+(100, 2, 1, 2, 52),
+(100, 3, 1, 2, 52),
+(100, 4, 1, 2, 52),
+(100,1,12,2, 53),
+(100,2,12,2, 53),
+(100,3,12,2, 53),
+(100,4,12,2, 53),
+(100, 1,9,2, 53),
+(100, 2,9,2, 53),
+(100, 3,9,2, 53),
+(100, 4,9,2, 53),
+(100,1,1,1, 53),
+(100,2,1,1, 53),
+(100,3,1,1, 53),
+(100,4,1,1, 53),
+(100,1,1,1,54),
+(100,2,1,1,54),
+(100,3,1,1,54),
+(100,4,1,1,54),
+(100, 1,2,1, 54),
+(100, 2,2,1, 54),
+(100, 3,2,1, 54),
+(100, 4,2,1, 54),
+(100, 1,3,1, 54),
+(4, 2,3,1,54),
+(1, 3,3,1,54),
+(12, 4,3,1,54);
+go
+-- Insert data for gio_hang_chi_tiet
+INSERT INTO gio_hang_chi_tiet (id_san_pham_chi_tiet, id_gio_hang, so_luong, don_gia, thanh_tien) VALUES 
+(1, 1, 1, 200000, 200000),
+(2, 2, 2, 300000, 600000),
+(3, 1, 1, 500000, 500000),
+(4, 1, 1, 100000, 100000),
+(5, 1, 1, 1500000, 1500000);
+go
 INSERT INTO hinh_anh_san_pham (id_san_pham, url_anh, mo_ta, trang_thai, thu_tu, loai_hinh_anh) VALUES /* Áo phông */
 (1, 'images/ao_phong/aophongbantaydep.jpg', N'Hình ảnh áo phông', 1, 1, N'Áo phông'),
 (1, 'images/ao_phong/aophongbantaydep(2).jpg', N'Hình ảnh áo phông', 1, 2, N'Áo phông'),
@@ -1377,7 +1442,9 @@ INSERT INTO hinh_anh_san_pham (id_san_pham, url_anh, mo_ta, trang_thai, thu_tu, 
 (54, 'images/quan_sort_&_jean/quansuongdaibasic.jpg', 'Hình ảnh quần kiểu', 1, 1, 'Quần sort and jean'),
 (54, 'images/quan_sort_&_jean/quansuongdaibasic(2).jpg', 'Hình ảnh quần kiểu', 1, 2, 'Quần sort and jean'),
 (54, 'images/quan_sort_&_jean/quansuongdaibasic(3).jpg', 'Hình ảnh quần kiểu', 1, 3, 'Quần sort and jean');
+
 go
+
 --Insert data for hoa_don_chi_tiet
 INSERT INTO hoa_don_chi_tiet (id_san_pham_chi_tiet, id_hoa_don, so_luong, tong_tien,so_tien_thanh_toan,tien_tra_lai) VALUES 
 (1, 1, 2, 1000.00, 1000.00,0),
@@ -1392,9 +1459,9 @@ go
 
 
 
+select * from vai_tro
+select * from nguoi_dung
 
-select * from voucher
-select * from loai_voucher
 select * from danh_muc
 select * from danh_gia
 select * from chat_lieu
@@ -1402,77 +1469,30 @@ select * from chat_lieu_chi_tiet
 select * from kich_thuoc
 select * from kich_thuoc_chi_tiet
 select * from mau_sac
-
+select * from mau_sac_chi_tiet
+select * from gio_hang
+select * from gio_hang_chi_tiet
 select * from phi_van_chuyen
 select * from dia_chi_van_chuyen
-
-select * from xac_thuc
-select * from lich_su_hoa_don
-
-select * from hinh_anh_san_pham
 select * from pt_thanh_toan
 select * from pt_thanh_toan_hoa_don
 select * from trang_thai_hoa_don
+select * from voucher
+select * from loai_voucher
 select * from hoa_don
 select * from hoa_don_chi_tiet
-select * from gio_hang
-select * from gio_hang_chi_tiet
-select * from vai_tro	
-select * from nguoi_dung
-
-SELECT 
-    spct.Id_san_pham_chi_tiet,
-    sp.Id_san_pham,
-    sp.ten_san_pham,
-    dm.ten_danh_muc,
-    cl.ten_chat_lieu,
-    kt.ten_kich_thuoc,
-    ms.ten_mau_sac,
-    spct.so_luong,
-    sp.gia_ban
-FROM 
-    san_pham_chi_tiet spct
-JOIN 
-    san_pham sp ON spct.id_san_pham = sp.Id_san_pham
-JOIN 
-    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
-JOIN 
-    chat_lieu_chi_tiet clct ON spct.id_chat_lieu_chi_tiet = clct.Id_chat_lieu_tiet
-JOIN 
-    chat_lieu cl ON clct.id_chat_lieu = cl.Id_chat_lieu
-JOIN 
-    kich_thuoc_chi_tiet ktct ON spct.id_kich_thuoc_chi_tiet = ktct.Id_kich_thuoc_chi_tiet
-JOIN 
-    kich_thuoc kt ON ktct.id_kich_thuoc = kt.Id_kich_thuoc
-JOIN 
-    mau_sac_chi_tiet msct ON spct.id_mau_sac_chi_tiet = msct.Id_mau_sac_chi_tiet
-JOIN 
-    mau_sac ms ON msct.id_mau_sac = ms.Id_mau_sac;
+select * from xac_thuc
+select * from lich_su_hoa_don
 select * from san_pham
 select * from san_pham_chi_tiet
-
-
-
-SELECT sp.ten_san_pham, 
-       SUM(hdct.so_luong) AS so_luong_ban_ra,
-       SUM(hdct.tong_tien) AS tong_doanh_thu
-FROM hoa_don_chi_tiet hdct
-JOIN san_pham_chi_tiet spct ON hdct.id_san_pham_chi_tiet = spct.Id_san_pham_chi_tiet
-JOIN san_pham sp ON spct.id_san_pham = sp.Id_san_pham
-JOIN hoa_don hd ON hdct.id_hoa_don = hd.Id_hoa_don
-WHERE hd.trang_thai = 1 -- Sản phẩm đã bán
-GROUP BY sp.ten_san_pham
-ORDER BY tong_doanh_thu DESC;
-
-SELECT COUNT(DISTINCT sp.id_san_pham) AS so_san_pham_duoc_ban_ra,
-       SUM(hdct.so_luong) AS tong_so_luong_ban_ra,
-       SUM(hdct.so_luong * hdct.tong_tien) AS tong_doanh_thu
-FROM hoa_don_chi_tiet hdct
-JOIN san_pham_chi_tiet spct ON hdct.id_san_pham_chi_tiet = spct.Id_san_pham_chi_tiet
-JOIN san_pham sp ON spct.id_san_pham = sp.Id_san_pham
-JOIN hoa_don hd ON hdct.id_hoa_don = hd.Id_hoa_don
-WHERE hd.trang_thai = 1; -- Sản phẩm đã bán
-
-
-
-
+select * from gio_hang_chi_tiet
+select * from gio_hang
+select * from hinh_anh_san_pham
+select * from dot_giam_gia
+select * from giam_gia_san_pham
+go
+ALTER TABLE hoa_don
+ADD loai VARCHAR(50);
+go
+ALTER TABLE hoa_don
+ALTER COLUMN dia_chi VARCHAR(255) NULL
