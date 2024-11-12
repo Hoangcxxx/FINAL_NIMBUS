@@ -634,7 +634,8 @@
                                         </div>
                                         <div class="modal-body p-4">
                                             <!-- Tiền khách đưa -->
-                                            <div class="mb-4">
+                                            <!-- Tiền khách đưa -->
+                                            <div class="mb-4" ng-if="selectedPhuongThucThanhToan !== 2">
                                                 <label for="customerPaid" class="form-label fw-semibold">
                                                     <i class="fa-solid fa-hand-holding-dollar"></i> Tiền Khách Đưa
                                                 </label>
@@ -659,15 +660,6 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Tiền thừa -->
-                                            <div class="mb-4">
-                                                <label for="soTienThua" class="form-label fw-semibold">
-                                                    <i class="fa-solid fa-coins"></i> Tiền Thừa
-                                                </label>
-                                                <input type="text" class="form-control shadow-sm" id="soTienThua"
-                                                    ng-value="tinhTienThua()" placeholder="0" readonly
-                                                    style="font-size: 1.1rem; background-color: #f8f9fa; border-radius: .375rem;">
-                                            </div>
 
                                             <!-- Bảng giao dịch -->
                                             <div class="mb-4">
@@ -681,10 +673,10 @@
                                                             <th>Hành Động</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
+                                                    <tbody id="show-user">
                                                         <tr>
                                                             <td>1</td>
-                                                            <td>{{ maGiaoDich }}</td>
+                                                            <td>GD1</td>
                                                             <td>{{ tienThua | currency:'':0 }} VND</td>
                                                             <td>{{ phuongThuc }}</td>
                                                             <td>
@@ -708,7 +700,9 @@
                                                         ng-value="totalPrice" placeholder="0" readonly
                                                         style="font-size: 1.1rem; background-color: #f8f9fa; border-radius: .375rem;">
                                                 </div>
-                                                <div class="mb-3">
+                                                <!-- Tiền thừa -->
+                                                <div class="mb-3"
+                                                    ng-if="selectedPhuongThucThanhToan !== 2">
                                                     <label for="changeDue" class="form-label fw-semibold">
                                                         <i class="fa-solid fa-money-bill-wave-alt"></i> Tiền Thừa
                                                     </label>
@@ -716,6 +710,7 @@
                                                         ng-value="tienThua" placeholder="0" readonly
                                                         style="font-size: 1.1rem; background-color: #f8f9fa; border-radius: .375rem;">
                                                 </div>
+
                                             </div>
                                         </div>
                                         <div class="modal-footer">

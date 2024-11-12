@@ -1,4 +1,5 @@
     window.BanHangController = function ($scope, $http) {
+        $scope.selectedPhuongThucThanhToan = 1; 
         $scope.invoiceToDelete = null;
         $scope.currentPage = 1;
         $scope.pageChanged = function (newPage) {
@@ -91,6 +92,9 @@
             .then(function (response) {
                 console.log('Danh sách hóa đơn chưa thanh toán:', response.data);
                 $scope.unpaidInvoices = response.data;
+                if ($scope.unpaidInvoices.length > 0) {
+                    $scope.selectInvoice($scope.unpaidInvoices[0]); 
+                }
                 // if ($scope.unpaidInvoices.length > 5) {
                 //     $scope.unpaidInvoices = $scope.unpaidInvoices.slice(0, 5);
                 //     alert("Bạn chỉ được phép tạo tối đa 5 hóa đơn chưa thanh toán!");
@@ -191,6 +195,8 @@
                 console.log('Chi tiết hóa đơn:', response.data);
                 $scope.selectedInvoice = response.data;
                 $scope.selectedInvoice.maHoaDon = response.data.maHoaDon;
+                $scope.selectedUser = $scope.selectedInvoice.nguoiDung;
+                $scope.searchTerm = $scope.selectedUser.tenNguoiDung;
             })
             .catch(function (error) {
                 console.error('Lỗi khi lấy chi tiết hóa đơn:', error);
