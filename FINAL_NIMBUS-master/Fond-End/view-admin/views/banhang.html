@@ -633,9 +633,7 @@
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body p-4">
-                                            <!-- Tiền khách đưa -->
-                                            <!-- Tiền khách đưa -->
-                                            <div class="mb-4" ng-if="selectedPhuongThucThanhToan !== 2">
+                                            <div class="mb-4" ng-show="selectedPhuongThucThanhToan !== 2">
                                                 <label for="customerPaid" class="form-label fw-semibold">
                                                     <i class="fa-solid fa-hand-holding-dollar"></i> Tiền Khách Đưa
                                                 </label>
@@ -644,6 +642,7 @@
                                                     placeholder="Nhập số tiền khách đưa"
                                                     style="font-size: 1.1rem; border-radius: .375rem;">
                                             </div>
+
 
                                             <!-- Phương thức thanh toán -->
                                             <div class="mb-4">
@@ -659,7 +658,6 @@
                                                     </button>
                                                 </div>
                                             </div>
-
 
                                             <!-- Bảng giao dịch -->
                                             <div class="mb-4">
@@ -700,17 +698,16 @@
                                                         ng-value="totalPrice" placeholder="0" readonly
                                                         style="font-size: 1.1rem; background-color: #f8f9fa; border-radius: .375rem;">
                                                 </div>
+
                                                 <!-- Tiền thừa -->
-                                                <div class="mb-3"
-                                                    ng-if="selectedPhuongThucThanhToan !== 2">
+                                                <div class="mb-3" ng-show="selectedPhuongThucThanhToan !== 2">
                                                     <label for="changeDue" class="form-label fw-semibold">
                                                         <i class="fa-solid fa-money-bill-wave-alt"></i> Tiền Thừa
                                                     </label>
                                                     <input type="text" class="form-control shadow-sm"
-                                                        ng-value="tienThua" placeholder="0" readonly
+                                                        ng-model="tienThua" placeholder="0" readonly
                                                         style="font-size: 1.1rem; background-color: #f8f9fa; border-radius: .375rem;">
                                                 </div>
-
                                             </div>
                                         </div>
                                         <div class="modal-footer">

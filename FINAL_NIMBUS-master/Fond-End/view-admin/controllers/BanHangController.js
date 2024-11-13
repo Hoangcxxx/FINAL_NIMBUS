@@ -1,4 +1,4 @@
-    window.BanHangController = function ($scope, $http) {
+    window.BanHangController = function ($scope, $http,$window, $location) {
         $scope.selectedPhuongThucThanhToan = 1; 
         $scope.invoiceToDelete = null;
         $scope.currentPage = 1;
@@ -202,15 +202,45 @@
                 console.error('Lỗi khi lấy chi tiết hóa đơn:', error);
             });
     };
-
     $scope.calculateChange = function () {
-        if ($scope.tienKhachDua !== undefined && !isNaN($scope.tienKhachDua)) {
-            $scope.tienThua = Math.max($scope.tienKhachDua - $scope.totalPrice, 0);
-        } else {
+        // Kiểm tra và loại bỏ dấu phân cách hàng nghìn nếu có
+        var tienKhachDua = $scope.tienKhachDua ? $scope.tienKhachDua.replace(/,/g, '') : '0'; // Loại bỏ dấu phẩy nếu có
+        tienKhachDua = parseFloat(tienKhachDua);  // Chuyển đổi thành số
+        
+        var totalPrice = parseFloat($scope.totalPrice) || 0;  // Tổng tiền cần thanh toán
+        
+        // Kiểm tra xem tiền khách đưa có phải là số hợp lệ hay không
+        if (isNaN(tienKhachDua) || tienKhachDua < 0) {
+            $scope.tienKhachDua = 0;  // Nếu không phải số hợp lệ, gán giá trị là 0
+            $scope.tienThua = 0;  // Cập nhật tiền thừa về 0
+            alert("Vui lòng nhập một số tiền hợp lệ.");
+            return;  // Dừng hàm nếu không có số tiền hợp lệ
+        }
+    
+        // Kiểm tra giá trị tổng tiền cần thanh toán
+        if (isNaN(totalPrice) || totalPrice < 0) {
+            $scope.totalPrice = 0;  // Nếu tổng tiền không hợp lệ, gán về 0
+            alert("Tổng tiền thanh toán không hợp lệ.");
+            return;
+        }
+    
+        // Tính tiền thừa
+        $scope.tienThua = tienKhachDua - totalPrice;
+    
+        // Nếu tiền khách đưa ít hơn tổng tiền thì tiền thừa = 0
+        if ($scope.tienThua < 0) {
             $scope.tienThua = 0;
         }
+    
+        // Log kết quả tiền thừa để kiểm tra
+        console.log("Tiền khách đưa:", tienKhachDua);
+        console.log("Tổng tiền thanh toán:", totalPrice);
         console.log("Tiền thừa:", $scope.tienThua);
     };
+    
+    
+    
+    
 
     // add giỏ hàng theo id người dùng
     $scope.addToCart = function (idSanPhamChiTiet) {
@@ -432,29 +462,40 @@
             };
             $scope.hoaDonChiTietDTO.push(detail);
         });
+    
         $http.post("http://localhost:8080/api/hoa-don-chi-tiet/create", $scope.hoaDonChiTietDTO, {
             params: { userId: $scope.selectedUser.id }
         })
-            .then(function (response) {
-                console.log("Hóa đơn chi tiết:", response.data);
-                $scope.deleteGioHangChiTietByUserId();
-                $scope.updateInvoiceStatus();
-                $scope.createPaymentMethod();
-                $scope.deleteCart();
-                $scope.TEST();
-                Swal.fire({
-                    title: 'Thành công!',
-                    text: 'Thanh toán thành công!',
-                    icon: 'success',
-                    timer: 1500,  // Đóng sau 2 giây
-                    showConfirmButton: false
-                });
-            })
-            .catch(function (error) {
-                console.error("Lỗi khi tạo hóa đơn chi tiết:", error);
-                alert("Có lỗi xảy ra. Vui lòng thử lại.");
+        .then(function (response) {
+            console.log("Hóa đơn chi tiết:", response.data);
+            $scope.deleteGioHangChiTietByUserId();
+            $scope.updateInvoiceStatus();
+            $scope.createPaymentMethod();
+            $scope.deleteCart();
+            $scope.TEST();
+    
+            // Hiển thị thông báo thành công
+            Swal.fire({
+                title: 'Thành công!',
+                text: 'Thanh toán thành công!',
+                icon: 'success',
+                timer: 1500,  // Đóng sau 2 giây
+                showConfirmButton: false
+            }).then(function () {
+                $scope.getUnpaidInvoices();
+                $scope.getCartItems();
+                $scope.description = "";
+                $scope.selectedInvoice = { maHoaDon: 0 };
+                $scope.selectednv = null;
+                $scope.searchTerm = "";
             });
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi tạo hóa đơn chi tiết:", error);
+            alert("Có lỗi xảy ra. Vui lòng thử lại.");
+        });
     };
+    
     $scope.deleteGioHangChiTietByUserId = function () {
         const userId = $scope.selectedUser.id;
         $http.delete("http://localhost:8080/api/gio-hang/delete/user/" + userId)
