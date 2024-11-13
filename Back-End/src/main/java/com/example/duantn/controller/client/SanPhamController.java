@@ -20,13 +20,14 @@ public class SanPhamController {
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
-        map.put("tenSanPham", row[1]);
-        map.put("trangThai", row[2]);
-        map.put("giaBan", row[3]);  // Cập nhật chỉ số cho giá bán
-        map.put("moTa", row[4]);    // Cập nhật chỉ số cho mô tả
-        map.put("tenDanhMuc", row[5]); // Cập nhật chỉ số cho trạng thái
-        map.put("urlAnh", row[6]);    // Cập nhật chỉ số cho thứ tự
-        map.put("thuTu", row[7]);       // Danh sách kích thước
+        map.put("maSanPham", row[1]);
+        map.put("tenSanPham", row[2]);
+        map.put("trangThai", row[3]);
+        map.put("giaBan", row[4]);  // Cập nhật chỉ số cho giá bán
+        map.put("moTa", row[5]);    // Cập nhật chỉ số cho mô tả
+        map.put("tenDanhMuc", row[6]); // Cập nhật chỉ số cho trạng thái
+        map.put("urlAnh", row[7]);    // Cập nhật chỉ số cho thứ tự
+        map.put("thuTu", row[8]);       // Danh sách kích thước
         return map;
     }
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {
@@ -35,17 +36,18 @@ public class SanPhamController {
     private Map<String, Object> mapSanPhamGiamGiaDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
-        map.put("tenSanPham", row[1]);
-        map.put("giaBan", row[2]);
-        map.put("giaKhuyenMai", row[3]);  // Cập nhật chỉ số cho giá bán
-        map.put("giaTriKhuyenMai", row[4]);  // Cập nhật chỉ số cho giá bán
-        map.put("kieuGiamGia", row[5]);  // Cập nhật chỉ số cho giá bán
-        map.put("tenDotGiamGia", row[6]);  // Cập nhật chỉ số cho giá bán
-        map.put("ngayBatDau", row[7]);  // Cập nhật chỉ số cho giá bán
-        map.put("ngayKetThuc", row[8]);  // Cập nhật chỉ số cho giá bán
-        map.put("moTa", row[9]);    // Cập nhật chỉ số cho mô tả
-        map.put("tenDanhMuc", row[10]); // Cập nhật chỉ số cho trạng thái
-        map.put("urlAnh", row[11]);    // Cập nhật chỉ số cho thứ tự
+        map.put("maSanPham", row[1]);
+        map.put("tenSanPham", row[2]);
+        map.put("giaBan", row[3]);
+        map.put("giaKhuyenMai", row[4]);  // Cập nhật chỉ số cho giá bán
+        map.put("giaTriKhuyenMai", row[5]);  // Cập nhật chỉ số cho giá bán
+        map.put("kieuGiamGia", row[6]);  // Cập nhật chỉ số cho giá bán
+        map.put("tenDotGiamGia", row[7]);  // Cập nhật chỉ số cho giá bán
+        map.put("ngayBatDau", row[8]);  // Cập nhật chỉ số cho giá bán
+        map.put("ngayKetThuc", row[9]);  // Cập nhật chỉ số cho giá bán
+        map.put("moTa", row[10]);    // Cập nhật chỉ số cho mô tả
+        map.put("tenDanhMuc", row[11]); // Cập nhật chỉ số cho trạng thái
+        map.put("urlAnh", row[12]);    // Cập nhật chỉ số cho thứ tự
         return map;
     }
     private List<Map<String, Object>> mapSanPhamGiamGias(List<Object[]> results) {
@@ -54,13 +56,14 @@ public class SanPhamController {
     private Map<String, Object> mapDanhMucDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
-        map.put("tenSanPham", row[1]);
-        map.put("trangThai", row[2]);
-        map.put("giaBan", row[3]);  // Cập nhật chỉ số cho giá bán
-        map.put("moTa", row[4]);    // Cập nhật chỉ số cho mô tả
-        map.put("tenDanhMuc", row[5]); // Cập nhật chỉ số cho trạng thái
-        map.put("urlAnh", row[6]);    // Cập nhật chỉ số cho thứ tự
-        map.put("thuTu", row[7]);       // Danh sách kích thước
+        map.put("maSanPham", row[1]);
+        map.put("tenSanPham", row[2]);
+        map.put("trangThai", row[3]);
+        map.put("giaBan", row[4]);  // Cập nhật chỉ số cho giá bán
+        map.put("moTa", row[5]);    // Cập nhật chỉ số cho mô tả
+        map.put("tenDanhMuc", row[6]); // Cập nhật chỉ số cho trạng thái
+        map.put("urlAnh", row[7]);    // Cập nhật chỉ số cho thứ tự
+        map.put("thuTu", row[8]);       // Danh sách kích thước
         return map;
     }
     private List<Map<String, Object>> mapDanhMucs(List<Object[]> results) {

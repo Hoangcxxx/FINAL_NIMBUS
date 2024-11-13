@@ -1,0 +1,103 @@
+<!-- Begin Page Content -->
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <h1 class="page-title">Chi Tiết Hóa Đơn</h1>
+        </div>
+        <div class="rounded ">
+            <div class="d-flex justify-content-between">
+                <a href="#!don_hang">
+                    <button class="btn btn-secondary">
+                        <i class="fa-light fa-rotate-right"></i> Trở lại
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="my-2 p-4 border rounded shadow-lg">
+            <div class="d-flex">
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin khách hàng -->
+                    <section class="customer-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Thông tin khách hàng</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Tên khách hàng:</strong> {{customer_name}}</li>
+                            <li><strong>Email:</strong> {{customer_email}}</li>
+                            <li><strong>Số điện thoại:</strong> {{customer_phone}}</li>
+                            <li><strong>Địa chỉ:</strong> {{customer_address}}</li>
+                            <li><strong>Vai trò:</strong> {{customer_role}}</li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin hóa đơn -->
+                    <section class="invoice-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Thông tin hóa đơn</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Mã hóa đơn:</strong> {{invoice_code}}</li>
+                            <li><strong>Ngày tạo:</strong> {{invoice_date}}</li>
+                            <li><strong>Phương thức thanh toán:</strong> {{payment_method}}</li>
+                            <li><strong>Trạng thái:</strong> {{invoice_status}}</li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin khuyến mãi -->
+                    <section class="discount-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Khuyến mãi</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Đợt giảm giá:</strong> {{discount_period}}</li>
+                            <li><strong>Mã voucher:</strong> {{voucher_code}}</li>
+                            <li>
+                                <strong>Tổng giảm
+                                    giá:</strong> {{total_discount}}
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+            <!-- Chi tiết sản phẩm -->
+            <section class="product-details mb-4">
+                <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Chi tiết sản phẩm</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên sản phẩm</th>
+                                <th>Giá bán</th>
+                                <th>Số lượng</th>
+                                <th>Tổng tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{product.name}}</td>
+                                <td>{{product.price}}</td>
+                                <td>{{product.quantity}}</td>
+                                <td>{{product.total}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <div class="d-flex">
+                <div class="p-2 flex-fill"></div>
+                <div class="p-2 flex-fill"></div>
+                <div class="p-2 flex-fill">
+                    <!-- Tổng cộng -->
+                    <section class="total mb-4">
+                        <h3 class="h5  text-black" style="font-weight: bold;">Tổng cộng</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Tổng tiền trước giảm giá:</strong> {{subtotal}}</li>
+                            <li><strong>Giảm giá:</strong> {{total_discount}}</li>
+                            <li><strong>Phí vận chuyển:</strong> {{shipping_fee}}</li>
+                            <li class="h4 mt-5"><strong>Tổng thanh toán:</strong> {{total_payment}}</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</main>

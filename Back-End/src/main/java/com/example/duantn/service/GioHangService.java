@@ -51,6 +51,7 @@ public class GioHangService {
 
             gioHang.setNguoiDung(nguoiDung); // Gán đối tượng NguoiDung vào giỏ hàng
             gioHang.setTrangThai(true);
+            gioHang.setNgayTao(new Date());
             gioHang.setNgayCapNhat(new Date());
             gioHang = gioHangRepository.save(gioHang);
         }
@@ -68,6 +69,7 @@ public class GioHangService {
         gioHangChiTiet.setDonGia(sanPhamRepository.findById(gioHangChiTietDTO.getIdSanPham()).get().getGiaBan());
         gioHangChiTiet.setTrangThai(true);
         gioHangChiTiet.setNgayTao(new Date());
+        gioHangChiTiet.setNgayCapNhat(new Date());
 
         if (gioHangChiTietRepository.existsByIdGioHangAndIdSanPhamChiTiet(gioHang.getIdGioHang(),
                 sanPhamChiTiet.get().getIdSanPhamChiTiet())) {

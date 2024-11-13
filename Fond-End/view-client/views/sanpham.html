@@ -5,7 +5,7 @@
 <section id="product1" class="section-p1">
     <h2>Sản Phẩm Đang Giảm Giá</h2>
     <p>Bộ sưu tập những sản phẩm đang được giảm giá</p>
-    <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#demo">
+    <button class="btn" data-bs-toggle="collapse" data-bs-target="#demo">
         Danh Mục Sản Phẩm
         <i class="fa-solid fa-angle-down"></i>
     </button>
@@ -32,7 +32,7 @@
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                     </div>
-                    <h4>{{ item.giaBan/1 | currency: '$': 0 }}</span> VND</h4>
+                    <h4>{{ item.giaBan/1 | currency: '': 0 }}</span> VND</h4>
                 </div>
                 <a href="#!san_pham_ct/{{item.idSanPham}}"><i class="fa-solid fa-cart-shopping cart"></i></a>
             </a>

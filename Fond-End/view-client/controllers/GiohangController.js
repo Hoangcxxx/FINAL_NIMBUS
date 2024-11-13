@@ -1,14 +1,25 @@
-window.GiohangController = function ($scope,$http) {
+window.GiohangController = function ($scope, $http) {
     $scope.products = [];
     $scope.dsDanhMuc = [];
     $scope.selectedCategoryId = null; // Lưu ID danh mục đã chọn
     $scope.cart = []; // Khởi tạo mảng giỏ hàng trống
-    const userId = 11; // Thay thế bằng ID người dùng thực tế
-    const cartId = 3; // Thay thế bằng ID giỏ hàng thực tế
+    const userId =  $scope.userId; // Thay thế bằng ID người dùng thực tế
+    const cartId =  $scope.userId; // Thay thế bằng ID giỏ hàng thực tế
     $scope.cartItemCount = 0;
 
+    // Lấy thông tin người dùng từ localStorage
+    var userInfo = localStorage.getItem('user');
+
+    if (userInfo) {
+        // Nếu có thông tin người dùng, chuyển thành đối tượng và lấy ID người dùng
+        userInfo = JSON.parse(userInfo);  // Parse thông tin người dùng từ JSON
+        $scope.userId = $scope.infoUser.idNguoiDung;  // Lấy ID người dùng từ thông tin đã lưu
+    } else {
+        // Nếu không có thông tin người dùng (người dùng chưa đăng nhập), gán userId là null
+        $scope.userId = null;
+    }
     $scope.getCartItems = function () {
-        $http.get(`http://localhost:8080/api/gio_hang/${cartId}`)
+        $http.get(`http://localhost:8080/api/gio_hang/${$scope.userId}`)
             .then(function (response) {
                 $scope.cart = response.data;
                 $scope.cartItemCount = $scope.cart.length; // Cập nhật số lượng sản phẩm trong giỏ hàng
@@ -116,6 +127,6 @@ window.GiohangController = function ($scope,$http) {
     }
 
     fetchData('http://localhost:8080/api/san_pham', 'products');
-    fetchData('http://localhost:8080/api/danh_muc', 'dsDanhMuc');
+    fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc');
 }
 

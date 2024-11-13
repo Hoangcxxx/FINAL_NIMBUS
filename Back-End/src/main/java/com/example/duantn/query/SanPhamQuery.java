@@ -3,6 +3,7 @@ package com.example.duantn.query;
 public class SanPhamQuery {
     public static final String BASE_QUERY = "SELECT \n" +
             "    sp.Id_san_pham,\n" +
+            "    sp.ma_san_pham,\n" +
             "    sp.ten_san_pham,\n" +
             "    sp.trang_thai,\n" +
             "    sp.gia_ban,\n" +
@@ -28,6 +29,7 @@ public class SanPhamQuery {
 
     public static final String GET_SAN_PHAM_BY_DANH_MUC = "SELECT \n" +
             "    sp.Id_san_pham AS idSanPham, \n" +
+            "    sp.ma_san_pham AS maSanPham, \n" +
             "    sp.ten_san_pham AS tenSanPham, \n" +
             "    sp.trang_thai AS trangThai, \n" +
             "    sp.gia_ban AS giaBan,       -- Giá bán trung bình\n" +
@@ -47,6 +49,7 @@ public class SanPhamQuery {
             "    hl.thu_tu = 1 AND sp.trang_thai = 1 AND dc.Id_danh_muc = :idDanhMuc\n" +  // Thêm điều kiện trạng thái
             "GROUP BY \n" +
             "    sp.Id_san_pham, \n" +
+            "    sp.ma_san_pham, \n" +
             "    sp.ten_san_pham, \n" +
             "    sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY\n" +
             "    sp.gia_ban,  -- Đảm bảo trường này có trong GROUP BY\n" +
@@ -55,6 +58,7 @@ public class SanPhamQuery {
 
     public static final String GET_SAN_PHAM_BY_ID = "SELECT " +
             "    sp.Id_san_pham AS idSanPham, " +
+            "    sp.ma_san_pham AS maSanPham, " +
             "    sp.ten_san_pham AS tenSanPham, " +
             "    spct.so_luong AS soLuong, " +
             "    spct.mo_ta AS mo_ta_spct, " +
@@ -83,8 +87,8 @@ public class SanPhamQuery {
 
 
     public static final String ADD_SAN_PHAM_AD =
-            "INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc, ngay_tao, ngay_cap_nhat, trang_thai) " +
-                    "VALUES (:tenSanPham, :giaBan, :moTa, :idDanhMuc, :ngayTao, :ngayCapNhat, :trangThai); " +
+            "INSERT INTO san_pham (ma_san_pham,ten_san_pham, gia_ban, mo_ta, id_danh_muc, ngay_tao, ngay_cap_nhat, trang_thai) " +
+                    "VALUES (:maSanPham,:tenSanPham, :giaBan, :moTa, :idDanhMuc, :ngayTao, :ngayCapNhat, :trangThai); " +
                     "SELECT SCOPE_IDENTITY();";
 
 
@@ -94,6 +98,7 @@ public class SanPhamQuery {
 
     public static final String GET_SAN_PHAM_AD = "SELECT \n" +
             "    sp.id_san_pham AS idSanPham,\n" +
+            "    sp.ma_san_pham AS maSanPham,\n" +
             "    sp.ten_san_pham AS tenSanPham,\n" +
             "    sp.gia_ban AS giaBan,\n" +
             "    sp.mo_ta AS moTa,\n" +
@@ -109,6 +114,7 @@ public class SanPhamQuery {
 
     public static final String GET_SAN_PHAM_GIAM_GIA = "SELECT \n" +
             "    sp.Id_san_pham,\n" +
+            "    sp.ma_san_pham,\n" +
             "    sp.ten_san_pham,\n" +
             "    sp.gia_ban,\n" +
             "    ggs.gia_khuyen_mai,\n" +

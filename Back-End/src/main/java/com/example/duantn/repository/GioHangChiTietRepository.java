@@ -20,4 +20,8 @@ public interface GioHangChiTietRepository extends JpaRepository<GioHangChiTiet, 
             + "AND g.sanPhamChiTiet.idSanPhamChiTiet = :idSanPhamChiTiet")
     Boolean existsByIdGioHangAndIdSanPhamChiTiet(@Param("idGioHang") Integer idGioHang,
                                                  @Param("idSanPhamChiTiet") Integer idSanPhamChiTiet);
+
+
+
+
 }

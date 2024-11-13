@@ -60,4 +60,7 @@ public class HoaDonChiTietQuery {
             "WHERE \n" +
             "    hd.id_trang_thai_hoa_don = (SELECT Id_trang_thai_hoa_don FROM trang_thai_hoa_don WHERE ten_trang_thai = 'Hoàn thành');  -- Thay đổi tên trạng thái nếu cần\n";
 
+
+    public static final String GET_HOA_DON_CHI_TIET = "";
+
 }

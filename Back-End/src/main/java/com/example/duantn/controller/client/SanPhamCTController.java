@@ -38,11 +38,15 @@ public class SanPhamCTController {
 
     @GetMapping("/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getById(idSanPhamCT), "idSanPham", "tenSanPham", "giaBan", "moTa");
+        return getResponse(service.getById(idSanPhamCT), "idSanPham","maSanPham", "tenSanPham","tenDanhMuc","giaBan", "moTa", "ngayTao");
     }
     @GetMapping("/findSanPhamCT/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getSanPhamCTById(idSanPhamCT), "idSanPhamCT","idSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
+        return getResponse(service.getSanPhamCTById(idSanPhamCT), "idSanPhamCT","idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
+    }
+    @GetMapping("/findSanPhamCTLonHon0/{idSanPhamCT}")
+    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTByIdSanPhamLonHon0(@PathVariable Integer idSanPhamCT) {
+        return getResponse(service.getSanPhamCTByIdSanPhamLonHon0(idSanPhamCT), "idSanPhamCT","idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
     }
 
     @GetMapping("/mau_sac/{idSanPhamCT}")

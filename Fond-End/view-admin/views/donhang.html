@@ -52,21 +52,18 @@
                                     </tr>
                                 </thead>
                                 <tbody id="show-user">
-                                    <tr>
-                                        <td>1</td>
-                                        <td>124</td>
-                                        <td>125</td>
-                                        <td>22/09/2024</td>
-                                        <td>125.000</td>
-                                        <td><span class="status-complete">Hoạt động</span></td>
-                                        <td class="control control-table">
-                                            <button class="btn-edit" id="edit-account" onclick="editAccount(125)"><i
-                                                    class="fa-light fa-pen-to-square"></i></button>
-                                            <button class="btn-delete" id="delete-account" onclick="deleteAcount(0)"><i
-                                                    class="fa-regular fa-trash"></i></button>
-                                        </td>
+                                    <tr ng-repeat="item in dsHoaDon track by $index">
+                                        <td>{{$index + 1}}</td>
+                                        <td>{{item.maHoaDon}}</td>
+                                        <td>{{item.tenNguoiDung}}</td>
+                                        <td>{{item.ngayTao | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{item.thanhTien / 1 | currency: '': 0 }} VND</td>
                                         <td>
-                                            <a href="#" class="btn btn-warning btn-sm"
+                                            {{item.trangThaiHoaDon}}
+                                        </td>
+
+                                        <td>
+                                            <a href="#!add_hd/:id" class="btn btn-warning btn-sm"
                                                 ng-click="chinhSuaSanPham(item)"><i class="fas fa-edit"></i></a>
                                         </td>
                                     </tr>

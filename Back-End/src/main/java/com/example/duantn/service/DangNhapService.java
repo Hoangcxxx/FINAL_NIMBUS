@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -22,24 +23,51 @@ public class DangNhapService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int CODE_LENGTH = 5;
+    private static final SecureRandom RANDOM = new SecureRandom();
 
-    // Phương thức đăng ký
+    // Phương thức tìm người dùng theo email
+    public Optional<NguoiDung> findByEmail(String email) {
+        return nguoiDungRepository.findByEmail(email);
+    }
+
     public NguoiDung dangKy(NguoiDung nguoiDung) {
-        // Mã hóa mật khẩu
-        String matKhauMãHóa = passwordEncoder.encode(nguoiDung.getMatKhau());
-        nguoiDung.setMatKhau(matKhauMãHóa);
+        // Kiểm tra sự tồn tại của email
+        if (nguoiDungRepository.existsByEmail(nguoiDung.getEmail())) {
+            throw new RuntimeException("Email đã tồn tại");
+        }
 
-        // Lấy vai trò "Khách hàng" (id_vai_tro = 2)
-        VaiTro vaiTroKhachHang = vaiTroRepository.findById(2).orElseThrow(() -> new RuntimeException("Vai trò không tồn tại"));
-        nguoiDung.setVaiTro(vaiTroKhachHang);
+        // Mã hóa mật khẩu và tạo mã khách hàng
+        nguoiDung.setMatKhau(passwordEncoder.encode(nguoiDung.getMatKhau()));
+        nguoiDung.setMaNguoiDung(nguoiDung.getMaNguoiDung() == null ? generateUniqueCode() : nguoiDung.getMaNguoiDung());
 
-        // Cập nhật thời gian tạo và cập nhật
-        nguoiDung.setNgayTao(LocalDateTime.now());
-        nguoiDung.setNgayCapNhat(LocalDateTime.now());
-
-        // Lưu người dùng vào cơ sở dữ liệu
+        // Gán vai trò và thời gian tạo
+        nguoiDung.setVaiTro(vaiTroRepository.findById(2).orElseThrow(() -> new RuntimeException("Vai trò không tồn tại")));
+        LocalDateTime now = LocalDateTime.now();
+        nguoiDung.setNgayTao(now);
+        nguoiDung.setNgayCapNhat(now);
+        nguoiDung.setTrangThai(true);
         return nguoiDungRepository.save(nguoiDung);
     }
+
+    private String generateUniqueCode() {
+        String code;
+        do {
+            code = generateRandomCode();
+        } while (nguoiDungRepository.existsByMaNguoiDung(code)); // Kiểm tra tính duy nhất
+        return code;
+    }
+
+    private String generateRandomCode() {
+        StringBuilder code = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            code.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
+        }
+        return code.toString();
+    }
+
+
 
     // Phương thức đăng nhập
     public NguoiDung dangNhap(String email, String matKhau) {
@@ -55,4 +83,5 @@ public class DangNhapService {
             throw new RuntimeException("Tài khoản không tồn tại");
         }
     }
+
 }

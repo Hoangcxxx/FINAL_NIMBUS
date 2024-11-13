@@ -31,7 +31,7 @@ public class ADHoaDonChiTietController {
         return results.stream().map(this::mapThongKe).collect(Collectors.toList());
     }
 
-    @GetMapping
+    @GetMapping("/getAllThongKe")
     public ResponseEntity<List<Map<String, Object>>> getAllThongKe() {
         List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllThongKe();
         List<Map<String, Object>> filteredProducts = mapThongKes(hoaDonChiTiets);

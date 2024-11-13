@@ -29,6 +29,8 @@
     <script src="view-admin/controllers/PhieuGiamGiaController.js"></script>
     <script src="view-admin/controllers/DotGiamGiaController.js"></script>
     <script src="view-admin/views/SanPhamEven/addSanPhamController.js"></script>
+    <script src="view-admin/views/SanPhamEven/detailSanPhamController.js"></script>
+    <script src="view-admin/views/HoaDonEven/detailHoaDonController.js"></script>
     <script src="view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMaiController.js"></script>
     <script src="view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMaiController.js"></script>
     <title>Quản lý cửa hàng</title>
@@ -67,6 +69,10 @@
                     templateUrl: 'view-admin/views/donhang.html',
                     controller: DonHangController
                 })
+                .when('/add_hd/:id', {
+                    templateUrl: 'view-admin/views/HoaDonEven/detaiHoaDon.html',
+                    controller: detailHoaDonController
+                })
                 .when('/san_pham', {
                     templateUrl: 'view-admin/views/sanpham.html',
                     controller: SanPhamController
@@ -74,6 +80,10 @@
                 .when('/add_sp/:id', {
                     templateUrl: 'view-admin/views/SanPhamEven/addSanPham.html',
                     controller: addSanPhamController
+                })
+                .when('/detail_sp/:id', {
+                    templateUrl: 'view-admin/views/SanPhamEven/detailSanPham.html',
+                    controller: detailSanPhamController
                 })
                 .when('/add_dot_km', {
                     templateUrl: 'view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMai.html',

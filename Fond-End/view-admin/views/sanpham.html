@@ -64,13 +64,16 @@
                                             <label for="user-status-{{$index}}" class="switch"></label>
                                         </td>
                                         <td>
-                                            <a href="#!san_pham" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#updateProductModal" ng-click="chinhSuaSanPham(item)"><i
-                                                    class="fas fa-edit"></i></a>
+                                            <a href="#!detail_sp/{{item.idSanPham}}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
                                             <a href="#!san_pham" class="btn btn-danger btn-sm"
-                                                ng-click="xoaSanPham(item.idSanPham)"><i class="fas fa-trash"></i></a>
-                                            <a href="#!add_sp/{{item.idSanPham}}" class="btn btn-success btn-sm"><i
-                                                    class="fa-solid fa-plus"></i></a>
+                                                ng-click="xoaSanPham(item.idSanPham)">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            <a href="#!add_sp/{{item.idSanPham}}" class="btn btn-success btn-sm">
+                                                <i class="fa-solid fa-plus"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 </tbody>

@@ -1014,14 +1014,17 @@ footer a:hover {
     text-align: center;
     margin-top: 20px;
 }
+
 .register-link p {
     color: #fff;
 }
+
 .register-link a {
     color: #fff;
     text-decoration: none;
     font-weight: 600;
 }
-.register-link p a:hover{
+
+.register-link p a:hover {
     text-decoration: underline;
 }

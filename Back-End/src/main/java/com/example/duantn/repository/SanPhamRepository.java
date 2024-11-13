@@ -31,6 +31,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Transactional
     @Query(value = SanPhamQuery.ADD_SAN_PHAM_AD, nativeQuery = true)
     Integer addSanPham(@Param("idDanhMuc") Integer idDanhMuc,
+                       @Param("maSanPham") String maSanPham,
                        @Param("tenSanPham") String tenSanPham,
                        @Param("giaBan") BigDecimal giaBan,
                        @Param("moTa") String moTa,

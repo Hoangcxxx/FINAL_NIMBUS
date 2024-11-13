@@ -18,8 +18,10 @@ public class NguoiDung {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_nguoi_dung")
     private Integer idNguoiDung;
-    @Column(name = "ma_nguoi_dung", unique = true, nullable = false) // Cột ma_nguoi_dung không thể NULL
-    private String maNguoiDung;  // Thêm trường này
+
+    @Column(name = "ma_nguoi_dung", unique = true, nullable = false)
+    private String maNguoiDung;
+
     @Column(name = "ten_nguoi_dung", nullable = false)
     private String tenNguoiDung;
 
@@ -29,7 +31,7 @@ public class NguoiDung {
     @Column(name = "mat_khau", nullable = false)
     private String matKhau;
 
-    @Column(name = "sdt", unique = true, nullable = false)
+    @Column(name = "sdt", nullable = false)
     private String sdt;
 
     @Column(name = "ngay_sinh", nullable = false)

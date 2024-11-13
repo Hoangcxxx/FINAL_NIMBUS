@@ -16,6 +16,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Query(value = SanPhamChiTietQuery.GET_SAN_PHAM_BY_ID, nativeQuery = true)
     List<Object[]> getSanPhamById(@Param("idSanPhamCT") Integer idSanPhamCT);
 
+
     @Query(value = SanPhamChiTietQuery.GET_MAU_SAC_BY_ID_SAN_PHAM, nativeQuery = true)
     List<Object[]> getMauSacByIdSanPham(@Param("idSanPhamCT") Integer idSanPhamCT);
 
@@ -27,6 +28,8 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query(value = SanPhamChiTietQuery.GET_SAN_PHAM_CT_BY_ID_SAN_PHAM, nativeQuery = true)
     List<Object[]> getSanPhamCTByIdSanPham(@Param("idSanPhamCT") Integer idSanPhamCT);
+    @Query(value = SanPhamChiTietQuery.GET_SAN_PHAM_CT_BY_ID_SAN_PHAM_AND_SL_LON_HON_0, nativeQuery = true)
+    List<Object[]> getSanPhamCTByIdSanPhamLonHon0(@Param("idSanPhamCT") Integer idSanPhamCT);
     @Modifying
     @Transactional
     @Query("DELETE FROM SanPhamChiTiet s WHERE s.idSanPhamChiTiet IN :idSanPhamCTs")

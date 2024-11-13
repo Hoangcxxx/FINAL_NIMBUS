@@ -30,7 +30,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5 d-flex flex-column" style="padding-left: 0px;padding-right: 0px;"
+                <div class="col-md-5 d-flex flex-column" 
                     ng-repeat="sanPhamChiTiet in sanPhamChiTiet track by $index">
                     <h1 class="display-5 fw-bolder">{{sanPhamChiTiet.tenSanPham}}</h1>
                     <div class="star" style="color: rgb(223, 223, 66);">
@@ -40,14 +40,14 @@
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                     </div>
-                    <div class="fs-5 d-flex justify-content-between mt-5">
-                        <h3><span>{{ sanPhamChiTiet.giaBan/1 | currency: '$': 0 }}</span> VND</h3>
+                    <div class="fs-5 d-flex justify-content-between mt-4">
+                        <h3><span>{{ sanPhamChiTiet.giaBan/1 | currency: '': 0 }}</span> VND</h3>
                         <span>Còn hàng</span>
                     </div>
                     <hr>
                     <div class="product-details">
                         <div>
-                            <p><strong>Tên sản phẩm:</strong> {{sanPhamChiTiet.tenSanPham}}</p>
+                            <p><strong>Mã sản phẩm:</strong> {{sanPhamChiTiet.maSanPham}}</p>
                             <!-- Chọn chất liệu -->
                             <p><strong>Chất liệu:</strong>
                             <div class="swatch-attribute material">
@@ -87,34 +87,49 @@
                         </div>
                     </div>
                     <!-- Buttons for adding to cart and checkout -->
-                    <div class="mt-4">
-                        <div class="d-flex flex-column">
-                            <div class="d-flex mb-2">
-                                <div class="flex-grow-1 me-2">
-                                    <a href="" class="text-decoration-none">
-                                        <button class="btn btn-danger w-100" style="font-size: 18px;">
-                                            <i class="fa-solid fa-heart" style="font-size: 24px;"></i> Sản phẩm yêu
-                                            thích
-                                        </button>
-                                    </a>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <a href="" class="text-decoration-none">
-                                        <button class="btn btn-danger w-100" ng-click="addToCart(sanPhamChiTiet)"
-                                            style="font-size: 18px;">
-                                            <i class="fa-solid fa-bag-shopping" style="font-size: 24px;"></i> Giỏ hàng
-                                        </button>
-                                    </a>
-                                </div>
-                            </div>
-                            <div>
-                                <a href="#!thanh_toan" class="text-decoration-none">
-                                    <button class="btn btn-success w-100" ng-click="checkout(sanPhamChiTiet)"
-                                        style="font-size: 18px;">
-                                        <i class="fa-solid fa-bolt" style="font-size: 24px;"></i> Mua ngay
+                    <!-- Add to Cart and Buy Now buttons -->
+                    <div class="d-flex flex-column">
+                        <div class="d-flex mb-2">
+                            <!-- Add to Favorite Button -->
+                            <div class="flex-grow-1 me-2">
+                                <a href="#" class="text-decoration-none">
+                                    <button class="btn btn-danger w-100" style="font-size: 18px;">
+                                        <i class="fa-solid fa-heart" style="font-size: 24px;"></i> Sản phẩm yêu thích
                                     </button>
                                 </a>
                             </div>
+                            <!-- Add to Cart Button -->
+                            <div class="flex-grow-1">
+                                <a href="#" class="text-decoration-none">
+                                    <button class="btn btn-danger w-100" style="font-size: 18px;">
+                                        <i class="fa-solid fa-bag-shopping" style="font-size: 24px;"></i> Giỏ hàng
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Buy Now Button -->
+                        <div class="border border-3 rounded border-danger">
+                            <a href="#!thanh_toan" class="text-decoration-none ">
+                                <button class="btn btn-light text-danger w-100" style="font-size: 18px;">
+                                    <i class="fa-solid fa-bolt" style="font-size: 24px;"></i> Mua ngay
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information Icons -->
+                    <div class="mt-4 d-flex justify-content-between text-center">
+                        <div>
+                            <i class="fa-solid fa-truck" style="font-size: 32px; color: red;"></i>
+                            <p>Miễn phí giao hàng xem tại giỏ hàng</p>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-repeat" style="font-size: 32px; color: red;"></i>
+                            <p>1 đổi 1 trong vòng 7 ngày</p>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-sack-dollar" style="font-size: 32px; color: red;"></i>
+                            <p>Kiểm tra hàng trước khi thanh toán</p>
                         </div>
                     </div>
                 </div>

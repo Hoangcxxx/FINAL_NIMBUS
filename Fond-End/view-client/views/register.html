@@ -1,38 +1,33 @@
-<header id="header">
-    <a href="#"><img src="./assets/img/logo.png" class="logo" alt=""></a>
-    <ul id="navbar">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="shop.html">Shop</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="cart.html"><i class="fa-solid fa-bag-shopping"></i></a></li>
-        <li><a class="active" href="user.html"><i class="fa-solid fa-user"></i></a></li>
-    </ul>
-</header>
 <section id="wrapper">
     <div class="form-box register">
-        <form action="">
-            <h1>Registration</h1>
+        <form ng-submit="dangKy()">
+            <h1>Đăng ký tài khoản</h1>
+
+            <!-- Trường Tên -->
             <div class="input-box">
-                <input type="text" placeholder="Username" required>
+                <input type="text" ng-model="tenNguoiDung" placeholder="Tên người dùng" required>
                 <i class="fa-solid fa-user"></i>
             </div>
+
+            <!-- Trường Email -->
             <div class="input-box">
-                <input type="email" placeholder="Email" required>
+                <input type="email" ng-model="email" placeholder="Email" required>
                 <i class="fa-solid fa-envelope"></i>
             </div>
+
+            <!-- Trường Mật khẩu -->
             <div class="input-box">
-                <input type="password" placeholder="Password" required>
+                <input type="password" ng-model="matKhau" placeholder="Mật khẩu" required>
                 <i class="fa-solid fa-lock"></i>
             </div>
-            <div class="remember-forgot">
-                <label><input type="checkbox">I agree to the terms & conditions</label>
-                <!-- <a href="#">Forgot Password</a> -->
-            </div>
-            <button type="submit" class="normal">Register</button>
+
+            <!-- Vai trò (mặc định là khách hàng) -->
+            <!-- Vai trò này không cần phải hiển thị cho người dùng, ta sẽ gán vai trò "Khách hàng" tự động trong controller -->
+
+            <button type="submit" class="normal">Đăng ký</button>
+
             <div class="register-link">
-                <p>Already have an Account? <a href="user.html">Login</a></p>
+                <p>Đã có tài khoản? <a href="#!user">Đăng nhập</a></p>
             </div>
         </form>
     </div>

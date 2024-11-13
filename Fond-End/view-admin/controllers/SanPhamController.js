@@ -15,6 +15,7 @@ window.SanPhamController = function ($scope, $http) {
     $scope.productData = { idSanPham: null };
     $scope.SanPham = {
         idDanhMuc: null,
+        maSanPham: "",
         tenSanPham: "",
         moTa: "",
         giaBan: 0,
@@ -67,6 +68,7 @@ window.SanPhamController = function ($scope, $http) {
     // Reset the form when opening the modal
     $scope.resetModal = function () {
         $scope.SanPham = {
+            maSanPham: "",
             tenSanPham: "",
             soLuong: "",
             danhMuc: "",
@@ -123,6 +125,7 @@ window.SanPhamController = function ($scope, $http) {
     $scope.resetModal = function () {
         $scope.SanPham = {
             idDanhMuc: null,
+            maSanPham: "",
             tenSanPham: "",
             moTa: "",
             giaBan: 0,
