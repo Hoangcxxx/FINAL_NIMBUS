@@ -1,5 +1,6 @@
-window.UserController = function ($scope, $http, $route) {
-    
+window.UserController = function ($scope, $http, $route, $window) {
+
+
     // Đăng nhập
     $scope.dangNhap = function () {
         var loginData = {
@@ -24,15 +25,15 @@ window.UserController = function ($scope, $http, $route) {
                 $scope.email = ""; // Xóa email trong form
                 $scope.matKhau = ""; // Xóa mật khẩu trong form
 
-                // Có thể chuyển hướng đến trang chủ sau khi đăng nhập thành công
-                window.location.href = "#/";  // Chuyển hướng về trang chủ
-                window.location.reload();  // Tải lại trang để cập nhật giao diện
+                // Chuyển hướng đến trang chủ sau khi đăng nhập thành công
+                $window.location.href = "#/";  // Chuyển hướng về trang chủ
+                // Tải lại trang giống như nút reload của Google
+                $window.location.reload();  // Reload lại trang hoàn toàn từ server (bỏ cache)
             }, function (error) {
                 // Nếu có lỗi
                 alert("Đăng nhập thất bại: " + (error.data ? error.data.message : "Lỗi không xác định"));
             });
     };
-
 
     // Đăng ký tài khoản
     $scope.dangKy = function () {

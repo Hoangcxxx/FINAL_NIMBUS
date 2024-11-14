@@ -119,11 +119,11 @@ public class GioHangService {
         return gioHangRepository.save(gioHang); // Lưu và trả về giỏ hàng đã xóa sản phẩm
     }
 
-    public List<SanPhamChiTietDTO> getGioHangChiTiet(Integer idGioHang) {
+    public List<SanPhamChiTietDTO> getGioHangChiTiet(Integer idNguoiDung) {
         // Fetch the shopping cart by ID
-        GioHang gioHang = gioHangRepository.findById(idGioHang).orElseThrow();
+        GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDungOrderByIdGioHang(idNguoiDung);
 
-        List<GioHangChiTiet> chiTietList = gioHangChiTietRepository.findByGioHang_IdGioHang(idGioHang);
+        List<GioHangChiTiet> chiTietList = gioHangChiTietRepository.findByGioHang_IdGioHang(idNguoiDung);
         List<SanPhamChiTietDTO> sanpham = new ArrayList<>();
 
         for (GioHangChiTiet gioHangChiTiet : chiTietList) {

@@ -51,7 +51,7 @@ window.GiohangController = function ($scope, $http) {
     };
 
     $scope.removeFromCart = function (idSanPhamChiTiet) {
-        $http.delete(`http://localhost:8080/api/gio_hang/delete?idGioHang=${cartId}&idSanPhamChiTiet=${idSanPhamChiTiet}`)
+        $http.delete(`http://localhost:8080/api/gio_hang/delete?idGioHang=${$scope.userId}&idSanPhamChiTiet=${idSanPhamChiTiet}`)
             .then(function (response) {
                 alert(response.data.message);
                 $scope.getCartItems(); // Lấy lại giỏ hàng sau khi xóa
@@ -70,7 +70,7 @@ window.GiohangController = function ($scope, $http) {
         };
         $http({
             method: "PUT",
-            url: `http://localhost:8080/api/gio_hang/update?idGioHang=${cartId}`,
+            url: `http://localhost:8080/api/gio_hang/update?idGioHang=${$scope.userId}`,
             data: value,
             headers: {
                 "Content-Type": "application/json",

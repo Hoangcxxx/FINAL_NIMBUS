@@ -1,7 +1,6 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
     var idSanPham = $routeParams.id;
     var idMauSacCT = $routeParams.id; // Initialize idMauSacCT to null
-    var idGioHang = 3; // Thay đổi theo nhu cầu của bạn
     $scope.dsSanPhamChiTiet = [];
     $scope.dsMauSacChiTiet = [];
     $scope.dsKichThuocChiTiet = [];
@@ -10,7 +9,18 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
     $scope.selectedColor = null;
     $scope.soluong = 1;
     $scope.slideIndex = 1;
-
+    // Lấy thông tin người dùng từ localStorage
+    var userInfo = localStorage.getItem('user');
+    if (userInfo) {
+        // Nếu có thông tin người dùng, chuyển thành đối tượng và lấy ID người dùng
+        userInfo = JSON.parse(userInfo);  // Parse thông tin người dùng từ JSON
+        $scope.userId = $scope.infoUser.idNguoiDung;  // Lấy ID người dùng từ thông tin đã lưu
+        console.log("thông tin:", $scope.userId);
+        localStorage.setItem('idGioHang', $scope.userId);
+    } else {
+        // Nếu không có thông tin người dùng (người dùng chưa đăng nhập), gán userId là null
+        $scope.userId = null;
+    }
     function fetchAnhSanPham() {
         $http.get('http://localhost:8080/api/hinh_anh/' + idSanPham)
             .then(function (response) {
@@ -109,7 +119,12 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             alert("Vui lòng chọn đầy đủ màu sắc, kích thước và chất liệu trước khi thêm vào giỏ hàng.");
             return;
         }
-
+        // Lấy idGioHang từ localStorage
+        var idGioHang = localStorage.getItem('idGioHang');
+        if (!idGioHang) {
+            alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
+            return;
+        }
         // Chuẩn bị dữ liệu sản phẩm để gửi lên backend
         let cartItem = {
             idSanPham: $scope.sanPhamChiTiet[0].idSanPham,

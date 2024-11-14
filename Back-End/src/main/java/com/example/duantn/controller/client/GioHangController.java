@@ -55,9 +55,9 @@ public class GioHangController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{idGioHang}")
-    public ResponseEntity<List<SanPhamChiTietDTO>> getGioHangChiTiet(@PathVariable Integer idGioHang) {
-        List<SanPhamChiTietDTO> sanpham = gioHangService.getGioHangChiTiet(idGioHang);
+    @GetMapping("/{idNguoiDung}")
+    public ResponseEntity<List<SanPhamChiTietDTO>> getGioHangChiTiet(@PathVariable Integer idNguoiDung) {
+        List<SanPhamChiTietDTO> sanpham = gioHangService.getGioHangChiTiet(idNguoiDung);
         return ResponseEntity.ok(sanpham);
     }
 

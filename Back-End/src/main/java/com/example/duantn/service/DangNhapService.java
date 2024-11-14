@@ -1,7 +1,9 @@
 package com.example.duantn.service;
 
+import com.example.duantn.entity.GioHang;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.entity.VaiTro;
+import com.example.duantn.repository.GioHangRepository;
 import com.example.duantn.repository.NguoiDungRepository;
 import com.example.duantn.repository.VaiTroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -20,6 +23,8 @@ public class DangNhapService {
 
     @Autowired
     private VaiTroRepository vaiTroRepository;
+    @Autowired
+    private GioHangRepository gioHangRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -48,8 +53,24 @@ public class DangNhapService {
         nguoiDung.setNgayTao(now);
         nguoiDung.setNgayCapNhat(now);
         nguoiDung.setTrangThai(true);
-        return nguoiDungRepository.save(nguoiDung);
+
+        // Lưu người dùng vào cơ sở dữ liệu
+        NguoiDung savedUser = nguoiDungRepository.save(nguoiDung);
+
+        // Tạo giỏ hàng mới cho người dùng
+        GioHang gioHang = new GioHang();
+        gioHang.setNguoiDung(savedUser); // Gán người dùng vào giỏ hàng
+        gioHang.setTrangThai(true); // Giỏ hàng có thể ở trạng thái "đang sử dụng"
+        gioHang.setNgayTao(new Date()); // Ngày tạo giỏ hàng là ngày hiện tại
+        gioHang.setNgayCapNhat(new Date()); // Ngày cập nhật giỏ hàng
+
+        // Lưu giỏ hàng vào cơ sở dữ liệu
+        gioHangRepository.save(gioHang);
+
+        // Trả về người dùng đã lưu
+        return savedUser;
     }
+
 
     private String generateUniqueCode() {
         String code;
