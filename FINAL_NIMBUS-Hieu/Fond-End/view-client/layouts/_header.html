@@ -1,0 +1,23 @@
+<header id="header">
+    <a href="#!">
+        <img src="/view-client/assets/img/logo.png" class="logo" alt="Logo">
+    </a>
+    <ul id="navbar">
+        <li><a class="active" href="#!">Home</a></li>
+        <li><a href="#!san_pham">Shop</a></li>
+        <li><a href="#!blog">Blog</a></li>
+        <li><a href="#!about">About</a></li>
+        <li><a href="#!contact">Contact</a></li>
+        <li><a href="#!tk_kh">Thông tin tài khoản</a></li>
+        <li>
+            <a href="#!gio_hang"><i class="fa-solid fa-bag-shopping"></i></a>
+            <span ng-if="cartItemCount > 0" class="cart-item-count">{{cartItemCount}}</span>
+        </li>
+        <li>
+            <span ng-if="isLoggedIn()">Xin chào, {{username}}</span>
+            <a href="#!user" ng-if="!isLoggedIn()"><i class="fa-solid fa-user"></i></a>
+            <a href="#!user" ng-if="isLoggedIn()" ng-click="logout()">Đăng xuất</a>
+            
+        </li>
+    </ul>
+</header>

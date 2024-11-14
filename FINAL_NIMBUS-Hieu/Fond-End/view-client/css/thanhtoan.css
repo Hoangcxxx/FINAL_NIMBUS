@@ -1,0 +1,88 @@
+/* Cài đặt cho tiêu đề */
+h2.cart-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+  text-transform: uppercase; /* Chữ in hoa */
+  letter-spacing: 1px; /* Khoảng cách giữa các chữ cái */
+}
+
+/* Cài đặt cho các thẻ h5 */
+h5 {
+  font-size: 1.5rem;
+  margin-top: 20px;
+  color: #007bff; /* Màu xanh đặc trưng */
+  border-bottom: 2px solid #007bff; /* Dòng dưới tiêu đề */
+  padding-bottom: 5px; /* Khoảng cách dưới */
+}
+
+/* Định dạng cho các ô nhập */
+.form-control {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s; /* Hiệu ứng chuyển màu biên */
+}
+
+.form-control:focus {
+  border-color: #007bff; /* Màu biên khi focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Hiệu ứng bóng */
+}
+
+/* Cài đặt cho các thẻ select */
+.form-select {
+  height: calc(2.25rem + 2px);
+  border-radius: 0.25rem;
+}
+
+/* Cài đặt cho thông báo vận chuyển */
+.alert-info {
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+}
+
+/* Cài đặt cho các nút */
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền */
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  transition: background-color 0.3s; /* Hiệu ứng chuyển màu nền */
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+/* Cài đặt cho sản phẩm trong đơn hàng */
+.summary-box {
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.product-img {
+  width: 80px; /* Đặt kích thước cho ảnh sản phẩm */
+  height: auto; /* Giữ tỷ lệ khung hình */
+}
+
+/* Cài đặt cho tổng tiền */
+.total-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #dc3545; /* Màu đỏ cho tổng tiền */
+}
+

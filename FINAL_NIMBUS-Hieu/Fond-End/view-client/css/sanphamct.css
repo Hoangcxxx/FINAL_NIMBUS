@@ -1,0 +1,30 @@
+.swatch-attribute {
+    margin-bottom: 15px;
+}
+
+.swatch-attribute-options {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.swatch-option {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.swatch-option.selected {
+    background-color: deeppink; /* Change to your preferred selected color */
+    color: #ffffff; /* Change text color when selected */
+    border-color: deeppink; /* Match the border color to the selected color */
+}
+
+.swatch-option:hover {
+    border-color: deeppink; /* Change to your preferred hover color */
+}
+    
