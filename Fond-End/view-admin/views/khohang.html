@@ -1,0 +1,140 @@
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <h1 class="page-title">Quản lý kho hàng</h1>
+            <div class="border border-3 rounded p-3 mt-3">
+                <!-- Select Category -->
+                <div>
+                    <label for="selectCategory" class="form-label">Chọn danh mục</label>
+                    <select class="form-select" required ng-model="productData.idDanhMuc"
+                        ng-change="onCategoryChange()">
+                        <option value="">Danh mục sản phẩm...</option>
+                        <option ng-repeat="item in dsDanhMuc track by $index" value="{{item.idDanhMuc}}">
+                            {{item.tenDanhMuc}}
+                        </option>
+                    </select>
+                </div>
+                <!-- Select Product -->
+                <div>
+                    <label for="selectProduct" class="form-label">Chọn sản phẩm</label>
+                    <select class="form-select" required ng-model="productData.idSanPham" ng-change="onSanPhamChange()">
+                        <option value="">Chọn sản phẩm...</option>
+                        <option ng-repeat="item in dsSanPham track by $index" value="{{item.idSanPham}}">
+                            {{item.tenSanPham}}
+                        </option>
+                    </select>
+                </div>
+                <!-- Select Material -->
+                <div>
+                    <label for="material" class="form-label">Chất liệu</label>
+                    <select class="form-select" ng-model="productData.idChatLieu" ng-change="onChatLieuChange()">
+                        <option value="">Chọn chất liệu...</option>
+                        <option ng-repeat="chatLieu in dsChatLieu track by $index" value="{{chatLieu.idChatLieu}}">
+                            {{chatLieu.tenChatLieu}}
+                        </option>
+                    </select>
+                </div>
+                <!-- Select Color -->
+                <div>
+                    <label for="color" class="form-label">Màu sắc</label>
+                    <select class="form-select" ng-model="productData.idMauSac" ng-change="onMauSacChange()">
+                        <option value="">Chọn màu sắc...</option>
+                        <option ng-repeat="mauSac in dsMauSac track by $index" value="{{mauSac.idMauSac}}">
+                            {{mauSac.tenMauSac}}
+                        </option>
+                    </select>
+                </div>
+                <!-- Select Size -->
+                <div>
+                    <label for="size" class="form-label">Kích thước</label>
+                    <select class="form-select" ng-model="productData.idKichThuoc">
+                        <option value="">Chọn kích thước...</option>
+                        <option ng-repeat="kichThuoc in dsKichThuoc track by $index" value="{{kichThuoc.idKichThuoc}}">
+                            {{kichThuoc.tenKichThuoc}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="p-3 mb-5 mt-5">
+                <div id="show-product">
+                    <div class="card shadow mb-4 mt-3" ng-if="filteredProducts.length > 0">
+                        <div class="card-body">
+                            <h4 class="mb-4 mt-3 text-center" ng-repeat="product in filteredProducts">Sản phẩm chi tiết:
+                                {{product.tenSanPham}}</h4>
+                            <div class="table-responsive text-center">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Tên sản phẩm</th>
+                                            <th scope="col">Số lượng</th>
+                                            <th scope="col">Chất liệu</th>
+                                            <th scope="col">Màu sắc</th>
+                                            <th scope="col">Kích thước</th>
+                                            <th scope="col">Trạng thái</th>
+                                            <th scope="col">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="product in filteredProducts">
+                                            <td>{{$index + 1}}</td>
+                                            <td>{{product.tenSanPham}}</td>
+                                            <td>{{product.soLuong}}</td>
+                                            <td>{{product.tenChatLieu}}</td>
+                                            <td>{{product.tenMauSac}}</td>
+                                            <td>{{product.tenKichThuoc}}</td>
+                                            <td>
+                                                <input type="checkbox" ng-model="product.trangThai"
+                                                    ng-change="updateTrangThai(product.idSanPhamCT, product.trangThai)"
+                                                    id="user-status-{{$index}}" class="switch-input">
+                                                <label for="user-status-{{$index}}" class="switch"></label>
+                                            </td>
+                                            <td>
+                                                <a href="#!kho_hang" class="btn btn-success btn-sm"
+                                                    ng-click="showQuantityModal(product)" data-bs-toggle="modal"
+                                                    data-bs-target="#quantityModal">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </a>
+                                                <a href="#!kho_hang" class="btn btn-danger btn-sm"
+                                                    ng-click="xoaSanPhamCT(product.idSanPhamCT)">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="!filteredProducts.length">Không tìm thấy sản phẩm nào phù hợp.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal thêm số lượng sản phẩm -->
+<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quantityModalLabel">Thêm số lượng sản phẩm</h5>
+                <button class="modal-close product-form" ng-click="hideModal('quantityModal')">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mt-3">
+                    <label for="quantityInput">Số lượng:</label>
+                    <input type="number" id="quantityInput" class="form-control" ng-model="quantity" min="1"
+                        placeholder="Nhập số lượng muốn thêm..." />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" ng-click="hideModal('quantityModal')">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="updateQuantity()">Cập nhật số lượng</button>
+            </div>
+        </div>
+    </div>
+</div>

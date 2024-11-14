@@ -1,0 +1,5 @@
+{
+  "message": "Thành công",
+  "url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=1000000&vnp_BankCode=NCB&vnp_Command=pay&vnp_CreateDate=20241106150347&vnp_CurrCode=VND&vnp_ExpireDate=20241106151847&vnp_IpAddr=27.73.209.243&vnp_Locale=vn&vnp_OrderInfo=Thanh%2Bto%25C3%25A1n%2B%25C4%2591%25C6%25A1n%2Bh%25C3%25A0ng%253A%2B04706053&vnp_OrderType=billpayment&vnp_ReturnUrl=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Fvnpay%2Fpayment-return&vnp_TmnCode=PEYJIEC7&vnp_TxnRef=04706053&vnp_Version=2.1.1&vnp_SecureHash=499870e55d4c4f7a3a286280781ac798980be4717e268fab506a8a3a512c539ad3c13136b5708a7dc9356ca10ac896b31c0b03c79af66d5c7a14951e068b0a04",
+  "status": "ok"
+}

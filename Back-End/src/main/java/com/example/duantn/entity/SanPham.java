@@ -18,18 +18,14 @@ public class SanPham {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_san_pham")
     private Integer idSanPham;
-
-    @Column(name = "ma_san_pham", nullable = false)
-    private String maSanPham;
-
     @Column(name = "ten_san_pham", nullable = false)
     private String tenSanPham;
-
     @Column(name = "gia_ban", nullable = false)
     private BigDecimal giaBan;
-
     @Column(name = "mo_ta")
     private String moTa;
+    @Column(name = "trang_thai", nullable = false)
+    private Boolean trangThai;
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,8 +39,8 @@ public class SanPham {
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
 
-    @ManyToOne
-    @JoinColumn(name = "id_loai_voucher")
-    private LoaiVoucher loaiVoucher;
+//    @ManyToOne
+//    @JoinColumn(name = "id_loai_voucher")
+//    private LoaiVoucher loaiVoucher;
 
 }

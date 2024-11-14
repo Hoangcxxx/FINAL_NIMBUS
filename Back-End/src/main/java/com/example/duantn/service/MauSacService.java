@@ -16,6 +16,9 @@ public class MauSacService {
     public List<com.example.duantn.entity.MauSac> getAllMauSac() {
         return mauSacRepository.findAll();
     }
+    public List<MauSac> searchMauSacByTen(String tenMauSac) {
+        return mauSacRepository.findByTenMauSacContaining(tenMauSac);
+    }
 
     public MauSac createMauSac(MauSac mauSac) {
         // Thiết lập ngày tạo là thời điểm hiện tại
