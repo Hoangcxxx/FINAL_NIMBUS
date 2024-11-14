@@ -16,7 +16,9 @@ public class KichThuocService {
     public List<KichThuoc> getAllKichThuoc() {
         return kichThuocRepository.findAll();
     }
-
+    public List<KichThuoc> searchKichThuocByTen(String tenKichThuoc) {
+        return kichThuocRepository.findByTenKichThuocContaining(tenKichThuoc);
+    }
     public KichThuoc createKichThuoc(KichThuoc kichThuoc) {
         kichThuoc.setNgayTao(new Date());
         kichThuoc.setNgayCapNhat(new Date());

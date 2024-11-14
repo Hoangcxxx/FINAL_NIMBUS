@@ -18,10 +18,10 @@ public class PhiVanChuyen {
     @Column(name = "Id_phi_van_chuyen")
     private Integer idPhiVanChuyen;
 
-    @Column(name = "ten_phi_van_chuyen", nullable = false)
+    @Column(name = "id_dia_chi_van_chuyen", nullable = false)
     private String tenPhiVanChuyen;
 
-    @Column(name = "trang_thai")
+    @Column(name = "id_hoa_don")
     private Boolean trangThai;
 
     @Column(name = "ngay_tao", updatable = false)

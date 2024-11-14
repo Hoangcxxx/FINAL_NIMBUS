@@ -23,15 +23,14 @@ public class PhuongThucThanhToanHoaDon {
     @JoinColumn(name = "id_pt_thanh_toan")
     private PhuongThucThanhToan phuongThucThanhToan;
 
-    @Column(name = "so_tien_thanh_toan")
-    private BigDecimal soTienThanhToan;
+
 
     @Column(name = "ngay_giao_dich")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayGiaoDich;
 
-    @Column(name = "ghi_chu")
-    private String ghiChu;
+    @Column(name = "mo_ta")
+    private String moTa;
 
     @Column(name = "id_giao_dich_thanh_toan")
     private String idGiaoDichThanhToan;

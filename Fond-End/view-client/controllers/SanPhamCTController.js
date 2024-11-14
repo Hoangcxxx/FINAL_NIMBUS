@@ -1,36 +1,142 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
-    // Biến để lưu thông tin sản phẩm chi tiết
-    $scope.sanPhamChiTiet = null;
-    $scope.anhSanPham = []; // Biến lưu trữ danh sách ảnh sản phẩm
-
-    // Lấy ID sản phẩm từ URL
     var idSanPham = $routeParams.id;
+    var idGioHang = 3; // Thay đổi theo nhu cầu của bạn
+    $scope.dsSanPhamChiTiet = [];
+    $scope.mauSacChiTiet = [];
+    $scope.kichThuocChiTiet = [];
+    $scope.chatLieuChiTiet = [];
+    $scope.slideIndex = 1;
+    $scope.soluong = 1;
 
-    // Hàm lấy thông tin chi tiết sản phẩm
-    function fetchSanPhamChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham/findSanPham/' + idSanPham)
+    // Hàm lấy ảnh sản phẩm
+    function fetchAnhSanPham() {
+        $http.get('http://localhost:8080/api/hinh_anh/' + idSanPham)
             .then(function (response) {
-                if (response.data.length > 0) {
-                    $scope.sanPhamChiTiet = response.data[0]; // Lấy sản phẩm đầu tiên trong mảng
-                    $scope.anhSanPham = response.data; // Giả sử tất cả ảnh có trong mảng này
-                    console.log("Ảnh sản phẩm:", $scope.anhSanPham);
-                } else {
-                    console.log("Không tìm thấy sản phẩm.");
-                }
-            }, function (error) {
-                console.error('Error fetching product details:', error);
+                $scope.anhSanPham = response.data || [];
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi lấy hình ảnh sản phẩm:', error);
             });
     }
 
-    // Gọi hàm để lấy thông tin chi tiết sản phẩm khi controller được khởi tạo
-    fetchSanPhamChiTiet();
+    // Hàm lấy chi tiết sản phẩm
+    function fetchSanPhamChiTiet() {
+        $http.get('http://localhost:8080/api/san_pham_chi_tiet/' + idSanPham)
+            .then(function (response) {
+                $scope.sanPhamChiTiet = response.data || {};
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
+            });
+    }
 
-    // Gán hàm currentDiv vào scope để có thể sử dụng trong HTML
-    $scope.currentDiv = currentDiv;
+    // Hàm lấy màu sắc
+    function fetchMauSacChiTiet() {
+        $http.get('http://localhost:8080/api/san_pham_chi_tiet/mau_sac/' + idSanPham)
+            .then(function (response) {
+                $scope.mauSacChiTiet = response.data || [];
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi lấy màu sắc sản phẩm:', error);
+            });
+    }
+
+    // Hàm lấy kích thước
+    function fetchKichThuocChiTiet() {
+        $http.get('http://localhost:8080/api/san_pham_chi_tiet/kich_thuoc/' + idSanPham)
+            .then(function (response) {
+                $scope.kichThuocChiTiet = response.data || [];
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi lấy kích thước sản phẩm:', error);
+            });
+    }
+
+    // Hàm lấy chất liệu
+    function fetchChatLieuChiTiet() {
+        $http.get('http://localhost:8080/api/san_pham_chi_tiet/chat_lieu/' + idSanPham)
+            .then(function (response) {
+                $scope.chatLieuChiTiet = response.data || [];
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi lấy chất liệu sản phẩm:', error);
+            });
+    }
+
+    // Hàm chọn màu sắc
+    $scope.chonMauSac = function (mauSac) {
+        $scope.selectedColor = mauSac.idMauSac;
+        console.log("Chọn màu sắc:", mauSac);
+    };
+
+    // Hàm chọn kích thước
+    $scope.chonKichThuoc = function (kichThuoc) {
+        $scope.selectedSize = kichThuoc.idKichThuoc;
+        console.log("Chọn kích thước:", kichThuoc);
+    };
+
+    // Hàm chọn chất liệu
+    $scope.chonChatLieu = function (chatLieu) {
+        $scope.selectedMaterial = chatLieu.idChatLieu;
+        console.log("Chọn chất liệu:", chatLieu);
+    };
+
+    $scope.addToCart = function () {
+        if (!$scope.selectedColor || !$scope.selectedSize || !$scope.selectedMaterial) {
+            alert("Vui lòng chọn đầy đủ màu sắc, kích thước và chất liệu trước khi thêm vào giỏ hàng.");
+            return;
+        }
+
+        // Chuẩn bị dữ liệu sản phẩm để gửi lên backend
+        let cartItem = {
+            idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
+            idMauSac: $scope.selectedColor,  // ID màu sắc
+            idKichThuoc: $scope.selectedSize, // ID kích thước
+            idChatLieu: $scope.selectedMaterial, // ID chất liệu
+            soLuong: $scope.soluong // Số lượng mà người dùng chọn
+        };
+        // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
+        $http.post(`http://localhost:8080/api/giohang/add?idUser=${idGioHang}`, cartItem)
+            .then(function (response) {
+                alert("Sản phẩm đã được thêm vào giỏ hàng.");
+                window.location.href = '#!gio_hang'; 
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+                alert(error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
+            });
+    };
+
+
+
+    // Hàm thanh toán
+    $scope.checkout = function () {
+        console.log("Đang thanh toán cho sản phẩm:", $scope.sanPhamChiTiet);
+        // Thực hiện logic thanh toán tại đây
+    };
+
+    // Hàm hiển thị hình ảnh sản phẩm trong carousel
+    $scope.showProductDetail = function (index) {
+        if ($scope.anhSanPham[index]) {
+            $scope.slideIndex = index + 1;
+            showDivs($scope.slideIndex);
+        }
+    };
+
+    // Hàm khởi tạo để tải dữ liệu
+    function initialize() {
+        fetchAnhSanPham();
+        fetchSanPhamChiTiet();
+        fetchMauSacChiTiet();
+        fetchKichThuocChiTiet();
+        fetchChatLieuChiTiet();
+    }
+
+    // Khởi động controller
+    initialize();
 };
 
-// JavaScript còn lại không thay đổi
-
+// Hàm hiển thị các slide hình ảnh
 function currentDiv(n) {
     showDivs(slideIndex = n);
 }
@@ -40,20 +146,18 @@ function showDivs(n) {
     var x = document.getElementsByClassName("mySlides");
     var dots = document.getElementsByClassName("demo");
 
-    if (n > x.length) { slideIndex = 1; }
-    if (n < 1) { slideIndex = x.length; }
+    n = n > x.length ? 1 : (n < 1 ? x.length : n);
 
     for (i = 0; i < x.length; i++) {
         x[i].style.display = "none";
     }
 
-    // Kiểm tra số lượng dots trước khi truy cập
-    if (dots.length > 0 && slideIndex > 0 && slideIndex <= dots.length) {
+    if (dots.length > 0 && n > 0 && n <= dots.length) {
         for (i = 0; i < dots.length; i++) {
             dots[i].className = dots[i].className.replace(" w3-opacity-off", "");
         }
-        x[slideIndex - 1].style.display = "block";
-        dots[slideIndex - 1].className += " w3-opacity-off";
+        x[n - 1].style.display = "block";
+        dots[n - 1].className += " w3-opacity-off";
     } else {
         console.error("Không có phần tử dots nào hoặc slideIndex không hợp lệ.");
     }

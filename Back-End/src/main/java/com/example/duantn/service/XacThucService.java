@@ -2,10 +2,10 @@ package com.example.duantn.service;
 
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.entity.XacThuc;
-import com.example.duantn.repository.NguoiDungRepository;
-import com.example.duantn.repository.XacThucRepository;
 import com.example.duantn.TokenUser.JwtTokenUtil;
 import com.example.duantn.TokenUser.Token;
+import com.example.duantn.repository.NguoiDungRepository;
+import com.example.duantn.repository.XacThucRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
