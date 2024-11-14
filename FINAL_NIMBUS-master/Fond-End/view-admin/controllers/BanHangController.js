@@ -95,40 +95,56 @@
                 if ($scope.unpaidInvoices.length > 0) {
                     $scope.selectInvoice($scope.unpaidInvoices[0]); 
                 }
-                // if ($scope.unpaidInvoices.length > 5) {
-                //     $scope.unpaidInvoices = $scope.unpaidInvoices.slice(0, 5);
-                //     alert("Bạn chỉ được phép tạo tối đa 5 hóa đơn chưa thanh toán!");
-                // }
+                if ($scope.unpaidInvoices.length >= 5) {
+                    Swal.fire({
+                        title: 'Thông báo!',
+                        text: 'Bạn đã có 5 hóa đơn chưa thanh toán. Không thể tạo thêm hóa đơn!',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                }
             })
-
+            .catch(function (error) {
+                console.error('Lỗi khi lấy danh sách hóa đơn chưa thanh toán:', error);
+            });
     };
+    
     $scope.createInvoice = function () {
         console.log("Selected User:", $scope.selectedUser);
-
+        if ($scope.unpaidInvoices && $scope.unpaidInvoices.length >= 5) {
+            Swal.fire({
+                title: 'Thông báo!',
+                text: 'Bạn không thể tạo thêm hóa đơn vì đã có 5 hóa đơn chưa thanh toán!',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+    
         let newInvoice = {
             tenNguoiNhan: $scope.selectedUser.tenNguoiDung,
             nguoiDung: { id: $scope.selectedUser.id },
             nhanVien: { id: $scope.nvs.id },
             ngayTao: new Date()
         };
+        
         $http.post('http://localhost:8080/api/hoa-don/create', newInvoice)
             .then(function (response) {
                 console.log('Hóa đơn được tạo:', response.data);
-                $scope.getUnpaidInvoices();
-
-                // Hiển thị thông báo thành công bằng SweetAlert2
+                $scope.getUnpaidInvoices(); 
+    
                 Swal.fire({
                     title: 'Thành công!',
                     text: 'Hóa đơn đã được tạo thành công!',
                     icon: 'success',
-                    timer: 1500,  // Đóng sau 2 giây
+                    timer: 1500,  
                     showConfirmButton: false
                 });
-
+    
             })
             .catch(function (error) {
                 console.error('Lỗi khi tạo hóa đơn:', error);
-                // Hiển thị thông báo lỗi bằng SweetAlert2
+                // Hiển thị thông báo lỗi
                 Swal.fire({
                     title: 'Lỗi!',
                     text: 'Có lỗi xảy ra khi tạo hóa đơn!',
@@ -136,9 +152,8 @@
                     confirmButtonText: 'OK'
                 });
             });
-
     };
-
+    
     $scope.openDeleteModal = function (invoiceId) {
         $scope.invoiceToDelete = invoiceId;
     };
@@ -160,14 +175,12 @@
                         title: 'Thành công!',
                         text: 'Xóa hóa đơn thành công!',
                         icon: 'success',
-                        timer: 1500,  // Đóng sau 2 giây
+                        timer: 1500, 
                         showConfirmButton: false
                     });
-                    alert("Hóa đơn đã được xóa thành công!");
                 })
                 .catch(function (error) {
                     console.error('Lỗi khi xóa hóa đơn:', error);
-                    alert("Có lỗi xảy ra khi xóa hóa đơn!");
                 });
         }
     };
