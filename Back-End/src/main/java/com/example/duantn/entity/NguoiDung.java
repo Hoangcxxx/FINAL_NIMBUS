@@ -1,5 +1,6 @@
 package com.example.duantn.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -35,7 +36,8 @@ public class NguoiDung {
     private String sdt;
 
     @Column(name = "ngay_sinh", nullable = false)
-    private LocalDate ngaySinh; // Changed to LocalDate
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate ngaySinh;
 
     @Column(name = "dia_chi", nullable = false)
     private String diaChi;

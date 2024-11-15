@@ -3,17 +3,14 @@ package com.example.duantn.controller.client;
 import com.example.duantn.dto.LoginRequest;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.service.DangNhapService;
+import com.example.duantn.service.NguoiDungService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/nguoi_dung")
@@ -21,6 +18,8 @@ import java.util.Optional;
 public class NguoiDungController {
     @Autowired
     private DangNhapService dangNhapService;
+    @Autowired
+    private NguoiDungService nguoiDungService;
 
     // Phương thức đăng ký
     @PostMapping("/dang_ky")
@@ -57,6 +56,26 @@ public class NguoiDungController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đăng xuất thất bại");
         }
     }
+    // Lấy thông tin người dùng theo id
+    @GetMapping("/{id}")
+    public ResponseEntity<NguoiDung> getNguoiDungById(@PathVariable Integer id) {
+        NguoiDung nguoiDung = nguoiDungService.getNguoiDungById(id);
+        if (nguoiDung != null) {
+            return ResponseEntity.ok(nguoiDung);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
+    // Cập nhật thông tin người dùng
+    @PutMapping("/{id}")
+    public ResponseEntity<NguoiDung> updateNguoiDung(@PathVariable Integer id, @RequestBody @Valid NguoiDung nguoiDung) {
+        NguoiDung updatedNguoiDung = nguoiDungService.updateNguoiDung(id, nguoiDung);
+        if (updatedNguoiDung != null) {
+            return ResponseEntity.ok(updatedNguoiDung);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
 }

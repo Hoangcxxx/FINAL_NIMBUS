@@ -28,8 +28,7 @@ public class DiaChiVanChuyen {
     @Column(name = "xa")
     private String xa;
 
-    @Column(name = "so_tien_van_chuyen")
-    private BigDecimal soTienVanChuyen; // Chỉnh sửa kiểu dữ liệu cho so_tien_van_chuyen
+
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -49,4 +48,7 @@ public class DiaChiVanChuyen {
     @ManyToOne
     @JoinColumn(name = "id_phi_van_chuyen")
     private PhiVanChuyen phiVanChuyen;
+    @ManyToOne
+    @JoinColumn(name = "id_nguoi_dung")
+    private NguoiDung nguoiDung;
 }

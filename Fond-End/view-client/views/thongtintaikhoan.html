@@ -46,14 +46,39 @@
                     <h3 class="mb-4 text-black">Thông Tin Cá Nhân</h3>
                     <div class="card border-0 shadow-sm p-4">
                         <div class="personal-info">
-                            <p><strong>Họ tên: </strong> {{ tenNguoiDung }}</p>
-                            <p><strong>Email: </strong> {{ emailNguoiDung }}</p>
-                            <p><strong>Địa chỉ: </strong> {{ diaChiNguoiDung }}</p>
-                            <p><strong>Số điện thoại: </strong> {{ sdtNguoiDung }}</p>
-                            <button type="button" class="btn btn-primary btn-sm mb-1" data-bs-toggle="modal"
-                                data-bs-target="#editCustomerModal" ng-click="openEditModal()">
-                                Thay đổi thông tin
-                            </button>
+
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Họ tên: </strong> {{ tenNguoiDung }}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Email: </strong> {{ emailNguoiDung }}</p>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Địa chỉ: </strong> {{ diaChiNguoiDung }}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Số điện thoại: </strong> {{ sdtNguoiDung }}</p>
+                                    </div>
+                                </div>
+                                <!-- Thêm ngày sinh và giới tính -->
+                                <div class="row mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Ngày sinh: </strong> {{ ngaySinhNguoiDung }}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Giới tính: </strong> {{ gioiTinhNguoiDung }}</p>
+                                    </div>
+                                </div>
+                                <!-- Nút thay đổi thông tin -->
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#editCustomerModal" ng-click="openEditModal()">
+                                    Thay đổi thông tin
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,7 +155,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal chỉnh sửa thông tin cá nhân -->
 <div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
     aria-hidden="true">
@@ -143,26 +167,52 @@
             </div>
             <div class="modal-body">
                 <form ng-submit="saveCustomerDetails()">
+                    <!-- Tên khách hàng -->
                     <div class="form-floating mb-3">
                         <input type="text" class="form-control" id="editCustomerName" ng-model="tenNguoiDung"
                             placeholder="Nhập tên khách hàng" required>
                         <label for="editCustomerName">Tên Khách Hàng</label>
                     </div>
+
+                    <!-- Email khách hàng -->
                     <div class="form-floating mb-3">
                         <input type="email" class="form-control" id="editCustomerEmail" ng-model="emailNguoiDung"
                             placeholder="Nhập email" required>
                         <label for="editCustomerEmail">Email</label>
                     </div>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="editCustomerAddress" ng-model="diaChiNguoiDung"
-                            placeholder="Nhập địa chỉ" required>
-                        <label for="editCustomerAddress">Địa chỉ</label>
-                    </div>
+
+                    <!-- Số điện thoại khách hàng -->
                     <div class="form-floating mb-3">
                         <input type="tel" class="form-control" id="editCustomerPhone" ng-model="sdtNguoiDung"
                             placeholder="Nhập số điện thoại" required>
                         <label for="editCustomerPhone">Số điện thoại</label>
                     </div>
+
+                    <!-- Input ngày sinh -->
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="editCustomerDob" ng-model="ngaySinhNguoiDung"
+                            placeholder="Chọn ngày sinh" required>
+                        <label for="editCustomerDob">Ngày sinh</label>
+                    </div>
+
+                    <!-- Giới tính khách hàng -->
+                    <div class="form-floating mb-3">
+                        <select class="form-control" id="editCustomerGender" ng-model="gioiTinh" required>
+                            <option value="" disabled selected>Chọn giới tính</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                        <label for="editCustomerGender">Giới tính</label>
+                    </div>
+
+                    <!-- Địa chỉ khách hàng -->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editCustomerAddress" ng-model="diaChiNguoiDung"
+                            placeholder="Nhập địa chỉ" required>
+                        <label for="editCustomerAddress">Địa chỉ</label>
+                    </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                         <button type="submit" class="btn btn-primary">Lưu thay đổi</button>

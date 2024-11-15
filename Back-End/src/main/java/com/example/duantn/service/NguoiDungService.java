@@ -104,4 +104,31 @@ public class NguoiDungService {
         // Tạo mã người dùng đơn giản từ tên (hoặc phương thức tạo mã khác)
         return tenNguoiDung.substring(0, 3).toUpperCase() + System.currentTimeMillis();
     }
+
+
+
+    // Lấy thông tin người dùng theo ID
+    public NguoiDung getNguoiDungById(Integer id) {
+        return nguoiDungRepository.findById(id).orElse(null);
+    }
+
+    // Cập nhật thông tin người dùng
+    public NguoiDung updateNguoiDung(Integer id, NguoiDung nguoiDungDetails) {
+        NguoiDung existingNguoiDung = nguoiDungRepository.findById(id).orElse(null);
+
+        if (existingNguoiDung != null) {
+            existingNguoiDung.setTenNguoiDung(nguoiDungDetails.getTenNguoiDung());
+            existingNguoiDung.setEmail(nguoiDungDetails.getEmail());
+            existingNguoiDung.setSdt(nguoiDungDetails.getSdt());
+            existingNguoiDung.setNgaySinh(nguoiDungDetails.getNgaySinh());
+            existingNguoiDung.setDiaChi(nguoiDungDetails.getDiaChi());
+            existingNguoiDung.setGioiTinh(nguoiDungDetails.getGioiTinh());
+            existingNguoiDung.setAnhDaiDien(nguoiDungDetails.getAnhDaiDien());
+            existingNguoiDung.setNgayCapNhat(LocalDateTime.now());
+
+            return nguoiDungRepository.save(existingNguoiDung);
+        } else {
+            return null;
+        }
+    }
 }
