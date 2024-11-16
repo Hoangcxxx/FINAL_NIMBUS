@@ -1,5 +1,5 @@
 window.ThongTinTKController = function ($scope, $http) {
-    var iduser = 1;  
+    var iduser = 3;  
 
     // Lấy thông tin người dùng
     $http.get('http://localhost:8080/api/auth/user/' + iduser)

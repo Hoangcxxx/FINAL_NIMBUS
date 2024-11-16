@@ -68,7 +68,7 @@ public class NguoiDungController {
         try {
             NguoiDung nguoiDung = nguoiDungService.getUserById(id);
 
-            // Convert NguoiDung to NguoiDungDTO
+
             NguoiDungDTO nguoiDungDTO = new NguoiDungDTO();
             nguoiDungDTO.setId(nguoiDung.getIdNguoiDung());
             nguoiDungDTO.setTenNguoiDung(nguoiDung.getTenNguoiDung());

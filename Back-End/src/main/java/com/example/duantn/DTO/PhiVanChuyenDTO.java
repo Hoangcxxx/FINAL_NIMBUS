@@ -4,11 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class PhiVanChuyenDTO {
     private Integer idDiaChiVanChuyen;
-    private String tenPhiVanChuyen;
+    private BigDecimal SoTienVanChuyen;
     private Boolean trangThai;
+    private Integer idPhiVanChuyen;
+    private Integer idHoaDon;
 }

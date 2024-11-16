@@ -2,6 +2,7 @@ package com.example.duantn.service;
 
 import com.example.duantn.DTO.DiaChiVanChuyenDTO;
 import com.example.duantn.DTO.HoaDonDTO;
+import com.example.duantn.DTO.SanphamchiTietDTO;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -81,29 +82,71 @@ public class HoaDonService {
 
 	private HoaDonDTO convertToDTO(HoaDon hoaDon) {
 		HoaDonDTO dto = new HoaDonDTO();
-		GioHang gioHang = new GioHang();
-		SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
-		PhuongThucThanhToan phuongThanhToan = new PhuongThucThanhToan();
-		dto.setCartId(gioHang.getIdGioHang());
+
 		dto.setIdHoaDon(hoaDon.getIdHoaDon());
 		dto.setMaHoaDon(hoaDon.getMaHoaDon());
 		dto.setTenNguoiNhan(hoaDon.getTenNguoiNhan());
-		dto.setPhiShip(hoaDon.getPhiShip().byteValueExact());
-		dto.setIdDiaChiVanChuyen(hoaDon.getDiaChiVanChuyen().getIdDiaChiVanChuyen());
-		dto.setIdtrangthaihoadon(hoaDon.getTrangThaiHoaDon().getIdTrangThaiHoaDon());
-		dto.setIdNguoiDung(hoaDon.getNguoiDung().getIdNguoiDung());
 		dto.setSdtNguoiNhan(hoaDon.getSdtNguoiNhan());
-		dto.setGhiChu(hoaDon.getMoTa());
-		dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh());
-		dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen());
-		dto.setXa(hoaDon.getDiaChiVanChuyen().getXa());
-		dto.setEmail(hoaDon.getNguoiDung().getEmail());
-		dto.setIdphuongthucthanhtoanhoadon(hoaDon.getPhuongThucThanhToanHoaDon().getIdThanhToanHoaDon());
-		dto.setTenPhuongThucThanhToan(phuongThanhToan.getTenPhuongThuc());
+		dto.setDiaChi(hoaDon.getDiaChi());
+		dto.setPhiShip(hoaDon.getPhiShip().doubleValue());
 		dto.setThanhTien(hoaDon.getThanhTien());
-//		dto.setListSanPhamChiTiet(hoaDon.ge);
+		dto.setGhiChu(hoaDon.getMoTa());
+
+
+//
+//		// Thông tin voucher
+//		if (hoaDon.getVoucher() != null) {
+//			dto.setIdvoucher(hoaDon.getVoucher().getIdVoucher());
+//		}
+
+		// Thông tin người dùng
+		if (hoaDon.getNguoiDung() != null) {
+			dto.setIdNguoiDung(hoaDon.getNguoiDung().getIdNguoiDung());
+			dto.setEmail(hoaDon.getNguoiDung().getEmail());
+		}
+
+		// Thông tin địa chỉ vận chuyển
+		if (hoaDon.getDiaChiVanChuyen() != null) {
+			dto.setIdDiaChiVanChuyen(hoaDon.getDiaChiVanChuyen().getIdDiaChiVanChuyen());
+			dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh());
+			dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen());
+			dto.setXa(hoaDon.getDiaChiVanChuyen().getXa());
+		}
+
+		// Thông tin trạng thái hóa đơn
+		if (hoaDon.getTrangThaiHoaDon() != null) {
+			dto.setIdtrangthaihoadon(hoaDon.getTrangThaiHoaDon().getIdTrangThaiHoaDon());
+		}
+
+		// Thông tin phương thức thanh toán
+		if (hoaDon.getPhuongThucThanhToanHoaDon() != null) {
+			dto.setIdphuongthucthanhtoanhoadon(hoaDon.getPhuongThucThanhToanHoaDon().getIdThanhToanHoaDon());
+			dto.setTenPhuongThucThanhToan(hoaDon.getPhuongThucThanhToanHoaDon()
+					.getPhuongThucThanhToan()
+					.getTenPhuongThuc());
+		}
+
+		// Danh sách sản phẩm chi tiết
+		List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon_IdHoaDon(hoaDon.getIdHoaDon());
+		dto.setListSanPhamChiTiet(chiTietList.stream()
+				.map(chiTiet -> {
+					SanphamchiTietDTO spDTO = new SanphamchiTietDTO();
+					spDTO.setIdspct(chiTiet.getSanPhamChiTiet().getIdSanPhamChiTiet());
+					spDTO.setSoLuong(chiTiet.getSoLuong());
+					spDTO.setGiaTien(chiTiet.getTongTien());
+					spDTO.setTenkichthuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
+					spDTO.setTenmausac(chiTiet.getSanPhamChiTiet().getMauSacChiTiet().getMauSac().getTenMauSac());
+					spDTO.setTenchatlieu(chiTiet.getSanPhamChiTiet().getChatLieuChiTiet().getChatLieu().getTenChatLieu());
+					spDTO.setTenSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getTenSanPham());
+					spDTO.setMoTa(chiTiet.getSanPhamChiTiet().getSanPham().getMoTa());
+					spDTO.setIdSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getIdSanPham());
+					return spDTO;
+				})
+				.collect(Collectors.toList()));
+
 		return dto;
 	}
+
 
 	public void createOrder(HoaDonDTO hoaDonDTO,HttpServletRequest res) {
 		long currentCount = hoaDonRepository.count();
@@ -166,39 +209,27 @@ public class HoaDonService {
 
 			// Lưu hóa đơn
 			hoaDonRepository.save(hoaDon);
-
-			// Lưu phương thức thanh toán (VNPay)
 			PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon = new PhuongThucThanhToanHoaDon();
 			phuongThucThanhToanHoaDon.setPhuongThucThanhToan(phuongThucThanhToanRepository.findById(2).orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ"))); // 2 là mã phương thức thanh toán cho VNPay
 			phuongThucThanhToanHoaDon.setNgayGiaoDich(new Date());
 			phuongThucThanhToanHoaDon.setMoTa("Thanh toán VNPay cho đơn hàng " + generatedMaHoaDon);
 			phuongThucThanhToanHoaDon.setHoaDon(hoaDon);
 			phuongThucThanhToanHoaDonRepository.save(phuongThucThanhToanHoaDon);
-
-			// Gán phương thức thanh toán vào hóa đơn
 			hoaDon.setPhuongThucThanhToanHoaDon(phuongThucThanhToanHoaDon);
 			hoaDonRepository.save(hoaDon);
 
-			// Xử lý các sản phẩm trong giỏ hàng
 			processCartItems(hoaDonDTO, hoaDon);
-
-			// Nếu thanh toán thành công, cập nhật trạng thái của hóa đơn (có thể cần xác nhận thêm từ VNPay)
-			// Ví dụ: cập nhật trạng thái thanh toán, gửi thông báo
-			updateHoaDonAfterPaymentSuccess(hoaDon, paymentUrl); // Cập nhật trạng thái sau khi thanh toán
+			updateHoaDonAfterPaymentSuccess(hoaDon, paymentUrl);
 
 		} catch (Exception e) {
-			// Xử lý lỗi
 			throw new RuntimeException("Lỗi khi tạo URL thanh toán VNPay", e);
 		}
 	}
 
 	private void updateHoaDonAfterPaymentSuccess(HoaDon hoaDon, String paymentUrl) {
-		// Nếu thanh toán thành công, cập nhật trạng thái của hóa đơn
-		// Ví dụ: đặt trạng thái thanh toán thành công và lưu lại URL thanh toán
-		hoaDon.setTrangThaiHoaDon(hoaDon.getTrangThaiHoaDon()); // Giả sử bạn có trường này để theo dõi trạng thái thanh toán
-		hoaDon.setThanhTien(hoaDon.getThanhTien()); // Lưu URL thanh toán VNPay để tham chiếu nếu cần
+		hoaDon.setTrangThaiHoaDon(hoaDon.getTrangThaiHoaDon());
+		hoaDon.setThanhTien(hoaDon.getThanhTien());
 		hoaDonRepository.save(hoaDon);
-		// Bạn cũng có thể thêm các bước khác như gửi email hoặc SMS thông báo cho khách hàng
 	}
 
 

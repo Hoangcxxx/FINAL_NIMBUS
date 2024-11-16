@@ -64,6 +64,7 @@ public class WebSecurityConfiguration {
                                 "/api/lich-su-hoa-don/**",
                                 "/api/voucher/**",
                                 "/api/hoa-don/**",
+                                 "/api/email/**",
                                 "/api/ad_san_pham/**").permitAll() // Các đường dẫn này được cho phép truy cập mà không cần xác thực
                         // Bỏ chú thích các dòng bên dưới để hạn chế quyền truy cập dựa trên vai trò
                         //.requestMatchers("/api/admin/login/**").hasRole("admin")

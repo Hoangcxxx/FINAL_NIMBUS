@@ -15,7 +15,6 @@
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href='assets/image/favicon1.png' rel='icon' type='image/x-icon' />
-    <!-- Font Awesome -->
     <script src="lib/angular.js"></script>
     <script src="lib/angular-route.js"></script>
     <script src="view-client/controllers/SanPhamController.js"></script>
@@ -90,7 +89,7 @@
                 })
                 .when("/register", {
                     templateUrl: "view-client/views/register.html",
-                    controller: registetController
+                    controller: registerController
                 })
                 .when("/thanh_toan", {
                     templateUrl: "view-client/views/thanhtoan.html",
@@ -100,18 +99,50 @@
                     redirectTo: "/"
                 });
         });
-        app.controller("ngController", function ($scope) {
-            $scope.infoUser = undefined;
-        });
+        app.controller("ngController", function ($scope, $http) {
+            // Đăng xuất
+            $scope.dangXuat = function () {
+                // Gửi yêu cầu đăng xuất đến API
+                $http.post("http://localhost:8080/api/nguoi_dung/dang_xuat")
+                    .then(function (response) {
+                        // Xóa thông tin người dùng trong localStorage
+                        localStorage.removeItem("user");
 
+                        // Cập nhật lại giao diện
+                        $scope.infoUser = undefined;
+                        $scope.tenNguoiDung = undefined;
+
+                        // Thông báo đăng xuất thành công
+                        alert("Đăng xuất thành công!");
+
+                        // Chuyển hướng đến trang chủ hoặc giữ nguyên trang sau khi đăng xuất
+                        window.location.reload();  // Làm mới route để giao diện được cập nhật
+                    }, function (error) {
+                        // Nếu có lỗi
+                        alert("Đăng xuất thất bại: " + (error.data ? error.data.message : "Lỗi không xác định"));
+                    });
+            };
+
+            // Kiểm tra người dùng đã đăng nhập chưa
+            var userInfo = localStorage.getItem("user");
+            if (userInfo) {
+                $scope.infoUser = JSON.parse(userInfo);  // Lấy thông tin người dùng từ localStorage
+                $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
+            } else {
+                $scope.infoUser = undefined;
+                $scope.tenNguoiDung = undefined;
+            }
+        });
+    </script>
     </script>
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    
+
     <script src="lib/bootstrap.js"></script>
-     <!-- Nội dung HTML khác -->
-     <script src="view-client/assets/javascript/script.js"></script>
+    <!-- Nội dung HTML khác -->
+    <script src="view-client/assets/javascript/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

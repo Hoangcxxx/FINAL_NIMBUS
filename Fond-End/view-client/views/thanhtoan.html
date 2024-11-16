@@ -15,46 +15,60 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="email" ng-model="userInfo.email" placeholder="Nhập email" required>
+                        <input type="email" class="form-control" id="email" ng-model="userInfo.email"
+                            placeholder="Nhập email" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" ng-model="userInfo.tenNguoiDung" placeholder="Nhập họ và tên" required>
+                        <input type="text" class="form-control" id="name" ng-model="userInfo.tenNguoiDung"
+                            placeholder="Nhập họ và tên" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="phone" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="phone" ng-model="userInfo.sdtNguoiDung" placeholder="Nhập số điện thoại">
+                        <input type="text" class="form-control" id="phone" ng-model="userInfo.sdtNguoiDung"
+                            placeholder="Nhập số điện thoại">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="address" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="address" ng-model="userInfo.diaChi" placeholder="Nhập địa chỉ" required>
+                        <input type="text" class="form-control" id="address" ng-model="userInfo.diaChi"
+                            placeholder="Nhập địa chỉ" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label for="province" class="form-label">Tỉnh thành <span class="text-danger">*</span></label>
-                        <select class="form-select" id="province" ng-model="shippingInfo.province" ng-options="province.tinh as province.tinh for province in provinces" ng-change="getShippingFee()" required>
-                            <option selected disabled>Chọn tỉnh thành</option>
+                        <select class="form-select" id="province" ng-model="shippingInfo.province"
+                            ng-options="province.tinh as province.tinh for province in provinces"
+                            ng-change="getShippingFee()" required>
+                            <option value="" disabled selected>Chọn tỉnh thành</option>
                         </select>
                     </div>
+
                     <div class="col-md-4 mb-3">
                         <label for="district" class="form-label">Quận huyện</label>
-                        <select class="form-select" id="district" ng-model="shippingInfo.district" ng-options="district.huyen as district.huyen for district in districts" ng-disabled="!shippingInfo.province" ng-change="getShippingFee()">
-                            <option selected disabled>Chọn quận huyện</option>
+                        <select class="form-select" id="district" ng-model="shippingInfo.district"
+                            ng-options="district.huyen as district.huyen for district in districts"
+                            ng-disabled="!shippingInfo.province" ng-change="getShippingFee()">
+                            <option value="" disabled selected>Chọn quận huyện</option>
                         </select>
                     </div>
+
                     <div class="col-md-4 mb-3">
                         <label for="ward" class="form-label">Phường xã</label>
-                        <select class="form-select" id="ward" ng-model="shippingInfo.ward" ng-options="ward.xa as ward.xa for ward in wards" ng-disabled="!shippingInfo.district" ng-change="getShippingFee()">
-                            <option selected disabled>Chọn phường xã</option>
+                        <select class="form-select" id="ward" ng-model="shippingInfo.ward"
+                            ng-options="ward.xa as ward.xa for ward in wards" ng-disabled="!shippingInfo.district"
+                            ng-change="getShippingFee()">
+                            <option value="" disabled selected>Chọn phường xã</option>
                         </select>
                     </div>
+
                 </div>
                 <div class="mb-3">
                     <label for="note" class="form-label">Ghi chú</label>
-                    <textarea class="form-control" id="note" ng-model="shippingInfo.note" rows="2" placeholder="Ghi chú"></textarea>
+                    <textarea class="form-control" id="note" ng-model="shippingInfo.note" rows="2"
+                        placeholder="Ghi chú"></textarea>
                 </div>
             </form>
 
@@ -63,19 +77,22 @@
             <div class="card p-3 mb-4">
                 <label for="paymentMethod" class="form-label">Chọn phương thức thanh toán</label>
                 <div class="form-check">
-                    <input class="form-check-input" ng-model="selectedPaymentMethod" type="radio" name="payment" id="cod" value="cod">
+                    <input class="form-check-input" ng-model="selectedPaymentMethod" type="radio" name="payment"
+                        id="cod" value="cod">
                     <label class="form-check-label" for="cod">
                         <i class="fas fa-truck"></i> Thanh toán khi giao hàng (COD)
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" ng-model="selectedPaymentMethod" type="radio" name="payment" id="zalopay" value="zalopay">
+                    <input class="form-check-input" ng-model="selectedPaymentMethod" type="radio" name="payment"
+                        id="zalopay" value="zalopay">
                     <label class="form-check-label" for="zalopay">
                         <i class="fas fa-wallet"></i> ZaloPay
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" ng-model="selectedPaymentMethod" type="radio" name="payment" id="vnpay" value="vnpay">
+                    <input class="form-check-input" ng-model="selectedPaymentMethod" type="radio" name="payment"
+                        id="vnpay" value="vnpay">
                     <label class="form-check-label" for="vnpay">
                         <i class="fas fa-mobile-alt"></i> VNPay
                     </label>
@@ -84,7 +101,7 @@
                     Bạn chỉ phải thanh toán khi nhận được hàng với COD, hoặc thanh toán qua ứng dụng ZaloPay và VNPay.
                 </small>
             </div>
-            
+
         </div>
 
         <!-- Right Column: Order Summary -->
@@ -92,7 +109,8 @@
             <div class="summary-box p-4 shadow-sm rounded">
                 <h5>Đơn hàng ({{ cart.length }} sản phẩm)</h5>
                 <div ng-repeat="item in cart" class="d-flex align-items-center mb-3">
-                    <img ng-src="{{item.urlAnh}}" alt="Hình ảnh sản phẩm" class="img-thumbnail me-2" style="width: 80px; height: 80px;">
+                    <img ng-src="{{item.urlAnh}}" alt="Hình ảnh sản phẩm" class="img-thumbnail me-2"
+                        style="width: 80px; height: 80px;">
                     <div class="flex-grow-1">
                         <h6>{{item.tenSanPham}}</h6>
                         <p class="mb-1">Giá: {{item.giaTien | currency}}</p>
@@ -104,7 +122,8 @@
                 <!-- Promo Code -->
                 <div class="mb-3">
                     <label for="promoCode" class="form-label">Mã voucher</label>
-                    <input type="text" class="form-control" id="promoCode" ng-model="promoCode" placeholder="Nhập mã khuyến mãi (nếu có)">
+                    <input type="text" class="form-control" id="promoCode" ng-model="promoCode"
+                        placeholder="Nhập mã khuyến mãi (nếu có)">
                 </div>
                 <button ng-click="applyPromo()" class="btn btn-warning w-100">Áp dụng mã khuyến mãi</button>
 
@@ -112,17 +131,19 @@
 
                 <div class="d-flex justify-content-between">
                     <span>Tạm tính:</span>
-                    <span>{{totalAmount | currency}}</span>
+                    <span>{{ totalAmount | currency }}</span>
                 </div>
+                
                 <div class="d-flex justify-content-between">
                     <span>Phí vận chuyển:</span>
-                    <span>{{shippingFee.soTienVanChuyen | currency}}</span>
+                    <span>{{ shippingFee | currency }}</span>
                 </div>
+                
                 <div class="d-flex justify-content-between mt-2">
                     <strong>Tổng tiền:</strong>
-                    <strong>{{totalAmount | currency}}</strong>
+                    <strong>{{ totalonline() | currency }}</strong> 
                 </div>
-
+                
                 <p class="mt-4 text-muted small">
                     Sau khi "Đặt hàng" thành công, Nimbus sẽ liên hệ xác nhận đơn hàng theo số Hotline 02836220632.
                 </p>

@@ -3,20 +3,19 @@
         <form ng-submit="registerUser()">
             <h1>Registration</h1>
             <div class="input-box">
-                <input type="text" placeholder="Usernameng-model="user.tenNguoiDung" placeholder="Full Name" >
+                <input type="text" ng-model="user.tenNguoiDung" placeholder="Full Name" required>
                 <i class="fa-solid fa-user"></i>
             </div>
             <div class="input-box">
-                <input type="email" placeholder="Email" required>
+                <input type="email" ng-model="user.email" placeholder="Email" required>
                 <i class="fa-solid fa-envelope"></i>
             </div>
             <div class="input-box">
-                <input type="password" placeholder="Password" required>
+                <input type="password" ng-model="user.matKhau" placeholder="Password" required>
                 <i class="fa-solid fa-lock"></i>
             </div>
             <div class="remember-forgot">
-                <label><input type="checkbox">I agree to the terms & conditions</label>
-                <!-- <a href="#">Forgot Password</a> -->
+                <label><input type="checkbox" ng-model="user.agreeTerms" required> I agree to the terms & conditions</label>
             </div>
             <button type="submit" class="normal">Register</button>
             <div class="register-link">

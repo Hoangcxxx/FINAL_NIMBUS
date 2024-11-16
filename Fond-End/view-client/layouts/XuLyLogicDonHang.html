@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theo Dõi Đơn Hàng</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2d87f0;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2d87f0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1c6bc1;
+        }
+        .order-details {
+            margin-top: 20px;
+        }
+        .order-details p {
+            font-size: 16px;
+            color: #333;
+        }
+        .error-message {
+            color: red;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body ng-app="orderTrackingApp" ng-controller="OrderTrackingController">
+
+    <div class="container">
+        <h1>Theo Dõi Đơn Hàng</h1>
+        <form ng-submit="trackOrder()">
+            <input type="text" ng-model="orderId" placeholder="Nhập mã đơn hàng của bạn" required>
+            <button type="submit">Theo Dõi</button>
+        </form>
+
+        <!-- Hiển thị kết quả -->
+        <div class="order-details" ng-if="order">
+            <h3>Thông tin đơn hàng</h3>
+            <p><strong>Mã đơn hàng:</strong> {{ order.id }}</p>
+            <p><strong>Trạng thái:</strong> {{ order.status }}</p>
+            <p><strong>Sản phẩm:</strong> {{ order.productName }}</p>
+            <p><strong>Số lượng:</strong> {{ order.quantity }}</p>
+            <p><strong>Tổng giá trị:</strong> {{ order.totalPrice | currency }}</p>
+        </div>
+
+        <!-- Hiển thị lỗi nếu đơn hàng không tìm thấy -->
+        <div class="error-message" ng-if="errorMessage">
+            <p>{{ errorMessage }}</p>
+        </div>
+    </div>
+
+    <script>
+        // AngularJS App
+        var app = angular.module('orderTrackingApp', []);
+
+        app.controller('OrderTrackingController', function($scope, $http) {
+            // Sample data for orders
+            var orders = [
+                { id: 'ORD123', productName: 'Áo thun đông mùa hè', quantity: 2, totalPrice: 4000000, status: 'Đang xử lý' },
+                { id: 'ORD124', productName: 'Giày thể thao', quantity: 1, totalPrice: 1500000, status: 'Đã giao' },
+                { id: 'ORD125', productName: 'Mũ bảo hiểm', quantity: 1, totalPrice: 300000, status: 'Đang giao' }
+            ];
+
+            // Function to track order
+            $scope.trackOrder = function() {
+                $scope.errorMessage = ''; // Clear error message
+
+                // Simulate fetching order from server
+                var foundOrder = orders.find(order => order.id === $scope.orderId);
+                
+                if (foundOrder) {
+                    $scope.order = foundOrder;
+                } else {
+                    $scope.errorMessage = 'Không tìm thấy đơn hàng với mã này!';
+                    $scope.order = null;
+                }
+            };
+        });
+    </script>
+</body>
+</html>

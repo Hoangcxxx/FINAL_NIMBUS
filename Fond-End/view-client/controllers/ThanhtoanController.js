@@ -34,7 +34,7 @@ window.ThanhtoanController = function ($scope, $http, $window) {
 
 
     $scope.getCartItems = function () {
-        const cartId = 3; 
+        const cartId = 3;
         $http.get(`http://localhost:8080/api/giohang/${cartId}`)
             .then(response => {
                 $scope.cart = response.data;
@@ -79,8 +79,6 @@ window.ThanhtoanController = function ($scope, $http, $window) {
             alert("Vui lòng chọn đầy đủ thông tin nhận hàng!");
             return;
         }
-
-        // Dữ liệu đơn hàng
         const orderData = {
             cartId: cartId,
             idNguoiDung: $scope.userInfo.id,
@@ -112,7 +110,6 @@ window.ThanhtoanController = function ($scope, $http, $window) {
                         $http.post("http://localhost:8080/api/hoa-don/them_thong_tin_nhan_hang", orderData)
                             .then(response => {
                                 console.log("Đặt hàng thành công!");
-                                alert("Đặt hàng thành công!");
                                 $scope.paymentStatus = "Đặt hàng thành công!";
                                 $scope.cart = [];
                                 // Điều hướng đến cổng thanh toán VNPAY
@@ -133,14 +130,22 @@ window.ThanhtoanController = function ($scope, $http, $window) {
                 });
             return;
         }
-        // Gửi dữ liệu đơn hàng đến API
         $http.post("http://localhost:8080/api/hoa-don/them_thong_tin_nhan_hang", orderData)
             .then(response => {
                 console.log("Đặt hàng thành công!");
-                alert("Đặt hàng thành công!");
-                $scope.paymentStatus = "Đặt hàng thành công!";
+                Swal.fire({
+                    title: 'Thành công!',
+                    text: 'Thêm giỏ hàng thành công!',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
                 $scope.cart = [];
                 $window.location.href = "/#!thanhcong";
+                // Gửi email sau khi đặt hàng thành công
+                $http.post(`http://localhost:8080/api/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
+                    .then(response => console.log("Email đã được gửi thành công"))
+                    .catch(error => console.error("Lỗi khi gửi email:", error));
             })
             .catch(error => {
                 console.error("Lỗi khi đặt hàng:", error);
@@ -182,7 +187,6 @@ window.ThanhtoanController = function ($scope, $http, $window) {
                         $scope.shippingFee = response.data;
                         $scope.calculateTotal();
                     } else {
-                        // Nếu không có phí vận chuyển hoặc dữ liệu không hợp lệ
                         $scope.shippingFee = 0;
                         alert("Không thể lấy được phí vận chuyển.");
                     }
@@ -192,9 +196,36 @@ window.ThanhtoanController = function ($scope, $http, $window) {
                     alert("Có lỗi xảy ra khi tính phí vận chuyển.");
                 });
         } else {
-            $scope.shippingFee = 0; // Đảm bảo rằng khi chưa có tỉnh, huyện, xã thì phí vận chuyển là 0
+            $scope.shippingFee = 0;
         }
     };
+
+    $scope.totalonline = function () {
+        return $scope.totalAmount + ($scope.shippingFee || 0);
+    };
+
+    // $scope.getShippingFee = function () {
+    //     const { province, district, ward } = $scope.shippingInfo;
+    //     if (province && district && ward) {
+    //         $http.get(`http://localhost:8080/api/dia-chi/shipping-fee/${province}/${district}/${ward}`)
+    //             .then(response => {
+    //                 if (response.data && !isNaN(response.data)) {
+    //                     $scope.shippingFee = response.data;
+    //                     $scope.calculateTotal();
+    //                 } else {
+    //                     // Nếu không có phí vận chuyển hoặc dữ liệu không hợp lệ
+    //                     $scope.shippingFee = 0;
+    //                     alert("Không thể lấy được phí vận chuyển.");
+    //                 }
+    //             })
+    //             .catch(error => {
+    //                 console.error("Lỗi khi lấy phí ship:", error);
+    //                 alert("Có lỗi xảy ra khi tính phí vận chuyển.");
+    //             });
+    //     } else {
+    //         $scope.shippingFee = 0; // Đảm bảo rằng khi chưa có tỉnh, huyện, xã thì phí vận chuyển là 0
+    //     }
+    // };
     // $scope.getPhuongThucThanhToan = function () {
     //     $http.get('http://localhost:8080/api/phuong-thuc-thanh-toan/ten-phuong-thuc')
     //         .then(function (response) {
