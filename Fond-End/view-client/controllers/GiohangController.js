@@ -19,14 +19,14 @@ window.GiohangController = function ($scope, $http) {
         $scope.userId = null;
     }
     $scope.getCartItems = function () {
-        $http.get(`http://localhost:8080/api/gio_hang/${$scope.userId}`)
+        $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${$scope.userId}`)
             .then(function (response) {
                 $scope.cart = response.data;
                 $scope.cartItemCount = $scope.cart.length; // Cập nhật số lượng sản phẩm trong giỏ hàng
 
                 // Lấy hình ảnh cho từng sản phẩm
                 $scope.cart.forEach((element) => {
-                    $http.get(`http://localhost:8080/api/hinh_anh/${element.idSanPham}`)
+                    $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${element.idSanPham}`)
                         .then(function (response) {
                             element.urlAnh = response.data[0]?.urlAnh || ''; // Lấy url hình ảnh
                         })
@@ -51,7 +51,7 @@ window.GiohangController = function ($scope, $http) {
     };
 
     $scope.removeFromCart = function (idSanPhamChiTiet) {
-        $http.delete(`http://localhost:8080/api/gio_hang/delete?idGioHang=${$scope.userId}&idSanPhamChiTiet=${idSanPhamChiTiet}`)
+        $http.delete(`http://localhost:8080/api/nguoi_dung/gio_hang/delete?idGioHang=${$scope.userId}&idSanPhamChiTiet=${idSanPhamChiTiet}`)
             .then(function (response) {
                 alert(response.data.message);
                 $scope.getCartItems(); // Lấy lại giỏ hàng sau khi xóa
@@ -70,7 +70,7 @@ window.GiohangController = function ($scope, $http) {
         };
         $http({
             method: "PUT",
-            url: `http://localhost:8080/api/gio_hang/update?idGioHang=${$scope.userId}`,
+            url: `http://localhost:8080/api/nguoi_dung/gio_hang/update?idGioHang=${$scope.userId}`,
             data: value,
             headers: {
                 "Content-Type": "application/json",
@@ -100,7 +100,7 @@ window.GiohangController = function ($scope, $http) {
         $scope.selectedCategoryId = id; // Cập nhật ID danh mục đã chọn
 
         // Xây dựng URL với ID danh mục
-        var url = 'http://localhost:8080/api/san_pham/findDanhMuc/' + id;
+        var url = 'http://localhost:8080/api/nguoi_dung/san_pham/findDanhMuc/' + id;
 
         $http({
             method: 'GET',
@@ -126,7 +126,7 @@ window.GiohangController = function ($scope, $http) {
         });
     }
 
-    fetchData('http://localhost:8080/api/san_pham', 'products');
+    fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'products');
     fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc');
 }
 

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 @RestController
-@RequestMapping("/api/ad_hoa_don")
+@RequestMapping("/api/admin/hoa_don")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ADHoaDonController {
     @Autowired

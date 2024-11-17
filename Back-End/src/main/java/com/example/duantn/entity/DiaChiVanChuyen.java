@@ -3,7 +3,6 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -27,8 +26,6 @@ public class DiaChiVanChuyen {
 
     @Column(name = "xa")
     private String xa;
-
-
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

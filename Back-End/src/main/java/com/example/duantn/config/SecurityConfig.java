@@ -16,7 +16,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .requestMatchers("/api/nguoi_dung/**", "/api/**").permitAll()  // Cho phép truy cập không cần xác thực
+                .requestMatchers("/api/nguoi_dung/**", "/api/admin/**").permitAll()  // Cho phép truy cập không cần xác thực
                 .anyRequest().authenticated()  // Các endpoint khác yêu cầu xác thực
                 .and()
                 .httpBasic()

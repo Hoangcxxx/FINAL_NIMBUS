@@ -44,7 +44,7 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             $scope.filteredProducts = []; // Reset if no product selected
             return;
         }
-        const url = `http://localhost:8080/api/san_pham_chi_tiet/findSanPhamCT/${idSanPham}`;
+        const url = `http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/findSanPhamCT/${idSanPham}`;
         $http.get(url)
             .then(response => {
                 const products = response.data; // Assuming the response returns an array of product details
@@ -131,7 +131,7 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             console.log('Đang xóa các sản phẩm chi tiết với các id:', idSanPhamCTs);
 
             // Gọi API xóa sản phẩm chi tiết
-            $http.delete('http://localhost:8080/api/ad_san_pham_ct', { data: idSanPhamCTs, headers: { 'Content-Type': 'application/json' } })
+            $http.delete('http://localhost:8080/api/admin/san_pham_chi_tiet', { data: idSanPhamCTs, headers: { 'Content-Type': 'application/json' } })
                 .then(function (response) {
                     alert("Xóa sản phẩm chi tiết thành công!");
 
@@ -152,11 +152,11 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     // Initialize data
     const initializeData = () => {
         const urls = [
-            { url: 'http://localhost:8080/api/ad_san_pham', target: 'dsSanPham', log: 'Fetched products:' },
-            { url: 'http://localhost:8080/api/ad_danh_muc', target: 'dsDanhMuc', log: 'Fetched categories:' },
-            { url: 'http://localhost:8080/api/ad_chat_lieu', target: 'dsChatLieu', log: 'Fetched materials:' },
-            { url: 'http://localhost:8080/api/ad_mau_sac', target: 'dsMauSac', log: 'Fetched colors:' },
-            { url: 'http://localhost:8080/api/ad_kich_thuoc', target: 'dsKichThuoc', log: 'Fetched sizes:' }
+            { url: 'http://localhost:8080/api/admin/san_pham', target: 'dsSanPham', log: 'Fetched products:' },
+            { url: 'http://localhost:8080/api/admin/danh_muc', target: 'dsDanhMuc', log: 'Fetched categories:' },
+            { url: 'http://localhost:8080/api/admin/chat_lieu', target: 'dsChatLieu', log: 'Fetched materials:' },
+            { url: 'http://localhost:8080/api/admin/mau_sac', target: 'dsMauSac', log: 'Fetched colors:' },
+            { url: 'http://localhost:8080/api/admin/kich_thuoc', target: 'dsKichThuoc', log: 'Fetched sizes:' }
         ];
         urls.forEach(({ url, target, log }) => fetchData(url, target, log));
     };
@@ -224,7 +224,7 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
         );
 
         console.log("Payload to send:", JSON.stringify($scope.sanPhamChiTietList, null, 2));
-        $http.post('http://localhost:8080/api/ad_san_pham/multiple', $scope.sanPhamChiTietList)
+        $http.post('http://localhost:8080/api/admin/san_pham/multiple', $scope.sanPhamChiTietList)
             .then(response => {
                 alert("Thêm sản phẩm chi tiết thành công!");
                 console.log(response.data);
@@ -246,7 +246,7 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
 
     $http({
         method: 'GET',
-        url: 'http://localhost:8080/api/ad_san_pham/findSanPham' + "/" + $routeParams.id,
+        url: 'http://localhost:8080/api/admin/san_pham/findSanPham' + "/" + $routeParams.id,
     }).then(function (response) {
         $scope.productData = response.data;
         console.log("log thử giá trị biến $scope.sanpham", response.data);
@@ -270,9 +270,10 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     // Delete a product
     $scope.xoaSanPham = function (id) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-            $http.delete(`http://localhost:8080/api/ad_san_pham/${id}`).then(response => {
+            console.log('Sản phẩm được xóa thành công:', id);
+            $http.delete(`http://localhost:8080/api/admin/san_pham_chi_tiet/findSanPhamCT/${id}`).then(response => {
                 console.log('Sản phẩm được xóa thành công:', response.data);
-                initializeData();
+                $scope.fetchProductDetails($scope.productData.idSanPham);
             }).catch(error => console.error('Error deleting product:', error));
         }
     };
@@ -337,8 +338,50 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
         $scope.hideModal('sizeModal');       // Đóng modal sizeModal
     };
 
-    $scope.selectAll = false; // Tình trạng chọn tất cả
 
+
+
+
+    $scope.editCommonQuantity = function () {
+        // Kiểm tra nếu có số lượng được nhập vào
+        if ($scope.commonQuantity !== null && $scope.commonQuantity > 0) {
+            // Cập nhật số lượng cho các sản phẩm đã chọn
+            $scope.filteredProducts.forEach(function (materialGroup) {
+                materialGroup.colors.forEach(function (colorGroup) {
+                    colorGroup.products[0].items.forEach(function (item) {
+                        if (item.selected) {
+                            item.soLuong = $scope.commonQuantity; // Cập nhật số lượng cho item đã chọn
+                        }
+                    });
+                });
+            });
+            // Đóng modal sau khi lưu
+            $('#quantityModal').modal('hide');
+        } else {
+            alert('Vui lòng nhập số lượng hợp lệ!');
+        }
+    };
+    $scope.hasSelectedItems = function () {
+        let selected = false;
+        $scope.filteredProducts.forEach(function (materialGroup) {
+            materialGroup.colors.forEach(function (colorGroup) {
+                colorGroup.products[0].items.forEach(function (item) {
+                    if (item.selected) {
+                        selected = true;
+                    }
+                });
+            });
+        });
+        return selected;
+    };
+
+
+
+
+    $scope.selectAll = false; // Tình trạng chọn tất cả
+    $scope.commonQuantity = null; // Biến lưu số lượng chung cho tất cả sản phẩm đã chọn
+
+    // Hàm toggle chọn tất cả sản phẩm trong nhóm màu
     $scope.toggleSelectAll = function (selectAll, items) {
         items.forEach(item => {
             item.selected = selectAll; // Cập nhật trạng thái cho từng item
@@ -347,16 +390,16 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
         $scope.updateSelectedQuantities();
     };
 
+    // Hàm kiểm tra lại xem tất cả các sản phẩm trong danh sách đã được chọn hay chưa
     $scope.updateSelectAll = function (items) {
         $scope.selectAll = items.every(item => item.selected); // Kiểm tra xem tất cả đã được chọn hay chưa
     };
-
 
     // Hàm cập nhật số lượng cho các sản phẩm đã chọn
     $scope.updateSelectedQuantities = function () {
         const selectedItems = [];
 
-        // Lọc tất cả các sản phẩm được chọn
+        // Lọc ra các sản phẩm được chọn
         $scope.filteredProducts.forEach(function (materialGroup) {
             materialGroup.colors.forEach(function (colorGroup) {
                 colorGroup.products[0].items.forEach(function (item) {
@@ -367,16 +410,14 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             });
         });
 
-        // Nếu có ít nhất một sản phẩm được chọn, cập nhật số lượng cho tất cả các sản phẩm đã chọn
-        if (selectedItems.length > 0) {
-            // Đồng bộ số lượng cho tất cả sản phẩm đã chọn với số lượng của sản phẩm đầu tiên trong danh sách chọn
-            const quantity = selectedItems[0].soLuong;  // Lấy số lượng từ sản phẩm đầu tiên
-
-            selectedItems.forEach(function (item) {
-                item.soLuong = quantity; // Cập nhật số lượng cho các sản phẩm đã chọn
-            });
-        }
+        // Kiểm tra nếu có sản phẩm được chọn và cập nhật số lượng
+        selectedItems.forEach(function (item) {
+            if (item.soLuong !== undefined) {
+                item.soLuong = item.soLuong; // Cập nhật số lượng sản phẩm đã thay đổi
+            }
+        });
     };
+
 
     // Hàm lưu số lượng sản phẩm khi nhấn nút "Lưu số lượng sản phẩm"
     $scope.saveQuantities = function () {
@@ -396,25 +437,12 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             });
         });
 
-        // Log dữ liệu đã chuẩn bị
-        console.log("Danh sách sản phẩm và số lượng sẽ được cập nhật:");
-        console.log(JSON.stringify(updatedProducts, null, 4)); // Log với định dạng đẹp
-
-        // Gửi thông tin cập nhật số lượng lên server
         if (updatedProducts.length > 0) {
-            $http.put('http://localhost:8080/api/ad_san_pham_ct/updateQuantities', updatedProducts)
+            $http.put('http://localhost:8080/api/admin/san_pham_chi_tiet/updateQuantities', updatedProducts)
                 .then(function (response) {
                     console.log('Cập nhật số lượng thành công');
                     alert('Cập nhật số lượng thành công!');
-
-                    // Reset bảng và các lựa chọn đã chọn
-                    $scope.resetTable();
-
-                    // Lấy lại chi tiết sản phẩm mới
-                    if ($scope.productData.idSanPham) {
-                        $scope.fetchProductDetails($scope.productData.idSanPham);  // Lấy lại chi tiết sản phẩm
-                    }
-
+                    $scope.fetchProductDetails($scope.productData.idSanPham);
                 }, function (error) {
                     console.error('Cập nhật số lượng thất bại');
                     alert('Cập nhật số lượng thất bại!');
@@ -424,6 +452,19 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
         }
     };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     $scope.ChatLieu = {
         tenChatLieu: "",
         moTa: ""
@@ -431,7 +472,7 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     $scope.onCreateChatLieu = function () {
         $http({
             method: 'POST',
-            url: "http://localhost:8080/api/ad_chat_lieu",
+            url: "http://localhost:8080/api/admin/chat_lieu",
             data: $scope.ChatLieu
         }).then(function (response) {
             alert('Chúc mừng bạn tạo mới thành công');
@@ -452,7 +493,7 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     $scope.onCreateMauSac = function () {
         $http({
             method: 'POST',
-            url: "http://localhost:8080/api/ad_mau_sac",
+            url: "http://localhost:8080/api/admin/mau_sac",
             data: $scope.MauSac
         }).then(function (response) {
             alert('Chúc mừng bạn tạo mới thành công');
@@ -472,7 +513,7 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     $scope.onCreateKichThuoc = function () {
         $http({
             method: 'POST',
-            url: "http://localhost:8080/api/ad_kich_thuoc",
+            url: "http://localhost:8080/api/admin/kich_thuoc",
             data: $scope.KichThuoc
         }).then(function (response) {
             alert('Chúc mừng bạn tạo mới thành công');
@@ -496,15 +537,15 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     };
 
     $scope.onRefreshChatLieu = function () {
-        fetchData('http://localhost:8080/api/ad_chat_lieu', 'dsChatLieu');
+        fetchData('http://localhost:8080/api/admin/chat_lieu', 'dsChatLieu');
     };
 
     $scope.onRefreshMauSac = function () {
-        fetchData('http://localhost:8080/api/ad_mau_sac', 'dsMauSac');
+        fetchData('http://localhost:8080/api/admin/mau_sac', 'dsMauSac');
     };
 
     $scope.onRefreshKichThuoc = function () {
-        fetchData('http://localhost:8080/api/ad_kich_thuoc', 'dsKichThuoc');
+        fetchData('http://localhost:8080/api/admin/kich_thuoc', 'dsKichThuoc');
     };
 
 

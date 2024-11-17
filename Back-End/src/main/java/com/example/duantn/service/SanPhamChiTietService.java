@@ -5,6 +5,7 @@ import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,7 +61,10 @@ public class SanPhamChiTietService {
     public void deleteByIds(List<Integer> idSanPhamCTs) {
         sanPhamChiTietRepository.deleteByIds(idSanPhamCTs);
     }
-
+    @Transactional
+    public void deleteByIdSanPhamCTs(Integer idSanPhamCT) {
+        sanPhamChiTietRepository.deleteSanPhamChiTietByIdSanPhamChiTiet(idSanPhamCT);
+    }
 
     // Giả sử bạn có một phương thức lưu cho ChatLieuChiTiet
 

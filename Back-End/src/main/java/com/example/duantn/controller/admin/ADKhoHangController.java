@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 @RestController
-@RequestMapping("/api/ad_kho_hang")
+@RequestMapping("/api/admin/kho_hang")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ADKhoHangController {
 

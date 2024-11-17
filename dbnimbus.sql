@@ -13,22 +13,33 @@ CREATE TABLE [vai_tro] (
 go
 CREATE TABLE [nguoi_dung] (
   [Id_nguoi_dung] INT PRIMARY KEY IDENTITY(1,1),
-  [ten_nguoi_dung] NVARCHAR(100) NOT NULL,
   [ma_nguoi_dung] NVARCHAR(50) NOT NULL UNIQUE,
-  [Email] NVARCHAR(255) NOT NULL UNIQUE,
-  [sdt_nguoi_dung] NVARCHAR(15),
-  [Ngay_Sinh] DATE,
-  [Dia_Chi] NVARCHAR(255),
-  [Gioi_Tinh] NVARCHAR(10),
-  [Mat_Khau] NVARCHAR(255) NOT NULL,
-  [Anh_Dai_Dien] NVARCHAR(255),
-  [Trang_thai] BIT DEFAULT 1,
+  [ten_nguoi_dung] NVARCHAR(100),
+  [email] NVARCHAR(255) NOT NULL UNIQUE,
+  [sdt] NVARCHAR(15),
+  [ngay_sinh] DATE,
+  [dia_chi] NVARCHAR(255),
+  [gioi_tinh] NVARCHAR(10),
+  [mat_khau] NVARCHAR(255) NOT NULL,
+  [anh_dai_dien] NVARCHAR(255),
+  [trang_thai] BIT DEFAULT 1,
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [id_vai_tro] INT,
   CONSTRAINT [FK_nguoi_dung_id_vai_tro]
     FOREIGN KEY ([id_vai_tro])
       REFERENCES [vai_tro]([Id_vai_tro])
+);
+go
+CREATE TABLE thong_bao (
+    Id_thong_bao INT PRIMARY KEY IDENTITY(1,1),
+    id_nguoi_dung INT,
+    noi_dung NVARCHAR(MAX),
+    trang_thai BIT DEFAULT 1,
+    ngay_gui DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_thong_bao_id_nguoi_dung
+        FOREIGN KEY (id_nguoi_dung)
+        REFERENCES nguoi_dung(Id_nguoi_dung)
 );
 -- Insert data for vai_tro
 go
@@ -40,24 +51,38 @@ CREATE TABLE [loai_voucher] (
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
 );
 go
+CREATE TABLE [trang_thai_giam_gia] (
+  [Id_trang_thai_giam_gia] INT PRIMARY KEY IDENTITY(1,1),
+  [ten_trang_thai_giam_gia] NVARCHAR(100) NOT NULL,
+  [mo_ta] NVARCHAR(MAX),
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+);
+go
 CREATE TABLE [voucher] (
   [Id_voucher] INT PRIMARY KEY IDENTITY(1,1),
   [ma_voucher] NVARCHAR(50) NOT NULL UNIQUE,
+  [ten_voucher] NVARCHAR(50),
   [gia_tri_giam_gia] DECIMAL(18),
+  [kieu_giam_gia] BIT DEFAULT 1,
   [so_luong] INT,
   [gia_tri_toi_da] DECIMAL(18),
   [so_tien_toi_thieu] DECIMAL(18),
-  [trang_thai] BIT DEFAULT 1,
   [mo_ta] NVARCHAR(MAX),
   [ngay_bat_dau] DATETIME,
   [ngay_ket_thuc] DATETIME,
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [id_loai_voucher] int,
+  [id_trang_thai_giam_gia] int,
   CONSTRAINT [FK_loai_voucher_id_loai_voucher]
     FOREIGN KEY ([id_loai_voucher])
-      REFERENCES [loai_voucher]([Id_loai_voucher])
+      REFERENCES [loai_voucher]([Id_loai_voucher]),
+	  CONSTRAINT [FK_trang_thai_voucher_id_trang_thai_giam_gia]
+    FOREIGN KEY ([id_trang_thai_giam_gia])
+      REFERENCES [trang_thai_giam_gia]([Id_trang_thai_giam_gia])
 );
+
 go
 CREATE TABLE [danh_muc] (
   [Id_danh_muc] INT PRIMARY KEY IDENTITY(1,1),
@@ -69,9 +94,9 @@ CREATE TABLE [danh_muc] (
 go
 CREATE TABLE [san_pham] (
   [Id_san_pham] INT PRIMARY KEY IDENTITY(1,1),
+  [ma_san_pham] VARCHAR(15) NOT NULL UNIQUE,
   [ten_san_pham] NVARCHAR(100) NOT NULL,
   [gia_ban] DECIMAL(18) NOT NULL,
-  [gia_khuyen_mai] DECIMAL(18),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [mo_ta] NVARCHAR(MAX),
@@ -86,22 +111,26 @@ go
 CREATE TABLE [dot_giam_gia] (
   [Id_dot_giam_gia] INT PRIMARY KEY IDENTITY(1,1),
   [ten_dot_giam_gia] NVARCHAR(100) NOT NULL,
+  [kieu_giam_gia] BIT DEFAULT 1,
   [gia_tri_giam_gia] DECIMAL(18),
-  [trang_thai] BIT DEFAULT 1,
   [mo_ta] NVARCHAR(MAX),
   [ngay_bat_dau] DATETIME DEFAULT GETDATE(),
   [ngay_ket_thuc] DATETIME DEFAULT GETDATE(),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+  [id_trang_thai_giam_gia] INT,
+	  CONSTRAINT [FK_trang_thai_giam_gia_id_trang_thai_giam_gia]
+    FOREIGN KEY ([id_trang_thai_giam_gia])
+      REFERENCES [trang_thai_giam_gia]([Id_trang_thai_giam_gia])
 );
 go
 CREATE TABLE [giam_gia_san_pham] (
   [Id_giam_gia_san_pham] INT PRIMARY KEY IDENTITY(1,1),
-  [mo_ta] NVARCHAR(MAX),
+  [gia_khuyen_mai] DECIMAL(18),
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
-  [Id_dot_giam_gia] INT,
-  [id_san_pham] INT, -- Thêm id_san_pham vào loai_voucher
+  [id_dot_giam_gia] INT,
+  [id_san_pham] INT,
   CONSTRAINT [FK_giam_gia_san_pham_id_dot_giam_gia]
     FOREIGN KEY ([id_dot_giam_gia])
       REFERENCES [dot_giam_gia]([Id_dot_giam_gia]),
@@ -135,7 +164,7 @@ CREATE TABLE [chat_lieu] (
 );
 go
 CREATE TABLE [chat_lieu_chi_tiet] (
-  [Id_chat_lieu_tiet] INT PRIMARY KEY IDENTITY(1,1),
+  [Id_chat_lieu_chi_tiet] INT PRIMARY KEY IDENTITY(1,1),
   [id_chat_lieu] INT,
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
@@ -199,9 +228,9 @@ CREATE TABLE [san_pham_chi_tiet] (
   [id_mau_sac_chi_tiet] INT,
   [id_chat_lieu_chi_tiet] INT,
   [id_san_pham] INT,
-  CONSTRAINT [FK_san_pham_chi_tiet_id_chat_lieu_chi_tiet]
+  CONSTRAINT [FK_san_pham_chi_tiet_id_chat_lieu_chi_chi_tiet]
     FOREIGN KEY ([id_chat_lieu_chi_tiet])
-      REFERENCES [chat_lieu_chi_tiet]([Id_chat_lieu_tiet]),
+      REFERENCES [chat_lieu_chi_tiet]([Id_chat_lieu_chi_tiet]),
   CONSTRAINT [FK_san_pham_chi_tiet_id_kich_thuoc_chi_tiet]
     FOREIGN KEY ([id_kich_thuoc_chi_tiet])
       REFERENCES [kich_thuoc_chi_tiet]([Id_kich_thuoc_chi_tiet]),
@@ -230,12 +259,7 @@ CREATE TABLE [gio_hang_chi_tiet] (
     FOREIGN KEY ([id_san_pham_chi_tiet])
       REFERENCES [san_pham_chi_tiet]([Id_san_pham_chi_tiet])
 );
-go
-CREATE TABLE kho_hang (
-    [Id_kho_hang] INT PRIMARY KEY IDENTITY(1,1),
-    [so_luong_them] INT,
-    [ngay_cap_nhat] DATETIME DEFAULT GETDATE() -- Đổi kiểu dữ liệu từ INT sang DATETIME
-);
+
 GO
 CREATE TABLE trang_thai_hoa_don (
     [Id_trang_thai_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
@@ -274,23 +298,29 @@ CREATE TABLE hoa_don (
         FOREIGN KEY ([id_voucher])
             REFERENCES voucher([id_voucher])
 );
+
+
 GO
 CREATE TABLE dia_chi_van_chuyen (
     [Id_dia_chi_van_chuyen] INT PRIMARY KEY IDENTITY(1,1),
     [tinh] NVARCHAR(100),
     [huyen] NVARCHAR(100),
     [xa] NVARCHAR(100),
-    [so_tien_van_chuyen] DECIMAL(18),
     [ngay_tao] DATETIME DEFAULT GETDATE(),
     [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
     [trang_thai] BIT DEFAULT 1,
-    [mo_ta] NVARCHAR(MAX)
+    [mo_ta] NVARCHAR(MAX),
+	[id_nguoi_dung] INT,
+    CONSTRAINT [FK_dia_chi_van_chuyen_id_nguoi_dung]
+        FOREIGN KEY ([id_nguoi_dung])
+            REFERENCES nguoi_dung([Id_nguoi_dung])
 );
 GO
 
 CREATE TABLE phi_van_chuyen (
     [Id_phi_van_chuyen] INT PRIMARY KEY IDENTITY(1,1),
     [id_dia_chi_van_chuyen] INT,
+    [so_tien_van_chuyen] DECIMAL(18),
     [id_hoa_don] INT,
     [ngay_tao] DATETIME DEFAULT GETDATE(),
     [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
@@ -403,29 +433,35 @@ INSERT INTO vai_tro (ten, mo_ta) VALUES
 (N'Quản lý kho', N'Người quản lý tồn kho');
 go
 -- Insert data for nguoi_dung
-INSERT INTO nguoi_dung (ten_nguoi_dung, ma_nguoi_dung, Email, sdt_nguoi_dung, Ngay_Sinh, Dia_Chi, Gioi_Tinh, Mat_Khau,id_vai_tro) VALUES 
+INSERT INTO nguoi_dung (ten_nguoi_dung, ma_nguoi_dung, email, sdt, ngay_sinh, dia_chi, gioi_tinh, mat_khau,id_vai_tro) VALUES 
 (N'Phạm Thùy Dương', 'user001', 'duongpt@gmail.com', '0918829273', '2004-01-02', N'Hà Nội', N'Nữ', '123456',1),
 (N'Lê Khả Hoàng', 'user002', 'hoanglk@gmail.com', '0912353678', '2004-01-03', N'Hà Nội', N'Nam', '123456',2),
 (N'Nguyễn Trung Hiếu', 'user003', 'hieunt@gmail.com', '0916789535', '2004-01-04', N'Hà Nội', 'Nam', '123456',3),
 (N'Lê Đình Linh', 'user004', 'linhld@gmail.com', '0912679346', '2004-01-05', N'Hà Nội', N'Nam', '123456',4),
 (N'Hoàng Văn Hà', 'user005', 'hahv@gmail.com', '0918934754', '2004-01-06', N'Hà Nội', N'Nam', '123456',5);
+go	
+INSERT INTO [trang_thai_giam_gia] (ten_trang_thai_giam_gia, mo_ta) VALUES
+(N'Đang phát hành', N'Giảm giá đã được phát hành và có thể sử dụng.'),
+(N'Đã sử dụng', N'Giảm giá đã được sử dụng và không còn giá trị.'),
+(N'Hết hạn', N'Giảm giá không còn giá trị do đã hết hạn sử dụng.'),
+(N'Chưa phát hành', N'Giảm giá đã được tạo nhưng chưa được phát hành cho người dùng.'),
+(N'Bị hủy', N'Giảm giá đã bị hủy và không còn hiệu lực.');
+
 go
+
 INSERT INTO loai_voucher (ten_loai_voucher, mo_ta) VALUES
 (N'Giảm giá theo phần trăm', N'Giảm giá theo tỷ lệ phần trăm của giá sản phẩm.'),
 (N'Giảm giá theo số tiền', N'Giảm giá một số tiền cụ thể cho sản phẩm.'),
-(N'Miễn phí vận chuyển', N'Miễn phí vận chuyển cho đơn hàng trên một mức giá nhất định.'),
-(N'Quà tặng kèm', N'Tặng kèm sản phẩm miễn phí khi mua sản phẩm khác.'),
-(N'Khuyến mãi theo gói', N'Giảm giá khi mua theo gói sản phẩm.'),
-(N'Khuyến mãi theo mùa', N'Giảm giá đặc biệt cho các dịp lễ tết.');
+(N'Miễn phí vận chuyển', N'Miễn phí vận chuyển cho đơn hàng trên một mức giá nhất định.')
 
+go
 -- Insert data for voucher
-INSERT INTO voucher (ma_voucher, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc, id_loai_voucher) VALUES
-(N'KM10', 10, 100, 500000,2000000, N'Giảm 10% cho đơn hàng từ 50k', '2024-01-01', '2024-01-31', 1),
-(N'KM20K', 20000, 50,500000,2000000, N'Giảm 20.000đ cho đơn hàng từ 100k', '2024-02-01', '2024-02-28', 2),
-(N'FREE_SHIP', 0, 200,500000,2000000, N'Miễn phí vận chuyển cho đơn hàng từ 150k', '2024-03-01', '2024-03-31', 3),
-(N'GIFT1', 0, 100, 500000,2000000, N'Tặng kèm sản phẩm A khi mua sản phẩm B', '2024-04-01', '2024-04-30', 4),
-(N'PACKAGE5', 50, 30, 500000,2000000, N'Giảm 50.000đ khi mua gói 5 sản phẩm', '2024-05-01', '2024-05-31', 5),
-(N'SUMMER2024', 30, 150, 500000,2000000, N'Giảm 30% cho các sản phẩm mùa hè', '2024-06-01', '2024-06-30', 6);
+INSERT INTO voucher (ma_voucher,ten_voucher,kieu_giam_gia, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc, id_loai_voucher,id_trang_thai_giam_gia) VALUES
+(N'KM10',N'Giảm giá cho đơn hàng', 0,10, 100, 500000,2000000, N'Giảm 10% cho đơn hàng từ 50k', '2024-01-01', '2024-01-31', 1,3),
+(N'KM20K',N'Giảm giá cho đơn hàng',1, 20000, 50,500000,2000000, N'Giảm 20.000đ cho đơn hàng từ 100k', '2024-02-01', '2024-02-28', 2,3),
+(N'FREE_SHIP',N'Miễn phí vận chuyển cho đơn hàng',1, 0, 200,500000,2000000, N'Miễn phí vận chuyển cho đơn hàng từ 150k', '2024-03-01', '2024-03-31', 3,3),
+(N'KM30', N'Giảm giá cho đơn hàng', 0, 30, 80, 500000, 1500000, N'Giảm 30% cho đơn hàng từ 100k', '2024-04-01', '2024-04-30', 1, 3),
+(N'BONUS50K', N'Giảm giá cho đơn hàng', 1, 50000, 60, 1000000, 3000000, N'Giảm 50.000đ cho đơn hàng từ 200k', '2024-05-01', '2024-05-31', 2, 3);
 
 go
 -- Insert data for danh_muc
@@ -521,15 +557,6 @@ go
 INSERT INTO gio_hang (id_nguoi_dung) VALUES 
 (1), (2), (3), (4), (5);
 go
-
--- Insert data for gio_hang_chi_tiet
-
-
-
-
-
-
-go
 -- Insert data for trang_thai_hoa_don
 INSERT INTO trang_thai_hoa_don (ten_trang_thai, mo_ta) VALUES 
 (N'Chờ Xử Lý', N'Hoa đơn đang chờ xử lý.'),
@@ -540,22 +567,26 @@ INSERT INTO trang_thai_hoa_don (ten_trang_thai, mo_ta) VALUES
 
 go
 -- Insert data for hoa_don
-INSERT INTO hoa_don (ma_hoa_don, id_nguoi_dung, id_voucher, Id_dia_chi_van_chuyen, id_trang_thai_hoa_don, ten_nguoi_nhan, phi_ship, dia_chi, sdt_nguoi_nhan, thanh_tien, mo_ta, id_pt_thanh_toan_hoa_don) VALUES 
+INSERT INTO hoa_don (ma_hoa_don, id_nguoi_dung, id_voucher, id_dia_chi_van_chuyen, id_trang_thai_hoa_don, ten_nguoi_nhan, phi_ship, dia_chi, sdt_nguoi_nhan, thanh_tien, mo_ta, id_pt_thanh_toan_hoa_don) VALUES 
 ('HD001', 1, 1, 1, 1, N'Trần Văn A', 30.00, N'Số 1, Đường A, Quận 1', N'0123456789', 500.00, N'Hoa đơn cho sản phẩm A', 1),
 ('HD002', 2, 2, 2, 1, N'Nguyễn Thị B', 20.00, N'Số 2, Đường B, Quận 2', N'0123456788', 750.00, N'Hoa đơn cho sản phẩm B', 2),
-('HD003', 1, 3, 1, 1, N'Lê Văn C', 15.00, N'Số 3, Đường C, Quận 3', N'0123456787', 300.00, N'Hoa đơn cho sản phẩm C', 3),
-('HD004', 3, 4, 2, 1, N'Trần Thị D', 25.00, N'Số 4, Đường D, Quận 4', N'0123456786', 1200.00, N'Hoa đơn cho sản phẩm D', 4),
-('HD005', 2, 5, 1, 1, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5);
+('HD003', 1, 3, 1, 3, N'Lê Văn C', 15.00, N'Số 3, Đường C, Quận 3', N'0123456787', 300.00, N'Hoa đơn cho sản phẩm C', 3),
+('HD004', 3, 4, 2, 3, N'Trần Thị D', 25.00, N'Số 4, Đường D, Quận 4', N'0123456786', 1200.00, N'Hoa đơn cho sản phẩm D', 4),
+('HD005', 2, 5, 1, 3, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5),
+('HD006', 2, 5, 1, 3, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5),
+('HD007', 2, 5, 1, 3, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5),
+('HD008', 2, 5, 1, 3, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5),
+('HD009', 2, 5, 1, 3, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5);
 go
 
 
 -- Insert data for dia_chi_van_chuyen
-INSERT INTO dia_chi_van_chuyen ( so_tien_van_chuyen, tinh, huyen, xa, trang_thai, mo_ta) VALUES 
-(30000, N'Hà Nội', N'Hoàn Kiếm', N'Phan Chu Trinh',1, N'Địa chỉ giao hàng tại Hà Nội.'),
-(50000, N'TP. Hồ Chí Minh', N'Quận 1', N'Nguyễn Thái Bình',1, N'Địa chỉ giao hàng tại TP. Hồ Chí Minh.'),
-(20000, N'Hà Nội', N'Ba Đình', N'Trần Phú',1, N'Địa chỉ giao hàng cho các đơn hàng nhỏ.'),
-(10000, N'Đà Nẵng', N'Hải Châu', N'Hải Châu 1',1, N'Địa chỉ giao hàng tại Đà Nẵng.'),
-(100000, N'Bắc Ninh', N'Thuận Thành', N'Thị trấn Hồ',1, N'Địa chỉ giao hàng tại Bắc Ninh.');
+INSERT INTO dia_chi_van_chuyen (  tinh, huyen, xa, trang_thai, mo_ta,id_nguoi_dung) VALUES 
+( N'Hà Nội', N'Hoàn Kiếm', N'Phan Chu Trinh',1, N'Địa chỉ giao hàng tại Hà Nội.',1),
+( N'TP. Hồ Chí Minh', N'Quận 1', N'Nguyễn Thái Bình',1, N'Địa chỉ giao hàng tại TP. Hồ Chí Minh.',2),
+( N'Hà Nội', N'Ba Đình', N'Trần Phú',1, N'Địa chỉ giao hàng cho các đơn hàng nhỏ.',3),
+( N'Đà Nẵng', N'Hải Châu', N'Hải Châu 1',1, N'Địa chỉ giao hàng tại Đà Nẵng.',4),
+( N'Bắc Ninh', N'Thuận Thành', N'Thị trấn Hồ',1, N'Địa chỉ giao hàng tại Bắc Ninh.',5);
 
 go
 -- Insert data for pt_thanh_toan
@@ -566,12 +597,12 @@ INSERT INTO pt_thanh_toan (ma_thanh_toan, ten_phuong_thuc, mo_ta) VALUES
 (N'TT004', N'Thu Tiền Tận Nơi', N'Nhân viên sẽ đến thu tiền tại địa chỉ giao hàng.'),
 (N'TT005', N'Thanh Toán Trực Tiếp', N'Khách hàng thanh toán trực tiếp tại cửa hàng.');
 -- Insert data for phi_van_chuyen
-INSERT INTO phi_van_chuyen (id_dia_chi_van_chuyen,id_hoa_don, mo_ta) VALUES 
-(1,1, N'Phí vận chuyển cho đơn hàng nội tỉnh.'),
-(2,2, N'Phí vận chuyển cho đơn hàng liên tỉnh.'),
-(3,3, N'Phí vận chuyển cho đơn hàng dưới 1kg.'),
-(4,4, N'Phí vận chuyển cho đơn hàng trên 1kg.'),
-(5,5, N'Phí vận chuyển cho đơn hàng đặc biệt.');
+INSERT INTO phi_van_chuyen (id_dia_chi_van_chuyen,so_tien_van_chuyen,id_hoa_don, mo_ta) VALUES 
+(1,10000,1, N'Phí vận chuyển cho đơn hàng nội tỉnh.'),
+(2,10000,2, N'Phí vận chuyển cho đơn hàng liên tỉnh.'),
+(3,10000,3, N'Phí vận chuyển cho đơn hàng dưới 1kg.'),
+(4,10000,4, N'Phí vận chuyển cho đơn hàng trên 1kg.'),
+(5,10000,5, N'Phí vận chuyển cho đơn hàng đặc biệt.');
 go
 
 -- Insert data for pt_thanh_toan_hoa_don
@@ -593,67 +624,67 @@ go
 
 
 -- Insert data for san_pham
-INSERT INTO san_pham (ten_san_pham, gia_ban, mo_ta, id_danh_muc,trang_thai) VALUES 
-(N'Áo phông hình bàn tay',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông butterfly',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1,1),
-(N'Áo phông cotton',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông ENJOYABLE',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông loang',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông holiday 1961', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông nam nữ 1984', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông nam nữ oversize',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông tay lỡ',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông thể thao',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
-(N'Áo phông SPORT FASHION', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+INSERT INTO san_pham (ma_san_pham,ten_san_pham, gia_ban, mo_ta, id_danh_muc,trang_thai) VALUES 
+('SP001',N'Áo phông hình bàn tay',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP002',N'Áo phông butterfly',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1,1),
+('SP003',N'Áo phông cotton',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP004',N'Áo phông ENJOYABLE',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP005',N'Áo phông loang',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP006',N'Áo phông holiday 1961', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP007',N'Áo phông nam nữ 1984', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP008',N'Áo phông nam nữ oversize',120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP009',N'Áo phông tay lỡ',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP0010',N'Áo phông thể thao',  120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
+('SP0011',N'Áo phông SPORT FASHION', 120000 , N'Áo phông cotton mềm mại, thiết kế cổ tròn với tay ngắn', 1, 1),
 
-(N'Áo sơ mi đũi nơ thắt eo', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
-(N'Áo sơ mi nam kẻ sọc', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
-(N'Áo sơ mi lụa công sở', 120000 , N'Áo sơ mi được làm từ lụa mềm mại, thoáng khí', 2, 1),
-(N'Áo sơ mi nam loang', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
-(N'Áo sơ mi ngắn siết eo',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
-(N'Áo sơ mi tay ngắn túi hộp', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
-(N'Áo sơ mi thắt cà vạt', 120000 , N'Áo sơ mi được làm theo phong cách Nhật', 2,1),
-(N'Áo sơ mi sọc đơn giản',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
-(N'Áo sơ mi tay ngắn', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2,1),
-(N'Áo sơ mi trơn',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+('SP0012',N'Áo sơ mi đũi nơ thắt eo', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+('SP0013',N'Áo sơ mi nam kẻ sọc', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+('SP0014',N'Áo sơ mi lụa công sở', 120000 , N'Áo sơ mi được làm từ lụa mềm mại, thoáng khí', 2, 1),
+('SP0015',N'Áo sơ mi nam loang', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+('SP0016',N'Áo sơ mi ngắn siết eo',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+('SP0017',N'Áo sơ mi tay ngắn túi hộp', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+('SP0018',N'Áo sơ mi thắt cà vạt', 120000 , N'Áo sơ mi được làm theo phong cách Nhật', 2,1),
+('SP0019',N'Áo sơ mi sọc đơn giản',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
+('SP0020',N'Áo sơ mi tay ngắn', 120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2,1),
+('SP0021',N'Áo sơ mi trơn',  120000 , N'Áo sơ mi được làm từ 100% cotton mềm mại, thoáng khí', 2, 1),
 
-(N'Áo ấm lông cừu', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
-(N'Áo béo buộc nơ', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
-(N'Áo phao bông',  120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
-(N'Áo phao cài khuy', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
-(N'Áo phao gile', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
-(N'Áo phao cài khuy cổ', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
-(N'Áo phao cài lửng thời trang', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
-(N'Áo phao nhung cừu', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
-(N'Áo phao cài NIKE',  120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
+('SP0022',N'Áo ấm lông cừu', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+('SP0023',N'Áo béo buộc nơ', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+('SP0024',N'Áo phao bông',  120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
+('SP0025',N'Áo phao cài khuy', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+('SP0026',N'Áo phao gile', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+('SP0027',N'Áo phao cài khuy cổ', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
+('SP0028',N'Áo phao cài lửng thời trang', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3, 1),
+('SP0029',N'Áo phao nhung cừu', 120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
+('SP0030',N'Áo phao cài NIKE',  120000 , N'Áo phao dày dặn, giúp giữ ấm hiệu quả trong những ngày đông lạnh giá', 3,1),
 
-(N'Áo chống nắng viền tròn', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
-(N'Áo chống nắng toàn thân',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
-(N'Áo chống nắng thông hơi', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4,1),
-(N'Áo chống nắng thời trang', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
-(N'Áo chống nắng thể thao', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
-(N'Áo chống nắng LV',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
-(N'Áo chống nắng dài xoe',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+('SP0031',N'Áo chống nắng viền tròn', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+('SP0032',N'Áo chống nắng toàn thân',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+('SP0033',N'Áo chống nắng thông hơi', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4,1),
+('SP0034',N'Áo chống nắng thời trang', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+('SP0035',N'Áo chống nắng thể thao', 120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+('SP0036',N'Áo chống nắng LV',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
+('SP0037',N'Áo chống nắng dài xoe',  120000 , N'Áo chống nắng chất liệu vải thoáng mát, nhẹ nhàng và có khả năng chống tia UV', 4, 1),
 
 
-(N'Quần baggy kaki',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5,1),
-(N'Quần đũi dài nam',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
-(N'Quần đũi dài nữ', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
-(N'Quần ống rộng cạp cao',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
-(N'Quần ống rộng nam',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
-(N'Quần đũi rộng túi hộp', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
-(N'Quần suông đơn giản', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
-(N'Quần suông rộng', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+('SP0038',N'Quần baggy kaki',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5,1),
+('SP0039',N'Quần đũi dài nam',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+('SP0040',N'Quần đũi dài nữ', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+('SP0041',N'Quần ống rộng cạp cao',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+('SP0042',N'Quần ống rộng nam',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+('SP0043',N'Quần đũi rộng túi hộp', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+('SP0044',N'Quần suông đơn giản', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
+('SP0045',N'Quần suông rộng', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 5, 1),
 
-(N'Quần ống rộng suông',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
-(N'Quần sort nữ cá tính', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
-(N'Quần sort nữ đũi', 120000 , N'Quần sort chất liệu đũi mềm mại, co giãn nhẹ', 6, 1),
-(N'Quần đùi túi hộp đứng', 120000 , N'Quần dài dáng suông, chất liệu đũi mềm mại, co giãn nhẹ', 6, 1),
-(N'Quần jean cạp trễ',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1),
-(N'Quần jean thời trang', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
-(N'Quần sort bò rộng',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1),
-(N'Quần sort tây nam', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
-(N'Quần suông dài basic', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1);
+('SP0046',N'Quần ống rộng suông',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
+('SP0047',N'Quần sort nữ cá tính', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
+('SP0048',N'Quần sort nữ đũi', 120000 , N'Quần sort chất liệu đũi mềm mại, co giãn nhẹ', 6, 1),
+('SP0049',N'Quần đùi túi hộp đứng', 120000 , N'Quần dài dáng suông, chất liệu đũi mềm mại, co giãn nhẹ', 6, 1),
+('SP0050',N'Quần jean cạp trễ',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1),
+('SP0051',N'Quần jean thời trang', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
+('SP0052',N'Quần sort bò rộng',  120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1),
+('SP0053',N'Quần sort tây nam', 120000 , N'Quần sort chất liệu kaki mềm mại, co giãn nhẹ', 6, 1),
+('SP0054',N'Quần suông dài basic', 120000 , N'Quần dài dáng suông, chất liệu kaki mềm mại, co giãn nhẹ', 6,1);
 go
 INSERT INTO danh_gia (id_nguoi_dung, id_san_pham, noi_dung, diem) VALUES 
 (1, 1, N'Sản phẩm đẹp như trên mô tả', 5),
@@ -663,22 +694,22 @@ INSERT INTO danh_gia (id_nguoi_dung, id_san_pham, noi_dung, diem) VALUES
 (5, 5, N'Áo chất lượng, đáng tiền', 4);
 go
 -- Giả sử bạn đã có các bản ghi trong bảng dot_giam_gia
-INSERT INTO dot_giam_gia (ten_dot_giam_gia, gia_tri_giam_gia, mo_ta, ngay_bat_dau, ngay_ket_thuc)
+INSERT INTO dot_giam_gia (ten_dot_giam_gia, gia_tri_giam_gia, mo_ta, ngay_bat_dau, ngay_ket_thuc,id_trang_thai_giam_gia)
 VALUES 
-(N'Khuyến mãi mùa hè', 20000, N'Giảm giá cho các sản phẩm mùa hè', GETDATE(), DATEADD(DAY, 30, GETDATE()));
+(N'Khuyến mãi mùa hè', 20000, N'Giảm giá cho các sản phẩm mùa hè', GETDATE(), DATEADD(DAY, 30, GETDATE()),1);
 
 -- Lấy Id_dot_giam_gia vừa tạo
 DECLARE @Id_dot_giam_gia INT = SCOPE_IDENTITY();
 
 -- Chèn dữ liệu vào bảng giam_gia_san_pham
-INSERT INTO giam_gia_san_pham (mo_ta, Id_dot_giam_gia, id_san_pham)
+INSERT INTO giam_gia_san_pham (Id_dot_giam_gia, id_san_pham)
 VALUES
-(N'Áo thun nam được giảm giá 10%', @Id_dot_giam_gia, 1),
-(N'Smartphone XYZ áp dụng giảm 20.000đ', @Id_dot_giam_gia, 2),
-(N'Miễn phí vận chuyển cho Bình nước giữ nhiệt', @Id_dot_giam_gia, 3),
-(N'Sách hay được tặng kèm sản phẩm khác', @Id_dot_giam_gia, 4),
-(N'Giảm giá cho Bánh kẹo nhập khẩu', @Id_dot_giam_gia, 5),
-(N'Son môi ABC giảm giá 50.000đ', @Id_dot_giam_gia, 6);
+(@Id_dot_giam_gia, 1),
+(@Id_dot_giam_gia, 2),
+(@Id_dot_giam_gia, 3),
+(@Id_dot_giam_gia, 4),
+(@Id_dot_giam_gia, 5),
+( @Id_dot_giam_gia, 6);
 go
 -- Insert data for san_pham_chi_tiet
 INSERT INTO san_pham_chi_tiet (so_luong, id_kich_thuoc_chi_tiet, id_mau_sac_chi_tiet, id_chat_lieu_chi_tiet, id_san_pham)
@@ -1455,12 +1486,12 @@ INSERT INTO hoa_don_chi_tiet (id_san_pham_chi_tiet, id_hoa_don, so_luong, tong_t
 (2, 1, 1, 500,600,100),
 (3, 2, 1, 750, 750,0),
 (4, 3, 5, 1500, 1500,0),
-(5, 4, 3, 3600,4000,400);
+(5, 4, 3, 3600,4000,400),
+(27, 6, 5, 1500, 1500,0),
+(25, 7, 3, 3600,4000,400),
+(53, 8, 5, 1500, 1500,0),
+(54, 9, 3, 3600,4000,400);
 go
-
--- Insert data for lich_su_hoa_don
-
-
 
 
 select * from vai_tro
@@ -1487,9 +1518,10 @@ select * from hoa_don_chi_tiet
 select * from xac_thuc
 select * from lich_su_hoa_don
 select * from san_pham
-select * from san_pham_chi_tiet
+select * from san_pham_chi_tiet 
 select * from gio_hang_chi_tiet
 select * from gio_hang
 select * from hinh_anh_san_pham
 select * from dot_giam_gia
 select * from giam_gia_san_pham
+select * from trang_thai_giam_gia

@@ -15,28 +15,8 @@ window.TrangchuController = function ($scope, $http) {
             console.error('Error fetching data:', error);
         });
     }
-    fetchData('http://localhost:8080/api/san_pham', 'dsSanPham');
-    fetchData('http://localhost:8080/api/san_pham/san_pham_giam_gia', 'dsSanPhamGiamGia');
+    fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'dsSanPham');
+    fetchData('http://localhost:8080/api/nguoi_dung/san_pham/san_pham_giam_gia', 'dsSanPhamGiamGia');
 
-
-    $scope.login = function() {
-        var userCredentials = {
-            email: $scope.email,
-            matKhau: $scope.password
-        };
-
-        $http.post('http://localhost:8080/api/auth/login', userCredentials)
-            .then(function(response) {
-                // Lưu JWT token và tên người dùng vào localStorage
-                localStorage.setItem('jwtToken', response.data.token); 
-                localStorage.setItem('tenNguoiDung', response.data.tenNguoiDung); 
-                alert('Đăng nhập thành công!');
-                // Chuyển hướng đến trang chủ
-                $window.location.href = '/index.html';
-            })
-            .catch(function() {
-                $scope.errorMessage = 'Đăng nhập thất bại.';
-            });
-    };
 
 };

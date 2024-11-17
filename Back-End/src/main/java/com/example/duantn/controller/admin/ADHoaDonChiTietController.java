@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/ad_thong_ke")
+@RequestMapping("/api/admin/thong_ke")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ADHoaDonChiTietController {
 

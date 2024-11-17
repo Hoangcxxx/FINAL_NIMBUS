@@ -1,7 +1,7 @@
 window.DonHangController = function ($scope, $http) {
     $scope.dsHoaDon = [];
     function fetchdsHoaDon() {
-        $http.get('http://localhost:8080/api/ad_hoa_don')
+        $http.get('http://localhost:8080/api/admin/hoa_don')
             .then(function (response) {
                 if (response.data.length > 0) {
                     $scope.dsHoaDon = response.data;

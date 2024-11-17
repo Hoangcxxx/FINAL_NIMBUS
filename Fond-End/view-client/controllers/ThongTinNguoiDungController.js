@@ -1,4 +1,4 @@
-window.ThongTinNguoiDungController = function ($scope, $http) {
+window.ThongTinNguoiDungController = function ($scope, $http, $window) {
     // Lấy thông tin người dùng từ localStorage
     var userInfo = localStorage.getItem('user');
 
@@ -71,10 +71,40 @@ window.ThongTinNguoiDungController = function ($scope, $http) {
                 // Đóng modal
                 $('#editCustomerModal').modal('hide');
                 alert('Thông tin đã được cập nhật thành công!');
+                $window.location.href = "/#!thong_tin_nguoi_dung"; // Chuyển hướng sang trang thanh toán
             })
             .catch(function (error) {
                 console.log('Cập nhật thông tin thất bại:', error);
                 alert('Có lỗi xảy ra khi cập nhật thông tin!');
             });
     };
+    $scope.formatDate = function() {
+        let date = $scope.ngaySinhNguoiDung;
+    
+        // Loại bỏ mọi ký tự không phải là số (bao gồm cả dấu gạch nối)
+        date = date.replace(/[^0-9]/g, "");
+    
+        // Nếu có ít hơn 8 ký tự, xử lý thêm dấu gạch nối theo từng bước
+        if (date.length >= 2) {
+            // Nếu có 2 ký tự, thêm dấu gạch nối sau ngày
+            date = date.substring(0, 2) + (date.length >= 2 ? '-' : '') + date.substring(2);
+        }
+    
+        if (date.length >= 5) {
+            // Nếu có 5 ký tự, thêm dấu gạch nối sau tháng
+            date = date.substring(0, 5) + (date.length >= 5 ? '-' : '') + date.substring(5);
+        }
+    
+        // Hiển thị lại giá trị đã định dạng
+        $scope.ngaySinhNguoiDung = date;
+    
+        // Nếu đủ 10 ký tự, không thay đổi gì thêm
+        if (date.length === 10) {
+            return;
+        }
+    };
+    
+
+
+
 };

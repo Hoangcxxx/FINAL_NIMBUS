@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/ad_dot_giam_gia")
+@RequestMapping("/api/admin/dot_giam_gia")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ADDotGiamGiaController {
 

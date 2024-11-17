@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ad_san_pham_ct")
+@RequestMapping("/api/admin/san_pham_chi_tiet")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ADSanPhamCTController {
     @Autowired
@@ -23,7 +23,12 @@ public class ADSanPhamCTController {
         sanPhamChiTietService.deleteByIds(idSanPhamCTs);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
+    // Xóa một sản phẩm chi tiết theo ID
+    @DeleteMapping("/findSanPhamCT/{idSanPhamCT}")
+    public ResponseEntity<Void> deleteSanPhamChiTietById(@PathVariable Integer idSanPhamCT) {
+        sanPhamChiTietService.deleteByIdSanPhamCTs(idSanPhamCT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
     @PutMapping("/updateQuantities")
     public ResponseEntity<Void> updateSoLuongSanPhamCT(@RequestBody List<ProductDetailUpdateRequest> payload) throws IOException {
         // Gọi service để cập nhật số lượng cho từng sản phẩm chi tiết

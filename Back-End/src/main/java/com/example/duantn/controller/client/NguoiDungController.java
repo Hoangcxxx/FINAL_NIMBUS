@@ -39,11 +39,27 @@ public class NguoiDungController {
     public ResponseEntity<NguoiDung> dangNhap(@RequestBody LoginRequest loginRequest) {
         try {
             NguoiDung nguoiDung = dangNhapService.dangNhap(loginRequest.getEmail(), loginRequest.getMatKhau());
-            return ResponseEntity.ok(nguoiDung);
+
+            // In ra vai trò của người dùng khi đăng nhập thành công
+            System.out.println("Người dùng '" + nguoiDung.getEmail() + "' đăng nhập thành công với vai trò: " + nguoiDung.getVaiTro().getTen());
+
+            // Kiểm tra vai trò của người dùng để phân quyền truy cập
+            if (nguoiDung.getVaiTro().getIdVaiTro() == 1) {
+                // Quản trị viên, trả về quyền truy cập đầy đủ
+                return ResponseEntity.ok(nguoiDung);
+            } else if (nguoiDung.getVaiTro().getIdVaiTro() == 2) {
+                // Khách hàng, chỉ trả về thông tin người dùng cơ bản
+                return ResponseEntity.ok(nguoiDung);
+            } else {
+                // Vai trò không hợp lệ
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            }
         } catch (Exception e) {
+            System.out.println("Đăng nhập thất bại với email '" + loginRequest.getEmail() + "'. Lỗi: " + e.getMessage());
             return ResponseEntity.badRequest().body(null);
         }
     }
+
     // Phương thức đăng xuất
     @PostMapping("/dang_xuat")
     public ResponseEntity<?> dangXuat(HttpServletRequest request) {

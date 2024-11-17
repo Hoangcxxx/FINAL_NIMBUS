@@ -10,15 +10,15 @@ window.PhieuGiamGiaController = function ($scope, $http) {
         });
     };
 
-    $scope.fetchData('http://localhost:8080/api/ad_vouchers', 'dsKhuyenMai', 'Fetched Voucher:');
+    $scope.fetchData('http://localhost:8080/api/admin/vouchers', 'dsKhuyenMai', 'Fetched Voucher:');
 
     $scope.deleteVoucher = function (id) {
         if (confirm("Bạn có chắc chắn muốn xóa voucher này không?")) {
-            $http.delete('http://localhost:8080/api/ad_vouchers/' + id)
+            $http.delete('http://localhost:8080/api/admin/vouchers/' + id)
                 .then(function (response) {
                     alert("Voucher đã được xóa thành công!");
                     // Cập nhật lại danh sách vouchers
-                    $scope.fetchData('http://localhost:8080/api/ad_vouchers', 'dsKhuyenMai', 'Fetched KhuyenMai:');
+                    $scope.fetchData('http://localhost:8080/api/admin/vouchers', 'dsKhuyenMai', 'Fetched KhuyenMai:');
                 }, function (error) {
                     console.error('Error deleting voucher:', error);
                     alert("Có lỗi xảy ra khi xóa voucher.");
@@ -27,7 +27,7 @@ window.PhieuGiamGiaController = function ($scope, $http) {
     };
     // Function to update product status
     $scope.updateTrangThai = function (idVoucher, newStatus) {
-        $http.put('http://localhost:8080/api/ad_vouchers/update_status/' + idVoucher, { trangThai: newStatus })
+        $http.put('http://localhost:8080/api/admin/vouchers/update_status/' + idVoucher, { trangThai: newStatus })
             .then(function (response) {
                 console.log('Cập nhật trạng thái sản phẩm thành công:', response.data);
             })

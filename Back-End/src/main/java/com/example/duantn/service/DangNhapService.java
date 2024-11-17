@@ -2,7 +2,6 @@ package com.example.duantn.service;
 
 import com.example.duantn.entity.GioHang;
 import com.example.duantn.entity.NguoiDung;
-import com.example.duantn.entity.VaiTro;
 import com.example.duantn.repository.GioHangRepository;
 import com.example.duantn.repository.NguoiDungRepository;
 import com.example.duantn.repository.VaiTroRepository;
@@ -88,15 +87,21 @@ public class DangNhapService {
         return code.toString();
     }
 
-
-
     // Phương thức đăng nhập
     public NguoiDung dangNhap(String email, String matKhau) {
+        // Tìm người dùng theo email
         Optional<NguoiDung> nguoiDungOptional = nguoiDungRepository.findByEmail(email);
         if (nguoiDungOptional.isPresent()) {
             NguoiDung nguoiDung = nguoiDungOptional.get();
+
+            // Kiểm tra mật khẩu
             if (passwordEncoder.matches(matKhau, nguoiDung.getMatKhau())) {
-                return nguoiDung; // Trả về người dùng nếu đăng nhập thành công
+                // Nếu mật khẩu đúng, trả về thông tin người dùng và vai trò của họ
+                if (nguoiDung.getVaiTro() != null) {
+                    return nguoiDung; // Trả về người dùng và vai trò của họ
+                } else {
+                    throw new RuntimeException("Vai trò người dùng không hợp lệ");
+                }
             } else {
                 throw new RuntimeException("Mật khẩu không đúng");
             }
@@ -104,5 +109,8 @@ public class DangNhapService {
             throw new RuntimeException("Tài khoản không tồn tại");
         }
     }
+
+
+
 
 }

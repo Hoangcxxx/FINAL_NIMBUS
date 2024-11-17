@@ -11,7 +11,7 @@ window.KhoHangController = function ($scope, $http) {
     // Fetch categories
     const fetchCategories = () => {
         console.log('Fetching categories...');
-        $http.get('http://localhost:8080/api/ad_kho_hang/categories')
+        $http.get('http://localhost:8080/api/admin/kho_hang/categories')
             .then(response => {
                 console.log('Categories fetched successfully:', response.data);
                 $scope.dsDanhMuc = response.data;
@@ -27,7 +27,7 @@ window.KhoHangController = function ($scope, $http) {
         const idDanhMuc = $scope.productData.idDanhMuc;
         console.log('Category changed to ID:', idDanhMuc);
         if (idDanhMuc) {
-            $http.get(`http://localhost:8080/api/ad_kho_hang/products?idDanhMuc=${idDanhMuc}`)
+            $http.get(`http://localhost:8080/api/admin/kho_hang/products?idDanhMuc=${idDanhMuc}`)
                 .then(response => {
                     console.log('Products fetched successfully:', response.data);
                     $scope.dsSanPham = response.data;
@@ -57,7 +57,7 @@ window.KhoHangController = function ($scope, $http) {
         const idSanPham = $scope.productData.idSanPham;
         console.log('Product changed to ID:', idSanPham);
         if (idSanPham) {
-            $http.get(`http://localhost:8080/api/ad_kho_hang/materials?idSanPham=${idSanPham}`)
+            $http.get(`http://localhost:8080/api/admin/kho_hang/materials?idSanPham=${idSanPham}`)
                 .then(response => {
                     console.log('Materials fetched successfully:', response.data);
                     $scope.dsChatLieu = response.data;
@@ -85,7 +85,7 @@ window.KhoHangController = function ($scope, $http) {
         const idChatLieu = $scope.productData.idChatLieu;
         console.log('Material changed to ID:', idChatLieu);
         if (idSanPham && idChatLieu) {
-            $http.get(`http://localhost:8080/api/ad_kho_hang/colors?idSanPham=${idSanPham}&idChatLieu=${idChatLieu}`)
+            $http.get(`http://localhost:8080/api/admin/kho_hang/colors?idSanPham=${idSanPham}&idChatLieu=${idChatLieu}`)
                 .then(response => {
                     console.log('Colors fetched successfully:', response.data);
                     $scope.dsMauSac = response.data;
@@ -112,7 +112,7 @@ window.KhoHangController = function ($scope, $http) {
         const idMauSac = $scope.productData.idMauSac;
         console.log('Color changed to ID:', idMauSac);
         if (idSanPham && idChatLieu && idMauSac) {
-            $http.get(`http://localhost:8080/api/ad_kho_hang/sizes?idSanPham=${idSanPham}&idChatLieu=${idChatLieu}&idMauSac=${idMauSac}`)
+            $http.get(`http://localhost:8080/api/admin/kho_hang/sizes?idSanPham=${idSanPham}&idChatLieu=${idChatLieu}&idMauSac=${idMauSac}`)
                 .then(response => {
                     console.log('Sizes fetched successfully:', response.data);
                     $scope.dsKichThuoc = response.data;
@@ -129,7 +129,7 @@ window.KhoHangController = function ($scope, $http) {
     $scope.getProductDetails = function () {
         const { idSanPham, idChatLieu, idMauSac, idKichThuoc } = $scope.productData;
         if (idSanPham && idChatLieu && idMauSac && idKichThuoc) {
-            $http.get(`http://localhost:8080/api/ad_kho_hang/product_details?idSanPham=${idSanPham}&idChatLieu=${idChatLieu}&idMauSac=${idMauSac}&idKichThuoc=${idKichThuoc}`)
+            $http.get(`http://localhost:8080/api/admin/kho_hang/product_details?idSanPham=${idSanPham}&idChatLieu=${idChatLieu}&idMauSac=${idMauSac}&idKichThuoc=${idKichThuoc}`)
                 .then(response => {
                     console.log('Product details fetched successfully:', response.data);
                     $scope.filteredProducts = response.data; // Update filtered products
@@ -168,7 +168,7 @@ window.KhoHangController = function ($scope, $http) {
         if ($scope.quantity > 0 && $scope.selectedProduct) {
             const idSanPhamChiTiet = $scope.selectedProduct.idSanPhamCT; // Assuming you have this attribute
             console.log('Updating quantity for product ID:', idSanPhamChiTiet, 'New quantity:', $scope.quantity);
-            $http.put(`http://localhost:8080/api/ad_kho_hang/update/${idSanPhamChiTiet}?soLuongThem=${$scope.quantity}`)
+            $http.put(`http://localhost:8080/api/admin/kho_hang/update/${idSanPhamChiTiet}?soLuongThem=${$scope.quantity}`)
                 .then(response => {
                     console.log('Quantity updated successfully:', response.data);
                     $('#quantityModal').modal('hide'); // Close modal after success
@@ -192,7 +192,7 @@ window.KhoHangController = function ($scope, $http) {
     // Function to update product status
     $scope.updateTrangThai = function (idSanPhamCT, newStatus) {
         console.log('Updating status for product ID:', idSanPhamCT, 'New status:', newStatus);
-        $http.put(`http://localhost:8080/api/ad_kho_hang/update_status/${idSanPhamCT}`, { trangThai: newStatus })
+        $http.put(`http://localhost:8080/api/admin/kho_hang/update_status/${idSanPhamCT}`, { trangThai: newStatus })
             .then(function (response) {
                 console.log('Cập nhật trạng thái sản phẩm thành công:', response.data);
                 // Thêm bất kỳ hành động nào bạn muốn sau khi cập nhật thành công

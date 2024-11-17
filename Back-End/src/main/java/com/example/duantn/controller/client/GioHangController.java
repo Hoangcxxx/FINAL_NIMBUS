@@ -23,7 +23,7 @@ import com.example.duantn.entity.GioHang;
 import com.example.duantn.service.GioHangService;
 
 @RestController
-@RequestMapping("/api/gio_hang")
+@RequestMapping("/api/nguoi_dung/gio_hang")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class GioHangController {
 

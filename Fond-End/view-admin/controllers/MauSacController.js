@@ -14,7 +14,7 @@ window.MauSacController = function ($scope, $http) {
     }
 
     $scope.onRefresh = function () {
-        fetchData('http://localhost:8080/api/ad_mau_sac', 'dsMauSac');
+        fetchData('http://localhost:8080/api/admin/mau_sac', 'dsMauSac');
     };
 
     $scope.MauSac = {
@@ -31,7 +31,7 @@ window.MauSacController = function ($scope, $http) {
     $scope.onCreate = function () {
         $http({
             method: 'POST',
-            url: "http://localhost:8080/api/ad_mau_sac",
+            url: "http://localhost:8080/api/admin/mau_sac",
             data: $scope.MauSac
         }).then(function (response) {
             alert('Chúc mừng bạn tạo mới thành công');
@@ -43,7 +43,7 @@ window.MauSacController = function ($scope, $http) {
     $scope.onUpdate = function () {
         $http({
             method: 'PUT',
-            url: `http://localhost:8080/api/ad_mau_sac/${$scope.MauSac.id}`,
+            url: `http://localhost:8080/api/admin/mau_sac/${$scope.MauSac.id}`,
             data: $scope.MauSac
         }).then(function (response) {
             alert('Chất liệu đã được cập nhật thành công');
@@ -69,19 +69,19 @@ window.MauSacController = function ($scope, $http) {
         if (confirm('Bạn có chắc chắn muốn xóa chất liệu này không?')) {
             $http({
                 method: 'DELETE',
-                url: `http://localhost:8080/api/ad_mau_sac/${idMauSac}`
+                url: `http://localhost:8080/api/admin/mau_sac/${idMauSac}`
             }).then(function (response) {
                 alert('Chất liệu đã được xóa thành công');
                 location.reload();
             });
         }
     };
-    fetchData('http://localhost:8080/api/ad_mau_sac', 'dsMauSac');
+    fetchData('http://localhost:8080/api/admin/mau_sac', 'dsMauSac');
 
 
     $scope.onSearch = function () {
         const query = $scope.tenMauSac; // Lấy tên màu sắc từ ô nhập
-        const url = `http://localhost:8080/api/ad_mau_sac/${query}`; // URL tìm kiếm theo tên
+        const url = `http://localhost:8080/api/admin/mau_sac/${query}`; // URL tìm kiếm theo tên
 
         if (query) {
             $http.get(url).then(function (response) {

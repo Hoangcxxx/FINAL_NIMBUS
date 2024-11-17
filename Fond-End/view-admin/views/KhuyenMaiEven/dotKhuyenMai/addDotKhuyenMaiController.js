@@ -17,7 +17,7 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
             $scope.fetchSanPham(); // Nếu không có danh mục, lấy lại tất cả sản phẩm
             return;
         }
-        $http.get(`http://localhost:8080/api/ad_dot_giam_gia/findDanhMuc/${idDanhMuc}`)
+        $http.get(`http://localhost:8080/api/admin/dot_giam_gia/findDanhMuc/${idDanhMuc}`)
             .then(function (response) {
                 $scope.dsSanPham = response.data;
                 if ($scope.dsSanPham.length === 0) {
@@ -33,7 +33,7 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
 
     // Hàm lấy danh sách sản phẩm
     $scope.fetchSanPham = function () {
-        $http.get('http://localhost:8080/api/ad_dot_giam_gia/san_pham_chua_giam_gia')
+        $http.get('http://localhost:8080/api/admin/dot_giam_gia/san_pham_chua_giam_gia')
             .then(function (response) {
                 $scope.dsSanPham = response.data;
             }, function (error) {
@@ -54,7 +54,7 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
 
     // Hàm lấy thông tin đợt giảm giá theo ID
     $scope.fetchDotGiamGia = function (id) {
-        $http.get(`http://localhost:8080/api/ad_dot_giam_gia/detail/${id}`)
+        $http.get(`http://localhost:8080/api/admin/dot_giam_gia/detail/${id}`)
             .then(function (response) {
                 $scope.dotGiamGia = response.data.dotGiamGia;
 
@@ -86,7 +86,7 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
     // Gọi hàm để lấy danh sách sản phẩm ngay khi controller khởi tạo
     $scope.fetchSanPham();
     // Gọi hàm để lấy danh sách danh mục
-    $scope.fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc', 'Fetched categories:');
+    $scope.fetchData('http://localhost:8080/api/admin/danh_muc', 'dsDanhMuc', 'Fetched categories:');
 
     // Hàm thêm hoặc cập nhật đợt giảm giá
     $scope.saveDotGiamGia = function () {
@@ -106,8 +106,8 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
         }));
 
         const request = $routeParams.id
-            ? $http.put(`http://localhost:8080/api/ad_dot_giam_gia/${$routeParams.id}`, $scope.dotGiamGia) // Cập nhật
-            : $http.post('http://localhost:8080/api/ad_dot_giam_gia/create_with_san_pham', $scope.dotGiamGia); // Thêm mới
+            ? $http.put(`http://localhost:8080/api/admin/dot_giam_gia/${$routeParams.id}`, $scope.dotGiamGia) // Cập nhật
+            : $http.post('http://localhost:8080/api/admin/dot_giam_gia/create_with_san_pham', $scope.dotGiamGia); // Thêm mới
 
         request.then(function (response) {
             alert('Đợt giảm giá đã được lưu thành công!');

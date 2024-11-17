@@ -115,9 +115,18 @@
             if (userInfo) {
                 $scope.infoUser = JSON.parse(userInfo);  // Lấy thông tin người dùng từ localStorage
                 $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
+                $scope.vaiTro = $scope.infoUser.vaiTro;  // Lấy thông tin vai trò của người dùng
+
+                // Kiểm tra vai trò của người dùng, nếu là Quản trị viên (idVaiTro = 1)
+                if ($scope.vaiTro.idVaiTro === 1) {
+                    $scope.isAdmin = true;  // Cho phép hiển thị mục "Trang quản lý"
+                } else {
+                    $scope.isAdmin = false;  // Ẩn mục "Trang quản lý"
+                }
             } else {
                 $scope.infoUser = undefined;
                 $scope.tenNguoiDung = undefined;
+                $scope.isAdmin = false;  // Nếu chưa đăng nhập, ẩn mục "Trang quản lý"
             }
         });
 

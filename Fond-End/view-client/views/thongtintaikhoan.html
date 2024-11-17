@@ -190,11 +190,11 @@
 
                     <!-- Input ngày sinh -->
                     <div class="form-floating mb-3">
-                        <input type="date" class="form-control" id="editCustomerDob" ng-model="ngaySinhNguoiDung"
-                            placeholder="Chọn ngày sinh" required>
+                        <input type="text" class="form-control" id="editCustomerDob" ng-model="ngaySinhNguoiDung"
+                            placeholder="Chọn ngày sinh" required ng-keyup="formatDate()" ng-blur="formatDate()">
                         <label for="editCustomerDob">Ngày sinh</label>
                     </div>
-
+                    
                     <!-- Giới tính khách hàng -->
                     <div class="form-floating mb-3">
                         <select class="form-control" id="editCustomerGender" ng-model="gioiTinh" required>

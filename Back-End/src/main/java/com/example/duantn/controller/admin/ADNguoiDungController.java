@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/ad_nguoi_dung")
+@RequestMapping("/api/admin/nguoi_dung")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ADNguoiDungController {
 
@@ -53,4 +53,6 @@ public class ADNguoiDungController {
     public ResponseEntity<HttpStatus> deleteNguoiDung(@PathVariable int id) {
         return nguoiDungService.deleteNguoiDung(id);
     }
+
+
 }

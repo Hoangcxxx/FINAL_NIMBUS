@@ -38,8 +38,8 @@ window.SanPhamController = function ($scope, $http) {
 
     // Function to initialize data
     function initializeData() {
-        $scope.fetchData('http://localhost:8080/api/ad_san_pham', 'dsSanPham', 'Fetched products:');
-        $scope.fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc', 'Fetched categories:');
+        $scope.fetchData('http://localhost:8080/api/admin/san_pham', 'dsSanPham', 'Fetched products:');
+        $scope.fetchData('http://localhost:8080/api/admin/danh_muc', 'dsDanhMuc', 'Fetched categories:');
     }
 
     // Initial data fetch
@@ -56,7 +56,7 @@ window.SanPhamController = function ($scope, $http) {
     // Function to delete a product
     $scope.xoaSanPham = function (id) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-            $http.delete('http://localhost:8080/api/ad_san_pham/' + id).then(function (response) {
+            $http.delete('http://localhost:8080/api/admin/san_pham/' + id).then(function (response) {
                 alert("Xóa sản phẩm thành công!");
                 initializeData(); // Re-fetch products
             }, function (error) {
@@ -81,7 +81,7 @@ window.SanPhamController = function ($scope, $http) {
 
     // Function to update product status
     $scope.updateTrangThai = function (idSanPham, newStatus) {
-        $http.put('http://localhost:8080/api/ad_san_pham/update_status/' + idSanPham, { trangThai: newStatus })
+        $http.put('http://localhost:8080/api/admin/san_pham/update_status/' + idSanPham, { trangThai: newStatus })
             .then(function (response) {
                 console.log('Cập nhật trạng thái sản phẩm thành công:', response.data);
             })
@@ -169,7 +169,7 @@ window.SanPhamController = function ($scope, $http) {
             reader.readAsDataURL(image);
         })))
             .then(() => {
-                return $http.post("http://localhost:8080/api/ad_san_pham", $scope.SanPham, {
+                return $http.post("http://localhost:8080/api/admin/san_pham", $scope.SanPham, {
                     headers: { 'Content-Type': 'application/json' },
                 });
             })

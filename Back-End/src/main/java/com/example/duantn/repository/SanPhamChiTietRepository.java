@@ -35,6 +35,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     @Query("DELETE FROM SanPhamChiTiet s WHERE s.idSanPhamChiTiet IN :idSanPhamCTs")
     void deleteByIds(@Param("idSanPhamCTs") List<Integer> idSanPhamCTs);
 
+    void deleteSanPhamChiTietByIdSanPhamChiTiet(Integer idSanPhamCT);
 
     @Modifying
     @Transactional

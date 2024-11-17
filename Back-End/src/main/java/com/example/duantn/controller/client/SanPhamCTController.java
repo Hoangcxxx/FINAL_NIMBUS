@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/san_pham_chi_tiet")
+@RequestMapping("/api/nguoi_dung/san_pham_chi_tiet")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class SanPhamCTController {
     @Autowired

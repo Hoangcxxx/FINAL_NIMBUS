@@ -22,7 +22,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
         $scope.userId = null;
     }
     function fetchAnhSanPham() {
-        $http.get('http://localhost:8080/api/hinh_anh/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/hinh_anh/' + idSanPham)
             .then(function (response) {
                 if (response.data.length > 0) {
                     $scope.anhSanPham = response.data;
@@ -36,7 +36,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
     }
     console.log("Thông tin sản phẩm phẩm phẩm phẩm:");
     function fetchSanPhamChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/' + idSanPham)
             .then(function (response) {
                 if (response.data) {
                     $scope.sanPhamChiTiet = response.data;
@@ -50,7 +50,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
     }
 
     function fetchMauSacChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/mau_sac/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/mau_sac/' + idSanPham)
             .then(function (response) {
                 if (response.data && response.data.length > 0) {
                     $scope.mauSacChiTiet = response.data;
@@ -63,7 +63,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             });
     }
     function fetchKichThuocChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/kich_thuoc/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/kich_thuoc/' + idSanPham)
             .then(function (response) {
                 if (response.data && response.data.length > 0) {
                     $scope.kichThuocChiTiet = response.data;
@@ -76,7 +76,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             });
     }
     function fetchChatLieuChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/chat_lieu/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/chat_lieu/' + idSanPham)
             .then(function (response) {
                 if (response.data && response.data.length > 0) {
                     $scope.chatLieuChiTiet = response.data;
@@ -134,7 +134,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             soLuong: $scope.soluong // Số lượng mà người dùng chọn
         };
         // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
-        $http.post(`http://localhost:8080/api/gio_hang/add?idUser=${idGioHang}`, cartItem)
+        $http.post(`http://localhost:8080/api/nguoi_dung/gio_hang/add?idUser=${idGioHang}`, cartItem)
             .then(function (response) {
                 alert("Sản phẩm đã được thêm vào giỏ hàng.");
                 window.location.href = '#!gio_hang';

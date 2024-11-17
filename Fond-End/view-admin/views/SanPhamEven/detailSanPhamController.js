@@ -5,7 +5,7 @@ window.detailSanPhamController = function ($scope, $http, $routeParams) {
     $scope.kichThuocChiTiet = [];
 
     function fetchAnhSanPham() {
-        $http.get('http://localhost:8080/api/hinh_anh/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/hinh_anh/' + idSanPham)
             .then(function (response) {
                 if (response.data.length > 0) {
                     $scope.anhSanPham = response.data;
@@ -19,7 +19,7 @@ window.detailSanPhamController = function ($scope, $http, $routeParams) {
     }
     console.log("Thông tin sản phẩm:");
     function fetchSanPhamChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/' + idSanPham)
             .then(function (response) {
                 if (response.data) {
                     $scope.sanPhamChiTiet = response.data;
@@ -33,7 +33,7 @@ window.detailSanPhamController = function ($scope, $http, $routeParams) {
     }
     console.log("Danh sách sản phẩm:");
     function fetchDSSanPhamChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/findSanPhamCTLonHon0/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/findSanPhamCTLonHon0/' + idSanPham)
             .then(function (response) {
                 if (response.data) {
                     $scope.dsSanPhamChiTiet = response.data;

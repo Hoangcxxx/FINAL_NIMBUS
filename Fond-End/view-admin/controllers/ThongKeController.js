@@ -48,7 +48,7 @@ window.ThongKeController = function ($scope, $http) {
 
     $scope.fetchDoanhThuTheoThangNam = function (month, year) {
         console.log("Fetching doanh thu theo tháng và năm...");
-        let url = `http://localhost:8080/api/ad_thong_ke/doanh_thu_theo_thang_nam?month=${month}&year=${year}`;
+        let url = `http://localhost:8080/api/admin/thong_ke/doanh_thu_theo_thang_nam?month=${month}&year=${year}`;
 
         // Log URL yêu cầu
         console.log("Request URL for monthly revenue:", url);
@@ -80,7 +80,7 @@ window.ThongKeController = function ($scope, $http) {
         ];
     
         urls.forEach(function(item) {
-            let url = `http://localhost:8080/api/ad_thong_ke/${item.url}`;
+            let url = `http://localhost:8080/api/admin/thong_ke/${item.url}`;
             if (startDate && endDate) {
                 url += `?startDate=${startDate}&endDate=${endDate}`;
             }
@@ -124,7 +124,7 @@ window.ThongKeController = function ($scope, $http) {
         console.log("Fetching initial statistics...");
 
         // Fetch product sales data
-        $http.get('http://localhost:8080/api/ad_thong_ke/san_pham_ban_ra')
+        $http.get('http://localhost:8080/api/admin/thong_ke/san_pham_ban_ra')
             .then(function (response) {
                 // Log dữ liệu về sản phẩm bán ra
                 console.log("Product sales data:", response.data);
@@ -134,7 +134,7 @@ window.ThongKeController = function ($scope, $http) {
             });
 
         // Fetch total quantity sold
-        $http.get('http://localhost:8080/api/ad_thong_ke/tong_so_luong_ban_ra')
+        $http.get('http://localhost:8080/api/admin/thong_ke/tong_so_luong_ban_ra')
             .then(function (response) {
                 // Log dữ liệu về số lượng bán ra
                 console.log("Total quantity sold:", response.data);
@@ -144,7 +144,7 @@ window.ThongKeController = function ($scope, $http) {
             });
 
         // Fetch total revenue
-        $http.get('http://localhost:8080/api/ad_thong_ke/tong_doanh_thu')
+        $http.get('http://localhost:8080/api/admin/thong_ke/tong_doanh_thu')
             .then(function (response) {
                 // Log dữ liệu về tổng doanh thu
                 console.log("Total revenue:", response.data);

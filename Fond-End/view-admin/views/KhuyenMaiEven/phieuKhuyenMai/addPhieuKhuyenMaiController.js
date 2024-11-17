@@ -25,7 +25,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
 
     // Lấy voucher theo ID nếu có
     if ($routeParams.id) {
-        $http.get('http://localhost:8080/api/ad_vouchers/' + $routeParams.id).then(function (response) {
+        $http.get('http://localhost:8080/api/admin/vouchers/' + $routeParams.id).then(function (response) {
             $scope.selectedVoucher = response.data;
             $scope.selectedLoaiVoucher = response.data.loaiVoucher.idLoaiVoucher;
 
@@ -74,7 +74,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
 
         // Nếu có idVoucher, thực hiện cập nhật, nếu không thì tạo mới
         if ($scope.selectedVoucher.idVoucher) {
-            $http.put('http://localhost:8080/api/ad_vouchers/' + $scope.selectedVoucher.idVoucher, voucherData).then(function (response) {
+            $http.put('http://localhost:8080/api/admin/vouchers/' + $scope.selectedVoucher.idVoucher, voucherData).then(function (response) {
                 alert("Voucher đã được cập nhật thành công!");
                 $location.path('/phieu_giam_gia'); // Chuyển hướng về trang voucher
             }, function (error) {
@@ -82,7 +82,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
                 alert("Có lỗi xảy ra khi cập nhật voucher.");
             });
         } else {
-            $http.post('http://localhost:8080/api/ad_vouchers', voucherData).then(function (response) {
+            $http.post('http://localhost:8080/api/admin/vouchers', voucherData).then(function (response) {
                 alert("Voucher đã được tạo thành công!");
                 $location.path('/phieu_giam_gia'); // Chuyển hướng về trang voucher
             }, function (error) {
@@ -93,5 +93,5 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
     };
 
     // Fetch the types of vouchers
-    $scope.fetchData('http://localhost:8080/api/ad_loai_vouchers', 'dsLoaiVoucher', 'Fetched LoaiVoucher:');
+    $scope.fetchData('http://localhost:8080/api/admin/loai_vouchers', 'dsLoaiVoucher', 'Fetched LoaiVoucher:');
 };
