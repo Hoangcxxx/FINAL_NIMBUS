@@ -1,3 +1,0 @@
-window.BlogController = function ($scope) {
-    
-}
