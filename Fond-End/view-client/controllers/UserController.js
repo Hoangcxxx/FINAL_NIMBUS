@@ -1,8 +1,4 @@
 window.UserController = function ($scope, $http, $location, $rootScope) {
-    // Initialize username from localStorage if already logged in
-    $scope.username = localStorage.getItem("username") || null;
-    $rootScope.username = $scope.username;
-
     $scope.login = function () {
         const data = {
             email: $scope.email,
@@ -11,50 +7,66 @@ window.UserController = function ($scope, $http, $location, $rootScope) {
 
         $http.post("http://localhost:8080/api/auth/login", data)
             .then(function (response) {
-                if (response.data.tenNguoiDung) {
-                    // Save username and userId in localStorage
-                    $scope.username = response.data.tenNguoiDung;
-                    $scope.userId = response.data.id;
-                    localStorage.setItem("username", $scope.username);
-                    localStorage.setItem("userId", $scope.userId); // Save userId
+                const userData = response.data;
 
-                    alert("Login successful!");
-                    $rootScope.username = $scope.username; // Update username in root scope
+                if (userData && userData.tenNguoiDung) {
+                    // Lưu thông tin người dùng và token vào localStorage
+                    $rootScope.username = userData.tenNguoiDung;
+                    $rootScope.infoUser = true; // Cập nhật trạng thái đăng nhập
+                    localStorage.setItem("user", JSON.stringify(userData));
+
+                    if (userData.accessToken) {
+                        localStorage.setItem("accessToken", userData.accessToken);
+                    }
+
+                    // Hiển thị thông báo và chuyển hướng
+                    Swal.fire({
+                        icon: "success",
+                        title: "Đăng nhập thành công",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        $location.path("/thong-tin-tai-khoan");
+                        $scope.$apply(); // Cập nhật $location
+                    });
                 } else {
-                    alert("Login failed.");
+                    // Xử lý trường hợp thiếu dữ liệu trong phản hồi
+                    Swal.fire({
+                        icon: "error",
+                        title: "Đăng nhập thất bại",
+                        text: "Vui lòng thử lại."
+                    });
                 }
             })
             .catch(function (error) {
+                // Xử lý lỗi từ API
+                let errorMessage = "Có lỗi xảy ra. Vui lòng thử lại.";
                 if (error.status === 401) {
-                    alert("Incorrect username or password.");
-                } else {
-                    alert("An error occurred. Please try again later.");
+                    errorMessage = "Sai tên đăng nhập hoặc mật khẩu.";
                 }
+                Swal.fire({
+                    icon: "error",
+                    title: "Đăng nhập thất bại",
+                    text: errorMessage
+                });
             });
     };
 
-    // Check if user is logged in
-    $scope.isLoggedIn = function () {
-        return !!$scope.username; // Return true if username exists
-    };
-
-    // Logout function
+    // Xử lý đăng xuất
     $scope.dangXuat = function () {
-        $http.post("http://localhost:8080/api/nguoi_dung/dang_xuat")
-            .then(function (response) {
-                // Remove user information from localStorage
-                localStorage.removeItem("username");
-                localStorage.removeItem("userId");
+        $rootScope.username = null;
+        $rootScope.infoUser = false;
+        localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
 
-                // Clear user data and update UI
-                $scope.username = null;
-                $rootScope.username = null;
-                alert("Logout successful!");
-
-                // Redirect to homepage after logout
-                $location.path('/'); // Redirect to homepage after logout
-            }, function (error) {
-                alert("Logout failed: " + (error.data ? error.data.message : "Unknown error"));
-            });
+        Swal.fire({
+            icon: "success",
+            title: "Đăng xuất thành công",
+            showConfirmButton: false,
+            timer: 1500
+        }).then(() => {
+            $location.path("/");
+            $scope.$apply(); // Cập nhật $location
+        });
     };
 };

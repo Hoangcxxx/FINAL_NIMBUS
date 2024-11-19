@@ -99,40 +99,65 @@
                     redirectTo: "/"
                 });
         });
-        app.controller("ngController", function ($scope, $http) {
+        app.controller("ngController", function ($scope, $rootScope, $http) {
+            // Kiểm tra trạng thái đăng nhập
+            const userInfo = localStorage.getItem("user");
+            if (userInfo) {
+                const user = JSON.parse(userInfo);
+                $rootScope.infoUser = true;
+                $rootScope.username = user.tenNguoiDung;
+                $rootScope.isAdmin = user.idVaiTro === 1; // Kiểm tra vai trò admin
+            } else {
+                $rootScope.infoUser = false;
+                $rootScope.username = null;
+                $rootScope.isAdmin = false;
+            }
+
             // Đăng xuất
             $scope.dangXuat = function () {
-                // Gửi yêu cầu đăng xuất đến API
-                $http.post("http://localhost:8080/api/nguoi_dung/dang_xuat")
-                    .then(function (response) {
-                        // Xóa thông tin người dùng trong localStorage
+                const accessToken = localStorage.getItem("accessToken");
+                if (accessToken) {
+                    $http.post("http://localhost:8080/api/auth/logout", {}, {
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    }).then(function () {
+                        // Xóa dữ liệu sau khi đăng xuất
                         localStorage.removeItem("user");
+                        localStorage.removeItem("accessToken");
+                        $rootScope.infoUser = false;
+                        $rootScope.username = null;
 
-                        // Cập nhật lại giao diện
-                        $scope.infoUser = undefined;
-                        $scope.tenNguoiDung = undefined;
-
-                        // Thông báo đăng xuất thành công
-                        alert("Đăng xuất thành công!");
-
-                        // Chuyển hướng đến trang chủ hoặc giữ nguyên trang sau khi đăng xuất
-                        window.location.reload();  // Làm mới route để giao diện được cập nhật
-                    }, function (error) {
-                        // Nếu có lỗi
-                        alert("Đăng xuất thất bại: " + (error.data ? error.data.message : "Lỗi không xác định"));
+                        // Thông báo đăng xuất
+                        Swal.fire({
+                            icon: "success",
+                            title: "Đăng xuất thành công",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => window.location.href = "#!");
+                    }).catch(function (error) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Đăng xuất thất bại",
+                            text: error.data?.message || "Lỗi không xác định"
+                        });
                     });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Không thể đăng xuất",
+                        text: "AccessToken không tồn tại",
+                    });
+                }
             };
-
-            // Kiểm tra người dùng đã đăng nhập chưa
-            var userInfo = localStorage.getItem("user");
-            if (userInfo) {
-                $scope.infoUser = JSON.parse(userInfo);  // Lấy thông tin người dùng từ localStorage
-                $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
-            } else {
-                $scope.infoUser = undefined;
-                $scope.tenNguoiDung = undefined;
-            }
         });
+
+
+
+
+
+    </script>
+
+
+
     </script>
     </script>
     <!-- Bootstrap JS and dependencies -->

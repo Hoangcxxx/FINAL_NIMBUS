@@ -16,7 +16,7 @@
 
                     <h4 class="mt-4">Chi tiết sản phẩm:</h4>
                     <div ng-repeat="item in orderDetails.listSanPhamChiTiet" class="d-flex align-items-center mb-3">
-                        <img ng-src="{{item.urlAnh}}" alt="Hình ảnh sản phẩm" class="img-thumbnail me-2" style="width: 80px; height: 80px;">
+                        <img ng-src="{{item.urlAnh}}" alt="Hình ảnh sản phẩm" class="img-thumbnail me-2" style="width: 80px; height: 80px;" ng-if="item.urlAnh">
                         <div class="flex-grow-1">
                             <h6>{{item.tenSanPham}}</h6>
                             <p class="mb-1">Giá: {{item.giaTien | currency}}</p>

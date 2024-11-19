@@ -52,7 +52,6 @@
                 </div>
 
                 <div class="tab-pane fade" id="orders">
-                    <!-- Danh sách đơn hàng -->
                     <h4 class="mt-4 text-primary">Đơn hàng Mới Nhất</h4>
                     <div class="card shadow-sm p-3">
                         <table class="table table-bordered">
@@ -66,21 +65,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>#603566</td>
-                                    <td>11/11/2024</td>
-                                    <td>1,768,700đ</td>
-                                    <td>Chờ xử lý</td>
-                                    <td>Chờ xử lý</td>
+                                <tr ng-repeat="hoaDon in hoaDonList">
+                                    <td>#{{ hoaDon.maHoaDon }}</td>
+                                    <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
+                                    <td>{{ hoaDon.thanhTien | currency:"":0 }}đ</td>
+                                    <td>{{ hoaDon.trangThaiThanhToan }}</td>
+                                    <td>{{ hoaDon.vanChuyen }}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+                
 
 
-
-                <!-- Lịch sử mua hàng -->
                 <div class="tab-pane fade" id="downloads">
                     <h3 class="mb-4 text-primary">Lịch Sử Mua Hàng</h3>
                     <div class="card border-0 shadow-sm p-4">
@@ -92,11 +90,11 @@
                                 <li class="list-group-item" ng-repeat="order in purchaseHistory">
                                     <div class="d-flex justify-content-between">
                                         <div>
-                                            <h5>Đơn hàng #{{ order.orderNumber }}</h5>
-                                            <p><strong>Ngày mua: </strong> {{ order.purchaseDate | date: 'dd/MM/yyyy' }}
-                                            </p>
-                                            <p><strong>Tổng tiền: </strong> {{ order.totalAmount | currency }}</p>
-                                            <p><strong>Trạng thái: </strong> {{ order.status }}</p>
+                                            <p><strong>Mã đơn hàng:</strong> {{ order.id }}</p>
+                                            <p><strong>Ngày đặt:</strong> {{ order.orderDate }}</p>
+                                            <p><strong>Thành tiền:</strong> {{ order.totalAmount }}</p>
+                                            <p><strong>Trạng thái thanh toán:</strong> {{ order.paymentStatus }}</p>
+                                            <p><strong>Vận chuyển:</strong> {{ order.shippingStatus }}</p>
                                         </div>
                                         <div>
                                             <a href="#orderDetails" class="btn btn-info btn-sm"
@@ -109,9 +107,9 @@
                                         <ul>
                                             <li ng-repeat="product in order.products">
                                                 <p><strong>Tên sản phẩm:</strong> {{ product.name }}</p>
-                                                <p><strong>Giá:</strong> {{ product.price | currency }}</p>
+                                                <p><strong>Giá:</strong> {{ product.price }}</p>
                                                 <p><strong>Số lượng:</strong> {{ product.quantity }}</p>
-                                                <p><strong>Thành tiền:</strong> {{ product.totalPrice | currency }}</p>
+                                                <p><strong>Thành tiền:</strong> {{ product.total }}</p>
                                             </li>
                                         </ul>
                                     </div>
@@ -120,48 +118,53 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modal chỉnh sửa thông tin cá nhân -->
-<div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="editCustomerModalLabel">Chỉnh Sửa Thông Tin Cá Nhân</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form ng-submit="saveCustomerDetails()">
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="editCustomerName" ng-model="tempTenKhachHang"
-                            placeholder="Nhập tên khách hàng" required>
-                        <label for="editCustomerName">Tên Khách Hàng</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="editCustomerEmail" ng-model="tempEmailKhachHang"
-                            placeholder="Nhập email" required>
-                        <label for="editCustomerEmail">Email</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="editCustomerAddress" ng-model="tempDiaChiKhachHang"
-                            placeholder="Nhập địa chỉ" required>
-                        <label for="editCustomerAddress">Địa chỉ</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="tel" class="form-control" id="editCustomerPhone" ng-model="tempSdtKhachHang"
-                            placeholder="Nhập số điện thoại" required>
-                        <label for="editCustomerPhone">Số điện thoại</label>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Modal chỉnh sửa thông tin cá nhân -->
+    <div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editCustomerModalLabel">Chỉnh Sửa Thông Tin Cá Nhân</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form ng-submit="saveCustomerDetails()">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="editCustomerName" ng-model="tempTenKhachHang"
+                                placeholder="Nhập tên khách hàng" required>
+                            <label for="editCustomerName">Tên Khách Hàng</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="editCustomerEmail"
+                                ng-model="tempEmailKhachHang" placeholder="Nhập email" required>
+                            <label for="editCustomerEmail">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="editCustomerAddress"
+                                ng-model="tempDiaChiKhachHang" placeholder="Nhập địa chỉ" required>
+                            <label for="editCustomerAddress">Địa chỉ</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control" id="editCustomerPhone" ng-model="tempSdtKhachHang"
+                                placeholder="Nhập số điện thoại" required>
+                            <label for="editCustomerPhone">Số điện thoại</label>
+                        </div>
+                        <!-- <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="editCustomerPassword" ng-model="tempPassword"
+                            placeholder="Nhập mật khẩu mới (nếu thay đổi)">
+                        <label for="editCustomerPassword">Mật khẩu mới (nếu thay đổi)</label>
+                    </div> -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

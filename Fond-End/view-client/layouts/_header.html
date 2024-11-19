@@ -11,13 +11,23 @@
         <li><a href="#!tk_kh">Thông tin tài khoản</a></li>
         <li>
             <a href="#!gio_hang"><i class="fa-solid fa-bag-shopping"></i></a>
-            <span ng-if="cartItemCount > 0" class="cart-item-count">{{cartItemCount}}</span>
         </li>
-        <li>
-            <span ng-if="isLoggedIn()">Xin chào, {{username}}</span>
-            <a href="#!user" ng-if="!isLoggedIn()"><i class="fa-solid fa-user"></i></a>
-            <a href="#!user" ng-if="isLoggedIn()" ng-click="logout()">Đăng xuất</a>
-            
+        <!-- Hiển thị dropdown khi đã đăng nhập -->
+        <li ng-if="infoUser">
+            <div class="dropdown">
+                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
+                    Xin chào, {{ username }}!
+                </button>
+                <ul class="dropdown-menu">
+                    <li ng-if="isAdmin">
+                        <a class="dropdown-item" href="http://127.0.0.1:5500/admin.html#!/">Trang quản lý</a>
+                    </li>
+                    <li><a class="dropdown-item" href="#!tk_kh">Trang cá nhân</a></li>
+                    <li><a class="dropdown-item" ng-click="dangXuat()">Đăng xuất</a></li>
+                </ul>
+            </div>
         </li>
+        <!-- Nút login khi chưa đăng nhập -->
+        <li ng-if="!infoUser"><a href="#!user"><i class="fa-solid fa-user"></i> Login</a></li>
     </ul>
 </header>

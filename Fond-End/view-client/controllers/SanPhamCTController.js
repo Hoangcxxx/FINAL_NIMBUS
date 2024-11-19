@@ -1,12 +1,18 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
     var idSanPham = $routeParams.id;
-    var idGioHang = 3; // Thay đổi theo nhu cầu của bạn
+    
     $scope.dsSanPhamChiTiet = [];
     $scope.mauSacChiTiet = [];
     $scope.kichThuocChiTiet = [];
     $scope.chatLieuChiTiet = [];
     $scope.slideIndex = 1;
     $scope.soluong = 1;
+
+    var user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+        var iduser = user.idNguoiDung; 
+       
+    }
 
     // Hàm lấy ảnh sản phẩm
     function fetchAnhSanPham() {
@@ -96,7 +102,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             soLuong: $scope.soluong // Số lượng mà người dùng chọn
         };
         // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
-        $http.post(`http://localhost:8080/api/giohang/add?idUser=${idGioHang}`, cartItem)
+        $http.post(`http://localhost:8080/api/giohang/add?idUser=${iduser}`, cartItem)
             .then(function (response) {
                 alert("Sản phẩm đã được thêm vào giỏ hàng.");
                 window.location.href = '#!gio_hang'; 

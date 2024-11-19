@@ -1,6 +1,7 @@
 package com.example.duantn.DTO;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class HoaDonDTO {
 	private String email;
 	private Integer idDiaChiVanChuyen;
 	private Integer idNguoiDung;
+	private Date ngayTao;
 	private Integer idvoucher;
 	private Integer idtrangthaihoadon;
 	private Integer idphuongthucthanhtoanhoadon;

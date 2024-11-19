@@ -26,30 +26,23 @@ public class NguoiDungService {
 	@Autowired
 	private VaiTroService vaiTroService;
 	@Autowired
-	private XacThucService xacThucService;
-	@Autowired
 	private OurUserDetailsService ourUserDetailsService;
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
 	public NguoiDung registerUser(NguoiDungDTO nguoiDungDTO) {
 		if (nguoiDungRepository.findByEmail(nguoiDungDTO.getEmail()).isPresent()) {
-			throw new RuntimeException("Người dùng đã tồn tại với email: " + nguoiDungDTO.getEmail());
+			throw new RuntimeException("Email đã tồn tại: " + nguoiDungDTO.getEmail());
 		}
 
-		long soLuongNguoiDung = nguoiDungRepository.count();
-		String maNguoiDungGenerated = "user" + (soLuongNguoiDung + 1);
+		String maNguoiDungGenerated = generateUserCode();
 
 		NguoiDung newUser = new NguoiDung();
 		newUser.setTenNguoiDung(nguoiDungDTO.getTenNguoiDung());
 		newUser.setEmail(nguoiDungDTO.getEmail());
 		newUser.setMaNguoiDung(maNguoiDungGenerated);
-
-		String encodedPassword = bCryptPasswordEncoder.encode(nguoiDungDTO.getMatKhau());
-		newUser.setMatKhau(encodedPassword);
-		newUser.setVaiTro(vaiTroService.getVaiTroById(2));
+		newUser.setMatKhau(passwordEncoder.encode(nguoiDungDTO.getMatKhau()));
+		newUser.setVaiTro(vaiTroService.getVaiTroById(2)); // 2: Vai trò người dùng
 		newUser.setTrangThai(true);
 		newUser.setSdtNguoiDung(nguoiDungDTO.getSdtNguoiDung());
 		newUser.setDiaChi(nguoiDungDTO.getDiaChi());
@@ -57,45 +50,52 @@ public class NguoiDungService {
 
 		return nguoiDungRepository.save(newUser);
 	}
+	private String generateUserCode() {
+		long userCount = nguoiDungRepository.count();
+		return "user" + (userCount + 1);
+	}
 
 	public LoginResponse signIn(NguoiDungDTO nguoiDung) throws Exception {
-		try {
+		authenticateUser(nguoiDung.getEmail(), nguoiDung.getMatKhau());
 
-			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(nguoiDung.getEmail(), nguoiDung.getMatKhau()));
-		} catch (BadCredentialsException e) {
-			throw new Exception("Tên người dùng hoặc mật khẩu không đúng", e);
+		NguoiDung nguoiDungEntity = nguoiDungRepository.findByEmail(nguoiDung.getEmail())
+				.orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+
+		if (!nguoiDungEntity.getTrangThai()) {
+			throw new Exception("Tài khoản chưa được xác thực");
 		}
-
-		NguoiDung nguoiDung1 = nguoiDungRepository.findByEmail(nguoiDung.getEmail())
-				.orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
-		if (!nguoiDung1.getTrangThai())
-			throw new Exception("Chưa xác thực");
 
 		UserDetails userDetails = ourUserDetailsService.loadUserByUsername(nguoiDung.getEmail());
 		String accessToken = jwtTokenUtil.generateToken(userDetails);
 
-		return new LoginResponse(nguoiDung1.getIdNguoiDung(), nguoiDung1.getTenNguoiDung(), accessToken);
+		return new LoginResponse(nguoiDungEntity.getIdNguoiDung(), nguoiDungEntity.getTenNguoiDung(), accessToken);
 	}
 
 	public Token generateRefreshToken(RefreshToken token) {
 		String username = jwtTokenUtil.extractUsernameToken(token.getToken());
 		UserDetails userDetails = ourUserDetailsService.loadUserByUsername(username);
-		String jwttoken = jwtTokenUtil.generateToken(userDetails);
-		String refreshToken = jwtTokenUtil.generateRefreshToken(userDetails);
-		return new Token(jwttoken, refreshToken);
+
+		return new Token(jwtTokenUtil.generateToken(userDetails), jwtTokenUtil.generateRefreshToken(userDetails));
 	}
 
 	public NguoiDung updateUser(Integer id, NguoiDungDTO nguoiDungDTO) {
 		NguoiDung nguoiDung = nguoiDungRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Người dùng không tồn tại với ID: " + id));
+
 		nguoiDung.setTenNguoiDung(nguoiDungDTO.getTenNguoiDung());
 		nguoiDung.setEmail(nguoiDungDTO.getEmail());
-		nguoiDung.setMatKhau(bCryptPasswordEncoder.encode(nguoiDungDTO.getMatKhau()));
+
+		// Kiểm tra mật khẩu có được thay đổi không
+		if (nguoiDungDTO.getMatKhau() != null && !nguoiDungDTO.getMatKhau().isEmpty()) {
+			// Nếu có mật khẩu mới, mã hóa và lưu mật khẩu
+			nguoiDung.setMatKhau(passwordEncoder.encode(nguoiDungDTO.getMatKhau()));
+		}
+
 		nguoiDung.setSdtNguoiDung(nguoiDungDTO.getSdtNguoiDung());
 		nguoiDung.setDiaChi(nguoiDungDTO.getDiaChi());
 		nguoiDung.setGioiTinh(nguoiDungDTO.getGioiTinh());
 		nguoiDung.setTrangThai(nguoiDungDTO.getTrangThai());
+
 		return nguoiDungRepository.save(nguoiDung);
 	}
 
@@ -103,4 +103,18 @@ public class NguoiDungService {
 		return nguoiDungRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Người dùng không tồn tại với ID: " + id));
 	}
+
+	public void logout(String token) {
+		jwtTokenUtil.invalidateToken(token);
+	}
+
+	private void authenticateUser(String email, String password) {
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+		} catch (BadCredentialsException e) {
+			throw new RuntimeException("Tên người dùng hoặc mật khẩu không đúng");
+		}
+	}
+
+
 }

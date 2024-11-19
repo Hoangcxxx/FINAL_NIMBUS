@@ -20,6 +20,18 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtTokenUtil {
 
+    // Giả sử bạn có một danh sách đen (blacklist) để lưu trữ token đã vô hiệu hóa
+    private static final Set<String> invalidTokens = new HashSet<>();
+
+    // Phương thức vô hiệu hóa token
+    public void invalidateToken(String token) {
+        invalidTokens.add(token);  // Lưu token vào danh sách đen
+    }
+
+    // Phương thức kiểm tra token có hợp lệ hay không (có trong blacklist không)
+    public boolean isTokenValid(String token) {
+        return !invalidTokens.contains(token);
+    }
     private final SecretKey secretKeyForAccessToken ;
     private final SecretKey secretKeyForRefreshToken = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 

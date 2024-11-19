@@ -13,6 +13,10 @@ window.ThanhtoanController = function ($scope, $http, $window) {
     $scope.selectedVNPay = "vnpay";
     $scope.shippingInfo = {};
 
+    var user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+        var iduser = user.idNguoiDung;
+    }
     $scope.getUserInfo = function (userId) {
         $http.get('http://localhost:8080/api/auth/user/' + userId)
             .then(response => {
@@ -34,8 +38,7 @@ window.ThanhtoanController = function ($scope, $http, $window) {
 
 
     $scope.getCartItems = function () {
-        const cartId = 3;
-        $http.get(`http://localhost:8080/api/giohang/${cartId}`)
+        $http.get(`http://localhost:8080/api/giohang/user/${iduser}/giohang`)
             .then(response => {
                 $scope.cart = response.data;
                 if ($scope.cart.length === 0) {
@@ -60,11 +63,8 @@ window.ThanhtoanController = function ($scope, $http, $window) {
             $scope.totalAmount *= (1 - $scope.selectedVoucher.discount / 100); // Giảm giá theo voucher
         }
     };
-
-    // Đặt hàng
+    // ĐặT Hàng
     $scope.placeOrder = function () {
-        const cartId = 3; // ID giỏ hàng giả định
-        // Kiểm tra giỏ hàng có trống hay không
         if ($scope.cart.length === 0) {
             alert("Giỏ hàng của bạn đang trống!");
             return;
@@ -79,8 +79,9 @@ window.ThanhtoanController = function ($scope, $http, $window) {
             alert("Vui lòng chọn đầy đủ thông tin nhận hàng!");
             return;
         }
+
         const orderData = {
-            cartId: cartId,
+            cartId: iduser,
             idNguoiDung: $scope.userInfo.id,
             tinh: $scope.shippingInfo.province,
             huyen: $scope.shippingInfo.district,
@@ -95,30 +96,28 @@ window.ThanhtoanController = function ($scope, $http, $window) {
             thanhTien: $scope.totalAmount,
             idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.id : null,
         };
+
         if ($scope.selectedPaymentMethod === "vnpay") {
-            // Gửi yêu cầu tạo thanh toán VNPAY
             const paymentUrl = `http://localhost:8080/api/payment/creat_payment?amount=${$scope.totalAmount}&paymentMethod=vnpay`;
+
             $http.post(paymentUrl)
                 .then(function (response) {
                     const paymentUrlMatch = response.data.match(/window\.location\.href='([^']+)'/);
 
                     if (paymentUrlMatch && paymentUrlMatch[1]) {
                         const paymentRedirectUrl = paymentUrlMatch[1];
-                        console.log('Điều hướng đến URL thanh toán VNPAY:', paymentRedirectUrl);
 
-                        // Lưu dữ liệu đơn hàng vào hệ thống của bạn trước khi chuyển hướng
                         $http.post("http://localhost:8080/api/hoa-don/them_thong_tin_nhan_hang", orderData)
                             .then(response => {
-                                console.log("Đặt hàng thành công!");
-                                $scope.paymentStatus = "Đặt hàng thành công!";
-                                $scope.cart = [];
-                                // Điều hướng đến cổng thanh toán VNPAY
+                                const maHoaDon = response.data.maHoaDon;
+
+                                // Lưu mã hóa đơn và chuyển hướng tới cổng thanh toán
+                                localStorage.setItem("maHoaDon", maHoaDon);
                                 window.location.href = paymentRedirectUrl;
                             })
                             .catch(error => {
                                 console.error("Lỗi khi đặt hàng:", error);
-                                $scope.paymentStatus = "Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.";
-                                alert($scope.paymentStatus);
+                                alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
                             });
                     } else {
                         alert('Không thể tạo thanh toán VNPAY. Vui lòng thử lại.');
@@ -128,31 +127,40 @@ window.ThanhtoanController = function ($scope, $http, $window) {
                     console.error('Lỗi khi tạo thanh toán VNPAY:', error);
                     alert('Có lỗi xảy ra khi tạo thanh toán VNPAY. Vui lòng thử lại.');
                 });
+
             return;
         }
+
+        // Khi API trả về thành công
         $http.post("http://localhost:8080/api/hoa-don/them_thong_tin_nhan_hang", orderData)
             .then(response => {
                 console.log("Đặt hàng thành công!");
-                Swal.fire({
-                    title: 'Thành công!',
-                    text: 'Thêm giỏ hàng thành công!',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
+
+                // Lưu mã hóa đơn vào localStorage
+                if (response.data.maHoaDon) {
+                    localStorage.setItem("maHoaDon", response.data.maHoaDon);
+                }
+
+
+               
+                // Xóa giỏ hàng sau khi đặt hàng
                 $scope.cart = [];
-                $window.location.href = "/#!thanhcong";
-                // Gửi email sau khi đặt hàng thành công
+
+                // Điều hướng đến trang thành công
+                $window.location.href = "/#!thanhcong?maHoaDon=" + response.data.maHoaDon;
+
+                // Gửi email xác nhận sau khi đặt hàng thành công
                 $http.post(`http://localhost:8080/api/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
                     .then(response => console.log("Email đã được gửi thành công"))
                     .catch(error => console.error("Lỗi khi gửi email:", error));
             })
             .catch(error => {
                 console.error("Lỗi khi đặt hàng:", error);
-                $scope.paymentStatus = "Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.";
-                alert($scope.paymentStatus);
+                alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
             });
     };
+
+
 
     // Lấy thông tin tỉnh thành, quận huyện và phường xã
     $scope.getProvinces = function () {
@@ -178,27 +186,27 @@ window.ThanhtoanController = function ($scope, $http, $window) {
                 .catch(error => console.error("Lỗi khi lấy phường xã:", error));
         }
     });
-    $scope.getShippingFee = function () {
-        const { province, district, ward } = $scope.shippingInfo;
-        if (province && district && ward) {
-            $http.get(`http://localhost:8080/api/dia-chi/shipping-fee/${province}/${district}/${ward}`)
-                .then(response => {
-                    if (response.data && !isNaN(response.data)) {
-                        $scope.shippingFee = response.data;
-                        $scope.calculateTotal();
-                    } else {
-                        $scope.shippingFee = 0;
-                        alert("Không thể lấy được phí vận chuyển.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Lỗi khi lấy phí ship:", error);
-                    alert("Có lỗi xảy ra khi tính phí vận chuyển.");
-                });
-        } else {
-            $scope.shippingFee = 0;
-        }
-    };
+    // $scope.getShippingFee = function () {
+    //     const { province, district, ward } = $scope.shippingInfo;
+    //     if (province && district && ward) {
+    //         $http.get(`http://localhost:8080/api/dia-chi/shipping-fee/${province}/${district}/${ward}`)
+    //             .then(response => {
+    //                 if (response.data && !isNaN(response.data)) {
+    //                     $scope.shippingFee = response.data;
+    //                     $scope.calculateTotal();
+    //                 } else {
+    //                     $scope.shippingFee = 0;
+    //                     alert("Không thể lấy được phí vận chuyển.");
+    //                 }
+    //             })
+    //             .catch(error => {
+    //                 console.error("Lỗi khi lấy phí ship:", error);
+    //                 alert("Có lỗi xảy ra khi tính phí vận chuyển.");
+    //             });
+    //     } else {
+    //         $scope.shippingFee = 0;
+    //     }
+    // };
 
     $scope.totalonline = function () {
         return $scope.totalAmount + ($scope.shippingFee || 0);
@@ -305,7 +313,11 @@ window.ThanhtoanController = function ($scope, $http, $window) {
 
 
     // Khởi tạo thông tin ban đầu
-    $scope.getUserInfo(3);
-    $scope.getCartItems();
-    $scope.getProvinces();
+
+    $scope.getProvinces(); if (user) $scope.getUserInfo(iduser); $scope.getCartItems();
+
+
+
+
+
 };

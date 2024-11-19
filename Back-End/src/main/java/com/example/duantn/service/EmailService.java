@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class EmailService {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            mimeMessageHelper.setFrom("hieuntph33888@fpt.edu.vn");
+            mimeMessageHelper.setFrom("hieuntph33888@fpt.edu.vn","NimBus Shop");
             mimeMessageHelper.setTo(recipientEmail);
             mimeMessageHelper.setSubject("Thông Báo Xác Nhận Đơn Hàng");
 
@@ -60,6 +61,7 @@ public class EmailService {
 
             for (SanphamchiTietDTO sanPham : hoaDonDTO.getListSanPhamChiTiet()) {
                 emailContent.append("<div class='order-item'>")
+//                        .append("<span><strong>Mã Đơn Hàng:</strong> " + hoaDonDTO.getMaHoaDon() + "</span>")
                         .append("<span><strong>Sản phẩm:</strong> " + sanPham.getTenSanPham() + "</span>")
                         .append("<span><strong>Đơn giá:</strong> " + sanPham.getGiaTien() + " VND</span>")
                         .append("<span><strong>Số lượng:</strong> " + sanPham.getSoLuong() + "</span>")
@@ -86,6 +88,8 @@ public class EmailService {
         } catch (MessagingException e) {
             System.err.println("Error sending email: " + e.getMessage());
             throw e;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

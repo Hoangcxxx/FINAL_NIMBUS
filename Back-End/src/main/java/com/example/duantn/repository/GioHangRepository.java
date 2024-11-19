@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GioHangRepository extends JpaRepository<GioHang, Integer> {
     GioHang findByNguoiDung_IdNguoiDungOrderByIdGioHang(Integer idNguoiDung);
+
+    GioHang findByNguoiDung_IdNguoiDung(Integer idNguoiDung);
 }

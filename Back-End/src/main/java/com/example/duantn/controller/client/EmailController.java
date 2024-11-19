@@ -5,6 +5,9 @@ import com.example.duantn.service.EmailService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/email")
@@ -19,13 +22,22 @@ public class EmailController {
     }
 
     @PostMapping("/send")
-    public String sendEmail(@RequestParam String recipientEmail, @RequestBody HoaDonDTO hoaDonDTO) {
+    public ResponseEntity<?> sendEmail(@RequestParam String recipientEmail, @RequestBody HoaDonDTO hoaDonDTO) {
         try {
-            // Send email by passing both recipient and HoaDonDTO
+            // Gửi email
             emailService.sendEmail(recipientEmail, hoaDonDTO);
-            return "Email sent successfully to " + recipientEmail;
+
+            // Trả về JSON object
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Email sent successfully to " + recipientEmail
+            ));
         } catch (MessagingException e) {
-            return "Error while sending email: " + e.getMessage();
+            // Trả về lỗi trong JSON object
+            return ResponseEntity.badRequest().body(Map.of(
+                    "status", "error",
+                    "message", "Error while sending email: " + e.getMessage()
+            ));
         }
     }
 }

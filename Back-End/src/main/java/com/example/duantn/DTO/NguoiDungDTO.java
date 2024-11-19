@@ -15,8 +15,8 @@ public class NguoiDungDTO {
         private String diaChi;
         private String gioiTinh;
         private String matKhau;
-        private Integer vaiTro;  // e.g., "USER", "ADMIN"
-        private Boolean trangThai; // User active status
+        private Integer vaiTro;
+        private Boolean trangThai;
 
         // Getters and Setters
 

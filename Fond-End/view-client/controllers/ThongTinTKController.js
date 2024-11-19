@@ -1,7 +1,11 @@
 window.ThongTinTKController = function ($scope, $http) {
-    var iduser = 3;  
+    // Lấy thông tin người dùng từ localStorage
+    var user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+        var iduser = user.idNguoiDung;  // Giả sử 'idNguoiDung' là ID người dùng trong phản hồi từ API
+    }
 
-    // Lấy thông tin người dùng
+    // Lấy thông tin người dùng từ API
     $http.get('http://localhost:8080/api/auth/user/' + iduser)
         .then(function (response) {
             var user = response.data;
@@ -20,40 +24,11 @@ window.ThongTinTKController = function ($scope, $http) {
         $scope.tempDiaChiKhachHang = $scope.diaChiKhachHang;
         $scope.tempSdtKhachHang = $scope.sdtKhachHang;
 
-        $('#editCustomerModal').modal('show'); 
+        // Mở modal
+        $('#editCustomerModal').modal('show');
     };
-    $scope.getCartItems = function () {
-        $http.get(`http://localhost:8080/api/giohang/${cartId}`)
-            .then(function (response) {
-                $scope.cart = response.data;
-                $scope.cartItemCount = $scope.cart.length; // Cập nhật số lượng sản phẩm trong giỏ hàng
 
-                // Lấy hình ảnh cho từng sản phẩm
-                $scope.cart.forEach((element) => {
-                    $http.get(`http://localhost:8080/api/hinh_anh/${element.idSanPham}`)
-                        .then(function (response) {
-                            element.urlAnh = response.data[0]?.urlAnh || ''; // Lấy url hình ảnh
-                        })
-                        .catch(function (error) {
-                            console.error("Lỗi khi lấy hình ảnh sản phẩm:", error);
-                        });
-                });
-
-                // Kiểm tra xem có sản phẩm mới nào trong localStorage không
-                const newCartItem = localStorage.getItem("cartItem");
-                if (newCartItem) {
-                    const item = JSON.parse(newCartItem);
-                    $scope.cart.push(item);
-                    $scope.cartItemCount++; // Tăng số lượng sản phẩm khi thêm sản phẩm mới
-                    localStorage.removeItem("cartItem");
-                    alert(`${item.tenSanPham} đã được thêm vào giỏ hàng!`);
-                }
-            })
-            .catch(function (error) {
-                console.error("Error fetching cart items:", error);
-            });
-    };
-   
+    // Cập nhật thông tin khách hàng
     $scope.saveCustomerDetails = function () {
         var updatedCustomer = {
             tenNguoiDung: $scope.tempTenKhachHang,
@@ -62,19 +37,44 @@ window.ThongTinTKController = function ($scope, $http) {
             sdtNguoiDung: $scope.tempSdtKhachHang
         };
 
+        // Cập nhật thông tin người dùng qua API
         $http.put('http://localhost:8080/api/auth/update/' + iduser, updatedCustomer)
             .then(function (response) {
-                // Cập nhật thông tin sau khi thành công
+                // Cập nhật thông tin người dùng trên giao diện
                 $scope.tenKhachHang = updatedCustomer.tenNguoiDung;
                 $scope.emailKhachHang = updatedCustomer.email;
                 $scope.diaChiKhachHang = updatedCustomer.diaChi;
                 $scope.sdtKhachHang = updatedCustomer.sdtNguoiDung;
 
+                // Lưu lại thông tin vào localStorage
+                var updatedUser = { ...user, ...updatedCustomer }; // Cập nhật thông tin người dùng trong localStorage
+                localStorage.setItem("user", JSON.stringify(updatedUser));
+
+                // Thông báo cập nhật thành công
                 alert('Cập nhật thông tin thành công!');
-                $('#editCustomerModal').modal('hide'); 
+                $('#editCustomerModal').modal('hide');
             }, function (error) {
                 console.error('Lỗi khi cập nhật dữ liệu người dùng:', error);
                 alert('Cập nhật không thành công! Vui lòng thử lại.');
             });
     };
-};
+
+    // Lấy danh sách hóa đơn của người dùng
+    $scope.getHoaDonList = function () {
+        $http.get('http://localhost:8080/api/hoa-don/san-pham/' + iduser)
+            .then(function (response) {
+                var hoaDonList = response.data; 
+                $scope.hoaDonList = hoaDonList.maHoaDon; 
+                $scope.hoaDonList = hoaDonList.ngayTao;
+                $scope.hoaDonList = hoaDonList.thanhTien;
+                $scope.hoaDonList = hoaDonList.idtrangthaihoadon;
+                $scope.hoaDonList = hoaDonList.idDiaChiVanChuyen;
+            }, function (error) {
+                console.error('Lỗi khi lấy danh sách hóa đơn:', error);
+                alert('Không thể lấy danh sách hóa đơn!');
+            });
+    };
+
+    // Gọi hàm để lấy danh sách hóa đơn khi tải trang
+    $scope.getHoaDonList();
+}

@@ -85,43 +85,46 @@ public class GioHangService {
 		return gioHang;
 	}
 
-	public GioHang updateGioHangChiTiet(Integer idGioHang, GioHangChiTietDTO gioHangChiTietDTO) {
-		GioHang gioHang = gioHangRepository.findById(idGioHang)
-				.orElseThrow(() -> new RuntimeException("Giỏ hàng không tồn tại"));
+	public GioHang updateGioHangChiTiet(Integer idNguoiDung, GioHangChiTietDTO gioHangChiTietDTO) {
+		GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
+		if (gioHang == null) {
+			throw new RuntimeException("Giỏ hàng không tồn tại cho người dùng với ID: " + idNguoiDung);
+		}
 
-		// Tìm chi tiết sản phẩm trong giỏ hàng dựa trên id sản phẩm chi tiết
 		GioHangChiTiet chiTiet = gioHangChiTietRepository
-				.findByGioHang_IdGioHangAndSanPhamChiTiet_IdSanPhamChiTiet(idGioHang,
+				.findByGioHang_IdGioHangAndSanPhamChiTiet_IdSanPhamChiTiet(gioHang.getIdGioHang(),
 						gioHangChiTietDTO.getIdSanPhamChiTiet())
 				.orElseThrow(() -> new RuntimeException("Chi tiết sản phẩm không tồn tại trong giỏ hàng"));
 
 		// Cập nhật số lượng và thành tiền
 		chiTiet.setSoLuong(gioHangChiTietDTO.getSoLuong());
 		chiTiet.setThanhTien(chiTiet.getDonGia().multiply(BigDecimal.valueOf(gioHangChiTietDTO.getSoLuong())));
-		gioHangChiTietRepository.save(chiTiet); // Lưu lại chi tiết giỏ hàng
+		gioHangChiTietRepository.save(chiTiet);
 
-		return gioHang; // Trả về giỏ hàng sau khi cập nhật
+		return gioHang;
 	}
 
-	public GioHang clearGioHang(Integer idGioHang) {
-		// Kiểm tra xem giỏ hàng có tồn tại hay không
-		GioHang gioHang = gioHangRepository.findById(idGioHang)
-				.orElseThrow(() -> new RuntimeException("Giỏ hàng không tồn tại"));
 
-		// Xóa tất cả chi tiết sản phẩm liên quan đến giỏ hàng
-		List<GioHangChiTiet> chiTietList = gioHangChiTietRepository.findByGioHang_IdGioHang(idGioHang);
-		gioHangChiTietRepository.deleteAll(chiTietList); // Xóa tất cả sản phẩm trong giỏ hàng
+	public void clearGioHangByUserId(Integer idNguoiDung) {
+		GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
+		if (gioHang == null) {
+			throw new RuntimeException("Giỏ hàng không tồn tại cho người dùng với ID: " + idNguoiDung);
+		}
 
-		// Đặt lại ngày cập nhật giỏ hàng
+		List<GioHangChiTiet> chiTietList = gioHangChiTietRepository.findByGioHang_IdGioHang(gioHang.getIdGioHang());
+		gioHangChiTietRepository.deleteAll(chiTietList);
+
 		gioHang.setNgayCapNhat(new Date());
-		return gioHangRepository.save(gioHang); // Lưu và trả về giỏ hàng đã xóa sản phẩm
+		gioHangRepository.save(gioHang);
 	}
 
-	public List<SanphamchiTietDTO> getGioHangChiTiet(Integer idGioHang) {
-		// Fetch the shopping cart by ID
-		GioHang gioHang = gioHangRepository.findById(idGioHang).orElseThrow();
 
-		List<GioHangChiTiet> chiTietList = gioHangChiTietRepository.findByGioHang_IdGioHang(idGioHang);
+	public List<SanphamchiTietDTO> getGioHangChiTietByUserId(Integer idNguoiDung) {
+		// Fetch the shopping cart of the user based on user ID
+		GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
+
+
+		List<GioHangChiTiet> chiTietList = gioHangChiTietRepository.findByGioHang_IdGioHang(gioHang.getIdGioHang());
 		List<SanphamchiTietDTO> sanpham = new ArrayList<>();
 
 		for (GioHangChiTiet gioHangChiTiet : chiTietList) {
@@ -142,17 +145,21 @@ public class GioHangService {
 		return sanpham; // Return list of product details
 	}
 
-	public GioHang deleteGioHangChiTiet(Integer idGioHang, Integer idSanPhamChiTiet) {
-		GioHang gioHang = gioHangRepository.findById(idGioHang)
-				.orElseThrow(() -> new RuntimeException("Giỏ hàng không tồn tại"));
+
+	public GioHang deleteGioHangChiTiet(Integer idNguoiDung, Integer idSanPhamChiTiet) {
+		GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
+		if (gioHang == null) {
+			throw new RuntimeException("Giỏ hàng không tồn tại cho người dùng với ID: " + idNguoiDung);
+		}
 
 		GioHangChiTiet chiTiet = gioHangChiTietRepository
-				.findByGioHang_IdGioHangAndSanPhamChiTiet_IdSanPhamChiTiet(idGioHang, idSanPhamChiTiet)
+				.findByGioHang_IdGioHangAndSanPhamChiTiet_IdSanPhamChiTiet(gioHang.getIdGioHang(), idSanPhamChiTiet)
 				.orElseThrow(() -> new RuntimeException("Chi tiết sản phẩm không tồn tại trong giỏ hàng"));
 
-		gioHangChiTietRepository.delete(chiTiet); // Xóa chi tiết sản phẩm
+		gioHangChiTietRepository.delete(chiTiet);
 
-		return gioHang; // Trả về giỏ hàng sau khi xóa sản phẩm
+		return gioHang;
 	}
+
 
 }

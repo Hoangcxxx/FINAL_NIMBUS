@@ -62,6 +62,7 @@ public class WebSecurityConfiguration {
                                 "/api/dia-chi/**",
                                 "/api/hoadonchitiet/**",
                                 "/api/lich-su-hoa-don/**",
+                                "/api/trang-thai-hoa-don/**",
                                 "/api/voucher/**",
                                 "/api/hoa-don/**",
                                  "/api/email/**",

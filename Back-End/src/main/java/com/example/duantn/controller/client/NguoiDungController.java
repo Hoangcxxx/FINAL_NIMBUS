@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://127.0.0.1:5501")
@@ -21,36 +23,42 @@ public class NguoiDungController {
     private NguoiDungService nguoiDungService;
 
     @PostMapping("/register")
-    public ResponseEntity<NguoiDung> registerUser(@RequestBody NguoiDungDTO nguoiDungDTO) {
+    public ResponseEntity<?> registerUser(@RequestBody NguoiDungDTO nguoiDungDTO) {
         try {
             NguoiDung registeredUser = nguoiDungService.registerUser(nguoiDungDTO);
             return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Có lỗi xảy ra trong quá trình đăng ký"));
         }
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> signIn(@RequestBody NguoiDungDTO nguoiDungDTO) {
         try {
             LoginResponse loginResponse = nguoiDungService.signIn(nguoiDungDTO);
-
-
             if (loginResponse == null || loginResponse.getTenNguoiDung() == null || loginResponse.getTenNguoiDung().isEmpty()) {
-                return new ResponseEntity<>("Tên người dùng không tồn tại", HttpStatus.UNAUTHORIZED);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Tên người dùng không tồn tại"));
             }
-            return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+            return ResponseEntity.ok(loginResponse);
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>("Tên người dùng hoặc mật khẩu không đúng", HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Tên người dùng hoặc mật khẩu không đúng"));
         } catch (RuntimeException e) {
-            return new ResponseEntity<>("Người dùng không tồn tại hoặc chưa được xác thực", HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Người dùng không tồn tại hoặc chưa được xác thực"));
         } catch (Exception e) {
-            e.printStackTrace(); // Log lỗi để dễ debug
-            return new ResponseEntity<>("Có lỗi xảy ra trong quá trình đăng nhập", HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Có lỗi xảy ra trong quá trình đăng nhập"));
         }
     }
+
 
 
     @PostMapping("/refresh-token")
@@ -87,15 +95,32 @@ public class NguoiDungController {
     }
 
     @PutMapping("/update/{userid}")
-    public ResponseEntity<NguoiDung> updateUser(@PathVariable Integer userid, @RequestBody NguoiDungDTO nguoiDungDTO) {
+    public ResponseEntity<?> updateUser(@PathVariable Integer userid, @RequestBody NguoiDungDTO nguoiDungDTO) {
         try {
             NguoiDung nguoiDung = nguoiDungService.updateUser(userid, nguoiDungDTO);
-            return new ResponseEntity<>(nguoiDung, HttpStatus.OK);
+            return ResponseEntity.ok(nguoiDung);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Có lỗi xảy ra trong quá trình cập nhật thông tin người dùng"));
         }
     }
+
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody Token tokenRequest) {
+        try {
+            nguoiDungService.logout(tokenRequest.getAccessToken());
+            return ResponseEntity.ok(Map.of("message", "Đăng xuất thành công"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Có lỗi xảy ra trong quá trình đăng xuất"));
+        }
+    }
+
+
 }
 

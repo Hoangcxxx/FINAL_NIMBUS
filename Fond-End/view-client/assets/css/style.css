@@ -1052,3 +1052,19 @@ footer a:hover {
     width: 50px;
     text-align: center;
 }
+#navbar li .user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#navbar li .user-info a {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+#navbar li .logout-link {
+    font-size: 14px;
+    color: red;
+}
