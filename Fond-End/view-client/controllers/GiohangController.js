@@ -3,8 +3,8 @@ window.GiohangController = function ($scope, $http) {
     $scope.dsDanhMuc = [];
     $scope.selectedCategoryId = null; // Lưu ID danh mục đã chọn
     $scope.cart = []; // Khởi tạo mảng giỏ hàng trống
-    const userId =  $scope.userId; // Thay thế bằng ID người dùng thực tế
-    const cartId =  $scope.userId; // Thay thế bằng ID giỏ hàng thực tế
+    const userId = $scope.userId; // Thay thế bằng ID người dùng thực tế
+    const cartId = $scope.userId; // Thay thế bằng ID giỏ hàng thực tế
     $scope.cartItemCount = 0;
 
     // Lấy thông tin người dùng từ localStorage
@@ -17,6 +17,8 @@ window.GiohangController = function ($scope, $http) {
     } else {
         // Nếu không có thông tin người dùng (người dùng chưa đăng nhập), gán userId là null
         $scope.userId = null;
+        // Xóa idGioHang trong localStorage nếu người dùng chưa đăng nhập
+        localStorage.removeItem("idGioHang");
     }
     $scope.getCartItems = function () {
         $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${$scope.userId}`)
@@ -55,6 +57,7 @@ window.GiohangController = function ($scope, $http) {
             .then(function (response) {
                 alert(response.data.message);
                 $scope.getCartItems(); // Lấy lại giỏ hàng sau khi xóa
+                window.location.reload();  // Làm mới route để giao diện được cập nhật
             })
             .catch(function (error) {
                 console.error("Lỗi xóa sản phẩm khỏi giỏ hàng:", error);
@@ -127,6 +130,6 @@ window.GiohangController = function ($scope, $http) {
     }
 
     fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'products');
-    fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc');
+    fetchData('http://localhost:8080/api/admin/danh_muc', 'dsDanhMuc');
 }
 

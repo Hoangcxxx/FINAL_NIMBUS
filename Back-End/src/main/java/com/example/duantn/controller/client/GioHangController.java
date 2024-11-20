@@ -34,6 +34,9 @@ public class GioHangController {
     public ResponseEntity<GioHang> addProductToGioHang(@RequestParam Integer idUser,
                                                        @RequestBody GioHangChiTietDTO gioHangChiTietDTO) {
         GioHang gioHang = gioHangService.addGioHang(idUser, gioHangChiTietDTO);
+        // Tạo một map để trả về thông báo
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Sản phẩm đã được thêm vào giỏ hàng.");
         return ResponseEntity.ok(gioHang);
     }
 

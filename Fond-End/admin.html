@@ -25,7 +25,6 @@
     <script src="view-admin/controllers/KichThuocController.js"></script>
     <script src="view-admin/controllers/MauSacController.js"></script>
     <script src="view-admin/controllers/DanhMucController.js"></script>
-    <script src="view-admin/controllers/KhoHangController.js"></script>
     <script src="view-admin/controllers/PhieuGiamGiaController.js"></script>
     <script src="view-admin/controllers/DotGiamGiaController.js"></script>
     <script src="view-admin/views/SanPhamEven/addSanPhamController.js"></script>
@@ -52,10 +51,6 @@
                 .when('/ban_hang', {
                     templateUrl: 'view-admin/views/banhang.html',
                     controller: BanHangController
-                })
-                .when('/kho_hang', {
-                    templateUrl: 'view-admin/views/khohang.html',
-                    controller: KhoHangController
                 })
                 .when('/phieu_giam_gia', {
                     templateUrl: 'view-admin/views/phieugiamgia.html',
@@ -129,14 +124,47 @@
                     redirectTo: '/'
                 })
         });
-        app.controller("ngController", $scope => {
-            $scope.infoUser = undefined
+        app.controller("ngController", function ($scope, $http) {
+            // Kiểm tra người dùng đã đăng nhập chưa
+            var userInfo = localStorage.getItem("user");
+            if (userInfo) {
+                $scope.infoUser = JSON.parse(userInfo);  // Lấy thông tin người dùng từ localStorage
+                $scope.idNguoiDung = $scope.infoUser.idNguoiDung;  // Lấy tên người dùng
+                $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
+                $scope.vaiTro = $scope.infoUser.vaiTro;  // Lấy thông tin vai trò của người dùng
+            } else {
+                $scope.infoUser = undefined;
+                $scope.tenNguoiDung = undefined;
+                $scope.isAdmin = false;  // Nếu chưa đăng nhập, ẩn mục "Trang quản lý"
+            }
             // Biến để lưu trữ tab đang hoạt động
             $scope.activeTab = 'trang_chu'; // Tab mặc định là trang chủ
-
             // Hàm để thay đổi tab khi người dùng nhấn vào mục
             $scope.setActiveTab = function (tab) {
                 $scope.activeTab = tab;
+            };
+            // Đăng xuất
+            $scope.dangXuat = function () {
+                // Gửi yêu cầu đăng xuất đến API
+                $http.post("http://localhost:8080/api/nguoi_dung/dang_xuat")
+                    .then(function (response) {
+                        // Xóa thông tin người dùng trong localStorage
+                        localStorage.removeItem("user");
+                        // Xóa idGioHang trong localStorage
+                        localStorage.removeItem("idGioHang");
+                        // Cập nhật lại giao diện
+                        $scope.infoUser = undefined;
+                        $scope.tenNguoiDung = undefined;
+
+                        // Thông báo đăng xuất thành công
+                        alert("Đăng xuất thành công!");
+
+                        // Chuyển hướng đến trang chủ hoặc giữ nguyên trang sau khi đăng xuất
+                        window.location.reload("#!dang_nhap");  // Làm mới route để giao diện được cập nhật
+                    }, function (error) {
+                        // Nếu có lỗi
+                        alert("Đăng xuất thất bại: " + (error.data ? error.data.message : "Lỗi không xác định"));
+                    });
             };
         })
     </script>

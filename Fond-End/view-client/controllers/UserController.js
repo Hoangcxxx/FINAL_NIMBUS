@@ -1,6 +1,4 @@
 window.UserController = function ($scope, $http, $route, $window) {
-
-
     // Đăng nhập
     $scope.dangNhap = function () {
         var loginData = {

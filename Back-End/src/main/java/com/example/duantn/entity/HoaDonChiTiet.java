@@ -19,9 +19,6 @@ public class HoaDonChiTiet {
     @Column(name = "Id_hoa_don_chi_tiet")
     private Integer idHoaDonChiTiet;
 
-    @Column(name = "ma_don", nullable = true)
-    private String maDon;
-
     @ManyToOne
     @JoinColumn(name = "id_san_pham_chi_tiet", nullable = false)
     private SanPhamChiTiet sanPhamChiTiet;
@@ -40,17 +37,17 @@ public class HoaDonChiTiet {
     @Column(name = "tien_tra_lai", nullable = false)
     private BigDecimal tienTraLai;
 
-    @Column(name = "ngay_tao", nullable = false)
+    @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
 
-    @Column(name = "ngay_cap_nhat", nullable = false)
+    @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
 
-    @Column(name = "trang_thai", nullable = false)
+    @Column(name = "trang_thai")
     private Boolean trangThai;
 
-    @Column(name = "mo_ta", nullable = true)
+    @Column(name = "mo_ta")
     private String moTa;
 }

@@ -20,8 +20,8 @@ public class ADNguoiDungController {
 
     // Lấy tất cả người dùng có vai trò id = 2
     @GetMapping("/list")
-    public ResponseEntity<List<NguoiDung>> getAllNguoiDungsByRoleId(@RequestParam("roleId") int roleId) {
-        List<NguoiDung> nguoiDungs = nguoiDungService.getAllNguoiDungsByRoleId(roleId);
+    public ResponseEntity<List<NguoiDung>> getAllNguoiDungsByRoleId() {
+        List<NguoiDung> nguoiDungs = nguoiDungService.getAllNguoiDungsByRoleId();
         if (nguoiDungs.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

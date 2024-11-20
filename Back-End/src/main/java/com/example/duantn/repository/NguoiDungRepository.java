@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
-    @Query(value = "SELECT * FROM nguoi_dung nd WHERE nd.id_vai_tro = :roleId", nativeQuery = true)
-    List<NguoiDung> getSanPhamById(int roleId);
+    @Query(value = "SELECT * FROM nguoi_dung nd WHERE nd.id_vai_tro = 2", nativeQuery = true)
+    List<NguoiDung> getSanPhamById();
     Optional<NguoiDung> findByEmail(String email);
 
     Optional<NguoiDung> findBySdt(String sdt);

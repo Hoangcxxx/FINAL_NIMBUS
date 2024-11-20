@@ -55,4 +55,11 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet,Int
 
     @Query(value = "SELECT COUNT(*) as so_luong_dh_huy_bo FROM hoa_don hd JOIN trang_thai_hoa_don th ON hd.id_trang_thai_hoa_don = th.Id_trang_thai_hoa_don WHERE th.Id_trang_thai_hoa_don = 4", nativeQuery = true)
     Integer countDonHangHuyBo();
+
+    @Query("SELECT h FROM HoaDonChiTiet h WHERE h.hoaDon.idHoaDon = :hoaDonId")
+    List<HoaDonChiTiet> findByHoaDon_IdHoaDon(@Param("hoaDonId") Integer hoaDonId);
+
+
+
+
 }

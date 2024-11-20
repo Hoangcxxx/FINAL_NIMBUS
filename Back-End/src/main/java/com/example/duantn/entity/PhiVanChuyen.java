@@ -36,11 +36,11 @@ public class PhiVanChuyen {
 
     // Nếu cần, bạn có thể thiết lập quan hệ với DiaChiVanChuyen
     @ManyToOne
-    @JoinColumn(name = "id_dia_chi_van_chuyen", insertable = false, updatable = false)
+    @JoinColumn(name = "id_dia_chi_van_chuyen")
     private DiaChiVanChuyen diaChiVanChuyen;
 
     // Nếu cần, bạn có thể thiết lập quan hệ với HoaDon
     @ManyToOne
-    @JoinColumn(name = "id_hoa_don", insertable = false, updatable = false)
+    @JoinColumn(name = "id_hoa_don")
     private HoaDon hoaDon; // Giả sử bạn có một entity HoaDon
 }

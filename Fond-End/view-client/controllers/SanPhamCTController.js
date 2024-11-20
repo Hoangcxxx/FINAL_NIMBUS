@@ -20,6 +20,8 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
     } else {
         // Nếu không có thông tin người dùng (người dùng chưa đăng nhập), gán userId là null
         $scope.userId = null;
+        // Xóa idGioHang trong localStorage nếu người dùng chưa đăng nhập
+        localStorage.removeItem("idGioHang");
     }
     function fetchAnhSanPham() {
         $http.get('http://localhost:8080/api/nguoi_dung/hinh_anh/' + idSanPham)
@@ -137,7 +139,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
         $http.post(`http://localhost:8080/api/nguoi_dung/gio_hang/add?idUser=${idGioHang}`, cartItem)
             .then(function (response) {
                 alert("Sản phẩm đã được thêm vào giỏ hàng.");
-                window.location.href = '#!gio_hang';
+                window.location.reload();  // Làm mới route để giao diện được cập nhật
             })
             .catch(function (error) {
                 console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);

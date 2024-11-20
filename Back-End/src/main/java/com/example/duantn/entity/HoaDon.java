@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,7 +28,7 @@ public class HoaDon {
     private NguoiDung nguoiDung;
 
     @ManyToOne
-    @JoinColumn(name = "id_vocher")
+    @JoinColumn(name = "id_voucher")
     private Voucher voucher;
 
     @ManyToOne
@@ -56,7 +57,8 @@ public class HoaDon {
 
     @Column(name = "mo_ta")
     private String moTa;
-
+    @Column(name = "thanh_tien")
+    private BigDecimal thanhTien;
     @Column(name = "trang_thai", nullable = false)
     private Boolean trangThai;
 
@@ -67,4 +69,7 @@ public class HoaDon {
     @ManyToOne
     @JoinColumn(name = "id_pt_thanh_toan_hoa_don")
     private PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon;
+    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<HoaDonChiTiet> hoaDonChiTiets;
+
 }

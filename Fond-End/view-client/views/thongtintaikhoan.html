@@ -85,9 +85,39 @@
 
                 <!-- Đơn hàng -->
                 <div class="tab-pane fade" id="orders">
-                    <h3 class="mb-4 text-primary">Đơn hàng</h3>
-                    <div class="card border-0 shadow-sm p-4">
-                        <p>Danh sách đơn hàng của bạn sẽ được hiển thị ở đây.</p>
+                    <h4 class="mt-4 text-primary">Đơn hàng Mới Nhất</h4>
+                    <div class="card shadow-sm p-3">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Mã đơn hàng</th>
+                                    <th scope="col">Ngày đặt</th>
+                                    <th scope="col">Thành tiền</th>
+                                    <th scope="col">Trạng thái thanh toán</th>
+                                    <th scope="col">Vận chuyển</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Lặp qua danh sách đơn hàng -->
+                                <tr ng-repeat="hoaDon in orderData">
+                                    <td>#{{ hoaDon.maHoaDon }}</td>
+                                    <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
+                                    <td>{{ hoaDon.thanhTien | currency:"":0 }}đ</td>
+                                    <td>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 1">Chờ Xử Lý</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 2">Đang Giao Hàng</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 3">Hoàn Thành</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 4">Hủy Bỏ</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 5">Thất Bại</span>
+                                    </td>
+                                    <td>{{hoaDon.diaChi}}, {{hoaDon.tinh}}, {{hoaDon.huyen}}, {{hoaDon.xa}}</td>
+                                </tr>
+                                <!-- Trường hợp không có đơn hàng -->
+                                <tr ng-if="!orderData || orderData.length === 0">
+                                    <td colspan="5" class="text-center">Không có đơn hàng nào</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -194,7 +224,7 @@
                             placeholder="Chọn ngày sinh" required ng-keyup="formatDate()" ng-blur="formatDate()">
                         <label for="editCustomerDob">Ngày sinh</label>
                     </div>
-                    
+
                     <!-- Giới tính khách hàng -->
                     <div class="form-floating mb-3">
                         <select class="form-control" id="editCustomerGender" ng-model="gioiTinh" required>

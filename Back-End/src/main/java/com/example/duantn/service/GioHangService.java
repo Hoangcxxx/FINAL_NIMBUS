@@ -2,15 +2,8 @@ package com.example.duantn.service;
 
 import com.example.duantn.dto.GioHangChiTietDTO;
 import com.example.duantn.dto.SanPhamChiTietDTO;
-import com.example.duantn.entity.GioHang;
-import com.example.duantn.entity.GioHangChiTiet;
-import com.example.duantn.entity.NguoiDung;
-import com.example.duantn.entity.SanPhamChiTiet;
-import com.example.duantn.repository.GioHangChiTietRepository;
-import com.example.duantn.repository.GioHangRepository;
-import com.example.duantn.repository.NguoiDungRepository;
-import com.example.duantn.repository.SanPhamChiTietRepository;
-import com.example.duantn.repository.SanPhamRepository;
+import com.example.duantn.entity.*;
+import com.example.duantn.repository.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +22,10 @@ public class GioHangService {
     private static final Logger log = LoggerFactory.getLogger(GioHangService.class);
     @Autowired
     private GioHangRepository gioHangRepository;
+    @Autowired
+    private LoaiThongBaoRepository loaiThongBaoRepository;
+    @Autowired
+    private ThongBaoRepository thongBaoRepository;
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
     @Autowired
@@ -83,7 +80,19 @@ public class GioHangService {
         gioHangChiTiet.setThanhTien(sanPhamRepository.findById(gioHangChiTietDTO.getIdSanPham()).get().getGiaBan()
                 .multiply(BigDecimal.valueOf(gioHangChiTiet.getSoLuong())));
         gioHangChiTietRepository.save(gioHangChiTiet);
+        // Lấy thông tin mã sản phẩm và tên sản phẩm từ sanPhamChiTiet
+        String productCode = sanPhamChiTiet.get().getSanPham().getMaSanPham(); // Mã sản phẩm
+        String productName = sanPhamChiTiet.get().getSanPham().getTenSanPham(); // Tên sản phẩm
 
+        // Tạo thông báo sau khi thêm sản phẩm vào giỏ hàng
+        LoaiThongBao loaiThongBao = loaiThongBaoRepository.findById(9).orElseThrow(() -> new RuntimeException("Loại thông báo không tồn tại"));
+        ThongBao thongBao = new ThongBao();
+        thongBao.setNguoiDung(gioHang.getNguoiDung());
+        thongBao.setLoaiThongBao(loaiThongBao);
+        thongBao.setNoiDung("Bạn đã thêm sản phẩm " + productName + " vào giỏ hàng với Mã sản phẩm là: " + productCode);
+        thongBao.setTrangThai(true);
+        thongBao.setNgayGui(new Date());
+        thongBaoRepository.save(thongBao);
         return gioHang;
     }
 

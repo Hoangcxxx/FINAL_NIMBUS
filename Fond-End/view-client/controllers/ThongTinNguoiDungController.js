@@ -5,6 +5,7 @@ window.ThongTinNguoiDungController = function ($scope, $http, $window) {
     if (userInfo) {
         // Nếu có thông tin người dùng, parse và gán vào scope để hiển thị
         $scope.infoUser = JSON.parse(userInfo);
+        $scope.idNguoiDung = $scope.infoUser.idNguoiDung;
         $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;
         $scope.emailNguoiDung = $scope.infoUser.email;
         $scope.diaChiNguoiDung = $scope.infoUser.diaChi;
@@ -78,32 +79,58 @@ window.ThongTinNguoiDungController = function ($scope, $http, $window) {
                 alert('Có lỗi xảy ra khi cập nhật thông tin!');
             });
     };
-    $scope.formatDate = function() {
+    $scope.formatDate = function () {
         let date = $scope.ngaySinhNguoiDung;
-    
+
         // Loại bỏ mọi ký tự không phải là số (bao gồm cả dấu gạch nối)
         date = date.replace(/[^0-9]/g, "");
-    
+
         // Nếu có ít hơn 8 ký tự, xử lý thêm dấu gạch nối theo từng bước
         if (date.length >= 2) {
             // Nếu có 2 ký tự, thêm dấu gạch nối sau ngày
             date = date.substring(0, 2) + (date.length >= 2 ? '-' : '') + date.substring(2);
         }
-    
+
         if (date.length >= 5) {
             // Nếu có 5 ký tự, thêm dấu gạch nối sau tháng
             date = date.substring(0, 5) + (date.length >= 5 ? '-' : '') + date.substring(5);
         }
-    
+
         // Hiển thị lại giá trị đã định dạng
         $scope.ngaySinhNguoiDung = date;
-    
+
         // Nếu đủ 10 ký tự, không thay đổi gì thêm
         if (date.length === 10) {
             return;
         }
     };
-    
+
+    function getOrderDetails() {
+        const apiUrl = `http://localhost:8080/api/nguoi_dung/hoa_don/user/${$scope.idNguoiDung}`;
+
+        $http.get(apiUrl)
+            .then(function (response) {
+                // Kiểm tra và gán dữ liệu đơn hàng
+                const hoaDonList = response.data.hoaDon && Array.isArray(response.data.hoaDon)
+                    ? response.data.hoaDon
+                    : [];
+
+                if (hoaDonList.length > 0) {
+                    // Gán danh sách hóa đơn vào $scope
+                    $scope.orderData = hoaDonList;
+                    console.log($scope.orderData);
+                } else {
+                    console.warn("Không tìm thấy đơn hàng nào.");
+                    $scope.orderData = [];
+                }
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi lấy thông tin hóa đơn:", error);
+                $scope.orderData = []; // Gán rỗng nếu lỗi
+            });
+    }
+    // Gọi API để lấy chi tiết đơn hàng
+    getOrderDetails();
 
 
 

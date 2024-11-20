@@ -18,8 +18,8 @@ public class NguoiDungService {
     private NguoiDungRepository nguoiDungRepository;
 
     // Lấy tất cả người dùng có vai trò id = 2 (ví dụ)
-    public List<NguoiDung> getAllNguoiDungsByRoleId(int roleId) {
-        return nguoiDungRepository.getSanPhamById(roleId);
+    public List<NguoiDung> getAllNguoiDungsByRoleId() {
+        return nguoiDungRepository.getSanPhamById();
     }
 
     // Lấy người dùng theo ID

@@ -31,15 +31,26 @@ CREATE TABLE [nguoi_dung] (
       REFERENCES [vai_tro]([Id_vai_tro])
 );
 go
+CREATE TABLE loai_thong_bao (
+    [Id_loai_thong_bao] INT PRIMARY KEY IDENTITY(1,1),
+    [ten_loai_thong_bao] NVARCHAR(225),
+    [ngay_tao] DATETIME DEFAULT GETDATE(),
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
+);
+go
 CREATE TABLE thong_bao (
     Id_thong_bao INT PRIMARY KEY IDENTITY(1,1),
     id_nguoi_dung INT,
+    id_loai_thong_bao INT,
     noi_dung NVARCHAR(MAX),
     trang_thai BIT DEFAULT 1,
     ngay_gui DATETIME DEFAULT GETDATE(),
     CONSTRAINT FK_thong_bao_id_nguoi_dung
         FOREIGN KEY (id_nguoi_dung)
-        REFERENCES nguoi_dung(Id_nguoi_dung)
+        REFERENCES nguoi_dung(Id_nguoi_dung),
+    CONSTRAINT FK_thong_bao_id_loai_thong_bao
+        FOREIGN KEY (id_loai_thong_bao)
+        REFERENCES loai_thong_bao(Id_loai_thong_bao)
 );
 -- Insert data for vai_tro
 go
@@ -81,6 +92,15 @@ CREATE TABLE [voucher] (
 	  CONSTRAINT [FK_trang_thai_voucher_id_trang_thai_giam_gia]
     FOREIGN KEY ([id_trang_thai_giam_gia])
       REFERENCES [trang_thai_giam_gia]([Id_trang_thai_giam_gia])
+);
+go
+CREATE TABLE voucher_nguoi_dung (
+  Id_voucher_nguoi_dung INT PRIMARY KEY IDENTITY(1,1),
+  id_voucher INT,
+  id_nguoi_dung INT,
+  ngay_tao DATETIME DEFAULT GETDATE(),
+  FOREIGN KEY (id_voucher) REFERENCES voucher(id_voucher),
+  FOREIGN KEY (id_nguoi_dung) REFERENCES nguoi_dung(Id_nguoi_dung)
 );
 
 go
@@ -258,6 +278,14 @@ CREATE TABLE [gio_hang_chi_tiet] (
 	  CONSTRAINT [FK_san_pham_chi_tiet_id_san_pham_chi_tiet]
     FOREIGN KEY ([id_san_pham_chi_tiet])
       REFERENCES [san_pham_chi_tiet]([Id_san_pham_chi_tiet])
+);
+go
+CREATE TABLE gio_hang_voucher (
+  Id_gio_hang_voucher INT PRIMARY KEY IDENTITY(1,1),
+  id_gio_hang INT,
+  id_voucher INT,
+  FOREIGN KEY (id_gio_hang) REFERENCES gio_hang(id_gio_hang),
+  FOREIGN KEY (id_voucher) REFERENCES voucher(id_voucher)
 );
 
 GO
@@ -440,12 +468,42 @@ INSERT INTO nguoi_dung (ten_nguoi_dung, ma_nguoi_dung, email, sdt, ngay_sinh, di
 (N'Lê Đình Linh', 'user004', 'linhld@gmail.com', '0912679346', '2004-01-05', N'Hà Nội', N'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',4),
 (N'Hoàng Văn Hà', 'user005', 'hahv@gmail.com', '0918934754', '2004-01-06', N'Hà Nội', N'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',5);
 go	
+INSERT INTO loai_thong_bao (ten_loai_thong_bao)
+VALUES
+--Thông báo về Đơn hàng
+(N'Đơn hàng được tạo thành công'),
+(N'Đơn hàng đã được xác nhận'),
+(N'Đơn hàng đã được giao'),
+(N'Đơn hàng đã hoàn tất'),
+(N'Đơn hàng bị hủy'),
+--Thông báo về Khuyến mãi và Voucher
+(N'Khuyến mãi mới'),
+(N'Voucher sử dụng thành công'),
+(N'Voucher được thêm vào tài khoản'),
+--Thông báo về Sản phẩm
+(N'Sản phẩm đã được thêm vào giỏ hàng'),
+(N'Sản phẩm hết hàng'),
+(N'Giảm giá sản phẩm'),
+--Thông báo về Tình trạng thanh toán
+(N'Thanh toán thành công'),
+(N'Thanh toán thất bại'),
+(N'Thanh toán đang chờ xử lý'),
+--Thông báo về Vận chuyển và Giao hàng
+(N'Đơn hàng đã được giao'),
+(N'Giao hàng thành công'),
+--Thông báo về Tài khoản và Bảo mật
+(N'Đăng ký tài khoản thành công'),
+(N'Đổi mật khẩu thành công'),
+--Thông báo về Khách hàng hoặc Đánh giá
+(N'Đánh giá sản phẩm'),
+(N'Khách hàng thân thiết');
+go
 INSERT INTO [trang_thai_giam_gia] (ten_trang_thai_giam_gia, mo_ta) VALUES
 (N'Đang phát hành', N'Giảm giá đã được phát hành và có thể sử dụng.'),
 (N'Đã sử dụng', N'Giảm giá đã được sử dụng và không còn giá trị.'),
 (N'Hết hạn', N'Giảm giá không còn giá trị do đã hết hạn sử dụng.'),
 (N'Chưa phát hành', N'Giảm giá đã được tạo nhưng chưa được phát hành cho người dùng.'),
-(N'Bị hủy', N'Giảm giá đã bị hủy và không còn hiệu lực.');
+(N'Bị xóa', N'Giảm giá đã bị xóa và không còn hiệu lực.');
 
 go
 
@@ -1495,6 +1553,8 @@ go
 
 
 select * from vai_tro
+select * from nguoi_dung
+select * from voucher_nguoi_dung
 select * from nguoi_dung
 select * from voucher
 select * from loai_voucher

@@ -1,9 +1,7 @@
 package com.example.duantn.service;
 
-import com.example.duantn.entity.TrangThaiGiamGia;
-import com.example.duantn.entity.Voucher;
-import com.example.duantn.repository.TrangThaiGiamGiaRepository;
-import com.example.duantn.repository.VoucherRepository;
+import com.example.duantn.entity.*;
+import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +15,14 @@ public class VoucherService {
 
     @Autowired
     private VoucherRepository voucherRepository;
+    @Autowired
+    private LoaiThongBaoRepository loaiThongBaoRepository;
+    @Autowired
+    private ThongBaoRepository thongBaoRepository;
+    @Autowired
+    private VoucherNguoiDungRepository voucherNguoiDungRepository;
+    @Autowired
+    private NguoiDungRepository nguoiDungRepository;
 
     @Autowired
     private TrangThaiGiamGiaRepository trangThaiGiamGiaRepository;
@@ -131,4 +137,72 @@ public class VoucherService {
         }
         return voucherCode.toString();
     }
+    public List<VoucherNguoiDung> addVoucherForUsers(List<Integer> idNguoiDungs, Voucher voucher) {
+        // Kiểm tra thông tin voucher trước khi tạo
+        System.out.println("Bắt đầu thêm voucher cho người dùng. Voucher: " + voucher);
+
+        // Tạo voucher mới (có thể check, validate trước khi tạo)
+        if (voucher.getMaVoucher() == null || voucher.getMaVoucher().isEmpty()) {
+            voucher.setMaVoucher(generateRandomVoucherCode());
+            System.out.println("Mã voucher được tạo ngẫu nhiên: " + voucher.getMaVoucher());
+        }
+
+        // Kiểm tra ngày bắt đầu và kết thúc voucher
+        validateVoucherDates(voucher);
+        setVoucherStatus(voucher);
+
+        // Lưu voucher vào cơ sở dữ liệu
+        Voucher savedVoucher = voucherRepository.save(voucher);
+        System.out.println("Voucher đã lưu thành công. ID: " + savedVoucher.getIdVoucher() + ", Mã voucher: " + savedVoucher.getMaVoucher());
+
+        // Tạo danh sách VoucherNguoiDung và lưu thông tin voucher cho nhiều người dùng
+        for (Integer idNguoiDung : idNguoiDungs) {
+            System.out.println("Đang xử lý người dùng ID: " + idNguoiDung);
+
+            Optional<NguoiDung> optionalNguoiDung = nguoiDungRepository.findById(idNguoiDung);
+            if (optionalNguoiDung.isPresent()) {
+                NguoiDung nguoiDung = optionalNguoiDung.get();
+
+                System.out.println("Người dùng tồn tại. Tên người dùng: " + nguoiDung.getTenNguoiDung());
+
+                // Tạo đối tượng VoucherNguoiDung và lưu
+                VoucherNguoiDung voucherNguoiDung = new VoucherNguoiDung();
+                voucherNguoiDung.setVoucher(savedVoucher);
+                voucherNguoiDung.setNguoiDung(nguoiDung);
+                voucherNguoiDung.setNgayTao(new Date());
+
+                // Lưu VoucherNguoiDung vào cơ sở dữ liệu
+                voucherNguoiDungRepository.save(voucherNguoiDung);
+                System.out.println("Voucher đã được thêm cho người dùng ID: " + idNguoiDung);
+
+                // Gửi thông báo cho người dùng sau khi thêm voucher
+                sendNotificationToUser(nguoiDung, savedVoucher);
+            } else {
+                // Nếu người dùng không tồn tại
+                System.out.println("Người dùng với ID " + idNguoiDung + " không tồn tại!");
+                throw new IllegalArgumentException("Người dùng với ID " + idNguoiDung + " không tồn tại!");
+            }
+        }
+
+        // Trả về danh sách VoucherNguoiDung đã được tạo
+        List<VoucherNguoiDung> voucherNguoiDungs = voucherNguoiDungRepository.findAllByVoucher(savedVoucher);
+        System.out.println("Danh sách VoucherNguoiDung đã được thêm: " + voucherNguoiDungs);
+        return voucherNguoiDungs;
+    }
+
+    // Phương thức gửi thông báo
+    private void sendNotificationToUser(NguoiDung nguoiDung, Voucher voucher) {
+        LoaiThongBao loaiThongBao = loaiThongBaoRepository.findById(6).orElseThrow(() -> new RuntimeException("LoaiThongBao không tồn tại"));
+        ThongBao thongBao = new ThongBao();
+        thongBao.setLoaiThongBao(loaiThongBao);
+        thongBao.setNguoiDung(nguoiDung);
+        thongBao.setNoiDung("Bạn đã nhận được voucher mới: " + voucher.getTenVoucher() + " với mã voucher: " + voucher.getMaVoucher());
+        thongBao.setTrangThai(true); // Trạng thái thông báo là hiện thị
+        thongBao.setNgayGui(new Date()); // Thời gian gửi thông báo
+
+        // Lưu thông báo vào cơ sở dữ liệu
+        thongBaoRepository.save(thongBao);
+        System.out.println("Thông báo đã được gửi cho người dùng: " + nguoiDung.getTenNguoiDung());
+    }
+
 }

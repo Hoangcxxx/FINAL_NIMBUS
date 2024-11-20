@@ -1,6 +1,7 @@
 package com.example.duantn.controller.admin;
 
 import com.example.duantn.entity.Voucher;
+import com.example.duantn.entity.VoucherNguoiDung;
 import com.example.duantn.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -61,4 +62,23 @@ public class ADVoucherController {
         }
         return ResponseEntity.notFound().build(); // Handle not found
     }
+    @PostMapping("/bulk/{idNguoiDungs}")
+    public ResponseEntity<List<VoucherNguoiDung>> addVoucherForMultipleUsers(
+            @PathVariable List<Integer> idNguoiDungs,
+            @RequestBody Voucher voucher) {
+
+        System.out.println("Nhận yêu cầu thêm voucher cho các người dùng: " + idNguoiDungs);
+        System.out.println("Thông tin voucher nhận được: " + voucher);
+
+        try {
+            // Thêm voucher cho người dùng
+            List<VoucherNguoiDung> voucherNguoiDungs = voucherService.addVoucherForUsers(idNguoiDungs, voucher);
+            System.out.println("Thêm voucher thành công. Số lượng voucher đã thêm: " + voucherNguoiDungs.size());
+            return ResponseEntity.ok(voucherNguoiDungs);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Lỗi xảy ra: " + e.getMessage());
+            return ResponseEntity.badRequest().body(null);  // Trả về lỗi nếu có người dùng không tồn tại
+        }
+    }
+
 }

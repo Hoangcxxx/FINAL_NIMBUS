@@ -1,5 +1,6 @@
 window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $window, $location) {
     $scope.dsLoaiVoucher = [];
+    $scope.dsKhachHang = [];
     $scope.selectedVoucher = {
         idVoucher: null,
         maVoucher: '',
@@ -40,7 +41,6 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
     // Hàm tạo mới hoặc cập nhật voucher
     $scope.createOrUpdateVoucher = function () {
         const voucherData = {
-            idVoucher: $scope.selectedVoucher.idVoucher || null,
             maVoucher: $scope.selectedVoucher.maVoucher || null,
             tenVoucher: $scope.selectedVoucher.tenVoucher,
             giaTriGiamGia: $scope.selectedVoucher.giaTriGiamGia,
@@ -48,50 +48,46 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
             kieuGiamGia: $scope.selectedVoucher.kieuGiamGia,
             giaTriToiDa: $scope.selectedVoucher.giaTriToiDa,
             soTienToiThieu: $scope.selectedVoucher.soTienToiThieu,
-            trangThai: true,
-            moTa: "Giảm giá cho đơn hàng trên 500.000đ",
+            moTa: "Voucher giảm giá cho đơn hàng từ 50k",
             ngayBatDau: $scope.selectedVoucher.ngayBatDau.toISOString(),
-            ngayKetThuc: $scope.selectedVoucher.ngayKetThuc.toISOString(),
-            loaiVoucher: { idLoaiVoucher: $scope.selectedLoaiVoucher }
+            ngayKetThuc: $scope.selectedVoucher.ngayKetThuc.toISOString()
         };
 
-        // Log dữ liệu voucher để kiểm tra
-        console.log("Dữ liệu voucher trước khi cập nhật:", voucherData);
-
-        // Kiểm tra loại voucher
-        if (!$scope.selectedLoaiVoucher) {
-            alert("Vui lòng chọn loại voucher.");
+        // Lấy danh sách khách hàng đã chọn
+        const selectedCustomers = $scope.getSelectedCustomers();
+        if (selectedCustomers.length === 0) {
+            alert("Vui lòng chọn khách hàng để gửi voucher.");
             return;
         }
 
-        // Kiểm tra tính hợp lệ của ngày
-        const ngayBatDau = new Date(voucherData.ngayBatDau);
-        const ngayKetThuc = new Date(voucherData.ngayKetThuc);
-        if (isNaN(ngayBatDau.getTime()) || isNaN(ngayKetThuc.getTime())) {
-            alert("Ngày bắt đầu hoặc ngày kết thúc không hợp lệ. Vui lòng kiểm tra lại.");
-            return;
-        }
+        // Lấy danh sách các ID khách hàng đã chọn
+        const customerIds = selectedCustomers.map(function (customer) {
+            return customer.idNguoiDung;
+        });
 
-        // Nếu có idVoucher, thực hiện cập nhật, nếu không thì tạo mới
-        if ($scope.selectedVoucher.idVoucher) {
-            $http.put('http://localhost:8080/api/admin/vouchers/' + $scope.selectedVoucher.idVoucher, voucherData).then(function (response) {
-                alert("Voucher đã được cập nhật thành công!");
-                $location.path('/phieu_giam_gia'); // Chuyển hướng về trang voucher
-            }, function (error) {
-                console.error('Error updating voucher:', error);
-                alert("Có lỗi xảy ra khi cập nhật voucher.");
-            });
-        } else {
-            $http.post('http://localhost:8080/api/admin/vouchers', voucherData).then(function (response) {
-                alert("Voucher đã được tạo thành công!");
-                $location.path('/phieu_giam_gia'); // Chuyển hướng về trang voucher
-            }, function (error) {
-                console.error('Error creating voucher:', error);
-                alert("Có lỗi xảy ra khi tạo voucher.");
-            });
-        }
+        // Gửi request để thêm voucher cho nhiều khách hàng
+        $http.post('http://localhost:8080/api/admin/vouchers/bulk/' + customerIds.join(','), voucherData).then(function (response) {
+            alert("Voucher đã được gửi cho khách hàng thành công!");
+            $location.path('/phieu_giam_gia'); // Chuyển hướng về trang voucher
+        }, function (error) {
+            console.error('Error sending voucher to customers:', error);
+            alert("Có lỗi xảy ra khi gửi voucher.");
+        });
+    };
+
+    $scope.getSelectedCustomers = function () {
+        // Lọc các khách hàng đã được chọn
+        return $scope.dsKhachHang.filter(function (item) {
+            return item.selected;
+        });
+    };
+    $scope.selectAllCustomers = function () {
+        angular.forEach($scope.dsKhachHang, function (customer) {
+            customer.selected = $scope.selectAll;
+        });
     };
 
     // Fetch the types of vouchers
     $scope.fetchData('http://localhost:8080/api/admin/loai_vouchers', 'dsLoaiVoucher', 'Fetched LoaiVoucher:');
+    $scope.fetchData('http://localhost:8080/api/admin/nguoi_dung/list', 'dsKhachHang', 'Fetched dsKhachHang:');
 };

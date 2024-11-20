@@ -1,7 +1,377 @@
 ﻿USE testdatn2;
 GO
+select * from thong_bao where id_nguoi_dung
+select * from loai_thong_bao
+select * from trang_thai_giam_gia
+SELECT * FROM trang_thai_giam_gia WHERE Id_trang_thai_giam_gia = 5;
+select * from dot_giam_gia
+select * from giam_gia_san_pham
+select * from voucher
+select * from nguoi_dung nd where nd.id_vai_tro = 2
+select * from hoa_don
+select * from hoa_don_chi_tiet
+select * from vai_tro
+select * from nguoi_dung
+select * from san_pham
+SELECT dg.id_dot_giam_gia,dg.ten_dot_giam_gia,dg.kieu_giam_gia,dg.gia_tri_giam_gia, dg.mo_ta,dg.ngay_bat_dau,dg.ngay_ket_thuc,tgg.ten_trang_thai_giam_gia
+FROM dot_giam_gia dg
+JOIN trang_thai_giam_gia tgg ON dg.id_trang_thai_giam_gia = tgg.Id_trang_thai_giam_gia;
+DELETE FROM dot_giam_gia
+WHERE Id_dot_giam_gia = 22;
 
 
+
+SELECT COLUMN_NAME
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'nguoi_dung';
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta,
+    dc.ten_danh_muc,
+    ha.url_anh
+FROM san_pham sp
+LEFT JOIN giam_gia_san_pham ggs ON sp.Id_san_pham = ggs.id_san_pham
+LEFT JOIN danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+LEFT JOIN hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    ha.thu_tu = 1 AND sp.id_danh_muc = 2 AND-- Chọn hình ảnh đầu tiên
+    ggs.Id_giam_gia_san_pham IS NULL;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DELETE FROM voucher
+WHERE Id_voucher = 5;
+SELECT * FROM voucher WHERE id_trang_thai_giam_gia = ?
+
+
+
+-- Xóa giảm giá sản phẩm liên quan
+DELETE FROM giam_gia_san_pham
+WHERE id_dot_giam_gia = 10;
+
+-- Sau đó xóa đợt giảm giá
+DELETE FROM dot_giam_gia
+WHERE Id_dot_giam_gia = 10;
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta,
+    dc.ten_danh_muc,
+    ha.url_anh
+FROM san_pham sp
+LEFT JOIN giam_gia_san_pham ggs ON sp.Id_san_pham = ggs.id_san_pham
+LEFT JOIN danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+LEFT JOIN hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    ha.thu_tu = 1 AND -- Chọn hình ảnh đầu tiên
+    ggs.Id_giam_gia_san_pham IS NULL;
+
+
+
+
+	SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.trang_thai,
+    sp.gia_ban,
+    sp.mo_ta,
+    dc.ten_danh_muc, 
+    ha.url_anh,
+    ha.thu_tu
+FROM 
+    san_pham sp
+LEFT JOIN 
+    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+LEFT JOIN 
+    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+WHERE 
+    ha.thu_tu = 1 -- Chọn hình ảnh đầu tiên
+    AND sp.trang_thai = 1 -- Nếu không có hình ảnh nào
+ORDER BY 
+    sp.Id_san_pham;
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham AS idSanPham, 
+    sp.ten_san_pham AS tenSanPham, 
+    sp.trang_thai AS trangThai, 
+    sp.gia_ban AS giaBan,       
+    MAX(sp.mo_ta) AS moTa,           
+    dc.ten_danh_muc AS tenDanhMuc, 
+    MAX(hl.url_anh) AS urlAnh,       
+    MAX(hl.thu_tu) AS thuTu           
+FROM 
+    san_pham sp 
+JOIN 
+    san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham 
+LEFT JOIN 
+    hinh_anh_san_pham hl ON spct.Id_san_pham = hl.id_san_pham 
+LEFT JOIN 
+    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+WHERE 
+    hl.thu_tu = 1 
+    AND sp.trang_thai = 1 
+    AND dc.Id_danh_muc = 1
+GROUP BY 
+    sp.Id_san_pham, 
+    sp.ten_san_pham, 
+    sp.trang_thai,  
+    sp.gia_ban,  
+    dc.ten_danh_muc;
+
+
+
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham AS idSanPham, 
+    sp.ten_san_pham AS tenSanPham, 
+    sp.trang_thai AS trangThai, 
+    sp.gia_ban AS giaBan,       
+    sp.mo_ta AS moTa,           
+    dc.ten_danh_muc AS tenDanhMuc, 
+    hl.url_anh AS urlAnh,       
+    hl.thu_tu AS thuTu           
+FROM 
+    san_pham sp 
+JOIN 
+    san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham 
+LEFT JOIN 
+    hinh_anh_san_pham hl ON spct.Id_san_pham = hl.id_san_pham 
+LEFT JOIN 
+    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+LEFT JOIN 
+    giam_gia_san_pham ggs ON sp.Id_san_pham = ggs.id_san_pham 
+WHERE 
+    hl.thu_tu = 1 
+    AND sp.trang_thai = 1 
+    AND dc.Id_danh_muc = 2
+    AND ggs.Id_giam_gia_san_pham IS NULL  -- Kiểm tra không có giảm giá
+GROUP BY 
+    sp.Id_san_pham, 
+    sp.ten_san_pham, 
+    sp.mo_ta,           
+    sp.trang_thai,  
+    sp.gia_ban,  
+    hl.url_anh,  
+    hl.thu_tu,  
+    dc.ten_danh_muc;
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.trang_thai,
+    sp.gia_ban,
+    sp.mo_ta,
+    dc.ten_danh_muc, 
+    ha.url_anh,
+    ha.thu_tu
+FROM 
+    san_pham sp
+LEFT JOIN 
+    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+LEFT JOIN 
+    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+LEFT JOIN 
+    giam_gia_san_pham ggs ON sp.Id_san_pham = ggs.id_san_pham
+WHERE 
+    ha.thu_tu = 1 -- Chọn hình ảnh đầu tiên
+    AND sp.trang_thai = 1 -- Sản phẩm đang hoạt động
+    AND ggs.Id_giam_gia_san_pham IS NULL -- Sản phẩm chưa được giảm giá
+ORDER BY 
+    sp.Id_san_pham;
+
+
+
+
+
+
+	SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    ggs.gia_khuyen_mai,
+    dgg.ten_dot_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc
+FROM 
+    san_pham AS sp
+LEFT JOIN 
+    giam_gia_san_pham AS ggs ON sp.Id_san_pham = ggs.id_san_pham
+LEFT JOIN 
+    dot_giam_gia AS dgg ON ggs.id_dot_giam_gia = dgg.Id_dot_giam_gia
+WHERE 
+    sp.trang_thai = 1
+ORDER BY 
+    sp.ten_san_pham;
+
+-- Hiển thị ra những sản phẩm đang được giảm giá
+SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    ggs.gia_khuyen_mai,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ten_dot_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc,
+	sp.mo_ta,
+    dc.ten_danh_muc,
+    ha.url_anh
+FROM 
+    san_pham AS sp
+LEFT JOIN giam_gia_san_pham AS ggs ON sp.Id_san_pham = ggs.id_san_pham
+LEFT JOIN dot_giam_gia AS dgg ON ggs.id_dot_giam_gia = dgg.Id_dot_giam_gia
+LEFT JOIN danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+LEFT JOIN hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    sp.trang_thai = 1
+    AND ggs.gia_khuyen_mai IS NOT NULL AND ha.thu_tu = 1
+ORDER BY 
+    sp.ten_san_pham;
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    ggs.gia_khuyen_mai,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ten_dot_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc,
+    sp.mo_ta,
+    dc.ten_danh_muc,
+    ha.url_anh
+FROM 
+    san_pham AS sp
+LEFT JOIN giam_gia_san_pham AS ggs ON sp.Id_san_pham = ggs.id_san_pham
+LEFT JOIN dot_giam_gia AS dgg ON ggs.id_dot_giam_gia = dgg.Id_dot_giam_gia
+LEFT JOIN danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+LEFT JOIN hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    sp.trang_thai = 1
+    AND ggs.gia_khuyen_mai IS NOT NULL
+    AND ha.thu_tu = 1
+    AND dgg.ngay_bat_dau <= GETDATE()  -- Kiểm tra giảm giá đã bắt đầu
+    AND dgg.ngay_ket_thuc >= GETDATE() -- Kiểm tra giảm giá chưa kết thúc
+    AND dgg.id_trang_thai_giam_gia = (SELECT Id_trang_thai_giam_gia 
+                                       FROM trang_thai_giam_gia 
+                                       WHERE ten_trang_thai_giam_gia = N'Đang phát hành')  -- Kiểm tra trạng thái
+ORDER BY 
+    sp.ten_san_pham;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.mo_ta,
+    sp.gia_ban,
+    ha.url_anh
+FROM 
+    san_pham sp
+LEFT JOIN 
+    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    ha.thu_tu = 1 -- Chọn hình ảnh đầu tiên
+    AND sp.trang_thai = 1 -- Nếu không có hình ảnh nào
+ORDER BY 
+    sp.Id_san_pham;
+
+
+
+	SELECT 
+    sp.Id_san_pham AS idSanPham, 
+    sp.ten_san_pham AS tenSanPham, 
+    sp.trang_thai AS trangThai, 
+    sp.gia_ban AS giaBan, 
+    MAX(sp.mo_ta) AS moTa, 
+    dc.ten_danh_muc AS tenDanhMuc, 
+    MAX(hl.url_anh) AS urlAnh, 
+    MAX(hl.thu_tu) AS thuTu 
+FROM 
+    san_pham sp 
+JOIN 
+    san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham 
+LEFT JOIN 
+    (SELECT DISTINCT id_san_pham, url_anh, thu_tu FROM hinh_anh_san_pham) hl ON spct.Id_san_pham = hl.id_san_pham 
+LEFT JOIN 
+    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc 
+WHERE 
+    hl.thu_tu = 1 AND sp.trang_thai = 1 
+GROUP BY 
+    sp.Id_san_pham, 
+    sp.ten_san_pham, 
+    sp.trang_thai, 
+    dc.ten_danh_muc, 
+    sp.gia_ban, 
+    sp.mo_ta 
+ORDER BY 
+    sp.Id_san_pham ASC;
+
+-- Sắp xếp theo tên sản phẩm
+
+select * from san_pham
+
+
+
+
+select * from hinh_anh_san_pham
+select * from voucher
+select * from dot_giam_gia
+select * from giam_gia_san_pham
 /*Lấy ra sản phẩm có hình ảnh là 1 và sắp xếp theo thứ tự tăng dần*/
 SELECT 
     sp.Id_san_pham AS idSanPham, 
@@ -518,12 +888,6 @@ WHERE
 
 
 
--- Thêm dữ liệu vào bảng tạm
-INSERT INTO kho_hang (Id_san_pham_chi_tiet, so_luong_them)
-VALUES
-    (1, 5),  -- Cập nhật sản phẩm chi tiết với ID 1, thêm 5 sản phẩm
-    (2, 10); -- Cập nhật sản phẩm chi tiết với ID 2, thêm 10 sản phẩm
-
 -- Cập nhật số lượng trong bảng san_pham_chi_tiet
 UPDATE sp
 SET sp.so_luong = sp.so_luong + tu.so_luong_them,
@@ -844,3 +1208,7 @@ select * from loai_voucher
 
 
 
+SELECT v.ma_voucher, v.gia_tri_giam_gia, v.ngay_bat_dau, v.ngay_ket_thuc
+FROM voucher v
+JOIN hoa_don h ON v.Id_voucher = h.id_voucher
+WHERE h.id_nguoi_dung = 3;
