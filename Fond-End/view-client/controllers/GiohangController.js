@@ -83,10 +83,6 @@ window.GiohangController = function ($scope, $http, $window, $rootScope) {
     };
     // Chuyển sang trang thanh toán
     $scope.checkout = function () {
-        if ($scope.cart.length === 0) {
-            alert("Giỏ hàng rỗng, vui lòng thêm sản phẩm trước khi thanh toán!");
-            return;
-        }
         $window.location.href = "/#!thanh_toan"; // Chuyển hướng đến trang thanh toán
     };
 

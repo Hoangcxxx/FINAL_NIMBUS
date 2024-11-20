@@ -267,35 +267,71 @@ public class HoaDonService {
 	}
 
 
-	public List<SanphamchiTietDTO> getSanPhamByNguoiDung(Integer idNguoiDung) {
-		// Lấy danh sách hóa đơn theo mã người dùng
+	public List<HoaDonDTO> getHoaDonByUserId(Integer idNguoiDung) {
+		// Lấy danh sách hóa đơn từ repository
 		List<HoaDon> hoaDonList = hoaDonRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
 
+		// Chuyển đổi từ HoaDon sang HoaDonDTO
+		return hoaDonList.stream().map(hoaDon -> {
+			HoaDonDTO dto = new HoaDonDTO();
+			dto.setIdHoaDon(hoaDon.getIdHoaDon());
+			dto.setMaHoaDon(hoaDon.getMaHoaDon());
+			dto.setNgayTao(hoaDon.getNgayTao());
+			dto.setTenNguoiNhan(hoaDon.getTenNguoiNhan());
+			dto.setSdtNguoiNhan(hoaDon.getSdtNguoiNhan());
+			dto.setDiaChi(hoaDon.getDiaChi());
+			dto.setPhiShip(hoaDon.getPhiShip().doubleValue());
+			dto.setThanhTien(hoaDon.getThanhTien());
+			dto.setGhiChu(hoaDon.getMoTa());
 
 
-		// Danh sách DTO sản phẩm
-		List<SanphamchiTietDTO> sanPhamList = new ArrayList<>();
+			// Thông tin người dùng
+			if (hoaDon.getNguoiDung() != null) {
+				dto.setIdNguoiDung(hoaDon.getNguoiDung().getIdNguoiDung());
+				dto.setEmail(hoaDon.getNguoiDung().getEmail());
+			}
 
-		// Duyệt qua từng hóa đơn và lấy chi tiết sản phẩm
-		hoaDonList.forEach(hoaDon -> {
+			// Thông tin địa chỉ vận chuyển
+			if (hoaDon.getDiaChiVanChuyen() != null) {
+				dto.setIdDiaChiVanChuyen(hoaDon.getDiaChiVanChuyen().getIdDiaChiVanChuyen());
+				dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh());
+				dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen());
+				dto.setXa(hoaDon.getDiaChiVanChuyen().getXa());
+			}
+
+			// Thông tin phương thức thanh toán
+			if (hoaDon.getPhuongThucThanhToanHoaDon() != null) {
+				dto.setIdphuongthucthanhtoanhoadon(hoaDon.getPhuongThucThanhToanHoaDon().getIdThanhToanHoaDon());
+				dto.setTenPhuongThucThanhToan(hoaDon.getPhuongThucThanhToanHoaDon()
+						.getPhuongThucThanhToan()
+						.getTenPhuongThuc());
+			}
+
+			// trangthaihoadon
+			if (hoaDon.getTrangThaiHoaDon() != null) {
+				dto.setIdtrangthaihoadon(hoaDon.getTrangThaiHoaDon().getIdTrangThaiHoaDon());
+			}
+
+			// Danh sách sản phẩm chi tiết
 			List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon_IdHoaDon(hoaDon.getIdHoaDon());
-			// Chuyển đổi từ Entity sang DTO và thêm vào danh sách
-			chiTietList.forEach(chiTiet -> {
-				SanphamchiTietDTO spDTO = new SanphamchiTietDTO();
-				spDTO.setIdspct(chiTiet.getSanPhamChiTiet().getIdSanPhamChiTiet());
-				spDTO.setSoLuong(chiTiet.getSoLuong());
-				spDTO.setGiaTien(chiTiet.getTongTien());
-				spDTO.setTenkichthuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
-				spDTO.setTenmausac(chiTiet.getSanPhamChiTiet().getMauSacChiTiet().getMauSac().getTenMauSac());
-				spDTO.setTenchatlieu(chiTiet.getSanPhamChiTiet().getChatLieuChiTiet().getChatLieu().getTenChatLieu());
-				spDTO.setTenSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getTenSanPham());
-				spDTO.setMoTa(chiTiet.getSanPhamChiTiet().getSanPham().getMoTa());
-				spDTO.setIdSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getIdSanPham());
-				sanPhamList.add(spDTO);
-			});
-		});
+			dto.setListSanPhamChiTiet(chiTietList.stream()
+					.map(chiTiet -> {
+						SanphamchiTietDTO spDTO = new SanphamchiTietDTO();
+						spDTO.setIdspct(chiTiet.getSanPhamChiTiet().getIdSanPhamChiTiet());
+						spDTO.setSoLuong(chiTiet.getSoLuong());
+						spDTO.setGiaTien(chiTiet.getTongTien());
+						spDTO.setTenkichthuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
+						spDTO.setTenmausac(chiTiet.getSanPhamChiTiet().getMauSacChiTiet().getMauSac().getTenMauSac());
+						spDTO.setTenchatlieu(chiTiet.getSanPhamChiTiet().getChatLieuChiTiet().getChatLieu().getTenChatLieu());
+						spDTO.setTenSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getTenSanPham());
+						spDTO.setMoTa(chiTiet.getSanPhamChiTiet().getSanPham().getMoTa());
+						spDTO.setIdSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getIdSanPham());
+						return spDTO;
+					})
+					.collect(Collectors.toList()));
 
-		return sanPhamList;
+			return dto;
+		}).collect(Collectors.toList());
 	}
 
 

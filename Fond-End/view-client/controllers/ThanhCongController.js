@@ -29,7 +29,7 @@ window.ThanhCongController = function ($scope, $http) {
                         sdtNguoiNhan: hoaDon.sdtNguoiNhan,
                         ghiChu: hoaDon.ghiChu,
                         thanhTien: hoaDon.thanhTien,
-                        phiShip: hoaDon.phiShip,
+                        // phiShip: hoaDon.phiShip,
                         tinh: hoaDon.tinh,
                         huyen: hoaDon.huyen,
                         xa: hoaDon.xa

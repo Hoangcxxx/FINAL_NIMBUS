@@ -1,7 +1,10 @@
 package com.example.duantn.entity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +22,7 @@ public class HoaDon {
     @Column(name = "id_hoa_don")
     private Integer idHoaDon;
 
+//    @NotNull(message = "Ma Hoa Don Khong Duoc Bo Trong")
     @Column(name = "ma_hoa_don", nullable = false, unique = true)
     private String maHoaDon;
 

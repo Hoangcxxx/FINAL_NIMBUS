@@ -4,7 +4,6 @@ window.ThongTinTKController = function ($scope, $http) {
     if (user) {
         var iduser = user.idNguoiDung;  // Giả sử 'idNguoiDung' là ID người dùng trong phản hồi từ API
     }
-
     // Lấy thông tin người dùng từ API
     $http.get('http://localhost:8080/api/auth/user/' + iduser)
         .then(function (response) {
@@ -59,22 +58,29 @@ window.ThongTinTKController = function ($scope, $http) {
             });
     };
 
-    // Lấy danh sách hóa đơn của người dùng
-    $scope.getHoaDonList = function () {
-        $http.get('http://localhost:8080/api/hoa-don/san-pham/' + iduser)
-            .then(function (response) {
-                var hoaDonList = response.data; 
-                $scope.hoaDonList = hoaDonList.maHoaDon; 
-                $scope.hoaDonList = hoaDonList.ngayTao;
-                $scope.hoaDonList = hoaDonList.thanhTien;
-                $scope.hoaDonList = hoaDonList.idtrangthaihoadon;
-                $scope.hoaDonList = hoaDonList.idDiaChiVanChuyen;
-            }, function (error) {
-                console.error('Lỗi khi lấy danh sách hóa đơn:', error);
-                alert('Không thể lấy danh sách hóa đơn!');
-            });
-    };
+    function getOrderDetails(iduser) {
+        const apiUrl = `http://localhost:8080/api/hoa-don/user/${iduser}`;
 
-    // Gọi hàm để lấy danh sách hóa đơn khi tải trang
-    $scope.getHoaDonList();
+        $http.get(apiUrl)
+            .then(function (response) {
+                // Kiểm tra và gán dữ liệu đơn hàng
+                const hoaDonList = response.data.hoaDon && Array.isArray(response.data.hoaDon)
+                    ? response.data.hoaDon
+                    : [];
+
+                if (hoaDonList.length > 0) {
+                    // Gán danh sách hóa đơn vào $scope
+                    $scope.orderData = hoaDonList;
+                } else {
+                    console.warn("Không tìm thấy đơn hàng nào.");
+                    $scope.orderData = [];
+                }
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi lấy thông tin hóa đơn:", error);
+                $scope.orderData = []; // Gán rỗng nếu lỗi
+            });
+    }
+    // Gọi API để lấy chi tiết đơn hàng
+    getOrderDetails(iduser);
 }

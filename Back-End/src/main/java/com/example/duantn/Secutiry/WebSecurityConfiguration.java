@@ -64,6 +64,7 @@ public class WebSecurityConfiguration {
                                 "/api/lich-su-hoa-don/**",
                                 "/api/trang-thai-hoa-don/**",
                                 "/api/voucher/**",
+                                "/api/Test/**",
                                 "/api/hoa-don/**",
                                  "/api/email/**",
                                 "/api/ad_san_pham/**").permitAll() // Các đường dẫn này được cho phép truy cập mà không cần xác thực

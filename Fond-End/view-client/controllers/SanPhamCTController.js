@@ -104,8 +104,13 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
         // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
         $http.post(`http://localhost:8080/api/giohang/add?idUser=${iduser}`, cartItem)
             .then(function (response) {
-                alert("Sản phẩm đã được thêm vào giỏ hàng.");
-                window.location.href = '#!gio_hang'; 
+                Swal.fire({
+                    icon: "success",
+                    title: "Thêm Sản Phẩm Vào Giỏ Hàng",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => window.location.href = '#!gio_hang');
+              ; 
             })
             .catch(function (error) {
                 console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);

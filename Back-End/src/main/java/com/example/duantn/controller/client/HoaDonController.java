@@ -75,16 +75,25 @@ public class HoaDonController {
 		}
 	}
 
-	@GetMapping("/san-pham/{idNguoiDung}")
-	public ResponseEntity<List<SanphamchiTietDTO>> getSanPhamByNguoiDung(@PathVariable Integer idNguoiDung) {
+	@GetMapping("/user/{idNguoiDung}")
+	public ResponseEntity<Map<String, Object>> hienthi(@PathVariable Integer idNguoiDung) {
+		Map<String, Object> response = new HashMap<>();
 		try {
-			List<SanphamchiTietDTO> sanPhamList = hoaDonService.getSanPhamByNguoiDung(idNguoiDung);
-			if (sanPhamList.isEmpty()) {
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			// Lấy danh sách hóa đơn của người dùng
+			List<HoaDonDTO> hoaDonList = hoaDonService.getHoaDonByUserId(idNguoiDung);
+
+			if (hoaDonList != null && !hoaDonList.isEmpty()) {
+				response.put("hoaDon", hoaDonList);
+				return ResponseEntity.ok(response);
+			} else {
+				response.put("error", "Không tìm thấy hóa đơn nào cho người dùng có ID: " + idNguoiDung);
+				return ResponseEntity.status(404).body(response);
 			}
-			return new ResponseEntity<>(sanPhamList, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			log.error("Lỗi khi lấy thông tin hóa đơn: {}", e.getMessage(), e);
+			response.put("error", "Lỗi khi lấy thông tin hóa đơn!");
+			return ResponseEntity.badRequest().body(response);
 		}
 	}
+
 }

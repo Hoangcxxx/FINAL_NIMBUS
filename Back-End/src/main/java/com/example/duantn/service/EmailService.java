@@ -61,7 +61,7 @@ public class EmailService {
 
             for (SanphamchiTietDTO sanPham : hoaDonDTO.getListSanPhamChiTiet()) {
                 emailContent.append("<div class='order-item'>")
-//                        .append("<span><strong>Mã Đơn Hàng:</strong> " + hoaDonDTO.getMaHoaDon() + "</span>")
+                        .append("<span><strong>Mã Đơn Hàng:</strong> " + hoaDonDTO.getMaHoaDon() + "</span>")
                         .append("<span><strong>Sản phẩm:</strong> " + sanPham.getTenSanPham() + "</span>")
                         .append("<span><strong>Đơn giá:</strong> " + sanPham.getGiaTien() + " VND</span>")
                         .append("<span><strong>Số lượng:</strong> " + sanPham.getSoLuong() + "</span>")

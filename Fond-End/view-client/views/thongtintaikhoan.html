@@ -50,7 +50,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="tab-pane fade" id="orders">
                     <h4 class="mt-4 text-primary">Đơn hàng Mới Nhất</h4>
                     <div class="card shadow-sm p-3">
@@ -65,20 +64,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="hoaDon in hoaDonList">
+                                <!-- Lặp qua danh sách đơn hàng -->
+                                <tr ng-repeat="hoaDon in orderData">
                                     <td>#{{ hoaDon.maHoaDon }}</td>
                                     <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
                                     <td>{{ hoaDon.thanhTien | currency:"":0 }}đ</td>
-                                    <td>{{ hoaDon.trangThaiThanhToan }}</td>
-                                    <td>{{ hoaDon.vanChuyen }}</td>
+                                    <td>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 1">Chờ Xử Lý</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 2">Đang Giao Hàng</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 3">Hoàn Thành</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 4">Hủy Bỏ</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 5">Thất Bại</span>
+                                    </td>
+                                    <td>{{hoaDon.diaChi}}, {{hoaDon.tinh}}, {{hoaDon.huyen}}, {{hoaDon.xa}}</td>
+                                </tr>
+                                <!-- Trường hợp không có đơn hàng -->
+                                <tr ng-if="!orderData || orderData.length === 0">
+                                    <td colspan="5" class="text-center">Không có đơn hàng nào</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                
-
-
                 <div class="tab-pane fade" id="downloads">
                     <h3 class="mb-4 text-primary">Lịch Sử Mua Hàng</h3>
                     <div class="card border-0 shadow-sm p-4">
