@@ -16,4 +16,5 @@ public class HoaDonUpdateDTO {
     private BigDecimal thanhTien;
     private int idPtThanhToanHoaDon;
     private Integer trangThaiHoaDon;
+    private String setSdtNguoiNhan;
 }

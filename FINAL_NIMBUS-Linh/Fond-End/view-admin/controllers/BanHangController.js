@@ -69,7 +69,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         $scope.newCustomer.sdtNguoiDung = '';
     };
     $scope.addCustomer = function () {
-        // Kiểm tra dữ liệu nhập
         if (!$scope.newCustomer.tenNguoiDung || $scope.newCustomer.tenNguoiDung.trim() === '') {
             Swal.fire({
                 title: 'Lỗi!',
@@ -303,6 +302,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
             return;
         }    
+        
         let cartItem = { idSanPhamChiTiet: idSanPhamChiTiet, soLuong: 1 };
         $http.post('http://localhost:8080/api/gio-hang/them/' + $scope.selectedUser.id, cartItem)
             .then(function (response) {
@@ -311,7 +311,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                     title: 'Thành công!',
                     text: 'Thêm giỏ hàng thành công!',
                     icon: 'success',
-                    timer: 1500,  // Đóng sau 2 giây
+                    timer: 1500, 
                     showConfirmButton: false
                 });
                 return $scope.getCartItems();
@@ -325,7 +325,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
     };
 
-    // lấy danh sách sp theo id người dùng đã thêm vào giỏ hàng
     $scope.getCartItems = function () {
         $http.get('http://localhost:8080/api/gio-hang/lay/' + $scope.selectedUser.id)
             .then(function (response) {
@@ -452,7 +451,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 icon: 'error',
                 confirmButtonText: 'Đóng'
             });
-            item.soLuong = 1; // Reset lại nếu nhập số lượng không hợp lệ
+            item.soLuong = 1;
             return;
         }
     
@@ -463,7 +462,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 icon: 'error',
                 confirmButtonText: 'Đóng'
             });
-            item.soLuong = item.soLuongTon; // Reset lại số lượng nếu vượt quá tồn kho
+            item.soLuong = item.soLuongTon; 
             return;
         }
     
@@ -641,6 +640,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         ngayThanhToan: new Date().toISOString(),
                         thanhTien: Number($scope.totalPrice),
                         idPtThanhToanHoaDon: response.data.id,
+                        setSdtNguoiNhan: $scope.selectedUser.sdtNguoiDung,
                         trangThaiHoaDon: $scope.selectedPhuongThucThanhToan === 2 ? 1 : 3
                     };
                   
@@ -648,7 +648,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                     return $http.put("http://localhost:8080/api/hoa-don/cap-nhat/" + $scope.selectedInvoice.idHoaDon, updatedInvoice)
                         .then(function (putResponse) {
                             console.log("Hóa đơn đã được cập nhật thành công:", putResponse.data);
-
                         })
                 } 
             })
@@ -736,30 +735,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         });
     };
 
-    // Khi chọn tỉnh, lấy danh sách huyện
-    $scope.onProvinceChange = function (provinceId) {
-        $http.get('http://localhost:8080/api/ghn/districts/' + provinceId).then(function (response) {
-            if (response.data && response.data.data) {
-                $scope.districts = response.data.data;
-            } else {
-                console.error('Không lấy được danh sách huyện từ API GHN');
-            }
-        }, function (error) {
-            console.error('Lỗi khi gọi API GHN:', error);
-        });
-    };
-
-    $scope.onDistrictChange = function (districtId) {
-        $http.get('http://localhost:8080/api/ghn/wards/' + districtId).then(function (response) {
-            if (response.data && response.data.data) {
-                $scope.wards = response.data.data;
-            } else {
-                console.error('Không lấy được danh sách xã từ API GHN');
-            }
-        }, function (error) {
-            console.error('Lỗi khi gọi API GHN:', error);
-        });
-    };
     $scope.customerPaid = null;
     $scope.getProductDetails();
     $scope.getUsers();

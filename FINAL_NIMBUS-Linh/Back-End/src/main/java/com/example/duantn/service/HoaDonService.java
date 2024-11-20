@@ -122,7 +122,7 @@ public class HoaDonService {
         hoaDon.setPhiShip(updateHoaDonDTO.getPhiShip());
         hoaDon.setNgayThanhToan(updateHoaDonDTO.getNgayThanhToan());
         hoaDon.setThanhTien(updateHoaDonDTO.getThanhTien());
-
+        hoaDon.setSdtNguoiNhan(updateHoaDonDTO.getSetSdtNguoiNhan());
         PtThanhToanHoaDon ptThanhToan = new PtThanhToanHoaDon();
         ptThanhToan.setId(updateHoaDonDTO.getIdPtThanhToanHoaDon());
         PtThanhToanHoaDon existingPtThanhToan = ptThanhToanHoaDonRepository.findById(ptThanhToan.getId())
@@ -134,7 +134,6 @@ public class HoaDonService {
         hoaDon.setTrangThaiHoaDon(trangThaiHoaDon);
         hoaDonRepository.save(hoaDon);
 
-        // Trả về DTO với dữ liệu mong muốn
         return new HoaDonResponseDTO(hoaDon.getPhiShip(), hoaDon.getNgayThanhToan(), hoaDon.getThanhTien(), hoaDon.getPtThanhToanHoaDon().getId());
     }
 
