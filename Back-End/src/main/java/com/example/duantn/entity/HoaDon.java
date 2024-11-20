@@ -22,7 +22,7 @@ public class HoaDon {
     @Column(name = "id_hoa_don")
     private Integer idHoaDon;
 
-//    @NotNull(message = "Ma Hoa Don Khong Duoc Bo Trong")
+
     @Column(name = "ma_hoa_don", nullable = false, unique = true)
     private String maHoaDon;
 

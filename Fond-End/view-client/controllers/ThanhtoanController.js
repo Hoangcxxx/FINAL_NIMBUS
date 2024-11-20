@@ -82,7 +82,7 @@ window.ThanhtoanController = function ($scope, $http, $window) {
 
         const orderData = {
             cartId: iduser,
-            idNguoiDung: $scope.userInfo.id,
+            idNguoiDung: $scope.userInfo.id,    
             tinh: $scope.shippingInfo.province,
             huyen: $scope.shippingInfo.district,
             xa: $scope.shippingInfo.ward,

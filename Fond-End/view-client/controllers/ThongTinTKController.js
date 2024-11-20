@@ -33,7 +33,8 @@ window.ThongTinTKController = function ($scope, $http) {
             tenNguoiDung: $scope.tempTenKhachHang,
             email: $scope.tempEmailKhachHang,
             diaChi: $scope.tempDiaChiKhachHang,
-            sdtNguoiDung: $scope.tempSdtKhachHang
+            sdtNguoiDung: $scope.tempSdtKhachHang,
+            MatKhau: $scope.MatKhau
         };
 
         // Cập nhật thông tin người dùng qua API
@@ -44,6 +45,7 @@ window.ThongTinTKController = function ($scope, $http) {
                 $scope.emailKhachHang = updatedCustomer.email;
                 $scope.diaChiKhachHang = updatedCustomer.diaChi;
                 $scope.sdtKhachHang = updatedCustomer.sdtNguoiDung;
+                $scope.MatKhau = updatedCustomer.MatKhau;
 
                 // Lưu lại thông tin vào localStorage
                 var updatedUser = { ...user, ...updatedCustomer }; // Cập nhật thông tin người dùng trong localStorage

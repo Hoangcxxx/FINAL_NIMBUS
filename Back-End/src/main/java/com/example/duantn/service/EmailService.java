@@ -61,18 +61,17 @@ public class EmailService {
 
             for (SanphamchiTietDTO sanPham : hoaDonDTO.getListSanPhamChiTiet()) {
                 emailContent.append("<div class='order-item'>")
-                        .append("<span><strong>Mã Đơn Hàng:</strong> " + hoaDonDTO.getMaHoaDon() + "</span>")
+//                        .append("<span><strong>Mã Đơn Hàng:</strong> " + hoaDonDTO.getMaHoaDon() + "</span>")
                         .append("<span><strong>Sản phẩm:</strong> " + sanPham.getTenSanPham() + "</span>")
                         .append("<span><strong>Đơn giá:</strong> " + sanPham.getGiaTien() + " VND</span>")
                         .append("<span><strong>Số lượng:</strong> " + sanPham.getSoLuong() + "</span>")
                         .append("<span><strong>Thành tiền:</strong> " + sanPham.getGiaTien().multiply(BigDecimal.valueOf(sanPham.getSoLuong())) + " VND</span>")
                         .append("</div>");
             }
-
             emailContent.append("</div>")
                     .append("<p><strong>Tổng giá trị đơn hàng:</strong> " + hoaDonDTO.getThanhTien() + " VND</p>")
                     .append("<p>Chúng tôi sẽ thông báo cho bạn khi đơn hàng đã được gửi đi.</p>")
-                    .append("<p>Mọi thắc mắc, xin vui lòng liên hệ: <strong>HOTLINE 098232312332</strong>.</p>")
+                    .append("<p>Mọi thắc mắc, xin vui lòng liên hệ: <strong>HOTLINE 0376941599</strong>.</p>")
                     .append("<a href='https://yourshop.com/order-tracking' class='button'>Theo Dõi Đơn Hàng</a>")
                     .append("</div>")
                     .append("<div class='footer'>")
@@ -81,7 +80,6 @@ public class EmailService {
                     .append("</div>")
                     .append("</body>")
                     .append("</html>");
-
             mimeMessageHelper.setText(emailContent.toString(), true);
             javaMailSender.send(mimeMessage);
             System.out.println("Sent message successfully to " + recipientEmail);

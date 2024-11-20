@@ -92,7 +92,22 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             alert("Vui lòng chọn đầy đủ màu sắc, kích thước và chất liệu trước khi thêm vào giỏ hàng.");
             return;
         }
-
+    
+        // Kiểm tra nếu người dùng chưa đăng nhập
+        if (!iduser) {
+            // Nếu chưa đăng nhập, bạn có thể lưu giỏ hàng tạm thời hoặc thông báo yêu cầu đăng nhập
+            Swal.fire({
+                icon: "warning",
+                title: "Bạn chưa đăng nhập",
+                text: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng và thực hiện thanh toán.",
+                showConfirmButton: true
+            }).then(() => {
+                // Chuyển hướng đến trang đăng nhập nếu cần
+                window.location.href = '#!user'; 
+            });
+            return;
+        }
+    
         // Chuẩn bị dữ liệu sản phẩm để gửi lên backend
         let cartItem = {
             idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
@@ -101,6 +116,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             idChatLieu: $scope.selectedMaterial, // ID chất liệu
             soLuong: $scope.soluong // Số lượng mà người dùng chọn
         };
+    
         // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
         $http.post(`http://localhost:8080/api/giohang/add?idUser=${iduser}`, cartItem)
             .then(function (response) {
@@ -110,13 +126,59 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
                     showConfirmButton: false,
                     timer: 1500
                 }).then(() => window.location.href = '#!gio_hang');
-              ; 
             })
             .catch(function (error) {
                 console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
                 alert(error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
             });
     };
+    
+    $scope.thanhtoan = function () {
+        if (!$scope.selectedColor || !$scope.selectedSize || !$scope.selectedMaterial) {
+            alert("Vui lòng chọn đầy đủ màu sắc, kích thước và chất liệu trước khi thêm vào giỏ hàng.");
+            return;
+        }
+    
+        // Kiểm tra nếu người dùng chưa đăng nhập
+        if (!iduser) {
+            // Nếu chưa đăng nhập, bạn có thể lưu giỏ hàng tạm thời hoặc thông báo yêu cầu đăng nhập
+            Swal.fire({
+                icon: "warning",
+                title: "Bạn chưa đăng nhập",
+                text: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng và thực hiện thanh toán.",
+                showConfirmButton: true
+            }).then(() => {
+                // Chuyển hướng đến trang đăng nhập nếu cần
+                window.location.href = '#!user'; 
+            });
+            return;
+        }
+    
+        // Chuẩn bị dữ liệu sản phẩm để gửi lên backend
+        let cartItem = {
+            idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
+            idMauSac: $scope.selectedColor,  // ID màu sắc
+            idKichThuoc: $scope.selectedSize, // ID kích thước
+            idChatLieu: $scope.selectedMaterial, // ID chất liệu
+            soLuong: $scope.soluong // Số lượng mà người dùng chọn
+        };
+    
+        // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
+        $http.post(`http://localhost:8080/api/giohang/add?idUser=${iduser}`, cartItem)
+            .then(function (response) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Thêm Sản Phẩm Vào Thanh Toán",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => window.location.href = '#!thanh_toan');
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+                alert(error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
+            });
+    };
+    
 
 
 

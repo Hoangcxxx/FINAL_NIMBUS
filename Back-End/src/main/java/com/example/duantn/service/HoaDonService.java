@@ -266,7 +266,6 @@ public class HoaDonService {
 		gioHangRepository.save(gioHang);
 	}
 
-
 	public List<HoaDonDTO> getHoaDonByUserId(Integer idNguoiDung) {
 		// Lấy danh sách hóa đơn từ repository
 		List<HoaDon> hoaDonList = hoaDonRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
