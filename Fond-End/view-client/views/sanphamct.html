@@ -30,8 +30,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5 d-flex flex-column" 
-                    ng-repeat="sanPhamChiTiet in sanPhamChiTiet track by $index">
+                <div class="col-md-5 d-flex flex-column" ng-repeat="sanPhamChiTiet in sanPhamChiTiet track by $index">
                     <h1 class="display-5 fw-bolder">{{sanPhamChiTiet.tenSanPham}}</h1>
                     <div class="star" style="color: rgb(223, 223, 66);">
                         <i class="fas fa-star"></i>
@@ -83,6 +82,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Hiển thị số lượng tồn chỉ khi đã chọn đủ các thuộc tính -->
+                            <div ng-if="selectedMaterial && selectedColor && selectedSize">
+                                <p>Số lượng tồn: {{soLuongTon}}</p>
+                            </div>
                             </p>
                         </div>
                     </div>
@@ -101,7 +104,8 @@
                             <!-- Add to Cart Button -->
                             <div class="flex-grow-1">
                                 <a href="#!gio_hang" class="text-decoration-none">
-                                    <button class="btn btn-danger w-100" style="font-size: 18px;" ng-click="addToCart(sanPhamChiTiet)">
+                                    <button class="btn btn-danger w-100" style="font-size: 18px;"
+                                        ng-click="addToCart(sanPhamChiTiet)">
                                         <i class="fa-solid fa-bag-shopping" style="font-size: 24px;"></i> Giỏ hàng
                                     </button>
                                 </a>
@@ -110,7 +114,7 @@
                         <!-- Buy Now Button -->
                         <div class="border border-3 rounded border-danger">
                             <a href="#!thanh_toan" class="text-decoration-none " ng-click="thanhtoan(sanPhamChiTiet)">
-                                <button class="btn btn-light text-danger w-100" style="font-size: 18px;" >
+                                <button class="btn btn-light text-danger w-100" style="font-size: 18px;">
                                     <i class="fa-solid fa-bolt" style="font-size: 24px;"></i> Mua ngay
                                 </button>
                             </a>

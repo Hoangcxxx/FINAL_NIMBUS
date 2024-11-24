@@ -22,24 +22,6 @@ public class HoaDonController {
 	@Autowired
 	private HoaDonService hoaDonService;
 
-	// Đặt đơn hàng
-	@PostMapping("/them_thong_tin_nhan_hang")
-	public ResponseEntity<Map<String, String>> placeOrder(@RequestBody HoaDonDTO hoaDonDTO, HttpServletRequest request) {
-		try {
-			// Tạo đơn hàng và lấy mã đơn hàng mới tạo
-			String maHoaDon = hoaDonService.createOrder(hoaDonDTO, request);
-
-			// Tạo phản hồi trả về cho frontend
-			Map<String, String> response = new HashMap<>();
-			response.put("message", "Đơn hàng đã được đặt thành công!");
-			response.put("maHoaDon", maHoaDon); // Thêm mã đơn hàng vào phản hồi
-
-			return ResponseEntity.ok(response);
-		} catch (Exception e) {
-			log.error("Lỗi khi đặt hàng: {}", e.getMessage(), e);
-			return ResponseEntity.badRequest().body(Map.of("error", "Không thể đặt đơn hàng!"));
-		}
-	}
 
 	// Hiển thị thông tin đơn hàng
 	@GetMapping("/{maHoaDon}")

@@ -1,5 +1,6 @@
 package com.example.duantn.service;
 import com.example.duantn.entity.SanPham;
+import com.example.duantn.repository.DotGiamGiaRepository;
 import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,8 @@ import java.util.*;
 public class SanPhamService {
     @Autowired
     private static SanPhamRepository sanPhamRepository;
-
+    @Autowired
+    private static DotGiamGiaRepository dotGiamGiaRepository;
 
     @Autowired
     public SanPhamService(SanPhamRepository sanPhamRepository) {
@@ -37,7 +39,9 @@ public class SanPhamService {
     public List<Object[]> getSanPhamsByDanhMuc(Integer idDanhMuc) {
         return sanPhamRepository.getSanPhamByDanhMuc(idDanhMuc); // Trả về danh sách từ repository
     }
-
+    public List<Object[]> getSanPhamsByIdDotGiamGia(Integer idDotGiamGia) {
+        return sanPhamRepository.getSanPhamByIdDotGiamGia(idDotGiamGia); // Trả về danh sách từ repository
+    }
     public SanPham updateSanPham(Integer idSanPham, SanPham sanPham) {
         sanPham.setIdSanPham(idSanPham);
         return sanPhamRepository.save(sanPham);

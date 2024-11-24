@@ -31,8 +31,11 @@ public class SanPhamChiTietService {
         return sanPhamChiTietRepository.getSanPhamById(idSanPhamCT);
     }
 
-    public List<Object[]> getSanPhamCTById(Integer idSanPhamCT) {
-        return sanPhamChiTietRepository.getSanPhamCTByIdSanPham(idSanPhamCT);
+    public List<Object[]> getAllSanPhamCTById(Integer idSanPham) {
+        return sanPhamChiTietRepository.getAllSanPhamByIdSanPham(idSanPham);
+    }
+    public List<SanPhamChiTiet> timSanPhamChiTiet(Integer idSanPham, Integer idChatLieu, Integer idMauSac, Integer idKichThuoc) {
+        return sanPhamChiTietRepository.findByMauSacChatLieuKichThuocSanPham(idSanPham, idChatLieu, idMauSac, idKichThuoc);
     }
     public List<Object[]> getSanPhamCTByIdSanPhamLonHon0(Integer idSanPhamCT) {
         return sanPhamChiTietRepository.getSanPhamCTByIdSanPhamLonHon0(idSanPhamCT);

@@ -1,5 +1,7 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.entity.DotGiamGia;
+import com.example.duantn.service.DotGiamGiaService;
 import com.example.duantn.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,8 @@ import java.util.stream.Collectors;
 public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
-
+    @Autowired
+    private DotGiamGiaService dotGiamGiaService;
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -87,6 +90,12 @@ public class SanPhamController {
     public ResponseEntity<List<Map<String, Object>>> getSanPhamsByDanhMuc(@PathVariable Integer idDanhMuc) {
         return ResponseEntity.ok(mapDanhMucs(sanPhamService.getSanPhamsByDanhMuc(idDanhMuc)));
     }
-
-
+    @GetMapping("/findDotGiamGia/{idDotGiamGia}")
+    public ResponseEntity<List<Map<String, Object>>> getSanPhamsByDotGiamGia(@PathVariable Integer idDotGiamGia) {
+        return ResponseEntity.ok(mapSanPhamGiamGias(sanPhamService.getSanPhamsByIdDotGiamGia(idDotGiamGia)));
+    }
+    @GetMapping("/dot_giam_gia")
+    public List<DotGiamGia> getAllDotGiamGia() {
+        return dotGiamGiaService.getAllDotGiamGia();
+    }
 }

@@ -22,9 +22,9 @@ public class HoaDonDTO {
 	private String diaChi;
 	private String sdtNguoiNhan;
 	private String ghiChu;
-	private String tinh;
-	private String huyen;
-	private String xa;
+	private Integer tinh;
+	private Integer huyen;
+	private Integer xa;
 	private String email;
 	private Integer idDiaChiVanChuyen;
 	private Integer idNguoiDung;

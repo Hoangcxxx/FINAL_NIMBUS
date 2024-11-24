@@ -23,5 +23,5 @@ public class ThongBaoController {
         }
         return ResponseEntity.ok(thongBaos);  // Trả về 200 OK với danh sách thông báo
     }
-    
+
 }

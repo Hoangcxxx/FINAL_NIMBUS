@@ -5492,7 +5492,8 @@ fieldset:disabled .btn {
     --bs-badge-padding-y: 0.35em;
     --bs-badge-font-size: 0.75em;
     --bs-badge-font-weight: 700;
-    --bs-badge-color: #1f1f1f;;
+    --bs-badge-color: #1f1f1f;
+    ;
     --bs-badge-border-radius: var(--bs-border-radius);
     display: inline-block;
     padding: var(--bs-badge-padding-y) var(--bs-badge-padding-x);
@@ -6190,7 +6191,7 @@ fieldset:disabled .btn {
 }
 
 
-.modalsiu{
+.modalsiu {
     --bs-modal-zindex: 1055;
     --bs-modal-width: 700px;
     --bs-modal-padding: 1rem;
@@ -9805,7 +9806,7 @@ fieldset:disabled .btn {
 
 .bg-success {
     --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-success-rgb), var(--bs-bg-opacity)) !important
+    background-color: rgb(31, 185, 113) !important
 }
 
 .bg-info {

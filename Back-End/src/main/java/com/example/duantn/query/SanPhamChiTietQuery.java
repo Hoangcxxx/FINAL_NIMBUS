@@ -38,15 +38,15 @@ public class SanPhamChiTietQuery {
 
 
     public static final String GET_SAN_PHAM_CT_BY_ID_SAN_PHAM =
-            "SELECT spc.id_san_pham_chi_tiet,\n" +
-                    "       sp.id_san_pham,\n" +
+            "SELECT sp.id_san_pham,\n" +
                     "       sp.ma_san_pham,\n" +
                     "       sp.ten_san_pham,\n" +
                     "       spc.so_luong,\n" +
                     "       cl.ten_chat_lieu,\n" +
                     "       ms.ten_mau_sac,\n" +
                     "       kc.ten_kich_thuoc,\n" +
-                    "       sp.mo_ta\n" +
+                    "       sp.mo_ta,\n" +
+                    "       spc.id_san_pham_chi_tiet\n" +
                     "FROM san_pham sp\n" +
                     "JOIN san_pham_chi_tiet spc ON sp.id_san_pham = spc.id_san_pham\n" +
                     "JOIN mau_sac_chi_tiet msc ON spc.id_mau_sac_chi_tiet = msc.id_mau_sac_chi_tiet\n" +
@@ -55,8 +55,8 @@ public class SanPhamChiTietQuery {
                     "JOIN chat_lieu cl ON clc.id_chat_lieu = cl.id_chat_lieu\n" +
                     "JOIN kich_thuoc_chi_tiet kcc ON spc.id_kich_thuoc_chi_tiet = kcc.id_kich_thuoc_chi_tiet\n" +
                     "JOIN kich_thuoc kc ON kcc.id_kich_thuoc = kc.id_kich_thuoc\n" +
-                    "WHERE sp.id_san_pham = :idSanPhamCT\n";
-
+                    "WHERE sp.id_san_pham = :idSanPham\n";
+    public static final String GET_SO_LUONG_SAN_PHAM_CT = "";
     public static final String GET_SAN_PHAM_CT_BY_ID_SAN_PHAM_AND_SL_LON_HON_0 =
             "SELECT spc.id_san_pham_chi_tiet,\n" +
                     "       sp.id_san_pham,\n" +

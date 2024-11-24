@@ -26,6 +26,7 @@
     <script src="view-client/controllers/UserController.js"></script>
     <script src="view-client/controllers/ThongTinNguoiDungController.js"></script>
     <script src="view-client/controllers/ThanhCongController.js"></script>
+    <script src="view-client/controllers/DonhangController.js"></script>
 </head>
 
 <body ng-app="myApp">
@@ -86,6 +87,10 @@
                 .when("/thanhcong", {
                     templateUrl: "view-client/views/thanhcong.html",
                     controller: ThanhCongController
+                })
+                .when("/donhang", {
+                    templateUrl: "view-client/views/theodoidonhang.html",
+                    controller: DonHangController
                 })
                 .otherwise({
                     redirectTo: "/"

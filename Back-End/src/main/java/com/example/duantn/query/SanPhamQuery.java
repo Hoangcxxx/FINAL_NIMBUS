@@ -22,7 +22,6 @@ public class SanPhamQuery {
             "WHERE \n" +
             "    ha.thu_tu = 1 -- Chọn hình ảnh đầu tiên\n" +
             "    AND sp.trang_thai = 1 -- Sản phẩm đang hoạt động\n" +
-            "    AND ggs.Id_giam_gia_san_pham IS NULL -- Sản phẩm chưa được giảm giá\n" +
             "ORDER BY \n" +
             "    sp.Id_san_pham;";
 
@@ -54,7 +53,51 @@ public class SanPhamQuery {
             "    sp.trang_thai,  -- Đảm bảo trường này có trong GROUP BY\n" +
             "    sp.gia_ban,  -- Đảm bảo trường này có trong GROUP BY\n" +
             "    dc.ten_danh_muc;";
-
+    public static final String GET_SAN_PHAM_BY_ID_DOT_GIAM_GIA = "\n" +
+            "SELECT \n" +
+            "    sp.Id_san_pham,\n" +
+            "    sp.ma_san_pham,\n" +
+            "    sp.ten_san_pham,\n" +
+            "    sp.gia_ban,\n" +
+            "    ggs.gia_khuyen_mai,\n" +
+            "    dgg.gia_tri_giam_gia,\n" +
+            "    dgg.kieu_giam_gia,\n" +
+            "    dgg.ten_dot_giam_gia,\n" +
+            "    dgg.ngay_bat_dau,\n" +
+            "    dgg.ngay_ket_thuc,\n" +
+            "    sp.mo_ta,\n" +
+            "    dc.ten_danh_muc,\n" +
+            "    hl.url_anh\n" +
+            "FROM \n" +
+            "    san_pham sp\n" +
+            "JOIN \n" +
+            "    giam_gia_san_pham ggs ON ggs.id_san_pham = sp.Id_san_pham\n" +
+            "LEFT JOIN \n" +
+            "    dot_giam_gia AS dgg ON ggs.id_dot_giam_gia = dgg.Id_dot_giam_gia\n" +
+            "LEFT JOIN \n" +
+            "    trang_thai_giam_gia AS tt ON dgg.id_trang_thai_giam_gia = tt.Id_trang_thai_giam_gia\n" +
+            "LEFT JOIN \n" +
+            "    danh_muc AS dc ON sp.id_danh_muc = dc.Id_danh_muc\n" +
+            "LEFT JOIN \n" +
+            "    hinh_anh_san_pham AS hl ON sp.Id_san_pham = hl.id_san_pham\n" +
+            "WHERE \n" +
+            "    ggs.id_dot_giam_gia = :idDotGiamGia\n" +
+            "    AND tt.id_trang_thai_giam_gia = 1\n" +
+            "    AND sp.trang_thai = 1 AND hl.thu_tu = 1\n" +
+            "GROUP BY \n" +
+            "    sp.Id_san_pham,\n" +
+            "    sp.ma_san_pham,\n" +
+            "    sp.ten_san_pham,\n" +
+            "    sp.gia_ban,\n" +
+            "    ggs.gia_khuyen_mai,\n" +
+            "    dgg.gia_tri_giam_gia, \n" +
+            "    dgg.kieu_giam_gia, \n" +
+            "    dgg.ten_dot_giam_gia, \n" +
+            "    dgg.ngay_bat_dau,\n" +
+            "    dgg.ngay_ket_thuc, \n" +
+            "    sp.mo_ta, \n" +
+            "    hl.url_anh, \n" +
+            "    dc.ten_danh_muc; \n";
 
     public static final String GET_SAN_PHAM_BY_ID = "SELECT " +
             "    sp.Id_san_pham AS idSanPham, " +
@@ -123,18 +166,20 @@ public class SanPhamQuery {
             "    dgg.ten_dot_giam_gia,\n" +
             "    dgg.ngay_bat_dau,\n" +
             "    dgg.ngay_ket_thuc,\n" +
-            "\tsp.mo_ta,\n" +
+            "    sp.mo_ta,\n" +
             "    dc.ten_danh_muc,\n" +
             "    ha.url_anh\n" +
             "FROM \n" +
             "    san_pham AS sp\n" +
             "LEFT JOIN giam_gia_san_pham AS ggs ON sp.Id_san_pham = ggs.id_san_pham\n" +
             "LEFT JOIN dot_giam_gia AS dgg ON ggs.id_dot_giam_gia = dgg.Id_dot_giam_gia\n" +
+            "LEFT JOIN trang_thai_giam_gia AS tt ON dgg.id_trang_thai_giam_gia = tt.Id_trang_thai_giam_gia\n" +
             "LEFT JOIN danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc \n" +
             "LEFT JOIN hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham\n" +
             "WHERE \n" +
             "    sp.trang_thai = 1\n" +
-            "    AND ggs.gia_khuyen_mai IS NOT NULL AND ha.thu_tu = 1\n" +
+            "    AND ha.thu_tu = 1\n" +
+            "    AND tt.id_trang_thai_giam_gia = 1\n" +
             "ORDER BY \n" +
             "    sp.ten_san_pham;";
 

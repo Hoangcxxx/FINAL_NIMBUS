@@ -3,6 +3,7 @@ package com.example.duantn.query;
 public class HoaDonQuery {
 
     public static final String GET_ALL_HOA_DON ="SELECT \n" +
+            "    h.id_hoa_don,\n" +
             "    h.ma_hoa_don,\n" +
             "    u.ten_nguoi_dung,\n" +
             "    h.ngay_tao,\n" +

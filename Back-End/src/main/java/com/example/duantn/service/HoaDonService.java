@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +22,9 @@ public class HoaDonService {
     public List<Object[]> getAllHoaDon() {
         return hoaDonRepository.getAllHoaDon();
     }
-
+    public Optional<HoaDon> getHoaDonById(Integer idHoaDon) {
+        return hoaDonRepository.findById(idHoaDon);
+    }
     @Autowired
     private HoaDonChiTietRepository hoaDonChiTietRepository;
     @Autowired
@@ -33,8 +36,6 @@ public class HoaDonService {
     @Autowired
     private GioHangRepository gioHangRepository;
 
-    @Autowired
-    private PaymentService service;
 
     @Autowired
     private GioHangChiTietRepository gioHangChiTietRepository;
@@ -95,9 +96,9 @@ public class HoaDonService {
         // Thông tin địa chỉ vận chuyển
         if (hoaDon.getDiaChiVanChuyen() != null) {
             dto.setIdDiaChiVanChuyen(hoaDon.getDiaChiVanChuyen().getIdDiaChiVanChuyen());
-            dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh());
-            dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen());
-            dto.setXa(hoaDon.getDiaChiVanChuyen().getXa());
+            dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh().getIdTinh());
+            dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen().getIdHuyen());
+            dto.setXa(hoaDon.getDiaChiVanChuyen().getXa().getIdXa());
         }
 
         // Thông tin trạng thái hóa đơn
@@ -135,48 +136,6 @@ public class HoaDonService {
     }
 
 
-    public String createOrder(HoaDonDTO hoaDonDTO, HttpServletRequest res) {
-        long currentCount = hoaDonRepository.count();
-        String generatedMaHoaDon = "HD00" + (currentCount + 1);
-
-        HoaDon hoaDon = new HoaDon();
-        hoaDon.setMaHoaDon(generatedMaHoaDon);
-
-        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng"));
-        hoaDon.setNguoiDung(nguoiDung);
-
-        DiaChiVanChuyen diaChiVanChuyen = diaChiVanChuyenRepository
-                .findByTinhAndHuyenAndXa(hoaDonDTO.getTinh(), hoaDonDTO.getHuyen(), hoaDonDTO.getXa())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ vận chuyển"));
-        hoaDon.setDiaChiVanChuyen(diaChiVanChuyen);
-//        // Cập nhật số tiền vận chuyển từ PhiVanChuyen
-//        BigDecimal phiShip = diaChiVanChuyen.getPhiVanChuyen().getSoTienVanChuyen();
-//        hoaDon.setPhiShip(phiShip);  // Gán số tiền vận chuyển vào hóa đơn
-        hoaDon.setNgayTao(new Date());
-
-        hoaDon.setTrangThaiHoaDon(trangThaiHoaDonRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy trạng thái hóa đơn")));
-        hoaDon.setTenNguoiNhan(hoaDonDTO.getTenNguoiNhan());
-        hoaDon.setDiaChi(hoaDonDTO.getDiaChi());
-        hoaDon.setSdtNguoiNhan(hoaDonDTO.getSdtNguoiNhan());
-        hoaDon.setThanhTien(hoaDonDTO.getThanhTien());
-        hoaDon.setMoTa(hoaDonDTO.getGhiChu());
-        hoaDon.setTrangThai(true);
-
-        switch (hoaDonDTO.getTenPhuongThucThanhToan()) {
-            case "cod":
-                saveCODPayment(hoaDon, generatedMaHoaDon, hoaDonDTO);
-                break;
-            case "vnpay":
-                saveVNPayPayment(hoaDon,generatedMaHoaDon,hoaDonDTO,res);
-                break;
-            case "zalopay":
-                throw new RuntimeException("Chức năng ZaloPay đang phát triển");
-        }
-        return generatedMaHoaDon;
-    }
-
     private void saveCODPayment(HoaDon hoaDon, String generatedMaHoaDon, HoaDonDTO hoaDonDTO) {
         hoaDonRepository.save(hoaDon);
         PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon = new PhuongThucThanhToanHoaDon();
@@ -191,30 +150,6 @@ public class HoaDonService {
         processCartItems(hoaDonDTO, hoaDon);
     }
 
-    private void saveVNPayPayment(HoaDon hoaDon, String generatedMaHoaDon, HoaDonDTO hoaDonDTO, HttpServletRequest req) {
-        try {
-            // Gửi yêu cầu thanh toán VNPay và lấy URL thanh toán
-            String paymentUrl = service.createPayment(hoaDonDTO.getThanhTien().longValue(), "vnpay", req);
-            System.out.println("URL thanh toán VNPay: " + paymentUrl);
-
-            // Lưu hóa đơn
-            hoaDonRepository.save(hoaDon);
-            PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon = new PhuongThucThanhToanHoaDon();
-            phuongThucThanhToanHoaDon.setPhuongThucThanhToan(phuongThucThanhToanRepository.findById(2).orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ"))); // 2 là mã phương thức thanh toán cho VNPay
-            phuongThucThanhToanHoaDon.setNgayGiaoDich(new Date());
-            phuongThucThanhToanHoaDon.setMoTa("Thanh toán VNPay cho đơn hàng " + generatedMaHoaDon);
-            phuongThucThanhToanHoaDon.setHoaDon(hoaDon);
-            phuongThucThanhToanHoaDonRepository.save(phuongThucThanhToanHoaDon);
-            hoaDon.setPhuongThucThanhToanHoaDon(phuongThucThanhToanHoaDon);
-            hoaDonRepository.save(hoaDon);
-
-            processCartItems(hoaDonDTO, hoaDon);
-            updateHoaDonAfterPaymentSuccess(hoaDon, paymentUrl);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi tạo URL thanh toán VNPay", e);
-        }
-    }
 
     private void updateHoaDonAfterPaymentSuccess(HoaDon hoaDon, String paymentUrl) {
         hoaDon.setTrangThaiHoaDon(hoaDon.getTrangThaiHoaDon());
@@ -293,9 +228,9 @@ public class HoaDonService {
             // Thông tin địa chỉ vận chuyển
             if (hoaDon.getDiaChiVanChuyen() != null) {
                 dto.setIdDiaChiVanChuyen(hoaDon.getDiaChiVanChuyen().getIdDiaChiVanChuyen());
-                dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh());
-                dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen());
-                dto.setXa(hoaDon.getDiaChiVanChuyen().getXa());
+                dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh().getIdTinh());
+                dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen().getIdHuyen());
+                dto.setXa(hoaDon.getDiaChiVanChuyen().getXa().getIdXa());
             }
 
             // Thông tin phương thức thanh toán

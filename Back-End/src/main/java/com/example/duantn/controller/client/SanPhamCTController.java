@@ -40,9 +40,20 @@ public class SanPhamCTController {
     public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
         return getResponse(service.getById(idSanPhamCT), "idSanPham","maSanPham", "tenSanPham","tenDanhMuc","giaBan", "moTa", "ngayTao");
     }
-    @GetMapping("/findSanPhamCT/{idSanPhamCT}")
-    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getSanPhamCTById(idSanPhamCT), "idSanPhamCT","idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
+    @GetMapping("/findAllSanPhamCT/{idSanPham}")
+    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPham) {
+        return getResponse(service.getAllSanPhamCTById(idSanPham), "idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa","idSanPhamCT");
+    }
+    // Cập nhật lại method để tìm kiếm sản phẩm chi tiết theo idSanPham và các tham số tùy chọn
+    @GetMapping("/findSanPhamCT/{idSanPham}")
+    public List<SanPhamChiTiet> timSanPhamChiTiet(
+            @PathVariable Integer idSanPham,
+            @RequestParam(required = false) Integer idChatLieu, // idChatLieu từ request params
+            @RequestParam(required = false) Integer idMauSac, // idMauSac từ request params
+            @RequestParam(required = false) Integer idKichThuoc // idKichThuoc từ request params
+    ) {
+        // Gọi service để tìm kiếm và trả về danh sách sản phẩm chi tiết
+        return service.timSanPhamChiTiet(idSanPham, idChatLieu, idMauSac, idKichThuoc);
     }
     @GetMapping("/findSanPhamCTLonHon0/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamCTByIdSanPhamLonHon0(@PathVariable Integer idSanPhamCT) {

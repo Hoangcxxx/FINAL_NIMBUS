@@ -51,12 +51,20 @@
 
     <div id="demo" class="collapse mt-3">
         <div class="alert alert-info" role="alert">
-            
+            <div class="text-center">
+                <a href="" class="menu-link text-dark text-decoration-none me-5" ng-repeat="item in dsDotGiamGia"
+                    ng-click="onclickDotGiamGia(item.idDotGiamGia)">{{item.tenDotGiamGia}}</a>
+            </div>
         </div>
     </div>
+    
+    <!-- Hiển thị tên đợt giảm giá đã chọn -->
+    <div ng-if="selectedDotGiamGia" class="mt-3">
+        <h4>Đợt Giảm Giá Đang Chọn: {{selectedDotGiamGia.tenDotGiamGia}}</h4>
+    </div>
+
     <div class="prod-cont">
         <div class="prod" ng-repeat="item in dsSanPhamGiamGia">
-
             <img ng-src="{{item.urlAnh}}" alt="">
             <div class="des">
                 <span>{{item.tenSanPham}}</span>
@@ -65,8 +73,7 @@
                     <span class="badge bg-danger me-2 text-light text-center">
                         <i class="fa-solid fa-tag text-light d-flex align-items-center">
                             <div class="ms-1">
-                                {{item.kieuGiamGia ? (item.giaTriKhuyenMai | number) + ' VND' : item.giaTriKhuyenMai +
-                                '%'}}
+                                {{item.kieuGiamGia ? (item.giaTriKhuyenMai | number) + ' VND' : item.giaTriKhuyenMai + '%'}}
                             </div>
                         </i>
                     </span>
@@ -93,6 +100,7 @@
         </div>
     </div>
 </section>
+
 
 <section id="sm-banner" class="section-p1">
     <div class="banner-box">

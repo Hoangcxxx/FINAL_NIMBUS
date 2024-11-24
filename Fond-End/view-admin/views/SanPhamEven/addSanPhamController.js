@@ -44,7 +44,7 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             $scope.filteredProducts = []; // Reset if no product selected
             return;
         }
-        const url = `http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/findSanPhamCT/${idSanPham}`;
+        const url = `http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/findAllSanPhamCT/${idSanPham}`;
         $http.get(url)
             .then(response => {
                 const products = response.data; // Assuming the response returns an array of product details

@@ -27,7 +27,7 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
     List<Object[]> getChatLieuByIdSanPham(@Param("idSanPhamCT") Integer idSanPhamCT);
 
     @Query(value = SanPhamChiTietQuery.GET_SAN_PHAM_CT_BY_ID_SAN_PHAM, nativeQuery = true)
-    List<Object[]> getSanPhamCTByIdSanPham(@Param("idSanPhamCT") Integer idSanPhamCT);
+    List<Object[]> getAllSanPhamByIdSanPham(@Param("idSanPham") Integer idSanPham);
     @Query(value = SanPhamChiTietQuery.GET_SAN_PHAM_CT_BY_ID_SAN_PHAM_AND_SL_LON_HON_0, nativeQuery = true)
     List<Object[]> getSanPhamCTByIdSanPhamLonHon0(@Param("idSanPhamCT") Integer idSanPhamCT);
     @Modifying
@@ -53,5 +53,16 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
                                               @Param("idKichThuoc") Integer idKichThuoc, @Param("idChatLieu") Integer idChatLieu,
                                               @Param("idSanPham") Integer idSanPham);
 
-
+    // Tìm kiếm sản phẩm chi tiết theo id sản phẩm, màu sắc, chất liệu và kích thước
+    @Query("SELECT s FROM SanPhamChiTiet s " +
+            "WHERE s.sanPham.idSanPham = :idSanPham " +
+            "AND (:idChatLieu IS NULL OR s.chatLieuChiTiet.idChatLieuChiTiet = :idChatLieu) " +
+            "AND (:idMauSac IS NULL OR s.mauSacChiTiet.idMauSacChiTiet = :idMauSac) " +
+            "AND (:idKichThuoc IS NULL OR s.kichThuocChiTiet.idKichThuocChiTiet = :idKichThuoc)")
+    List<SanPhamChiTiet> findByMauSacChatLieuKichThuocSanPham(
+            @Param("idSanPham") Integer idSanPham,
+            @Param("idChatLieu") Integer idChatLieu,
+            @Param("idMauSac") Integer idMauSac,
+            @Param("idKichThuoc") Integer idKichThuoc
+    );
 }

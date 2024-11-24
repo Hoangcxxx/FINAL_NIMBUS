@@ -26,7 +26,7 @@
                     </li>
                     <li class="nav-item mb-2">
                         <a href="#address" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
-                            Địa chỉ
+                            Địa chỉ giao hàng
                         </a>
                     </li>
                     <li class="nav-item mb-2">
@@ -164,27 +164,97 @@
 
                 <!-- Địa chỉ -->
                 <div class="tab-pane fade" id="address">
-                    <h3 class="mb-4 text-primary">Địa chỉ</h3>
-                    <div class="card border-0 shadow-sm p-4">
-                        <form ng-submit="updateAddress()">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="address" ng-model="customerAddress"
-                                    placeholder="Nhập địa chỉ của bạn" required>
-                                <label for="address">Địa chỉ</label>
-                            </div>
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="city" ng-model="customerCity"
-                                    placeholder="Nhập thành phố" required>
-                                <label for="city">Thành phố</label>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Lưu địa chỉ</button>
-                        </form>
+                    <h3 class="mb-4 text-primary">Địa Chỉ Giao Hàng</h3>
+                    <div class="container my-5">
+                        <!-- Nút mở modal -->
+                        <button type="button" class="btn btn-danger mb-2" data-bs-toggle="modal"
+                            data-bs-target="#addAddressModal">
+                            Thêm địa chỉ giao hàng
+                        </button>
+                        <!-- Bảng Hiển Thị Dữ Liệu Địa Chỉ Vận Chuyển -->
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tỉnh</th>
+                                    <th>Huyện</th>
+                                    <th>Xã</th>
+                                    <th>Địa Chỉ Cụ Thể</th>
+                                    <th>Mô Tả</th>
+                                    <th>Trạng Thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="address in addresses">
+                                    <td>{{ address.idDiaChiVanChuyen }}</td>
+                                    <td>{{ address.tinh }}</td>
+                                    <td>{{ address.huyen }}</td>
+                                    <td>{{ address.xa }}</td>
+                                    <td>{{ address.diaChiCuThe }}</td>
+                                    <td>{{ address.moTa }}</td>
+                                    <td>{{ address.trangThai ? 'Đang sử dụng' : 'Không sử dụng' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<!-- Modal Thêm địa chỉ giao hàng-->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Thêm địa chỉ giao hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="province" class="form-label">Tỉnh</label>
+                        <select class="form-select" id="province" ng-model="selectedTinh" ng-change="onTinhChange()">
+                            <option value="">Chọn Tỉnh</option>
+                            <option value="{{item.idTinh}}" ng-repeat="item in tinhList">{{item.tenTinh}}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="district" class="form-label">Huyện</label>
+                        <select class="form-select" id="district" ng-model="selectedHuyen" ng-change="onHuyenChange()">
+                            <option value="">Chọn Huyện</option>
+                            <option value="{{item.idHuyen}}" ng-repeat="item in huyenList">{{item.tenHuyen}}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ward" class="form-label">Xã</label>
+                        <select class="form-select" id="ward" ng-model="selectedXa">
+                            <option value="">Chọn Xã</option>
+                            <option value="{{item.idXa}}" ng-repeat="item in xaList">{{item.tenXa}}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="specificAddress" class="form-label">Địa Chỉ Cụ Thể</label>
+                        <input type="text" class="form-control" id="specificAddress" placeholder="Nhập địa chỉ cụ thể"
+                            ng-model="specificAddress">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô Tả</label>
+                        <textarea class="form-control" id="description" rows="3" placeholder="Nhập mô tả"
+                            ng-model="description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="saveAddress()">Lưu Địa Chỉ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Modal chỉnh sửa thông tin cá nhân -->
 <div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
     aria-hidden="true">

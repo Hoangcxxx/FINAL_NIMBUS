@@ -18,7 +18,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
     @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_DANH_MUC, nativeQuery = true)
     List<Object[]> getSanPhamByDanhMuc(@Param("idDanhMuc") Integer idDanhMuc);
-
+    @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_ID_DOT_GIAM_GIA, nativeQuery = true)
+    List<Object[]> getSanPhamByIdDotGiamGia(@Param("idDotGiamGia") Integer idDotGiamGia);
     @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_ID, nativeQuery = true)
     List<Object[]> getSanPhamById(@Param("idSanPham") String idSanPham);
 

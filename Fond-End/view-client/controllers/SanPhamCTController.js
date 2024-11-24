@@ -90,29 +90,83 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
                 console.error('Error fetching product colors:', error);
             });
     }
+    // Hàm lấy số lượng tồn của sản phẩm
+    function fetchSoLuongTon() {
+        if (!$scope.selectedColor || !$scope.selectedSize || !$scope.selectedMaterial) {
+            $scope.soLuongTon = 0; // Nếu chưa chọn đủ các thuộc tính, không hiển thị số lượng tồn
+            return;
+        }
+
+        // Sử dụng URL với tham số idChatLieu, idMauSac, idKichThuoc từ các lựa chọn của người dùng
+        var url = `http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/findSanPhamCT/${idSanPham}?` +
+            `idChatLieu=${$scope.selectedMaterial}&idMauSac=${$scope.selectedColor}&idKichThuoc=${$scope.selectedSize}`;
+
+        $http.get(url)
+            .then(function (response) {
+                console.log("Dữ liệu trả về từ API:", response.data); // Kiểm tra toàn bộ dữ liệu trả về
+
+                if (response.data && response.data.length > 0) {
+                    console.log("Dữ liệu sản phẩm chi tiết:", response.data[0]); // Log ra đối tượng đầu tiên trong mảng
+                    if (response.data[0].soLuong !== undefined) {
+                        $scope.soLuongTon = response.data[0].soLuong;
+                        console.log("Số lượng tồn của sản phẩm:", $scope.soLuongTon); // Kiểm tra số lượng tồn
+                    } else {
+                        $scope.soLuongTon = 0; // Nếu không có số lượng tồn
+                        console.log("Không có thông tin số lượng tồn");
+                    }
+                } else {
+                    $scope.soLuongTon = 0; // Nếu không có dữ liệu
+                    console.log("Không có dữ liệu sản phẩm chi tiết");
+                }
+            }, function (error) {
+                console.error('Error fetching stock quantity:', error);
+                $scope.soLuongTon = 0; // Nếu có lỗi, giả sử là hết hàng
+            });
+
+    }
+
     // Fetch functions
     fetchAnhSanPham();
     fetchSanPhamChiTiet();
     fetchMauSacChiTiet();
     fetchKichThuocChiTiet();
     fetchChatLieuChiTiet();
+    fetchSoLuongTon();
 
-    // Hàm chọn chất liệu
     $scope.chonChatLieu = function (chatLieu) {
-        $scope.selectedMaterial = chatLieu.idChatLieu;
+        // Nếu chất liệu đã được chọn, bỏ chọn (gán giá trị là null)
+        if ($scope.selectedMaterial === chatLieu.idChatLieu) {
+            $scope.selectedMaterial = null;
+        } else {
+            // Nếu chưa chọn, gán giá trị đã chọn
+            $scope.selectedMaterial = chatLieu.idChatLieu;
+        }
         console.log("Chọn chất liệu:", chatLieu);
+        fetchSoLuongTon();  // Gọi lại hàm fetchSoLuongTon khi chọn hoặc bỏ chọn chất liệu
     };
 
-    // Hàm chọn màu sắc
     $scope.chonMauSac = function (mauSac) {
-        $scope.selectedColor = mauSac.idMauSac;
+        // Nếu màu sắc đã được chọn, bỏ chọn (gán giá trị là null)
+        if ($scope.selectedColor === mauSac.idMauSac) {
+            $scope.selectedColor = null;
+        } else {
+            // Nếu chưa chọn, gán giá trị đã chọn
+            $scope.selectedColor = mauSac.idMauSac;
+        }
         console.log("Chọn màu sắc:", mauSac);
+        fetchSoLuongTon();  // Gọi lại hàm fetchSoLuongTon khi chọn hoặc bỏ chọn màu sắc
     };
 
-    // Hàm chọn kích thước
     $scope.chonKichThuoc = function (kichThuoc) {
-        $scope.selectedSize = kichThuoc.idKichThuoc;
+        // Nếu kích thước đã được chọn, bỏ chọn (gán giá trị là null)
+        if ($scope.selectedSize === kichThuoc.idKichThuoc) {
+            $scope.selectedSize = null;
+        } else {
+            // Nếu chưa chọn, gán giá trị đã chọn
+            $scope.selectedSize = kichThuoc.idKichThuoc;
+        }
         console.log("Chọn kích thước:", kichThuoc);
+        fetchSoLuongTon();  // Gọi lại hàm fetchSoLuongTon khi chọn hoặc bỏ chọn kích thước
     };
 
 
