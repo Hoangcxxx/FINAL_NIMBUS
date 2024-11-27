@@ -10,7 +10,7 @@
         <aside class="sidebar open">
             <div class="top-sidebar">
                 <a href="#" class="channel-logo">
-                    <image src="/view-admin//assets/image/favicon1.png" alt="Channel Logo">
+                    <image src="/view-admin/assets/image/favicon1.png" alt="Channel Logo">
                 </a>
                 <div class="hidden-sidebar your-channel">
                     <image src="/view-admin/assets/image/admin/nb-fasion-title.png" style="height: 44px;" alt="">
@@ -23,13 +23,6 @@
                             <img class="sidebar-icon" src="../../images/icon_home.png" alt=""
                                 style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Trang tổng quan</div>
-                        </a>
-                    </li>
-                    <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'kho_hang'}">
-                        <a href="#!kho_hang" class="sidebar-link" ng-click="setActiveTab('kho_hang')">
-                            <img class="sidebar-icon" src="../../images/icon_kho_hang.png" alt=""
-                                style="width: 42px;height: 38px;">
-                            <div class="hidden-sidebar">Quản lý kho hàng</div>
                         </a>
                     </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'san_pham'}">
@@ -69,7 +62,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="bottom-sidebar">
+            <div class="bottom-sidebar" >
                 <ul class="sidebar-list">
                     <li class="sidebar-list-item user-logout">
                         <a href="/" class="sidebar-link">
@@ -77,13 +70,15 @@
                             <div class="hidden-sidebar">Trang chủ</div>
                         </a>
                     </li>
-                    <li class="sidebar-list-item user-logout">
+                    <li class="sidebar-list-item user-logout" ng-if="infoUser">
                         <a href="#" class="sidebar-link">
                             <div class="sidebar-icon"><i class="fa-light fa-circle-user"></i></div>
-                            <div class="hidden-sidebar" id="name-acc"></div>
+                            <div class="hidden-sidebar" id="name-acc">
+                                {{ tenNguoiDung }}
+                            </div>
                         </a>
                     </li>
-                    <li class="sidebar-list-item user-logout">
+                    <li class="sidebar-list-item user-logout" ng-click="dangXuat()" ng-if="infoUser">
                         <a href="#" class="sidebar-link" id="logout-acc">
                             <div class="sidebar-icon"><i class="fa-light fa-arrow-right-from-bracket"></i></div>
                             <div class="hidden-sidebar">Đăng xuất</div>

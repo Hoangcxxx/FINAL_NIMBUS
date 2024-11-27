@@ -1,6 +1,6 @@
 package com.example.duantn.controller.admin;
 
-import com.example.duantn.DTO.ProductDetailUpdateRequest;
+import com.example.duantn.dto.ProductDetailUpdateRequest;
 import com.example.duantn.service.SanPhamChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,15 +11,22 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/ad_san_pham_ct")
-@CrossOrigin(origins = "http://127.0.0.1:5501")
+@RequestMapping("/api/admin/san_pham_chi_tiet")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ADSanPhamCTController {
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
 
-    @DeleteMapping("/{idSanPhamCT}")
-    public ResponseEntity<Void> deleteSanPham(@PathVariable Integer idSanPhamCT) {
-        sanPhamChiTietService.deleteById(idSanPhamCT);
+    // DELETE method để xóa nhiều sản phẩm chi tiết
+    @DeleteMapping
+    public ResponseEntity<Void> deleteSanPhams(@RequestBody List<Integer> idSanPhamCTs) {
+        sanPhamChiTietService.deleteByIds(idSanPhamCTs);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    // Xóa một sản phẩm chi tiết theo ID
+    @DeleteMapping("/findSanPhamCT/{idSanPhamCT}")
+    public ResponseEntity<Void> deleteSanPhamChiTietById(@PathVariable Integer idSanPhamCT) {
+        sanPhamChiTietService.deleteByIdSanPhamCTs(idSanPhamCT);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @PutMapping("/updateQuantities")
@@ -28,8 +35,5 @@ public class ADSanPhamCTController {
         sanPhamChiTietService.updateSoLuongSanPhamCT(payload);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
-
 
 }

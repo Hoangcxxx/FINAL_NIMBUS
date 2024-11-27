@@ -1,7 +1,6 @@
 package com.example.duantn.entity;
-
-import lombok.*;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Date;
 @Getter

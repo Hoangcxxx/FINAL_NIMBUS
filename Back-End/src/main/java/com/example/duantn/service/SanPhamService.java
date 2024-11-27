@@ -1,8 +1,8 @@
 package com.example.duantn.service;
 import com.example.duantn.entity.SanPham;
+import com.example.duantn.repository.DotGiamGiaRepository;
 import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +14,8 @@ import java.util.*;
 public class SanPhamService {
     @Autowired
     private static SanPhamRepository sanPhamRepository;
-
+    @Autowired
+    private static DotGiamGiaRepository dotGiamGiaRepository;
 
     @Autowired
     public SanPhamService(SanPhamRepository sanPhamRepository) {
@@ -28,14 +29,19 @@ public class SanPhamService {
     public List<Object[]> getAllSanPhamAD() {
         return sanPhamRepository.getAllSanPhamAD();
     }
-    public List<Object[]> getSanPhamById(String idSanPham) {
-        return sanPhamRepository.getSanPhamById(idSanPham);
+    public List<Object[]> getAllSanPhamGiamGia() {
+        return sanPhamRepository.getAllSanPhamGiamGia();
+    }
+    public SanPham getSanPhamById(Integer idSanPham) {
+        return sanPhamRepository.findById(idSanPham).orElse(null);
     }
 
     public List<Object[]> getSanPhamsByDanhMuc(Integer idDanhMuc) {
         return sanPhamRepository.getSanPhamByDanhMuc(idDanhMuc); // Trả về danh sách từ repository
     }
-
+    public List<Object[]> getSanPhamsByIdDotGiamGia(Integer idDotGiamGia) {
+        return sanPhamRepository.getSanPhamByIdDotGiamGia(idDotGiamGia); // Trả về danh sách từ repository
+    }
     public SanPham updateSanPham(Integer idSanPham, SanPham sanPham) {
         sanPham.setIdSanPham(idSanPham);
         return sanPhamRepository.save(sanPham);
@@ -56,8 +62,8 @@ public class SanPhamService {
 
 
     @Transactional
-    public Integer addSanPham(Integer idDanhMuc, String tenSanPham, BigDecimal giaBan, String moTa, Date ngayTao, Date ngayCapNhat, Boolean trangThai) {
-        Integer idSanPham = sanPhamRepository.addSanPham(idDanhMuc, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
+    public Integer addSanPham(Integer idDanhMuc, String maSanPham, String tenSanPham, BigDecimal giaBan, String moTa, Date ngayTao, Date ngayCapNhat, Boolean trangThai) {
+        Integer idSanPham = sanPhamRepository.addSanPham(idDanhMuc,maSanPham, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
         return idSanPham;
     }
 

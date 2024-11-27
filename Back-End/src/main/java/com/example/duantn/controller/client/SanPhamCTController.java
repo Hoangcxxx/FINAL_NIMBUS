@@ -1,4 +1,3 @@
-
 package com.example.duantn.controller.client;
 
 import com.example.duantn.entity.SanPhamChiTiet;
@@ -13,8 +12,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/san_pham_chi_tiet")
-@CrossOrigin(origins = "http://127.0.0.1:5501")
+@RequestMapping("/api/nguoi_dung/san_pham_chi_tiet")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class SanPhamCTController {
     @Autowired
     private SanPhamChiTietService service;
@@ -39,17 +38,26 @@ public class SanPhamCTController {
 
     @GetMapping("/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getById(idSanPhamCT), "idSanPham", "tenSanPham", "giaBan", "moTa");
+        return getResponse(service.getById(idSanPhamCT), "idSanPham","maSanPham", "tenSanPham","tenDanhMuc","giaBan", "moTa", "ngayTao");
     }
-    @GetMapping("/findSanPhamCT/{idSanPhamCT}")
-    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable String idSanPhamCT) {
-        try {
-            Integer id = Integer.parseInt(idSanPhamCT);
-            return getResponse(service.getSanPhamCTById(id), "idSanPhamCT", "idSanPham", "tenSanPham", "soLuong", "tenChatLieu", "tenMauSac", "tenKichThuoc", "moTa");
-        } catch (NumberFormatException e) {
-
-            return ResponseEntity.badRequest().body(null);
-        }
+    @GetMapping("/findAllSanPhamCT/{idSanPham}")
+    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPham) {
+        return getResponse(service.getAllSanPhamCTById(idSanPham), "idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa","idSanPhamCT");
+    }
+    // Cập nhật lại method để tìm kiếm sản phẩm chi tiết theo idSanPham và các tham số tùy chọn
+    @GetMapping("/findSanPhamCT/{idSanPham}")
+    public List<SanPhamChiTiet> timSanPhamChiTiet(
+            @PathVariable Integer idSanPham,
+            @RequestParam(required = false) Integer idChatLieu, // idChatLieu từ request params
+            @RequestParam(required = false) Integer idMauSac, // idMauSac từ request params
+            @RequestParam(required = false) Integer idKichThuoc // idKichThuoc từ request params
+    ) {
+        // Gọi service để tìm kiếm và trả về danh sách sản phẩm chi tiết
+        return service.timSanPhamChiTiet(idSanPham, idChatLieu, idMauSac, idKichThuoc);
+    }
+    @GetMapping("/findSanPhamCTLonHon0/{idSanPhamCT}")
+    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTByIdSanPhamLonHon0(@PathVariable Integer idSanPhamCT) {
+        return getResponse(service.getSanPhamCTByIdSanPhamLonHon0(idSanPhamCT), "idSanPhamCT","idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
     }
 
     @GetMapping("/mau_sac/{idSanPhamCT}")

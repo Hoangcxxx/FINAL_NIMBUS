@@ -455,6 +455,25 @@ footer .logo {
     margin-bottom: 30px;
 }
 
+.logo {
+    width: 150px;
+    /* Đặt kích thước logo */
+    height: auto;
+    /* Tự động điều chỉnh chiều cao để giữ tỷ lệ */
+    transition: transform 0.3s ease;
+    /* Hiệu ứng chuyển động khi di chuột */
+}
+
+.logo:hover {
+    transform: scale(1.1);
+    /* Phóng to logo khi di chuột */
+}
+
+.logo {
+    border-radius: 10px;
+    /* Bo góc logo */
+}
+
 footer h4 {
     font-size: 14px;
     padding-bottom: 20px;
@@ -1052,19 +1071,37 @@ footer a:hover {
     width: 50px;
     text-align: center;
 }
-#navbar li .user-info {
+
+
+
+
+.swatch-attribute {
+    margin-bottom: 15px;
+}
+
+.swatch-attribute-options {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
+    flex-wrap: wrap;
 }
 
-#navbar li .user-info a {
-    margin: 5px 0;
-    font-size: 14px;
+.swatch-option {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
-#navbar li .logout-link {
-    font-size: 14px;
-    color: red;
+.swatch-option.selected {
+    background-color: deeppink; /* Change to your preferred selected color */
+    color: #ffffff; /* Change text color when selected */
+    border-color: deeppink; /* Match the border color to the selected color */
 }
+
+.swatch-option:hover {
+    border-color: deeppink; /* Change to your preferred hover color */
+}
+    

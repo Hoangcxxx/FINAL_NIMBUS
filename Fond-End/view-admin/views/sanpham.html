@@ -30,8 +30,9 @@
                 <div class="admin-control-right">
                     <button class="btn-control-large" id="btn-cancel-product"><i class="fa-light fa-rotate-right"></i>
                         Làm mới</button>
-                    <a href="#!add_sp">
-                        <button type="button" class="btn-control-large">
+                    <a href="#!san_pham">
+                        <button type="button" class="btn-control-large" data-bs-toggle="modal"
+                            data-bs-target="#addProductModal">
                             <i class="fa-light fa-plus"></i> Thêm sản phẩm mới
                         </button>
                     </a>
@@ -63,11 +64,16 @@
                                             <label for="user-status-{{$index}}" class="switch"></label>
                                         </td>
                                         <td>
-                                            <a href="#!san_pham" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#updateProductModal" ng-click="chinhSuaSanPham(item)"><i
-                                                    class="fas fa-edit"></i></a>
+                                            <a href="#!detail_sp/{{item.idSanPham}}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
                                             <a href="#!san_pham" class="btn btn-danger btn-sm"
-                                                ng-click="xoaSanPham(item.idSanPham)"><i class="fas fa-trash"></i></a>
+                                                ng-click="xoaSanPham(item.idSanPham)">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            <a href="#!add_sp/{{item.idSanPham}}" class="btn btn-success btn-sm">
+                                                <i class="fa-solid fa-plus"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -87,11 +93,10 @@
 
 
 <!-- Modal Thêm Sản phẩm -->
-<div class="modalsiu fade" id="updateProductModal" tabindex="-1" aria-labelledby="updateProductModalLabel"
-    aria-hidden="true">
+<div class="modalsiu fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <h2 class="page-title1 bg-danger">Chỉnh sửa sản phẩm</h2>
+            <h2 class="page-title1 bg-danger">Thêm sản phẩm mới</h2>
             <div class="modal-header">
                 <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
                     <i class="fa-solid fa-xmark"></i>

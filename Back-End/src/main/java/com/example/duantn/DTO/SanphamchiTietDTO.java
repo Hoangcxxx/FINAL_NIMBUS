@@ -1,4 +1,4 @@
-package com.example.duantn.DTO;
+package com.example.duantn.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -7,13 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class SanphamchiTietDTO {
+public class SanPhamChiTietDTO {
 	private Integer idspct;
 
 	private Integer soLuong;

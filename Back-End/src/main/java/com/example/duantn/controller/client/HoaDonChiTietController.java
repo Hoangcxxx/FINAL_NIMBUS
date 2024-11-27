@@ -1,16 +1,14 @@
 package com.example.duantn.controller.client;
 
-import com.example.duantn.DTO.HoaDonChiTietDTO;
-
+import com.example.duantn.dto.HoaDonChiTietDTO;
 import com.example.duantn.service.HoaDonChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-
 @RestController
-@RequestMapping("/api/hoadonchitiet")
+@RequestMapping("/api/nguoi_dung/hoa_don_chi_tiet")
 @CrossOrigin(origins = "http://127.0.0.1:5501")
 public class HoaDonChiTietController {
 
@@ -23,9 +21,4 @@ public class HoaDonChiTietController {
         return ResponseEntity.ok("Hóa đơn chi tiết đã được thêm thành công!");
     }
 
-//    @GetMapping("/hoadon/{idHoaDon}")
-//    public ResponseEntity<List<HoaDonChiTiet>> getAllByHoaDonId(@PathVariable Integer idHoaDon) {
-//        List<HoaDonChiTiet> hoaDonChiTietList = hoaDonChiTietService.getAllByHoaDonId(idHoaDon);
-//        return ResponseEntity.ok(hoaDonChiTietList);
-//    }
 }

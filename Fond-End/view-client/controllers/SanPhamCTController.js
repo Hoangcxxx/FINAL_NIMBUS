@@ -1,113 +1,186 @@
 window.SanPhamCTController = function ($scope, $http, $routeParams) {
     var idSanPham = $routeParams.id;
-    
+    var idMauSacCT = $routeParams.id; // Initialize idMauSacCT to null
     $scope.dsSanPhamChiTiet = [];
-    $scope.mauSacChiTiet = [];
+    $scope.dsMauSacChiTiet = [];
+    $scope.dsKichThuocChiTiet = [];
+    $scope.anhSanPham = [];
     $scope.kichThuocChiTiet = [];
-    $scope.chatLieuChiTiet = [];
-    $scope.slideIndex = 1;
+    $scope.selectedColor = null;
     $scope.soluong = 1;
-
-    var user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-        var iduser = user.idNguoiDung; 
-       
+    $scope.slideIndex = 1;
+    // Lấy thông tin người dùng từ localStorage
+    var userInfo = localStorage.getItem('user');
+    if (userInfo) {
+        // Nếu có thông tin người dùng, chuyển thành đối tượng và lấy ID người dùng
+        userInfo = JSON.parse(userInfo);  // Parse thông tin người dùng từ JSON
+        $scope.userId = $scope.infoUser.idNguoiDung;  // Lấy ID người dùng từ thông tin đã lưu
+        console.log("thông tin:", $scope.userId);
+        localStorage.setItem('idGioHang', $scope.userId);
+    } else {
+        // Nếu không có thông tin người dùng (người dùng chưa đăng nhập), gán userId là null
+        $scope.userId = null;
+        // Xóa idGioHang trong localStorage nếu người dùng chưa đăng nhập
+        localStorage.removeItem("idGioHang");
     }
-
-    // Hàm lấy ảnh sản phẩm
     function fetchAnhSanPham() {
-        $http.get('http://localhost:8080/api/hinh_anh/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/hinh_anh/' + idSanPham)
             .then(function (response) {
-                $scope.anhSanPham = response.data || [];
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy hình ảnh sản phẩm:', error);
+                if (response.data.length > 0) {
+                    $scope.anhSanPham = response.data;
+                    console.log("Ảnh sản phẩm:", $scope.anhSanPham);
+                } else {
+                    console.log("Không tìm thấy hình ảnh cho sản phẩm.");
+                }
+            }, function (error) {
+                console.error('Error fetching product images:', error);
             });
     }
-
-    // Hàm lấy chi tiết sản phẩm
+    console.log("Thông tin sản phẩm phẩm phẩm phẩm:");
     function fetchSanPhamChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/' + idSanPham)
             .then(function (response) {
-                $scope.sanPhamChiTiet = response.data || {};
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy chi tiết sản phẩm:', error);
+                if (response.data) {
+                    $scope.sanPhamChiTiet = response.data;
+                    console.log("Thông tin sản phẩm:", $scope.sanPhamChiTiet);
+                } else {
+                    console.log("Không tìm thấy sản phẩm.");
+                }
+            }, function (error) {
+                console.error('Error fetching product details:', error);
             });
     }
 
-    // Hàm lấy màu sắc
     function fetchMauSacChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/mau_sac/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/mau_sac/' + idSanPham)
             .then(function (response) {
-                $scope.mauSacChiTiet = response.data || [];
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy màu sắc sản phẩm:', error);
+                if (response.data && response.data.length > 0) {
+                    $scope.mauSacChiTiet = response.data;
+                    console.log("Màu sắc sản phẩm:", $scope.mauSacChiTiet);
+                } else {
+                    console.error("Không tìm thấy màu sắc cho sản phẩm. Dữ liệu trả về:", response.data);
+                }
+            }, function (error) {
+                console.error('Error fetching product colors:', error);
             });
     }
-
-    // Hàm lấy kích thước
     function fetchKichThuocChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/kich_thuoc/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/kich_thuoc/' + idSanPham)
             .then(function (response) {
-                $scope.kichThuocChiTiet = response.data || [];
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy kích thước sản phẩm:', error);
+                if (response.data && response.data.length > 0) {
+                    $scope.kichThuocChiTiet = response.data;
+                    console.log("Kích thước sản phẩm:", $scope.kichThuocChiTiet);
+                } else {
+                    console.error("Không tìm thấy kích thước cho sản phẩm. Dữ liệu trả về:", response.data);
+                }
+            }, function (error) {
+                console.error('Error fetching product colors:', error);
             });
     }
-
-    // Hàm lấy chất liệu
     function fetchChatLieuChiTiet() {
-        $http.get('http://localhost:8080/api/san_pham_chi_tiet/chat_lieu/' + idSanPham)
+        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/chat_lieu/' + idSanPham)
             .then(function (response) {
-                $scope.chatLieuChiTiet = response.data || [];
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy chất liệu sản phẩm:', error);
+                if (response.data && response.data.length > 0) {
+                    $scope.chatLieuChiTiet = response.data;
+                    console.log("Chất liệu sản phẩm:", $scope.chatLieuChiTiet);
+                } else {
+                    console.error("Không tìm thấy chất liệu cho sản phẩm. Dữ liệu trả về:", response.data);
+                }
+            }, function (error) {
+                console.error('Error fetching product colors:', error);
             });
     }
+    // Hàm lấy số lượng tồn của sản phẩm
+    function fetchSoLuongTon() {
+        if (!$scope.selectedColor || !$scope.selectedSize || !$scope.selectedMaterial) {
+            $scope.soLuongTon = 0; // Nếu chưa chọn đủ các thuộc tính, không hiển thị số lượng tồn
+            return;
+        }
 
-    // Hàm chọn màu sắc
-    $scope.chonMauSac = function (mauSac) {
-        $scope.selectedColor = mauSac.idMauSac;
-        console.log("Chọn màu sắc:", mauSac);
-    };
+        // Sử dụng URL với tham số idChatLieu, idMauSac, idKichThuoc từ các lựa chọn của người dùng
+        var url = `http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/findSanPhamCT/${idSanPham}?` +
+            `idChatLieu=${$scope.selectedMaterial}&idMauSac=${$scope.selectedColor}&idKichThuoc=${$scope.selectedSize}`;
 
-    // Hàm chọn kích thước
-    $scope.chonKichThuoc = function (kichThuoc) {
-        $scope.selectedSize = kichThuoc.idKichThuoc;
-        console.log("Chọn kích thước:", kichThuoc);
-    };
+        $http.get(url)
+            .then(function (response) {
+                console.log("Dữ liệu trả về từ API:", response.data); // Kiểm tra toàn bộ dữ liệu trả về
 
-    // Hàm chọn chất liệu
+                if (response.data && response.data.length > 0) {
+                    console.log("Dữ liệu sản phẩm chi tiết:", response.data[0]); // Log ra đối tượng đầu tiên trong mảng
+                    if (response.data[0].soLuong !== undefined) {
+                        $scope.soLuongTon = response.data[0].soLuong;
+                        console.log("Số lượng tồn của sản phẩm:", $scope.soLuongTon); // Kiểm tra số lượng tồn
+                    } else {
+                        $scope.soLuongTon = 0; // Nếu không có số lượng tồn
+                        console.log("Không có thông tin số lượng tồn");
+                    }
+                } else {
+                    $scope.soLuongTon = 0; // Nếu không có dữ liệu
+                    console.log("Không có dữ liệu sản phẩm chi tiết");
+                }
+            }, function (error) {
+                console.error('Error fetching stock quantity:', error);
+                $scope.soLuongTon = 0; // Nếu có lỗi, giả sử là hết hàng
+            });
+
+    }
+
+    // Fetch functions
+    fetchAnhSanPham();
+    fetchSanPhamChiTiet();
+    fetchMauSacChiTiet();
+    fetchKichThuocChiTiet();
+    fetchChatLieuChiTiet();
+    fetchSoLuongTon();
+
     $scope.chonChatLieu = function (chatLieu) {
-        $scope.selectedMaterial = chatLieu.idChatLieu;
+        // Nếu chất liệu đã được chọn, bỏ chọn (gán giá trị là null)
+        if ($scope.selectedMaterial === chatLieu.idChatLieu) {
+            $scope.selectedMaterial = null;
+        } else {
+            // Nếu chưa chọn, gán giá trị đã chọn
+            $scope.selectedMaterial = chatLieu.idChatLieu;
+        }
         console.log("Chọn chất liệu:", chatLieu);
+        fetchSoLuongTon();  // Gọi lại hàm fetchSoLuongTon khi chọn hoặc bỏ chọn chất liệu
     };
+
+    $scope.chonMauSac = function (mauSac) {
+        // Nếu màu sắc đã được chọn, bỏ chọn (gán giá trị là null)
+        if ($scope.selectedColor === mauSac.idMauSac) {
+            $scope.selectedColor = null;
+        } else {
+            // Nếu chưa chọn, gán giá trị đã chọn
+            $scope.selectedColor = mauSac.idMauSac;
+        }
+        console.log("Chọn màu sắc:", mauSac);
+        fetchSoLuongTon();  // Gọi lại hàm fetchSoLuongTon khi chọn hoặc bỏ chọn màu sắc
+    };
+
+    $scope.chonKichThuoc = function (kichThuoc) {
+        // Nếu kích thước đã được chọn, bỏ chọn (gán giá trị là null)
+        if ($scope.selectedSize === kichThuoc.idKichThuoc) {
+            $scope.selectedSize = null;
+        } else {
+            // Nếu chưa chọn, gán giá trị đã chọn
+            $scope.selectedSize = kichThuoc.idKichThuoc;
+        }
+        console.log("Chọn kích thước:", kichThuoc);
+        fetchSoLuongTon();  // Gọi lại hàm fetchSoLuongTon khi chọn hoặc bỏ chọn kích thước
+    };
+
 
     $scope.addToCart = function () {
         if (!$scope.selectedColor || !$scope.selectedSize || !$scope.selectedMaterial) {
             alert("Vui lòng chọn đầy đủ màu sắc, kích thước và chất liệu trước khi thêm vào giỏ hàng.");
             return;
         }
-    
-        // Kiểm tra nếu người dùng chưa đăng nhập
-        if (!iduser) {
-            // Nếu chưa đăng nhập, bạn có thể lưu giỏ hàng tạm thời hoặc thông báo yêu cầu đăng nhập
-            Swal.fire({
-                icon: "warning",
-                title: "Bạn chưa đăng nhập",
-                text: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng và thực hiện thanh toán.",
-                showConfirmButton: true
-            }).then(() => {
-                // Chuyển hướng đến trang đăng nhập nếu cần
-                window.location.href = '#!user'; 
-            });
+        // Lấy idGioHang từ localStorage
+        var idGioHang = localStorage.getItem('idGioHang');
+        if (!idGioHang) {
+            alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
             return;
         }
-    
         // Chuẩn bị dữ liệu sản phẩm để gửi lên backend
         let cartItem = {
             idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
@@ -116,44 +189,29 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             idChatLieu: $scope.selectedMaterial, // ID chất liệu
             soLuong: $scope.soluong // Số lượng mà người dùng chọn
         };
-    
         // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
-        $http.post(`http://localhost:8080/api/giohang/add?idUser=${iduser}`, cartItem)
+        $http.post(`http://localhost:8080/api/nguoi_dung/gio_hang/add?idUser=${idGioHang}`, cartItem)
             .then(function (response) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Thêm Sản Phẩm Vào Giỏ Hàng",
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => window.location.href = '#!gio_hang');
+                alert("Sản phẩm đã được thêm vào giỏ hàng.");
+                window.location.reload();  // Làm mới route để giao diện được cập nhật
             })
             .catch(function (error) {
                 console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
                 alert(error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
             });
     };
-    
+
     $scope.thanhtoan = function () {
         if (!$scope.selectedColor || !$scope.selectedSize || !$scope.selectedMaterial) {
             alert("Vui lòng chọn đầy đủ màu sắc, kích thước và chất liệu trước khi thêm vào giỏ hàng.");
             return;
         }
-    
-        // Kiểm tra nếu người dùng chưa đăng nhập
-        if (!iduser) {
-            // Nếu chưa đăng nhập, bạn có thể lưu giỏ hàng tạm thời hoặc thông báo yêu cầu đăng nhập
-            Swal.fire({
-                icon: "warning",
-                title: "Bạn chưa đăng nhập",
-                text: "Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng và thực hiện thanh toán.",
-                showConfirmButton: true
-            }).then(() => {
-                // Chuyển hướng đến trang đăng nhập nếu cần
-                window.location.href = '#!user'; 
-            });
+        // Lấy idGioHang từ localStorage
+        var idGioHang = localStorage.getItem('idGioHang');
+        if (!idGioHang) {
+            alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
             return;
         }
-    
         // Chuẩn bị dữ liệu sản phẩm để gửi lên backend
         let cartItem = {
             idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
@@ -162,54 +220,36 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             idChatLieu: $scope.selectedMaterial, // ID chất liệu
             soLuong: $scope.soluong // Số lượng mà người dùng chọn
         };
-    
         // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
-        $http.post(`http://localhost:8080/api/giohang/add?idUser=${iduser}`, cartItem)
+        $http.post(`http://localhost:8080/api/nguoi_dung/gio_hang/add?idUser=${idGioHang}`, cartItem)
             .then(function (response) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Thêm Sản Phẩm Vào Thanh Toán",
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => window.location.href = '#!thanh_toan');
+                alert("Sản phẩm đã được thêm vào giỏ hàng.");
+                window.location.reload();  // Làm mới route để giao diện được cập nhật
             })
             .catch(function (error) {
                 console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
                 alert(error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
             });
     };
-    
 
 
 
-    // Hàm thanh toán
     $scope.checkout = function () {
         console.log("Đang thanh toán cho sản phẩm:", $scope.sanPhamChiTiet);
         // Thực hiện logic thanh toán tại đây
     };
 
-    // Hàm hiển thị hình ảnh sản phẩm trong carousel
+    $scope.currentDiv = currentDiv;
+
     $scope.showProductDetail = function (index) {
-        if ($scope.anhSanPham[index]) {
+        if ($scope.anhSanPham && $scope.anhSanPham[index]) {
             $scope.slideIndex = index + 1;
             showDivs($scope.slideIndex);
         }
     };
-
-    // Hàm khởi tạo để tải dữ liệu
-    function initialize() {
-        fetchAnhSanPham();
-        fetchSanPhamChiTiet();
-        fetchMauSacChiTiet();
-        fetchKichThuocChiTiet();
-        fetchChatLieuChiTiet();
-    }
-
-    // Khởi động controller
-    initialize();
 };
 
-// Hàm hiển thị các slide hình ảnh
+// Hàm điều khiển carousel
 function currentDiv(n) {
     showDivs(slideIndex = n);
 }
@@ -219,7 +259,8 @@ function showDivs(n) {
     var x = document.getElementsByClassName("mySlides");
     var dots = document.getElementsByClassName("demo");
 
-    n = n > x.length ? 1 : (n < 1 ? x.length : n);
+    if (n > x.length) { n = 1; }
+    if (n < 1) { n = x.length; }
 
     for (i = 0; i < x.length; i++) {
         x[i].style.display = "none";

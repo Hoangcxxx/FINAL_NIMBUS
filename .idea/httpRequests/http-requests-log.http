@@ -1,96 +1,10 @@
-GET http://localhost:8080/api/vnpay/payment-url
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
+GET http://localhost:8080/api/nguoi_dung/payment/vnpay_return
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3
 Accept-Encoding: br, deflate, gzip, x-gzip
 Accept: */*
-content-length: 0
+cookie:
 
-<> 2024-11-06T150347.200.json
-
-###
-
-GET http://localhost:8080/api/vnpay/payment-url
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-<> 2024-11-06T145940.200.json
-
-###
-
-GET http://localhost:8080/lich-su-hoa-don
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-###
-
-GET http://localhost:8080/api/voucher/hienthi
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-###
-
-GET http://localhost:8080/api/voucher/hienthi
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-###
-
-GET http://localhost:8080/api/voucher/hienthi
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-###
-
-GET http://localhost:8080/api/dia-chi/tinh/TP.%20Hồ%20Chí%20Minh
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-<> 2024-11-01T110634.400.html
-
-###
-
-GET http://localhost:8080/api/dia-chi/all
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-<> 2024-11-01T110552.200.json
-
-###
-
-GET http://localhost:8080/api/hoadonct/hien-thi
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-###
-
-GET http://localhost:8080/api/hoadonct/hien-thi
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
-
-###
-
-GET http://localhost:8080/api/hoadonct/hien-thi
-User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.4
-Accept-Encoding: br, deflate, gzip, x-gzip
-Accept: */*
-content-length: 0
+<> 2024-11-26T181007.200.html
 
 ###
 

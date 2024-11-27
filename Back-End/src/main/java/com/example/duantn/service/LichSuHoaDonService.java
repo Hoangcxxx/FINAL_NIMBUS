@@ -9,13 +9,8 @@ import java.util.List;
 
 @Service
 public class LichSuHoaDonService {
-
-
     @Autowired
     private  LichSuHoaDonRepository lichSuHoaDonRepository;
-
-
-
 
     public List<LichSuHoaDon> getLichSuHoaDonByNguoiDungId(Integer nguoiDungId) {
         return lichSuHoaDonRepository.findByNguoiDung_IdNguoiDungOrderByIdLichSuHoaDon(nguoiDungId);

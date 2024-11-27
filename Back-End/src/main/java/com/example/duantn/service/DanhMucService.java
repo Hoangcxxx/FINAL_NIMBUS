@@ -18,6 +18,11 @@ public class DanhMucService {
     public List<DanhMuc> searchDanhMucByTen(String tenDanhMuc) {
         return danhMucRepository.findByTenDanhMucContaining(tenDanhMuc);
     }
+    public List<DanhMuc> getAllCategories() {
+        return danhMucRepository.findAll();
+    }
+
+
     public com.example.duantn.entity.DanhMuc createDanhMuc(com.example.duantn.entity.DanhMuc DanhMuc) {
         DanhMuc.setNgayTao(new Date());
         DanhMuc.setNgayCapNhat(new Date());

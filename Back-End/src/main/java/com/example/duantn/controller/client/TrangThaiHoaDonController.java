@@ -1,57 +1,39 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.dto.CapNhatTrangThaiRequest;
+import com.example.duantn.entity.HoaDon;
 import com.example.duantn.entity.TrangThaiHoaDon;
 import com.example.duantn.service.TrangThaiHoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/trang-thai-hoa-don")
-@CrossOrigin(origins = "http://127.0.0.1:5501")
+@RequestMapping("/api/nguoi_dung/trang-thai-hoa-don")
 public class TrangThaiHoaDonController {
 
     @Autowired
     private TrangThaiHoaDonService trangThaiHoaDonService;
 
-    // Lấy tất cả trạng thái hóa đơn
-    @GetMapping
-    public ResponseEntity<List<TrangThaiHoaDon>> getAllTrangThaiHoaDon() {
-        List<TrangThaiHoaDon> trangThaiHoaDons = trangThaiHoaDonService.getAllTrangThaiHoaDon();
-        return new ResponseEntity<>(trangThaiHoaDons, HttpStatus.OK);
+    // API để hiển thị trạng thái của tất cả các đơn hàng
+    @GetMapping("/tat-ca")
+    public List<TrangThaiHoaDon> getAllTrangThaiHoaDon() {
+        return trangThaiHoaDonService.getAllTrangThaiHoaDon();
     }
 
-    // Lấy trạng thái hóa đơn theo ID
-    @GetMapping("/{id}")
-    public ResponseEntity<TrangThaiHoaDon> getTrangThaiHoaDonById(@PathVariable Integer id) {
-        Optional<TrangThaiHoaDon> trangThaiHoaDon = trangThaiHoaDonService.getTrangThaiHoaDonById(id);
-        return trangThaiHoaDon.map(
-                ResponseEntity::ok
-        ).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    // API để hiển thị trạng thái của một đơn hàng theo ID
+    @GetMapping("/hoa-don/{hoaDonId}")
+    public TrangThaiHoaDon getTrangThaiHoaDonByHoaDonId(@PathVariable Integer hoaDonId) {
+        return trangThaiHoaDonService.getTrangThaiHoaDonByHoaDonId(hoaDonId);
     }
 
-    // Tạo mới trạng thái hóa đơn
-    @PostMapping
-    public ResponseEntity<TrangThaiHoaDon> createTrangThaiHoaDon(@RequestBody TrangThaiHoaDon trangThaiHoaDon) {
-        TrangThaiHoaDon createdTrangThaiHoaDon = trangThaiHoaDonService.createTrangThaiHoaDon(trangThaiHoaDon);
-        return new ResponseEntity<>(createdTrangThaiHoaDon, HttpStatus.CREATED);
-    }
+    // API để cập nhật trạng thái của đơn hàng
+    @PostMapping("/cap-nhat")
+    public TrangThaiHoaDon capNhatTrangThai(@RequestBody CapNhatTrangThaiRequest request) {
+        HoaDon hoaDon = new HoaDon();  // Giả sử bạn lấy hoaDon từ DB
+        hoaDon.setIdHoaDon(request.getHoaDonId()); // ID đơn hàng truyền vào
 
-    // Cập nhật trạng thái hóa đơn
-    @PutMapping("/{id}")
-    public ResponseEntity<TrangThaiHoaDon> updateTrangThaiHoaDon(@PathVariable Integer id, @RequestBody TrangThaiHoaDon trangThaiHoaDon) {
-        TrangThaiHoaDon updatedTrangThaiHoaDon = trangThaiHoaDonService.updateTrangThaiHoaDon(id, trangThaiHoaDon);
-        return new ResponseEntity<>(updatedTrangThaiHoaDon, HttpStatus.OK);
-    }
-
-    // Xóa trạng thái hóa đơn
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTrangThaiHoaDon(@PathVariable Integer id) {
-        trangThaiHoaDonService.deleteTrangThaiHoaDon(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return trangThaiHoaDonService.capNhatTrangThai(hoaDon, request.getLoaiTrangThaiId());
     }
 }

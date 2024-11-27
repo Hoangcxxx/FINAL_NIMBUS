@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface DanhMucRepository extends JpaRepository<DanhMuc, Integer> {
     List<DanhMuc> findByTenDanhMucContaining(String tenDanhMuc);
+
 }

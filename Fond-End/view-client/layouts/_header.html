@@ -1,32 +1,86 @@
 <header id="header">
-    <a href="#!">
-        <img src="/view-client/assets/img/logo.png" class="logo" alt="Logo">
-    </a>
+    <a href="#"><img src="/view-client/assets/img/logo.png" class="logo" alt=""></a>
     <ul id="navbar">
-        <li><a class="active" href="#!">Home</a></li>
+        <li><a class="active" href="#!/">Home</a></li>
         <li><a href="#!san_pham">Shop</a></li>
         <li><a href="#!blog">Blog</a></li>
         <li><a href="#!about">About</a></li>
         <li><a href="#!contact">Contact</a></li>
-        <li>
-            <a href="#!gio_hang"><i class="fa-solid fa-bag-shopping"></i></a>
+        <li class="nav-item">
+            <a href="#!gio_hang" class="nav-link d-flex align-items-center">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="badge rounded-pill bg-primary text-light" style="margin-bottom: 15px;">{{ cartQuantity
+                    }}</span>
+                <!-- Số lượng giỏ hàng sẽ được hiển thị ở đây -->
+            </a>
         </li>
-        <!-- Hiển thị dropdown khi đã đăng nhập -->
+        <li class="nav-item dropdown" ng-if="infoUser" style="padding-right: 0px;padding-left: 0px;">
+            <a class="" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
+                <div class="position-relative">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge rounded-pill bg-danger text-light"
+                        style="position: absolute; top: 0; right: 0; font-size: 0.75rem; padding: 0.3rem 0.5rem; margin-top: -7px; margin-right: -25px;">{{
+                        soLuongThongBao }}</span>
+                </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="alertsDropdown">
+                <div class="dropdown-menu-header">
+                    {{ soLuongThongBao }} New Notifications
+                </div>
+                <div class="list-group">
+                    <a href="#" class="list-group-item" ng-repeat="item in dsThongBao track by $index">
+                        <div class="row g-0 align-items-center">
+                            <div class="col-2">
+                                <i class="text-danger" data-feather="alert-circle"></i>
+                            </div>
+                            <div class="col-10">
+                                <div class="text-dark">{{item.loaiThongBao.tenLoaiThongBao}}</div>
+                                <div class="text-muted small mt-1">{{ item.noiDung }}</div>
+                                <div class="text-muted small mt-1">{{ formatTimeAgo(item.ngayGui) }}</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </li>
         <li ng-if="infoUser">
-            <div class="dropdown">
+            <div class="dropdown user-dropdown">
                 <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
-                    Xin chào, {{ username }}!
+                    Xin chào, {{ tenNguoiDung }}!
                 </button>
                 <ul class="dropdown-menu">
-                    <li ng-if="isAdmin">
-                        <a class="dropdown-item" href="http://127.0.0.1:5500/admin.html#!/">Trang quản lý</a>
-                    </li>
-                    <li><a class="dropdown-item" href="#!tk_kh">Trang cá nhân</a></li>
+                    <!-- Hiển thị "Trang quản lý" nếu vai trò là Quản trị viên (idVaiTro = 1) -->
+                    <li ng-if="isAdmin"><a class="dropdown-item" href="http://127.0.0.1:5500/admin.html#!/">Trang quản
+                            lý</a></li>
+                    <li><a class="dropdown-item" href="#!thong_tin_nguoi_dung">Trang cá nhân</a></li>
+                    <!-- Sửa nút Đăng xuất -->
                     <li><a class="dropdown-item" ng-click="dangXuat()">Đăng xuất</a></li>
                 </ul>
             </div>
         </li>
-        <!-- Nút login khi chưa đăng nhập -->
-        <li ng-if="!infoUser"><a href="#!user"><i class="fa-solid fa-user"></i> Login</a></li>
+        <!-- Hiển thị nút Login nếu chưa đăng nhập -->
+        <li ng-if="!infoUser"><a href="#!user"><i class="fa-solid fa-user"></i></a></li>
     </ul>
 </header>
+
+<style>
+    /* Chỉ áp dụng cho dropdown có lớp "user-dropdown" */
+    .user-dropdown .btn {
+        font-size: 16px;
+        /* Giảm kích thước chữ */
+    }
+
+    .user-dropdown .dropdown-menu {
+        font-size: 16px;
+        /* Giảm kích thước chữ trong dropdown */
+        padding: 5px 0;
+        /* Điều chỉnh khoảng cách giữa các mục */
+        min-width: 150px;
+        /* Điều chỉnh độ rộng tối thiểu */
+    }
+
+    .user-dropdown .dropdown-item {
+        padding: 5px 10px;
+        /* Điều chỉnh padding cho các mục */
+    }
+</style>

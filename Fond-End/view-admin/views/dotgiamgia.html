@@ -28,7 +28,7 @@
                         Làm mới</button>
                     <a href="#!add_dot_km">
                         <button type="button" class="btn-control-large">
-                            <i class="fa-light fa-plus"></i> Thêm phiếu giảm giá mới
+                            <i class="fa-light fa-plus"></i> Thêm đợt giảm giá mới
                         </button>
                     </a>
                 </div>
@@ -87,10 +87,9 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Mã</th>
-                                        <th scope="col">Loại giảm giá</th>
+                                        <th scope="col">Tên đợt giảm giá</th>
+                                        <th scope="col">Kiểu giảm giá</th>
                                         <th scope="col">Giá trị giảm</th>
-                                        <th scope="col">Số lượng</th>
                                         <th scope="col">Ngày bắt đầu</th>
                                         <th scope="col">Ngày kết thúc</th>
                                         <th scope="col">Trạng thái</th>
@@ -98,27 +97,30 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in dsKhuyenMai">
+                                    <tr ng-repeat="item in dsDotKhuyenMai">
                                         <th scope="row">{{$index + 1}}</th>
-                                        <td>{{item.maVoucher}}</td>
-                                        <td>{{item.tenLoaiGiamGia}}</td>
-                                        <td>{{item.giaTriGiamGia}}</td>
-                                        <td>{{item.soLuong}}</td>
-                                        <td>{{item.ngayBatDau | date:'dd/MM/yyyy'}}</td>
-                                        <td>{{item.ngayKetThuc | date:'dd/MM/yyyy'}}</td>
                                         <td>
-                                            <input type="checkbox" ng-model="item.trangThai"
-                                                ng-change="updateTrangThai(item.idVoucher, item.trangThai)"
-                                                id="user-status-{{$index}}" class="switch-input">
-                                            <label for="user-status-{{$index}}" class="switch"></label>
+                                            {{ item.tenDotGiamGia}}
                                         </td>
                                         <td>
-                                            <button class="btn btn-warning">Sửa</button>
-                                            <button class="btn btn-danger">Xóa</button>
+                                            {{ item.kieuGiamGia ? '$' : '%' }}
+                                        </td>
+                                        <td>
+                                            {{ item.kieuGiamGia ? formatCurrency(item.giaTriGiamGia) :
+                                            item.giaTriGiamGia + ' %' }}
+                                        </td>
+                                        <td>{{item.ngayBatDau | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{item.ngayKetThuc | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{item.trangThaiGiamGia.tenTrangThaiGiamGia}}</td>
+                                        <td>
+                                            <a href="#!add_dot_km/{{item.idDotGiamGia}}"
+                                                class="text-decoration-none">
+                                                <button class="btn btn-warning"><i class="fas fa-edit"></i></button>
+                                            </a>
+                                            <button class="btn btn-danger" ng-click="deleteDotGiamGia(item.idDotGiamGia)"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
-
                             </table>
                         </div>
                     </div>

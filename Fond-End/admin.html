@@ -8,7 +8,7 @@
     <link href='/view-admin/assets/image/favicon1.png' rel='icon' type='image/x-icon' />
     <link rel="stylesheet" href="/view-admin/assets/css/admin.css">
     <link rel="stylesheet" href="/view-admin/assets/css/toast-message.css">
-    <link href="/view-admin/assets/font/font-awesome-pro-v6-6.2.0/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="/view-admin/assets/font/font-awesome-pro    -v6-6.2.0/css/all.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="/view-admin/assets/css/admin-responsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="lib/angular.js"></script>
@@ -25,10 +25,11 @@
     <script src="view-admin/controllers/KichThuocController.js"></script>
     <script src="view-admin/controllers/MauSacController.js"></script>
     <script src="view-admin/controllers/DanhMucController.js"></script>
-    <script src="view-admin/controllers/KhoHangController.js"></script>
     <script src="view-admin/controllers/PhieuGiamGiaController.js"></script>
     <script src="view-admin/controllers/DotGiamGiaController.js"></script>
     <script src="view-admin/views/SanPhamEven/addSanPhamController.js"></script>
+    <script src="view-admin/views/SanPhamEven/detailSanPhamController.js"></script>
+    <script src="view-admin/views/HoaDonEven/detailHoaDonController.js"></script>
     <script src="view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMaiController.js"></script>
     <script src="view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMaiController.js"></script>
     <title>Quản lý cửa hàng</title>
@@ -51,10 +52,6 @@
                     templateUrl: 'view-admin/views/banhang.html',
                     controller: BanHangController
                 })
-                .when('/kho_hang', {
-                    templateUrl: 'view-admin/views/khohang.html',
-                    controller: KhoHangController
-                })
                 .when('/phieu_giam_gia', {
                     templateUrl: 'view-admin/views/phieugiamgia.html',
                     controller: PhieuGiamGiaController
@@ -67,17 +64,33 @@
                     templateUrl: 'view-admin/views/donhang.html',
                     controller: DonHangController
                 })
+                .when('/detail_hd/:idHoaDon', {
+                    templateUrl: 'view-admin/views/HoaDonEven/detaiHoaDon.html',
+                    controller: detailHoaDonController
+                })
                 .when('/san_pham', {
                     templateUrl: 'view-admin/views/sanpham.html',
                     controller: SanPhamController
                 })
-                .when('/add_sp', {
+                .when('/add_sp/:id', {
                     templateUrl: 'view-admin/views/SanPhamEven/addSanPham.html',
                     controller: addSanPhamController
+                })
+                .when('/detail_sp/:id', {
+                    templateUrl: 'view-admin/views/SanPhamEven/detailSanPham.html',
+                    controller: detailSanPhamController
                 })
                 .when('/add_dot_km', {
                     templateUrl: 'view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMai.html',
                     controller: addDotKhuyenMaiController
+                })
+                .when('/add_dot_km/:id', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMai.html',
+                    controller: addDotKhuyenMaiController
+                })
+                .when('/add_phieu_km/:id', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMai.html',
+                    controller: addPhieuKhuyenMaiController
                 })
                 .when('/add_phieu_km', {
                     templateUrl: 'view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMai.html',
@@ -111,14 +124,47 @@
                     redirectTo: '/'
                 })
         });
-        app.controller("ngController", $scope => {
-            $scope.infoUser = undefined
+        app.controller("ngController", function ($scope, $http) {
+            // Kiểm tra người dùng đã đăng nhập chưa
+            var userInfo = localStorage.getItem("user");
+            if (userInfo) {
+                $scope.infoUser = JSON.parse(userInfo);  // Lấy thông tin người dùng từ localStorage
+                $scope.idNguoiDung = $scope.infoUser.idNguoiDung;  // Lấy tên người dùng
+                $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
+                $scope.vaiTro = $scope.infoUser.vaiTro;  // Lấy thông tin vai trò của người dùng
+            } else {
+                $scope.infoUser = undefined;
+                $scope.tenNguoiDung = undefined;
+                $scope.isAdmin = false;  // Nếu chưa đăng nhập, ẩn mục "Trang quản lý"
+            }
             // Biến để lưu trữ tab đang hoạt động
             $scope.activeTab = 'trang_chu'; // Tab mặc định là trang chủ
-
             // Hàm để thay đổi tab khi người dùng nhấn vào mục
             $scope.setActiveTab = function (tab) {
                 $scope.activeTab = tab;
+            };
+            // Đăng xuất
+            $scope.dangXuat = function () {
+                // Gửi yêu cầu đăng xuất đến API
+                $http.post("http://localhost:8080/api/nguoi_dung/dang_xuat")
+                    .then(function (response) {
+                        // Xóa thông tin người dùng trong localStorage
+                        localStorage.removeItem("user");
+                        // Xóa idGioHang trong localStorage
+                        localStorage.removeItem("idGioHang");
+                        // Cập nhật lại giao diện
+                        $scope.infoUser = undefined;
+                        $scope.tenNguoiDung = undefined;
+
+                        // Thông báo đăng xuất thành công
+                        alert("Đăng xuất thành công!");
+
+                        // Chuyển hướng đến trang chủ hoặc giữ nguyên trang sau khi đăng xuất
+                        window.location.reload("#!dang_nhap");  // Làm mới route để giao diện được cập nhật
+                    }, function (error) {
+                        // Nếu có lỗi
+                        alert("Đăng xuất thất bại: " + (error.data ? error.data.message : "Lỗi không xác định"));
+                    });
             };
         })
     </script>

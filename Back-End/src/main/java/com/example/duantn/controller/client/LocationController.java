@@ -1,39 +1,69 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.service.TestDemoService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
-
 
 @RestController
-@RequestMapping( "/api/Test/")
+@RequestMapping("/api/nguoi_dung/test/")
+@CrossOrigin(origins = "http://127.0.0.1:5500") // Đảm bảo frontend có thể gọi được API từ domain này
 public class LocationController {
 
-    private final RestTemplate restTemplate;
+    private final TestDemoService testDemoSevice;
 
-    public LocationController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public LocationController(TestDemoService testDemoSevice) {
+        this.testDemoSevice = testDemoSevice;
     }
 
-    // Endpoint to get cities (provinces)
-    @GetMapping("/api/cities")
-    public List<?> getCities() {
-        String url = "https://provinces.open-api.vn/api/?depth=1";  // Example external API
-        return restTemplate.getForObject(url, List.class);
+    // API để lấy danh sách tỉnh thành
+    @GetMapping("/cities")
+    public ResponseEntity<?> getCities() {
+        try {
+            return ResponseEntity.ok(testDemoSevice.getCities());  // Trả về danh sách tỉnh/thành phố
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Có lỗi khi lấy tỉnh thành");
+        }
     }
 
-    // Endpoint to get districts for a specific city (province)
-    @GetMapping("/api/districts/{cityId}")
-    public List<?> getDistricts(@PathVariable String cityId) {
-        String url = "https://provinces.open-api.vn/api/p/" + cityId + "?depth=2";
-        return restTemplate.getForObject(url, List.class);
+    // API để lấy danh sách huyện theo mã tỉnh
+    @GetMapping("/districts/{cityCode}")
+    public ResponseEntity<?> getDistricts(@PathVariable String cityCode) {
+        try {
+            return ResponseEntity.ok(testDemoSevice.getDistricts(cityCode)); // Trả về danh sách huyện của tỉnh
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Có lỗi khi lấy huyện");
+        }
     }
 
-    // Endpoint to get wards for a specific district
-    @GetMapping("/api/wards/{districtId}")
-    public List<?> getWards(@PathVariable String districtId) {
-        String url = "https://provinces.open-api.vn/api/d/" + districtId + "?depth=2";
-        return restTemplate.getForObject(url, List.class);
+    // API để lấy danh sách xã theo mã huyện
+    @GetMapping("/wards/{districtCode}")
+    public ResponseEntity<?> getWards(@PathVariable String districtCode) {
+        try {
+            return ResponseEntity.ok(testDemoSevice.getWards(districtCode)); // Trả về danh sách xã của huyện
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Có lỗi khi lấy xã");
+        }
     }
+
+    @PostMapping("/save-location")
+    public ResponseEntity<String> saveLocationToDB(
+            @RequestParam Integer userId,
+            @RequestParam String cityCode,
+            @RequestParam String districtCode,
+            @RequestParam String wardCode) {
+        try {
+            // Gọi service để lưu tỉnh, huyện, xã vào DB
+            testDemoSevice.saveCityDistrictWardToDB(userId, cityCode, districtCode, wardCode);
+            return ResponseEntity.ok("Lưu địa chỉ thành công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Có lỗi khi lưu địa chỉ");
+        }
+    }
+
+
 }

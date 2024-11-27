@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.duantn.dto.SanPhamChiTietDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,55 +18,56 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.duantn.DTO.GioHangChiTietDTO;
-import com.example.duantn.DTO.SanphamchiTietDTO;
+import com.example.duantn.dto.GioHangChiTietDTO;
 import com.example.duantn.entity.GioHang;
 import com.example.duantn.service.GioHangService;
 
 @RestController
-@RequestMapping("/api/giohang")
-@CrossOrigin(origins = "http://127.0.0.1:5501")
+@RequestMapping("/api/nguoi_dung/gio_hang")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class GioHangController {
 
-	@Autowired
-	private GioHangService gioHangService;
+    @Autowired
+    private GioHangService gioHangService;
 
-	@PostMapping("/add")
-	public ResponseEntity<GioHang> addProductToGioHang(@RequestParam Integer idUser,
-			@RequestBody GioHangChiTietDTO gioHangChiTietDTO) {
-		GioHang gioHang = gioHangService.addGioHang(idUser, gioHangChiTietDTO);
-		return ResponseEntity.ok(gioHang);
-	}
+    @PostMapping("/add")
+    public ResponseEntity<GioHang> addProductToGioHang(@RequestParam Integer idUser,
+                                                       @RequestBody GioHangChiTietDTO gioHangChiTietDTO) {
+        GioHang gioHang = gioHangService.addGioHang(idUser, gioHangChiTietDTO);
+        // Tạo một map để trả về thông báo
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Sản phẩm đã được thêm vào giỏ hàng.");
+        return ResponseEntity.ok(gioHang);
+    }
 
-	@PutMapping("/update")
-	public ResponseEntity<GioHang> updateProductInGioHang(@RequestParam Integer idNguoiDung,
-														  @RequestBody GioHangChiTietDTO gioHangChiTietDTO) {
-		GioHang gioHang = gioHangService.updateGioHangChiTiet(idNguoiDung, gioHangChiTietDTO);
-		return ResponseEntity.ok(gioHang);
-	}
+    @PutMapping("/update")
+    public ResponseEntity<GioHang> updateProductInGioHang(@RequestParam Integer idGioHang,
+                                                          @RequestBody GioHangChiTietDTO gioHangChiTietDTO) {
+        GioHang gioHang = gioHangService.updateGioHangChiTiet(idGioHang, gioHangChiTietDTO);
+        return ResponseEntity.ok(gioHang);
+    }
 
-	@DeleteMapping("/delete")
-	public ResponseEntity<Map<String, String>> deleteProductFromGioHang(
-			@RequestParam Integer idNguoiDung,
-			@RequestParam Integer idSanPhamChiTiet) {
-		gioHangService.deleteGioHangChiTiet(idNguoiDung, idSanPhamChiTiet);
-		Map<String, String> response = new HashMap<>();
-		response.put("message", "Sản phẩm đã được xóa khỏi giỏ hàng.");
-		return ResponseEntity.ok(response);
-	}
+    @DeleteMapping("/delete")
+    public ResponseEntity<Map<String, String>> deleteProductFromGioHang(
+            @RequestParam Integer idGioHang,
+            @RequestParam Integer idSanPhamChiTiet) {
+        gioHangService.deleteGioHangChiTiet(idGioHang, idSanPhamChiTiet);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Sản phẩm đã được xóa khỏi giỏ hàng.");
 
-	@GetMapping("/user/{idNguoiDung}/giohang")
-	public ResponseEntity<List<SanphamchiTietDTO>> getGioHangByUserId(@PathVariable Integer idNguoiDung) {
-		List<SanphamchiTietDTO> sanpham = gioHangService.getGioHangChiTietByUserId(idNguoiDung);
-		return ResponseEntity.ok(sanpham);
-	}
+        return ResponseEntity.ok(response);
+    }
 
+    @GetMapping("/{idNguoiDung}")
+    public ResponseEntity<List<SanPhamChiTietDTO>> getGioHangChiTiet(@PathVariable Integer idNguoiDung) {
+        List<SanPhamChiTietDTO> sanpham = gioHangService.getGioHangChiTiet(idNguoiDung);
+        return ResponseEntity.ok(sanpham);
+    }
 
-
-	@DeleteMapping("/clear")
-	public ResponseEntity<String> clearGioHang(@RequestParam Integer idNguoiDung) {
-		gioHangService.clearGioHangByUserId(idNguoiDung);
-		return ResponseEntity.ok("Giỏ hàng đã được xóa sạch.");
-	}
+    @DeleteMapping("/clear/{idGioHang}")
+    public ResponseEntity<String> clearGioHang(@PathVariable Integer idGioHang) {
+        gioHangService.clearGioHang(idGioHang);
+        return ResponseEntity.ok("Giỏ hàng đã được xóa sạch.");
+    }
 
 }

@@ -20,13 +20,11 @@ public class GioHangChiTiet {
     private Integer idGioHangChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_gio_hang", nullable = false)
+    @JoinColumn(name = "id_gio_hang")
     private GioHang gioHang;
-
     @ManyToOne
-    @JoinColumn(name = "id_san_pham_chi_tiet", nullable = false)
+    @JoinColumn(name = "id_san_pham_chi_tiet")
     private SanPhamChiTiet sanPhamChiTiet;
-
     @Column(name = "so_luong")
     private Integer soLuong;
 

@@ -1,4 +1,4 @@
-package com.example.duantn.DTO;
+package com.example.duantn.dto;
 
 public class ProductDetailUpdateRequest {
     private Integer idSanPhamCT;

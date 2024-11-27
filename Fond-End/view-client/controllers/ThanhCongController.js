@@ -10,7 +10,7 @@ window.ThanhCongController = function ($scope, $http) {
     }
 
     function getOrderDetails(maHoaDon) {
-        const apiUrl = `http://localhost:8080/api/hoa-don/${maHoaDon}`;
+        const apiUrl = `http://localhost:8080/api/nguoi_dung/hoa_don/${maHoaDon}`;
 
         // Gọi API để lấy chi tiết hóa đơn
         $http.get(apiUrl)
@@ -34,7 +34,6 @@ window.ThanhCongController = function ($scope, $http) {
                         huyen: hoaDon.huyen,
                         xa: hoaDon.xa
                     };
-
                     // Cập nhật chi tiết sản phẩm
                     if (hoaDon.listSanPhamChiTiet && hoaDon.listSanPhamChiTiet.length > 0) {
                         $scope.orderDetails = {
@@ -45,7 +44,7 @@ window.ThanhCongController = function ($scope, $http) {
 
                         // Lấy hình ảnh cho từng sản phẩm
                         $scope.orderDetails.listSanPhamChiTiet.forEach((item) => {
-                            $http.get(`http://localhost:8080/api/hinh_anh/${item.idSanPham}`)
+                            $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${item.idSanPham}`)
                                 .then(function (imageResponse) {
                                     // Gán hình ảnh cho sản phẩm nếu có
                                     item.urlAnh = imageResponse.data[0]?.urlAnh || '';

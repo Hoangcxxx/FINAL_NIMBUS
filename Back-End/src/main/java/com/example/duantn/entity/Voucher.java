@@ -3,47 +3,76 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Entity
 @Table(name = "voucher")
 public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_voucher") // Update to match the actual column name
+    @Column(name = "Id_voucher")
     private Integer idVoucher;
 
-    @Column(name = "ma_voucher", nullable = false, unique = true)
+    @Column(name = "ma_voucher", unique = true, nullable = false)
     private String maVoucher;
+    @Column(name = "ten_voucher")
+    private String  tenVoucher;
 
     @Column(name = "gia_tri_giam_gia")
-    private Double phanTramGiamGia;
+    private BigDecimal giaTriGiamGia;
 
     @Column(name = "so_luong")
     private Integer soLuong;
 
-    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
-    private Boolean trangThai;
+    @Column(name = "gia_tri_toi_da")
+    private BigDecimal giaTriToiDa;
+
+    @Column(name = "kieu_giam_gia")
+    private Boolean kieuGiamGia;
+
+    @Column(name = "so_tien_toi_thieu")
+    private BigDecimal soTienToiThieu;
 
     @Column(name = "mo_ta")
     private String moTa;
 
     @Column(name = "ngay_bat_dau")
-    private LocalDateTime ngayBatDau;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayBatDau;
 
     @Column(name = "ngay_ket_thuc")
-    private LocalDateTime ngayKetThuc;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayKetThuc;
 
-    @Column(name = "ngay_tao", columnDefinition = "DATETIME DEFAULT GETDATE()")
-    private LocalDateTime ngayTao;
+    @Column(name = "ngay_tao", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao = new Date();
 
-    @Column(name = "ngay_cap_nhat", columnDefinition = "DATETIME DEFAULT GETDATE()")
-    private LocalDateTime ngayCapNhat;
+    @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayCapNhat = new Date();
 
-    @Column(name = "id_loai_voucher") // Added field for id_loai_voucher based on SQL query
-    private Integer idLoaiVoucher; // Assuming this is an Integer type, adjust as necessary
+    @ManyToOne
+    @JoinColumn(name = "id_loai_voucher")
+    private LoaiVoucher loaiVoucher;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_trang_thai_giam_gia")
+    private TrangThaiGiamGia trangThaiGiamGia;
+
+    @PrePersist
+    protected void onCreate() {
+        ngayTao = new Date();
+        ngayCapNhat = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        ngayCapNhat = new Date();
+    }
 }

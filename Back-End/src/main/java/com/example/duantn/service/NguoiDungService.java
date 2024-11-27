@@ -1,120 +1,134 @@
 package com.example.duantn.service;
 
-import com.example.duantn.Response.LoginResponse;
-import com.example.duantn.DTO.NguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
-import com.example.duantn.TokenUser.*;
 import com.example.duantn.repository.NguoiDungRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NguoiDungService {
 
-	@Autowired
-	private NguoiDungRepository nguoiDungRepository;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-	@Autowired
-	private VaiTroService vaiTroService;
-	@Autowired
-	private OurUserDetailsService ourUserDetailsService;
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private NguoiDungRepository nguoiDungRepository;
 
-	public NguoiDung registerUser(NguoiDungDTO nguoiDungDTO) {
-		if (nguoiDungRepository.findByEmail(nguoiDungDTO.getEmail()).isPresent()) {
-			throw new RuntimeException("Email đã tồn tại: " + nguoiDungDTO.getEmail());
-		}
+    // Lấy tất cả người dùng có vai trò id = 2 (ví dụ)
+    public List<NguoiDung> getAllNguoiDungsByRoleId() {
+        return nguoiDungRepository.getSanPhamById();
+    }
 
-		String maNguoiDungGenerated = generateUserCode();
+    // Lấy người dùng theo ID
+    public Optional<NguoiDung> getNguoiDungById(int id) {
+        return nguoiDungRepository.findById(id);
+    }
 
-		NguoiDung newUser = new NguoiDung();
-		newUser.setTenNguoiDung(nguoiDungDTO.getTenNguoiDung());
-		newUser.setEmail(nguoiDungDTO.getEmail());
-		newUser.setMaNguoiDung(maNguoiDungGenerated);
-		newUser.setMatKhau(passwordEncoder.encode(nguoiDungDTO.getMatKhau()));
-		newUser.setVaiTro(vaiTroService.getVaiTroById(2)); // 2: Vai trò người dùng
-		newUser.setTrangThai(true);
-		newUser.setSdtNguoiDung(nguoiDungDTO.getSdtNguoiDung());
-		newUser.setDiaChi(nguoiDungDTO.getDiaChi());
-		newUser.setGioiTinh(nguoiDungDTO.getGioiTinh());
+    // Thêm mới người dùng
+    public ResponseEntity<?> addNguoiDung(NguoiDung nguoiDung) {
+        // Kiểm tra nếu email hoặc số điện thoại đã tồn tại trong cơ sở dữ liệu
+        if (isEmailExist(nguoiDung.getEmail())) {
+            return new ResponseEntity<>("Email đã tồn tại!", HttpStatus.BAD_REQUEST);
+        }
+        if (isSdtExist(nguoiDung.getSdt())) {
+            return new ResponseEntity<>("Số điện thoại đã tồn tại!", HttpStatus.BAD_REQUEST);
+        }
 
-		return nguoiDungRepository.save(newUser);
-	}
-	private String generateUserCode() {
-		long userCount = nguoiDungRepository.count();
-		return "user" + (userCount + 1);
-	}
+        // Gán ngày tạo và ngày cập nhật bằng thời gian hiện tại
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        nguoiDung.setNgayTao(currentDateTime);
+        nguoiDung.setNgayCapNhat(currentDateTime);
 
-	public LoginResponse signIn(NguoiDungDTO nguoiDung) throws Exception {
-		authenticateUser(nguoiDung.getEmail(), nguoiDung.getMatKhau());
+        // Tạo mã người dùng (ma_nguoi_dung) nếu chưa có
+        if (nguoiDung.getMaNguoiDung() == null || nguoiDung.getMaNguoiDung().isEmpty()) {
+            String generatedMaNguoiDung = generateMaNguoiDung(nguoiDung.getTenNguoiDung()); // Hàm tự tạo mã
+            nguoiDung.setMaNguoiDung(generatedMaNguoiDung);
+        }
 
-		NguoiDung nguoiDungEntity = nguoiDungRepository.findByEmail(nguoiDung.getEmail())
-				.orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+        NguoiDung createdNguoiDung = nguoiDungRepository.save(nguoiDung);
+        return new ResponseEntity<>(createdNguoiDung, HttpStatus.CREATED);
+    }
 
-		if (!nguoiDungEntity.getTrangThai()) {
-			throw new Exception("Tài khoản chưa được xác thực");
-		}
+    // Kiểm tra xem email đã tồn tại hay chưa
+    private boolean isEmailExist(String email) {
+        return nguoiDungRepository.findByEmail(email).isPresent();
+    }
 
-		UserDetails userDetails = ourUserDetailsService.loadUserByUsername(nguoiDung.getEmail());
-		String accessToken = jwtTokenUtil.generateToken(userDetails);
+    // Kiểm tra xem số điện thoại đã tồn tại hay chưa
+    private boolean isSdtExist(String sdt) {
+        return nguoiDungRepository.findBySdt(sdt).isPresent();
+    }
 
-		return new LoginResponse(nguoiDungEntity.getIdNguoiDung(), nguoiDungEntity.getTenNguoiDung(), accessToken);
-	}
+    // Cập nhật người dùng
+    public ResponseEntity<?> updateNguoiDung(int id, NguoiDung nguoiDung) {
+        // Đảm bảo người dùng tồn tại trước khi cập nhật
+        Optional<NguoiDung> existingNguoiDung = nguoiDungRepository.findById(id);
+        if (existingNguoiDung.isPresent()) {
+            // Kiểm tra nếu email hoặc số điện thoại đã tồn tại
+            if (isEmailExist(nguoiDung.getEmail()) && !nguoiDung.getEmail().equals(existingNguoiDung.get().getEmail())) {
+                return new ResponseEntity<>("Email đã tồn tại!", HttpStatus.BAD_REQUEST);
+            }
+            if (isSdtExist(nguoiDung.getSdt()) && !nguoiDung.getSdt().equals(existingNguoiDung.get().getSdt())) {
+                return new ResponseEntity<>("Số điện thoại đã tồn tại!", HttpStatus.BAD_REQUEST);
+            }
 
-	public Token generateRefreshToken(RefreshToken token) {
-		String username = jwtTokenUtil.extractUsernameToken(token.getToken());
-		UserDetails userDetails = ourUserDetailsService.loadUserByUsername(username);
+            nguoiDung.setIdNguoiDung(id); // Đảm bảo ID không bị thay đổi
 
-		return new Token(jwtTokenUtil.generateToken(userDetails), jwtTokenUtil.generateRefreshToken(userDetails));
-	}
+            // Cập nhật ngày giờ của người dùng
+            nguoiDung.setNgayCapNhat(LocalDateTime.now()); // Chỉ cần cập nhật ngàyCapNhat
 
-	public NguoiDung updateUser(Integer id, NguoiDungDTO nguoiDungDTO) {
-		NguoiDung nguoiDung = nguoiDungRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Người dùng không tồn tại với ID: " + id));
+            NguoiDung updatedNguoiDung = nguoiDungRepository.save(nguoiDung);
+            return new ResponseEntity<>(updatedNguoiDung, HttpStatus.OK);
+        } else {
+            // Người dùng không tồn tại
+            return new ResponseEntity<>("Người dùng không tồn tại!", HttpStatus.NOT_FOUND);
+        }
+    }
 
-		nguoiDung.setTenNguoiDung(nguoiDungDTO.getTenNguoiDung());
-		nguoiDung.setEmail(nguoiDungDTO.getEmail());
+    // Xóa người dùng
+    public ResponseEntity<HttpStatus> deleteNguoiDung(int id) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(id);
+        if (nguoiDung.isPresent()) {
+            nguoiDungRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-		// Kiểm tra mật khẩu có được thay đổi không
-		if (nguoiDungDTO.getMatKhau() != null && !nguoiDungDTO.getMatKhau().isEmpty()) {
-			// Nếu có mật khẩu mới, mã hóa và lưu mật khẩu
-			nguoiDung.setMatKhau(passwordEncoder.encode(nguoiDungDTO.getMatKhau()));
-		}
-
-		nguoiDung.setSdtNguoiDung(nguoiDungDTO.getSdtNguoiDung());
-		nguoiDung.setDiaChi(nguoiDungDTO.getDiaChi());
-		nguoiDung.setGioiTinh(nguoiDungDTO.getGioiTinh());
-		nguoiDung.setTrangThai(nguoiDungDTO.getTrangThai());
-
-		return nguoiDungRepository.save(nguoiDung);
-	}
-
-	public NguoiDung getUserById(Integer id) {
-		return nguoiDungRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Người dùng không tồn tại với ID: " + id));
-	}
-
-	public void logout(String token) {
-		jwtTokenUtil.invalidateToken(token);
-	}
-
-	private void authenticateUser(String email, String password) {
-		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-		} catch (BadCredentialsException e) {
-			throw new RuntimeException("Tên người dùng hoặc mật khẩu không đúng");
-		}
-	}
+    // Hàm tạo mã người dùng tự động
+    private String generateMaNguoiDung(String tenNguoiDung) {
+        // Tạo mã người dùng đơn giản từ tên (hoặc phương thức tạo mã khác)
+        return tenNguoiDung.substring(0, 3).toUpperCase() + System.currentTimeMillis();
+    }
 
 
+
+    // Lấy thông tin người dùng theo ID
+    public NguoiDung getNguoiDungById(Integer id) {
+        return nguoiDungRepository.findById(id).orElse(null);
+    }
+
+    // Cập nhật thông tin người dùng
+    public NguoiDung updateNguoiDung(Integer id, NguoiDung nguoiDungDetails) {
+        NguoiDung existingNguoiDung = nguoiDungRepository.findById(id).orElse(null);
+
+        if (existingNguoiDung != null) {
+            existingNguoiDung.setTenNguoiDung(nguoiDungDetails.getTenNguoiDung());
+            existingNguoiDung.setEmail(nguoiDungDetails.getEmail());
+            existingNguoiDung.setSdt(nguoiDungDetails.getSdt());
+            existingNguoiDung.setNgaySinh(nguoiDungDetails.getNgaySinh());
+            existingNguoiDung.setDiaChi(nguoiDungDetails.getDiaChi());
+            existingNguoiDung.setGioiTinh(nguoiDungDetails.getGioiTinh());
+            existingNguoiDung.setAnhDaiDien(nguoiDungDetails.getAnhDaiDien());
+            existingNguoiDung.setNgayCapNhat(LocalDateTime.now());
+
+            return nguoiDungRepository.save(existingNguoiDung);
+        } else {
+            return null;
+        }
+    }
 }

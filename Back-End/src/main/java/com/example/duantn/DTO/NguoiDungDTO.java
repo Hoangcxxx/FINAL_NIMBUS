@@ -1,23 +1,17 @@
-package com.example.duantn.DTO;
+package com.example.duantn.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
-
-@Data
+@Getter@Setter
 public class NguoiDungDTO {
-        private Integer id;
-        private String tenNguoiDung;
-//        private LocalDate ngaytao;
-        private String email;
-        private String maNguoiDung;
-        private String sdtNguoiDung;
-        private String diaChi;
-        private String gioiTinh;
-        private String matKhau;
-        private Integer vaiTro;
-        private Boolean trangThai;
-
-        // Getters and Setters
+    private String tenNguoiDung;
+    private String email;
+    private String sdt;
+    private LocalDate ngaySinh;
+    private String diaChi;
+    private String gioiTinh;
+    private String anhDaiDien;
 
 }

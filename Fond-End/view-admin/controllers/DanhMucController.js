@@ -14,7 +14,7 @@ window.DanhMucController = function ($scope, $http) {
     }
 
     $scope.onRefresh = function () {
-        fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc');
+        fetchData('http://localhost:8080/api/admin/danh_muc', 'dsDanhMuc');
     };
 
     $scope.DanhMuc = {
@@ -31,7 +31,7 @@ window.DanhMucController = function ($scope, $http) {
     $scope.onCreate = function () {
         $http({
             method: 'POST',
-            url: "http://localhost:8080/api/ad_danh_muc",
+            url: "http://localhost:8080/api/admin/danh_muc",
             data: $scope.DanhMuc
         }).then(function (response) {
             alert('Chúc mừng bạn tạo mới thành công');
@@ -42,7 +42,7 @@ window.DanhMucController = function ($scope, $http) {
     $scope.onUpdate = function () {
         $http({
             method: 'PUT',
-            url: `http://localhost:8080/api/ad_danh_muc/${$scope.DanhMuc.idDanhMuc}`,
+            url: `http://localhost:8080/api/admin/danh_muc/${$scope.DanhMuc.idDanhMuc}`,
             data: $scope.DanhMuc
         }).then(function (response) {
             alert('Danh mục đã được cập nhật thành công');
@@ -63,7 +63,7 @@ window.DanhMucController = function ($scope, $http) {
         if (confirm('Bạn có chắc chắn muốn xóa danh mục này không?')) {
             $http({
                 method: 'DELETE',
-                url: `http://localhost:8080/api/ad_danh_muc/${idDanhMuc}`
+                url: `http://localhost:8080/api/admin/danh_muc/${idDanhMuc}`
             }).then(function (response) {
                 alert('Danh mục đã được xóa thành công');
                 location.reload(); // Reload the page
@@ -72,12 +72,12 @@ window.DanhMucController = function ($scope, $http) {
     };
 
     // Gọi hàm lấy dữ liệu khi controller được khởi tạo
-    fetchData('http://localhost:8080/api/ad_danh_muc', 'dsDanhMuc');
+    fetchData('http://localhost:8080/api/admin/danh_muc', 'dsDanhMuc');
 
 
     $scope.onSearch = function () {
         const query = $scope.tenDanhMuc; // Lấy tên màu sắc từ ô nhập
-        const url = `http://localhost:8080/api/ad_danh_muc/${query}`; // URL tìm kiếm theo tên
+        const url = `http://localhost:8080/api/admin/danh_muc/${query}`; // URL tìm kiếm theo tên
 
         if (query) {
             $http.get(url).then(function (response) {

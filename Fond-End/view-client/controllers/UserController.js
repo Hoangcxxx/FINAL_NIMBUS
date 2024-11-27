@@ -1,72 +1,58 @@
-window.UserController = function ($scope, $http, $location, $rootScope) {
-    $scope.login = function () {
-        const data = {
+window.UserController = function ($scope, $http, $route, $window) {
+    // Đăng nhập
+    $scope.dangNhap = function () {
+        var loginData = {
             email: $scope.email,
-            matKhau: $scope.password
+            matKhau: $scope.matKhau
         };
 
-        $http.post("http://localhost:8080/api/auth/login", data)
+        // Gửi yêu cầu đăng nhập
+        $http.post("http://localhost:8080/api/nguoi_dung/dang_nhap", loginData)
             .then(function (response) {
-                const userData = response.data;
+                // Nếu đăng nhập thành công
+                $scope.infoUser = response.data;  // Lưu thông tin người dùng vào scope
+                alert("Đăng nhập thành công!");
 
-                if (userData && userData.tenNguoiDung) {
-                    // Lưu thông tin người dùng và token vào localStorage
-                    $rootScope.username = userData.tenNguoiDung;
-                    $rootScope.infoUser = true; // Cập nhật trạng thái đăng nhập
-                    localStorage.setItem("user", JSON.stringify(userData));
+                // Lưu thông tin người dùng vào localStorage để sử dụng trên các trang khác nếu cần
+                localStorage.setItem("user", JSON.stringify($scope.infoUser));
 
-                    if (userData.accessToken) {
-                        localStorage.setItem("accessToken", userData.accessToken);
-                    }
+                // Hiển thị tên người dùng trong giao diện
+                $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng từ thông tin trả về
 
-                    // Hiển thị thông báo và chuyển hướng
-                    Swal.fire({
-                        icon: "success",
-                        title: "Đăng nhập thành công",
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        $location.path("/thong-tin-tai-khoan");
-                        $scope.$apply(); // Cập nhật $location
-                    });
-                } else {
-                    // Xử lý trường hợp thiếu dữ liệu trong phản hồi
-                    Swal.fire({
-                        icon: "error",
-                        title: "Đăng nhập thất bại",
-                        text: "Vui lòng thử lại."
-                    });
-                }
-            })
-            .catch(function (error) {
-                // Xử lý lỗi từ API
-                let errorMessage = "Có lỗi xảy ra. Vui lòng thử lại.";
-                if (error.status === 401) {
-                    errorMessage = "Sai tên đăng nhập hoặc mật khẩu.";
-                }
-                Swal.fire({
-                    icon: "error",
-                    title: "Đăng nhập thất bại",
-                    text: errorMessage
-                });
+                // Reset form đăng nhập
+                $scope.email = ""; // Xóa email trong form
+                $scope.matKhau = ""; // Xóa mật khẩu trong form
+
+                // Chuyển hướng đến trang chủ sau khi đăng nhập thành công
+                $window.location.href = "#/";  // Chuyển hướng về trang chủ
+                // Tải lại trang giống như nút reload của Google
+                $window.location.reload();  // Reload lại trang hoàn toàn từ server (bỏ cache)
+            }, function (error) {
+                // Nếu có lỗi
+                alert("Đăng nhập thất bại: " + (error.data ? error.data.message : "Lỗi không xác định"));
             });
     };
 
-    // Xử lý đăng xuất
-    $scope.dangXuat = function () {
-        $rootScope.username = null;
-        $rootScope.infoUser = false;
-        localStorage.removeItem("user");
-        localStorage.removeItem("accessToken");
+    // Đăng ký tài khoản
+    $scope.dangKy = function () {
+        var registerData = {
+            tenNguoiDung: $scope.tenNguoiDung,
+            email: $scope.email,
+            matKhau: $scope.matKhau,
+            vaiTro: { idVaiTro: 2 } // Vai trò mặc định là "Khách hàng" (id_vai_tro = 2)
+        };
 
-        Swal.fire({
-            icon: "success",
-            title: "Đăng xuất thành công",
-            showConfirmButton: false,
-            timer: 1500
-        }).then(() => {
-            $location.path("/");
-            $scope.$apply(); // Cập nhật $location
-        });
+        // Gửi yêu cầu đăng ký đến API
+        $http.post("http://localhost:8080/api/nguoi_dung/dang_ky", registerData)
+            .then(function (response) {
+                // Nếu đăng ký thành công
+                alert("Đăng ký thành công! Hãy đăng nhập.");
+
+                // Chuyển hướng người dùng đến trang đăng nhập
+                window.location.href = "#!user";
+            }, function (error) {
+                // Nếu có lỗi trong quá trình đăng ký
+                alert("Đăng ký thất bại: " + error.data.message);
+            });
     };
 };
