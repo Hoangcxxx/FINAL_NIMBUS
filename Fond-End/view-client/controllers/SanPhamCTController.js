@@ -1,4 +1,4 @@
-window.SanPhamCTController = function ($scope, $http, $routeParams) {
+window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
     var idSanPham = $routeParams.id;
     var idMauSacCT = $routeParams.id; // Initialize idMauSacCT to null
     $scope.dsSanPhamChiTiet = [];
@@ -171,16 +171,25 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
 
 
     $scope.addToCart = function () {
+        // Kiểm tra nếu chưa chọn đầy đủ màu sắc, kích thước và chất liệu
         if (!$scope.selectedColor || !$scope.selectedSize || !$scope.selectedMaterial) {
             alert("Vui lòng chọn đầy đủ màu sắc, kích thước và chất liệu trước khi thêm vào giỏ hàng.");
             return;
         }
+
+        // Kiểm tra số lượng tồn
+        if ($scope.soLuongTon === 0) {
+            alert("Sản phẩm hiện đã hết hàng.");
+            return;
+        }
+
         // Lấy idGioHang từ localStorage
         var idGioHang = localStorage.getItem('idGioHang');
         if (!idGioHang) {
             alert("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
             return;
         }
+
         // Chuẩn bị dữ liệu sản phẩm để gửi lên backend
         let cartItem = {
             idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
@@ -189,6 +198,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
             idChatLieu: $scope.selectedMaterial, // ID chất liệu
             soLuong: $scope.soluong // Số lượng mà người dùng chọn
         };
+
         // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
         $http.post(`http://localhost:8080/api/nguoi_dung/gio_hang/add?idUser=${idGioHang}`, cartItem)
             .then(function (response) {
@@ -200,6 +210,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams) {
                 alert(error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.");
             });
     };
+
 
 
     $scope.checkout = function () {

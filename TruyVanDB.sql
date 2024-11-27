@@ -12,7 +12,16 @@ select * from hoa_don
 select * from hoa_don_chi_tiet
 select * from vai_tro
 select * from nguoi_dung
+select * from hoa_don
+select * from hoa_don_chi_tiet
 select * from san_pham
+select * from phi_van_chuyen
+select * from dia_chi_van_chuyen
+select * from trang_thai_hoa_don
+select * from loai_trang_thai
+select * from tinh
+select * from huyen
+select * from xa
 SELECT dg.id_dot_giam_gia,dg.ten_dot_giam_gia,dg.kieu_giam_gia,dg.gia_tri_giam_gia, dg.mo_ta,dg.ngay_bat_dau,dg.ngay_ket_thuc,tgg.ten_trang_thai_giam_gia
 FROM dot_giam_gia dg
 JOIN trang_thai_giam_gia tgg ON dg.id_trang_thai_giam_gia = tgg.Id_trang_thai_giam_gia;
@@ -1212,3 +1221,708 @@ SELECT v.ma_voucher, v.gia_tri_giam_gia, v.ngay_bat_dau, v.ngay_ket_thuc
 FROM voucher v
 JOIN hoa_don h ON v.Id_voucher = h.id_voucher
 WHERE h.id_nguoi_dung = 3;
+
+
+
+
+
+
+
+
+
+SELECT 
+    dcvc.Id_dia_chi_van_chuyen, 
+    t.ten_tinh AS Tinh, 
+    h.ten_huyen AS Huyen, 
+    x.ten_xa AS Xa, 
+    dcvc.dia_chi_cu_the AS DiaChiCuThe, 
+    dcvc.mo_ta AS MoTa, 
+    dcvc.trang_thai AS TrangThai
+FROM 
+    dia_chi_van_chuyen dcvc
+JOIN 
+    tinh t ON dcvc.id_tinh = t.Id_tinh
+JOIN 
+    huyen h ON dcvc.id_huyen = h.Id_huyen
+JOIN 
+    xa x ON dcvc.id_xa = x.Id_xa
+where dcvc.id_nguoi_dung = 3;
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.trang_thai,
+    sp.gia_ban,
+    sp.mo_ta,
+    dc.ten_danh_muc, 
+    ha.url_anh,
+    ha.thu_tu
+FROM 
+    san_pham sp
+LEFT JOIN 
+    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+LEFT JOIN 
+    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc
+LEFT JOIN 
+    giam_gia_san_pham ggs ON sp.Id_san_pham = ggs.id_san_pham
+WHERE 
+    ha.thu_tu = 1 -- Chọn hình ảnh đầu tiên
+    AND sp.trang_thai = 1 -- Sản phẩm đang hoạt động
+ORDER BY 
+    sp.Id_san_pham;
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    sp.id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    spc.so_luong,
+    cl.ten_chat_lieu,
+    ms.ten_mau_sac,
+    kc.ten_kich_thuoc,
+    sp.mo_ta,
+    spc.id_san_pham_chi_tiet
+FROM san_pham sp
+JOIN san_pham_chi_tiet spc 
+    ON sp.id_san_pham = spc.id_san_pham
+JOIN mau_sac_chi_tiet msc 
+    ON spc.id_mau_sac_chi_tiet = msc.id_mau_sac_chi_tiet
+JOIN mau_sac ms 
+    ON msc.id_mau_sac = ms.id_mau_sac
+JOIN chat_lieu_chi_tiet clc 
+    ON spc.id_chat_lieu_chi_tiet = clc.id_chat_lieu_chi_tiet
+JOIN chat_lieu cl 
+    ON clc.id_chat_lieu = cl.id_chat_lieu
+JOIN kich_thuoc_chi_tiet kcc 
+    ON spc.id_kich_thuoc_chi_tiet = kcc.id_kich_thuoc_chi_tiet
+JOIN kich_thuoc kc 
+    ON kcc.id_kich_thuoc = kc.id_kich_thuoc
+WHERE sp.id_san_pham = 3;
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta AS mo_ta_san_pham,
+    sp.trang_thai,
+    dm.ten_danh_muc,
+    dgg.ten_dot_giam_gia,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc,
+    ggs.gia_khuyen_mai
+FROM 
+    san_pham sp
+JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+JOIN 
+    giam_gia_san_pham ggs ON sp.Id_san_pham = ggs.id_san_pham
+JOIN 
+    dot_giam_gia dgg ON ggs.id_dot_giam_gia = dgg.Id_dot_giam_gia
+WHERE 
+    GETDATE() BETWEEN dgg.ngay_bat_dau AND dgg.ngay_ket_thuc
+    AND sp.trang_thai = 1;  -- Chỉ lấy sản phẩm đang hoạt động (trang_thai = 1)
+
+
+
+
+
+	SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta AS mo_ta_san_pham,
+    dm.ten_danh_muc,
+    dgg.ten_dot_giam_gia,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc
+FROM 
+    san_pham sp
+LEFT JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+LEFT JOIN 
+    giam_gia_san_pham ggsp ON sp.Id_san_pham = ggsp.id_san_pham
+LEFT JOIN 
+    dot_giam_gia dgg ON ggsp.id_dot_giam_gia = dgg.Id_dot_giam_gia
+WHERE 
+    sp.trang_thai = 1 -- Chỉ lấy sản phẩm còn hoạt động (trang_thai = 1)
+    AND (dgg.ngay_ket_thuc >= GETDATE() OR dgg.ngay_ket_thuc IS NULL) -- Chỉ lấy các đợt giảm giá chưa hết hạn
+ORDER BY 
+    sp.ten_san_pham;
+
+
+
+
+select * from dot_giam_gia
+SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta ,
+    dm.ten_danh_muc,
+    dgg.ten_dot_giam_gia,
+    ggsp.gia_khuyen_mai,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc
+FROM 
+    san_pham sp
+LEFT JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+LEFT JOIN 
+    giam_gia_san_pham ggsp ON sp.Id_san_pham = ggsp.id_san_pham
+LEFT JOIN 
+    dot_giam_gia dgg ON ggsp.id_dot_giam_gia = dgg.Id_dot_giam_gia
+WHERE 
+    sp.trang_thai = 1
+    AND (dgg.ngay_ket_thuc >= GETDATE() OR dgg.ngay_ket_thuc IS NULL)
+ORDER BY 
+    sp.ten_san_pham ASC, 
+    sp.gia_ban ASC;
+
+
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta ,
+    dm.ten_danh_muc,
+    dgg.ten_dot_giam_gia,
+    ggsp.gia_khuyen_mai,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc,
+	ha.url_anh,
+	ha.thu_tu
+FROM 
+    san_pham sp
+LEFT JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+LEFT JOIN 
+    giam_gia_san_pham ggsp ON sp.Id_san_pham = ggsp.id_san_pham
+LEFT JOIN 
+    dot_giam_gia dgg ON ggsp.id_dot_giam_gia = dgg.Id_dot_giam_gia
+LEFT JOIN 
+    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    sp.trang_thai = 1 and ha.thu_tu = 1
+    AND (dgg.ngay_ket_thuc >= GETDATE() OR dgg.ngay_ket_thuc IS NULL)
+ORDER BY 
+    CASE 
+        WHEN ggsp.id_san_pham IS NOT NULL THEN 0 -- Sản phẩm có khuyến mãi sẽ xuất hiện đầu tiên
+        ELSE 1
+    END,
+    sp.ten_san_pham ASC, -- Sắp xếp theo tên sản phẩm (A-Z)
+    sp.gia_ban ASC; -- Sắp xếp theo giá (tăng dần)
+
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta,
+    dm.ten_danh_muc,
+    dgg.ten_dot_giam_gia,
+    ggsp.gia_khuyen_mai,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc
+FROM 
+    san_pham sp
+LEFT JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+LEFT JOIN 
+    giam_gia_san_pham ggsp ON sp.Id_san_pham = ggsp.id_san_pham
+LEFT JOIN 
+    dot_giam_gia dgg ON ggsp.id_dot_giam_gia = dgg.Id_dot_giam_gia
+WHERE 
+    sp.trang_thai = 1
+    AND (dgg.ngay_ket_thuc >= GETDATE() OR dgg.ngay_ket_thuc IS NULL)
+    AND sp.id_danh_muc = 1 -- Thêm điều kiện lọc theo id_danh_muc
+ORDER BY 
+    CASE 
+        WHEN ggsp.id_san_pham IS NOT NULL THEN 0 -- Sản phẩm có khuyến mãi sẽ xuất hiện đầu tiên
+        ELSE 1
+    END,
+    sp.ten_san_pham ASC, -- Sắp xếp theo tên sản phẩm (A-Z)
+    sp.gia_ban ASC; -- Sắp xếp theo giá (tăng dần)
+
+
+
+
+SELECT 
+    h.id_hoa_don,
+    h.ma_hoa_don,
+    u.ten_nguoi_dung,
+    h.ngay_tao,
+    h.thanh_tien,
+    lt.ten_loai_trang_thai 
+FROM 
+    hoa_don h
+JOIN 
+    nguoi_dung u ON h.id_nguoi_dung = u.id_nguoi_dung
+JOIN 
+    trang_thai_hoa_don ts ON h.id_hoa_don = ts.id_hoa_don
+JOIN 
+    loai_trang_thai lt ON ts.id_loai_trang_thai = lt.Id_loai_trang_thai
+where lt.id_loai_trang_thai = 2
+
+
+
+
+
+
+
+SELECT 
+    hd.ma_hoa_don,
+    hd.ten_nguoi_nhan,
+    hd.dia_chi,
+    hd.sdt_nguoi_nhan,
+    hd.thanh_tien,
+    ltt.ten_loai_trang_thai AS trang_thai,
+    ts.mo_ta AS mo_ta_trang_thai
+FROM 
+    hoa_don hd
+JOIN 
+    trang_thai_hoa_don ts ON hd.Id_hoa_don = ts.id_hoa_don
+JOIN 
+    loai_trang_thai ltt ON ts.id_loai_trang_thai = ltt.Id_loai_trang_thai
+WHERE 
+    ltt.ten_loai_trang_thai IN (N'Hoàn thành', N'Chờ giao hàng', N'Chờ thanh toán', N'Chờ xác nhận')
+ORDER BY 
+    CASE 
+        WHEN ltt.ten_loai_trang_thai = N'Hoàn thành' THEN 1
+        WHEN ltt.ten_loai_trang_thai = N'Chờ giao hàng' THEN 2
+        WHEN ltt.ten_loai_trang_thai = N'Chờ thanh toán' THEN 3
+        WHEN ltt.ten_loai_trang_thai = N'Chờ xác nhận' THEN 4
+        ELSE 5
+    END;
+
+
+
+
+	WITH LatestStatus AS (
+    SELECT 
+        hd.ma_hoa_don,
+        hd.ten_nguoi_nhan,
+        hd.dia_chi,
+        hd.sdt_nguoi_nhan,
+        hd.thanh_tien,
+        ltt.ten_loai_trang_thai AS trang_thai,
+        ts.mo_ta AS mo_ta_trang_thai,
+        ROW_NUMBER() OVER (PARTITION BY hd.ma_hoa_don ORDER BY ts.ngay_cap_nhat DESC) AS rn
+    FROM 
+        hoa_don hd
+    JOIN 
+        trang_thai_hoa_don ts ON hd.Id_hoa_don = ts.id_hoa_don
+    JOIN 
+        loai_trang_thai ltt ON ts.id_loai_trang_thai = ltt.Id_loai_trang_thai
+    WHERE 
+        ltt.ten_loai_trang_thai IN (N'Hoàn thành', N'Chờ giao hàng', N'Chờ thanh toán', N'Chờ xác nhận')
+)
+SELECT 
+    ma_hoa_don,
+    ten_nguoi_nhan,
+    dia_chi,
+    sdt_nguoi_nhan,
+    thanh_tien,
+    trang_thai,
+    mo_ta_trang_thai
+FROM 
+    LatestStatus
+WHERE 
+    rn = 1
+ORDER BY 
+    CASE 
+        WHEN trang_thai = N'Hoàn thành' THEN 1
+        WHEN trang_thai = N'Chờ giao hàng' THEN 2
+        WHEN trang_thai = N'Chờ thanh toán' THEN 3
+        WHEN trang_thai = N'Chờ xác nhận' THEN 4
+        ELSE 5
+    END;
+
+
+
+
+
+
+
+
+
+SELECT 
+    h.Id_hoa_don, 
+    h.ma_hoa_don, 
+    t.id_trang_thai_hoa_don, 
+    t.mo_ta,
+    t.ngay_tao
+FROM 
+    hoa_don h
+JOIN 
+    trang_thai_hoa_don t ON h.Id_hoa_don = t.id_hoa_don
+WHERE 
+    t.ngay_tao = (
+        SELECT MAX(ngay_tao)
+        FROM trang_thai_hoa_don
+        WHERE id_hoa_don = h.Id_hoa_don)
+ORDER BY 
+    h.Id_hoa_don;
+
+
+
+SELECT TOP 1 
+    h.[Id_hoa_don], 
+    h.[ma_hoa_don], 
+    t.[mo_ta] AS [trang_thai_moi],
+    t.[ngay_tao] AS [ngay_tao_trang_thai]
+FROM 
+    hoa_don h
+JOIN 
+    trang_thai_hoa_don t ON h.[Id_hoa_don] = t.[id_hoa_don]
+WHERE 
+    t.[ngay_tao] = (
+        SELECT MAX([ngay_tao])
+        FROM trang_thai_hoa_don
+        WHERE [id_hoa_don] = h.[Id_hoa_don]
+    )
+ORDER BY 
+    t.[ngay_tao] DESC;
+
+
+
+
+WITH RankedStatus AS (
+    SELECT 
+        h.Id_hoa_don, 
+        h.ma_hoa_don, 
+		u.ten_nguoi_dung,
+        t.ngay_tao,
+        h.thanh_tien, 
+        t.id_loai_trang_thai,
+        l.ten_loai_trang_thai,
+        ROW_NUMBER() OVER (PARTITION BY h.Id_hoa_don ORDER BY t.ngay_tao DESC) AS rn
+    FROM 
+        hoa_don h
+    JOIN 
+        trang_thai_hoa_don t ON h.Id_hoa_don = t.id_hoa_don
+	JOIN 
+        loai_trang_thai l ON l.id_loai_trang_thai = t.id_loai_trang_thai
+	JOIN 
+        nguoi_dung u ON h.id_nguoi_dung = u.id_nguoi_dung
+)
+SELECT 
+    Id_hoa_don, 
+    ma_hoa_don, 
+	ten_nguoi_dung,
+    ngay_tao,
+	thanh_tien, 
+	ten_loai_trang_thai
+FROM 
+    RankedStatus
+WHERE 
+    rn = 1
+ORDER BY 
+    Id_hoa_don;
+
+
+	select * from hoa_don
+
+SELECT 
+    h.[ma_hoa_don], 
+    tthd.[mo_ta] AS 'mo_ta_trang_thai_hoa_don',
+    ltth.[ten_loai_trang_thai] AS 'ten_loai_trang_thai',
+    tthd.[ngay_tao] AS 'ngay_tao_trang_thai',
+    tthd.[ngay_cap_nhat] AS 'ngay_cap_nhat_trang_thai'
+FROM 
+    hoa_don h
+JOIN 
+    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don
+JOIN 
+    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai
+ORDER BY 
+    h.[ma_hoa_don], tthd.[ngay_tao];
+
+
+
+
+SELECT 
+    h.[ma_hoa_don], 
+    tthd.[mo_ta] ,
+    ltth.[ten_loai_trang_thai] ,
+    tthd.[ngay_tao] ,
+    tthd.[ngay_cap_nhat]
+FROM 
+    hoa_don h
+JOIN 
+    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don
+JOIN 
+    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai
+WHERE 
+    tthd.id_loai_trang_thai = 2  -- Thay đổi giá trị 2 bằng id_loai_trang_thai bạn cần
+ORDER BY 
+    h.[ma_hoa_don], tthd.[ngay_tao];
+
+
+
+
+
+SELECT 
+    h.ma_hoa_don, 
+    tthd.mo_ta,
+    ltth.id_loai_trang_thai,
+    ltth.ten_loai_trang_thai,
+    tthd.ngay_tao,
+    tthd.ngay_cap_nhat
+FROM 
+    hoa_don h
+JOIN 
+    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don
+JOIN 
+    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai
+where h.Id_hoa_don =3  AND tthd.id_loai_trang_thai IN (1,2,3, 4,5, 6, 7, 8, 9)
+
+
+SELECT 
+    h.ma_hoa_don, 
+    tthd.mo_ta,
+    ltth.ten_loai_trang_thai,
+    tthd.ngay_tao,
+    tthd.ngay_cap_nhat
+FROM 
+    hoa_don h
+JOIN 
+    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don
+JOIN 
+    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai
+where h.Id_hoa_don = 1  AND tthd.id_loai_trang_thai IN (3, 5)
+
+
+
+SELECT 
+    h.[ma_hoa_don], 
+    tthd.[mo_ta] AS 'mo_ta_trang_thai_hoa_don',
+    ltth.[ten_loai_trang_thai] AS 'ten_loai_trang_thai',
+    tthd.[ngay_tao] AS 'ngay_tao_trang_thai',
+    tthd.[ngay_cap_nhat] AS 'ngay_cap_nhat_trang_thai'
+FROM 
+    hoa_don h
+JOIN 
+    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don
+JOIN 
+    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai
+WHERE 
+    ltth.ten_loai_trang_thai IN 
+    ('Chờ giao hàng', 
+     'Chờ thanh toán', 
+     'Chờ xác nhận', 
+     'Đang vận chuyển', 
+     'Hoàn thành', 
+     'Đã hủy')
+ORDER BY 
+    h.[Id_hoa_don], tthd.[ngay_tao];
+
+
+
+
+	select * from loai_trang_thai
+	select * from trang_thai_hoa_don where id_hoa_don = 1 and id_loai_trang_thai = 8
+	select * from hoa_don 
+
+
+
+SELECT 
+    hdct.Id_san_pham_chi_tiet, 
+    sp.ma_san_pham ,
+    hdct.so_luong, 
+    k.ten_kich_thuoc,
+    ms.ten_mau_sac ,
+    cl.ten_chat_lieu ,
+    spct.id_san_pham ,
+    sp.mo_ta ,
+    sp.ten_san_pham 
+FROM 
+    hoa_don_chi_tiet hdct
+JOIN 
+    san_pham_chi_tiet spct ON spct.id_san_pham_chi_tiet = hdct.id_san_pham_chi_tiet
+LEFT JOIN 
+    kich_thuoc k ON spct.id_kich_thuoc_chi_tiet = k.Id_kich_thuoc
+LEFT JOIN 
+    mau_sac ms ON spct.id_mau_sac_chi_tiet = ms.Id_mau_sac
+LEFT JOIN 
+    chat_lieu cl ON spct.id_chat_lieu_chi_tiet = cl.Id_chat_lieu
+LEFT JOIN 
+    san_pham sp ON spct.id_san_pham = sp.Id_san_pham
+WHERE 
+    hdct.id_hoa_don = 1;
+
+
+
+
+WITH LatestStatus AS (
+    SELECT 
+       h.Id_hoa_don, 
+        h.ma_hoa_don, 
+		u.ten_nguoi_dung,
+		u.sdt,
+        h.thanh_tien, 
+        h.loai,
+        t.ngay_tao,
+        l.ten_loai_trang_thai,
+        ROW_NUMBER() OVER (PARTITION BY  h.Id_hoa_don ORDER BY h.id_trang_thai_hoa_don DESC) AS rn
+     FROM 
+        hoa_don h
+    JOIN 
+        trang_thai_hoa_don t ON h.Id_hoa_don = t.id_hoa_don
+	JOIN 
+        loai_trang_thai l ON l.id_loai_trang_thai = t.id_loai_trang_thai
+	JOIN 
+        nguoi_dung u ON h.id_nguoi_dung = u.id_nguoi_dung
+)
+SELECT 
+    Id_hoa_don, 
+    ma_hoa_don, 
+	ten_nguoi_dung,
+	sdt,
+    ngay_tao,
+	thanh_tien, 
+	ten_loai_trang_thai
+FROM 
+        hoa_don h
+    JOIN 
+        trang_thai_hoa_don t ON h.Id_hoa_don = t.id_hoa_don
+	JOIN 
+        loai_trang_thai l ON l.id_loai_trang_thai = t.id_loai_trang_thai
+	JOIN 
+        nguoi_dung u ON h.id_nguoi_dung = u.id_nguoi_dung
+WHERE rn = 1
+ORDER BY h.id_hoa_don;
+
+
+
+
+WITH RankedStatus AS (
+    SELECT 
+        h.Id_hoa_don, 
+        h.ma_hoa_don, 
+		u.ten_nguoi_dung,
+        t.ngay_tao,
+        h.thanh_tien, 
+        t.id_loai_trang_thai,
+        l.ten_loai_trang_thai,
+        ROW_NUMBER() OVER (PARTITION BY h.Id_hoa_don ORDER BY t.ngay_tao DESC) AS rn
+    FROM 
+        hoa_don h
+    JOIN 
+        trang_thai_hoa_don t ON h.Id_hoa_don = t.id_hoa_don
+	JOIN 
+        loai_trang_thai l ON l.id_loai_trang_thai = t.id_loai_trang_thai
+	JOIN 
+        nguoi_dung u ON h.id_nguoi_dung = u.id_nguoi_dung
+)
+SELECT 
+    Id_hoa_don, 
+    ma_hoa_don, 
+	ten_nguoi_dung,
+    ngay_tao,
+	thanh_tien, 
+	ten_loai_trang_thai
+FROM 
+    RankedStatus
+WHERE 
+    rn = 1
+ORDER BY 
+    Id_hoa_don;
+
+
+
+
+WITH LatestStatus AS (
+    SELECT 
+        h.Id_hoa_don, 
+        h.ma_hoa_don, 
+        u.ten_nguoi_dung,
+        u.sdt,
+        h.thanh_tien, 
+        h.loai, 
+        t.ngay_tao,
+        l.ten_loai_trang_thai,
+        ROW_NUMBER() OVER (PARTITION BY h.Id_hoa_don ORDER BY t.id_loai_trang_thai DESC) AS rn
+    FROM 
+        hoa_don h
+    JOIN 
+        trang_thai_hoa_don t ON h.Id_hoa_don = t.id_hoa_don
+    JOIN 
+        loai_trang_thai l ON l.id_loai_trang_thai = t.id_loai_trang_thai
+    JOIN 
+        nguoi_dung u ON h.id_nguoi_dung = u.id_nguoi_dung
+)
+SELECT 
+    ls.Id_hoa_don, 
+    ls.ma_hoa_don, 
+    ls.ten_nguoi_dung,
+    ls.sdt, 
+    ls.thanh_tien, 
+    ls.loai, 
+    ls.ngay_tao,
+    ls.ten_loai_trang_thai
+FROM 
+    LatestStatus ls
+WHERE 
+    ls.rn = 1
+ORDER BY 
+    ls.Id_hoa_don;
+
+
+
+	select * from loai_trang_thai
+	select * from trang_thai_hoa_don
+	select * from hoa_don

@@ -41,7 +41,11 @@
                     </div>
                     <div class="fs-5 d-flex justify-content-between mt-4">
                         <h3><span>{{ sanPhamChiTiet.giaBan/1 | currency: '': 0 }}</span> VND</h3>
-                        <span>Còn hàng</span>
+                        <!-- Hiển thị số lượng tồn chỉ khi đã chọn đủ các thuộc tính -->
+                        <div ng-if="selectedMaterial && selectedColor && selectedSize">
+                            <span ng-if="soLuongTon > 0">Còn hàng</span>
+                            <span ng-if="soLuongTon === 0" style="color: red;">Hết hàng</span>
+                        </div>
                     </div>
                     <hr>
                     <div class="product-details">
@@ -101,20 +105,19 @@
                                     </button>
                                 </a>
                             </div>
-                            <!-- Add to Cart Button -->
-                            <div class="flex-grow-1">
-                                <a href="#!gio_hang" class="text-decoration-none">
-                                    <button class="btn btn-danger w-100" style="font-size: 18px;"
-                                        ng-click="addToCart(sanPhamChiTiet)">
-                                        <i class="fa-solid fa-bag-shopping" style="font-size: 24px;"></i> Giỏ hàng
-                                    </button>
-                                </a>
+                            <!-- Thêm vào Giỏ hàng Button -->
+                            <div class="flex-grow-1" ng-disabled="soLuongTon === 0">
+                                <button class="btn btn-danger w-100" style="font-size: 18px;"
+                                    ng-click="addToCart(sanPhamChiTiet)">
+                                    <i class="fa-solid fa-bag-shopping" style="font-size: 24px;"></i> Giỏ hàng
+                                </button>
                             </div>
                         </div>
                         <!-- Buy Now Button -->
-                        <div class="border border-3 rounded border-danger">
-                            <a href="#!thanh_toan" class="text-decoration-none " ng-click="thanhtoan(sanPhamChiTiet)">
-                                <button class="btn btn-light text-danger w-100" style="font-size: 18px;">
+                        <div class="border border-3 rounded border-danger" ng-disabled="soLuongTon === 0">
+                            <a href="#!thanh_toan" class="text-decoration-none ">
+                                <button class="btn btn-light text-danger w-100" style="font-size: 18px;"
+                                    ng-click="thanhtoan(sanPhamChiTiet)">
                                     <i class="fa-solid fa-bolt" style="font-size: 24px;"></i> Mua ngay
                                 </button>
                             </a>

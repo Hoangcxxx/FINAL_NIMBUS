@@ -60,8 +60,10 @@
                                                 <th scope="col">#</th>
                                                 <th scope="col">Mã đơn</th>
                                                 <th scope="col">Khách hàng</th>
-                                                <th scope="col">Ngày đặt</th>
+                                                <th scope="col">Số điện thoại</th>
                                                 <th scope="col">Tổng tiền</th>
+                                                <th scope="col">Loại đơn hàng</th>
+                                                <th scope="col">Ngày đặt</th>
                                                 <th scope="col">Trạng thái</th>
                                                 <th scope="col">Thao tác</th>
                                                 <th scope="col"></th>
@@ -69,13 +71,15 @@
                                         </thead>
                                         <tbody>
                                             <tr
-                                                ng-repeat="item in dsHoaDon | filter: {trangThaiHoaDon: tab.status} track by item.idHoaDon">
+                                                ng-repeat="item in dsHoaDon | filter: {tenLoaiTrangThaiHoaDon: tab.status} track by item.idHoaDon">
                                                 <td>{{$index + 1}}</td>
                                                 <td>{{item.maHoaDon}}</td>
                                                 <td>{{item.tenNguoiDung}}</td>
-                                                <td>{{item.ngayTao | date:'dd/MM/yyyy'}}</td>
+                                                <td>{{item.sdt}}</td>
                                                 <td>{{ item.thanhTien/1 | currency: '': 0 }} VND</td>
-                                                <td>{{item.trangThaiHoaDon}}</td>
+                                                <td>{{ item.loai ? 'Online' : 'Tại quầy' }}</td>
+                                                <td>{{item.ngayTao | date:'dd/MM/yyyy'}}</td>
+                                                <td>{{item.tenLoaiTrangThaiHoaDon}}</td>
                                                 <td>
                                                     <a href="#!detail_hd/{{item.idHoaDon}}"
                                                         class="btn btn-warning btn-sm">

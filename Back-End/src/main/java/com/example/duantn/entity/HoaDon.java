@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "hoa_don")
 public class HoaDon {
@@ -35,10 +34,6 @@ public class HoaDon {
     @JoinColumn(name = "Id_dia_chi_van_chuyen")
     private DiaChiVanChuyen diaChiVanChuyen;
 
-    @ManyToOne
-    @JoinColumn(name = "id_trang_thai_hoa_don")
-    private TrangThaiHoaDon trangThaiHoaDon;
-
     @Column(name = "ten_nguoi_nhan", nullable = false)
     private String tenNguoiNhan;
 
@@ -59,7 +54,7 @@ public class HoaDon {
     private String moTa;
     @Column(name = "thanh_tien")
     private BigDecimal thanhTien;
-    @Column(name = "trang_thai", nullable = false)
+    @Column(name = "trang_thai")
     private Boolean trangThai;
 
     @Column(name = "ngay_thanh_toan")

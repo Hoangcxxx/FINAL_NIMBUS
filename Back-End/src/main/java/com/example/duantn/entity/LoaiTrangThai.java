@@ -9,19 +9,20 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Entity
-@Table(name = "tinh")
-public class Tinh {
+@Table(name = "loai_trang_thai")
+public class LoaiTrangThai {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_tinh")
-    private Integer idTinh;
+    @Column(name = "Id_loai_trang_thai")
+    private Integer idLoaiTrangThai;
 
-    @Column(name = "ma_tinh")
-    private String maTinh;
+    @Column(name = "ten_loai_trang_thai", nullable = false)
+    private String tenLoaiTrangThai;
 
-    @Column(name = "ten_tinh")
-    private String tenTinh;
+    @Column(name = "mo_ta")
+    private String moTa;
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -30,5 +31,4 @@ public class Tinh {
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
-
 }
