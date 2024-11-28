@@ -127,10 +127,12 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     // Hàm cập nhật trạng thái hóa đơn
     $scope.updateTrangThaiHoaDon = function () {
         console.log("Trang thái ID:", $scope.ghiChu.trangThaiId);  // Kiểm tra giá trị
+    
         if ($scope.ghiChu.trangThaiId && idHoaDon) {
             // Thực hiện API update
             $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai?idHoaDon=' + idHoaDon + '&idLoaiTrangThai=' + $scope.ghiChu.trangThaiId)
                 .then(function (response) {
+                    // Kiểm tra nếu backend trả về thành công
                     if (response.data.success) {
                         console.log("Cập nhật thành công");
                         alert("Cập nhật trạng thái hóa đơn thành công");
@@ -138,18 +140,23 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                         $('#ghiChuModal').modal('hide'); // Đóng modal
                         $scope.resetModal();
                     } else {
+                        // Nếu không thành công, hiển thị thông báo lỗi từ backend
                         console.error('Error updating status:', response.data.message);
+                        alert(response.data.message);  // Hiển thị thông báo lỗi từ backend
                     }
                 })
                 .catch(function (error) {
+                    // Nếu có lỗi khi gọi API
                     console.error('Error calling API:', error);
+                    alert("Không thể cập nhật trạng thái 'Hoàn thành' vì hóa đơn chưa xác nhận thanh toán.");
                 });
         } else {
             alert('Vui lòng chọn trạng thái trước khi cập nhật!');
         }
     };
     
-    
+
+
 
     // Reset modal trạng thái
     $scope.resetModal = function () {

@@ -35,4 +35,6 @@ public class SanPhamChiTietDTO {
 	private String MoTa;
 
 	private Integer idSanPham;
+
+	private  Integer DotGiamGia;
 }

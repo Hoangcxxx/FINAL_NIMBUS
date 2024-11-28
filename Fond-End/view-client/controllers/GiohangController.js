@@ -20,6 +20,7 @@ window.GiohangController = function ($scope, $http) {
         // Xóa idGioHang trong localStorage nếu người dùng chưa đăng nhập
         localStorage.removeItem("idGioHang");
     }
+
     $scope.getCartItems = function () {
         $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${$scope.userId}`)
             .then(function (response) {
@@ -65,12 +66,19 @@ window.GiohangController = function ($scope, $http) {
     };
 
     $scope.updateCart = function (item) {
+        // Kiểm tra nếu có giá khuyến mãi, nếu không thì dùng giá gốc
+        let donGia = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;
+
+        // Tính thành tiền
+        let thanhTien = item.soLuongGioHang * donGia;
+
         let value = {
-            soLuong: item.soLuong,
-            donGia: item.giaTien,
-            idSanPhamChiTiet: item.idspct,
-            thanhTien: item.soLuong * item.giaTien,
+            soLuong: item.soLuongGioHang,
+            donGia: donGia,
+            idSanPhamChiTiet: item.idSanPhamCT,
+            thanhTien: thanhTien,
         };
+
         $http({
             method: "PUT",
             url: `http://localhost:8080/api/nguoi_dung/gio_hang/update?idGioHang=${$scope.userId}`,
@@ -87,9 +95,16 @@ window.GiohangController = function ($scope, $http) {
             });
     };
 
+
+
     $scope.getTotal = function () {
-        return $scope.cart.reduce((total, item) => total + (item.soLuong * item.giaTien), 0);
+        return $scope.cart.reduce((total, item) => {
+            // Kiểm tra giá và tính tổng tiền
+            let donGia = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;
+            return total + (item.soLuongGioHang * donGia);
+        }, 0);
     };
+    
 
     $scope.checkout = function () {
         $window.location.href = "/#!thanh_toan"; // Chuyển hướng sang trang thanh toán

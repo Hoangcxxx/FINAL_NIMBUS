@@ -8,13 +8,23 @@ public class SanPhamChiTietQuery {
             "    dc.ten_danh_muc, \n" +
             "    sp.gia_ban,\n" +
             "    sp.mo_ta,\n" +
-            "    sp.ngay_tao\n" +
+            "    sp.ngay_tao,\n" +
+            "\tdgg.ten_dot_giam_gia,\n" +
+            "    ggsp.gia_khuyen_mai,\n" +
+            "    dgg.gia_tri_giam_gia,\n" +
+            "    dgg.kieu_giam_gia,\n" +
+            "    dgg.ngay_bat_dau,\n" +
+            "    dgg.ngay_ket_thuc\n" +
             "FROM \n" +
             "    san_pham sp\n" +
             "LEFT JOIN \n" +
-            "    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc \n" +
+            "    danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc\n" +
+            "LEFT JOIN\n" +
+            "    giam_gia_san_pham ggsp ON sp.Id_san_pham = ggsp.id_san_pham\n" +
+            "LEFT JOIN \n" +
+            "    dot_giam_gia dgg ON ggsp.id_dot_giam_gia = dgg.Id_dot_giam_gia\n" +
             "WHERE \n" +
-            "    sp.id_san_pham = :idSanPhamCT\n";
+            "    sp.id_san_pham = :idSanPhamCT;\n";
     public static final String GET_MAU_SAC_BY_ID_SAN_PHAM = "SELECT mct.id_mau_sac_chi_tiet, ms.ten_mau_sac AS mau_sac " +
             "FROM san_pham sp " +
             "JOIN san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham " +

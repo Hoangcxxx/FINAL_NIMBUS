@@ -20,4 +20,5 @@ public class GioHangChiTietDTO {
 	private Integer idMauSac;
 	private Integer idKichThuoc;
 	private Integer idChatLieu;
+	private String tenDotGiamGia;
 }

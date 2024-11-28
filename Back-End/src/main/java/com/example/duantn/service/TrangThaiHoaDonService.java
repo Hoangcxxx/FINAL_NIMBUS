@@ -49,7 +49,17 @@ public class TrangThaiHoaDonService {
             // Kiểm tra xem trạng thái loại đã tồn tại chưa
             if (isTrangThaiHoaDonExist(idHoaDon, idLoaiTrangThai)) {
                 System.out.println("Trạng thái đã tồn tại cho hóa đơn này với loại trạng thái ID = " + idLoaiTrangThai);
-                return null;  // Nếu đã có trạng thái loại này, trả về null
+                return null;  // Nếu trạng thái đã tồn tại, không tiếp tục thực hiện lưu và trả về null
+            }
+
+            // Kiểm tra nếu trạng thái là 'Hoàn thành' (idLoaiTrangThai == 8)
+            if (idLoaiTrangThai == 8) {
+                // Kiểm tra xem hóa đơn có đang ở trạng thái 'Chờ thanh toán' (idLoaiTrangThai == 4) hay không
+                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 5); // Kiểm tra xem trạng thái 'đã xác nhận thanh toán' có tồn tại không
+                if (!isPaymentConfirmed) {
+                    System.out.println("Không thể cập nhật trạng thái 'Hoàn thành' vì hóa đơn chưa xác nhận thanh toán.");
+                    return null; // Nếu hóa đơn chưa thanh toán, không cho phép cập nhật trạng thái hoàn thành
+                }
             }
 
             // Tạo đối tượng TrangThaiHoaDon mới
@@ -99,6 +109,8 @@ public class TrangThaiHoaDonService {
         System.out.println("Không tìm thấy hóa đơn hoặc loại trạng thái.");
         return null;
     }
+
+
 
 
 

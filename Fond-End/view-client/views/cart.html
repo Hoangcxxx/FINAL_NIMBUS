@@ -4,7 +4,7 @@
 </section>
 
 <section id="cart" class="section-p1">
-    <h2 class="cart-title text-center mb-4">Giỏ hàng của bạn</h2>
+    <h2 class="cart-title mb-4">Giỏ hàng của bạn</h2>
     <table width="100%">
         <thead>
             <tr>
@@ -17,31 +17,54 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="item in cart track by item.idspct">
+            <tr ng-repeat="item in cart track by item.idSanPhamCT">
                 <td>
                     <button type="button" class="btn btn-link" aria-label="Xóa sản phẩm"
-                        ng-click="removeFromCart(item.idspct)">
+                        ng-click="removeFromCart(item.idSanPhamCT)">
                         <i class="fa-regular fa-circle-xmark"></i>
                     </button>
                 </td>
-                <td><img ng-src="{{item.urlAnh}}" alt="Hình sản phẩm" class="cart-item-image"
-                        style="max-width: 100px; max-height: 100px;"></td>
+                <td>
+                    <img ng-src="{{item.urlAnh}}" alt="Hình sản phẩm" class="cart-item-image"
+                        style="max-width: 100px; max-height: 100px;">
+                </td>
                 <td>
                     <strong>
-                        <a href="#!san_pham_chi_tiet/{{item.idSanPhamChiTiet}}"
+                        <a href="#!san_pham_chi_tiet/{{item.idSanPhamCT}}"
                             class="text-decoration-none">{{item.tenSanPham}}</a>
                     </strong><br>
-                    <small>Màu sắc: {{item.tenmausac}}</small><br>
-                    <small>Chất liệu: {{item.tenchatlieu}}</small><br>
-                    <small>Kích thước: {{item.tenkichthuoc}}</small>
+                    <small>Màu sắc: {{item.mauSac}}</small><br>
+                    <small>Chất liệu: {{item.chatLieu}}</small><br>
+                    <small>Kích thước: {{item.kichThuoc}}</small>
                 </td>
-                <td class="text-center">{{ item.giaTien/1 | currency: '': 0 }}</span> VND</td>
-                <td class="text-center">
-                    <input type="number" ng-model="item.soLuong" min="1"
-                        class="form-control form-control-sm cart-quantity-input" ng-blur="updateCart(item)"
+                <td>
+                    <!-- Hiển thị giá khuyến mãi nếu có và giá không null -->
+                    <div ng-if="item.kieuGiamGia && item.giaKhuyenMai != null"
+                        class="d-flex flex-column align-items-center">
+                        <span class="text-danger mb-2">
+                            {{ item.giaKhuyenMai | currency: '$': 0 }} VND
+                        </span>
+                        <!-- Hiển thị giá ban đầu nếu có giảm giá và giá bán không null -->
+                        <span>
+                            <del>{{ item.giaBan | currency: '$': 0 }}</del> VND
+                        </span>
+                    </div>
+
+                    <!-- Nếu không có giảm giá hoặc giá khuyến mãi null, chỉ hiển thị giá gốc -->
+                    <div ng-if="!item.kieuGiamGia || item.giaKhuyenMai == null"
+                        class="d-flex flex-column align-items-center">
+                        <span>{{ item.giaBan | currency: '$': 0 }} VND</span>
+                    </div>
+                </td>
+                <td>
+                    <input type="number" ng-model="item.soLuongGioHang" min="1" ng-blur="updateCart(item)"
                         aria-label="Số lượng sản phẩm">
                 </td>
-                <td class="text-center">{{ item.soLuong * item.giaTien/1 | currency: '': 0 }}</span> VND</td>
+
+                <td>
+                    <!-- Tính toán Thành Tiền dựa trên giá sản phẩm và số lượng -->
+                    <span>{{ item.soLuongGioHang * (item.giaKhuyenMai || item.giaBan) | currency: '' : 0 }} VND</span>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -70,7 +93,7 @@
                 </tr>
                 <tr class="font-weight-bold">
                     <td><strong>Tổng cộng</strong></td>
-                    <td><strong>{{ getTotal()/1 | currency: '': 0 }}</span> VND</strong></td>
+                    <td><strong>{{ getTotal() | currency: '': 0 }} VND</strong></td>
                 </tr>
             </tbody>
         </table>

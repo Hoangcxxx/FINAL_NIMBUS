@@ -127,30 +127,8 @@ public class GioHangService {
         gioHang.setNgayCapNhat(new Date());
         return gioHangRepository.save(gioHang); // Lưu và trả về giỏ hàng đã xóa sản phẩm
     }
-
-    public List<SanPhamChiTietDTO> getGioHangChiTiet(Integer idNguoiDung) {
-        // Fetch the shopping cart by ID
-        GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDungOrderByIdGioHang(idNguoiDung);
-
-        List<GioHangChiTiet> chiTietList = gioHangChiTietRepository.findByGioHang_IdGioHang(idNguoiDung);
-        List<SanPhamChiTietDTO> sanpham = new ArrayList<>();
-
-        for (GioHangChiTiet gioHangChiTiet : chiTietList) {
-            SanPhamChiTietDTO s = new SanPhamChiTietDTO();
-            SanPhamChiTiet sanPhamChiTiet = gioHangChiTiet.getSanPhamChiTiet();
-            s.setIdspct(sanPhamChiTiet.getIdSanPhamChiTiet());
-            s.setSoLuong(gioHangChiTiet.getSoLuong());
-            s.setTenSanPham(sanPhamChiTiet.getSanPham().getTenSanPham());
-            s.setTenchatlieu(sanPhamChiTiet.getChatLieuChiTiet().getChatLieu().getTenChatLieu());
-            s.setTenkichthuoc(sanPhamChiTiet.getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
-            s.setTenmausac(sanPhamChiTiet.getMauSacChiTiet().getMauSac().getTenMauSac());
-            s.setIdSanPham(sanPhamChiTiet.getSanPham().getIdSanPham());
-            s.setMoTa(sanPhamChiTiet.getSanPham().getMoTa());
-            s.setGiaTien(sanPhamChiTiet.getSanPham().getGiaBan());
-            sanpham.add(s);
-        }
-
-        return sanpham; // Return list of product details
+    public List<Object[]> getGioHangChiTiets(Integer idNguoiDung) {
+        return gioHangRepository.getAllGioHang(idNguoiDung);
     }
 
     public GioHang deleteGioHangChiTiet(Integer idGioHang, Integer idSanPhamChiTiet) {

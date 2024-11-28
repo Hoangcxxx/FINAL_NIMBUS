@@ -9,5 +9,6 @@ import java.util.List;
 public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
     // Phương thức tìm kiếm theo trạng thái giảm giá
     List<Voucher> findByTrangThaiGiamGia(TrangThaiGiamGia trangThaiGiamGia);
+    Voucher findByMaVoucher(String maVoucher);
 }
 

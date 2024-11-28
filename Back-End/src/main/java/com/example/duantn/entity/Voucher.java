@@ -75,4 +75,13 @@ public class Voucher {
     protected void onUpdate() {
         ngayCapNhat = new Date();
     }
+    @Transient
+    private boolean isUsable;
+    public boolean getIsUsable() {
+        return isUsable;
+    }
+
+    public void setIsUsable(boolean isUsable) {
+        this.isUsable = isUsable;
+    }
 }

@@ -38,7 +38,7 @@ public class SanPhamCTController {
 
     @GetMapping("/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getById(idSanPhamCT), "idSanPham","maSanPham", "tenSanPham","tenDanhMuc","giaBan", "moTa", "ngayTao");
+        return getResponse(service.getById(idSanPhamCT), "idSanPham","maSanPham", "tenSanPham","tenDanhMuc","giaBan", "moTa", "ngayTao","tenDotGiamGia","giaKhuyenMai","giaTriGiamGia","kieuGiamGia","ngayBatDau","ngayKetThuc");
     }
     @GetMapping("/findAllSanPhamCT/{idSanPham}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPham) {

@@ -175,7 +175,7 @@
                         <table class="table table-bordered table-striped">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>ID</th>
+                                    <th>#</th>
                                     <th>Tỉnh</th>
                                     <th>Huyện</th>
                                     <th>Xã</th>
@@ -186,7 +186,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="address in addresses">
-                                    <td>{{ address.idDiaChiVanChuyen }}</td>
+                                    <td>{{ $index + 1 }}</td>
                                     <td>{{ address.tinh }}</td>
                                     <td>{{ address.huyen }}</td>
                                     <td>{{ address.xa }}</td>

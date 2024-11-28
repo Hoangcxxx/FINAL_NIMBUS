@@ -14,7 +14,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
     $scope.shippingInfo = {};
 
     var user = JSON.parse(localStorage.getItem("user"));
-    console.log("1233",user)
     if (user) {
         var iduser = user.idNguoiDung;
     }
@@ -56,14 +55,69 @@ window.ThanhToanController = function ($scope, $http, $window) {
             })
             .catch(error => console.error("Lỗi khi lấy sản phẩm trong giỏ hàng:", error));
     };
+    $scope.selectVoucher = function (voucher) {
+        // Kiểm tra điều kiện sử dụng voucher
+        if (voucher.isUsable) {
+            $scope.selectedVoucher = voucher;
+            $scope.voucherCode = voucher.maVoucher;  // Gán mã voucher vào input (nếu cần)
+            $scope.voucherError = '';  // Reset lỗi
 
-    // Tính tổng tiền của giỏ hàng, áp dụng mã giảm giá nếu có
-    $scope.calculateTotal = function () {
-        $scope.totalAmount = $scope.cart.reduce((total, item) => total + item.soLuong * item.giaTien, 0);
-        if ($scope.selectedVoucher && $scope.selectedVoucher.discount) {
-            $scope.totalAmount *= (1 - $scope.selectedVoucher.discount / 100); // Giảm giá theo voucher
+        } else {
+            $scope.voucherError = 'Voucher này không thể sử dụng.';
         }
     };
+    $scope.dsvoucher = function () {
+        // Calculate the total amount from the cart
+        $scope.totalAmount = $scope.cart.reduce(function (total, item) {
+            // Determine the price based on whether there's a promotional price or not
+            let donGia = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;
+            // Add the total price for the item based on its quantity
+            return total + (item.soLuongGioHang * donGia);
+        }, 0);
+
+        // Log the total amount for debugging
+        console.log("Tổng tiền giỏ hàng: " + $scope.totalAmount);
+
+        // If the totalAmount is 0 or less, don't fetch vouchers
+        if ($scope.totalAmount <= 0) {
+            $scope.availableVouchers = []; // No valid vouchers if there's no total amount
+            return;
+        }
+
+        // Fetch available vouchers based on the total amount
+        $http.get('http://localhost:8080/api/nguoi_dung/vouchers/' + $scope.totalAmount)
+            .then(function (response) {
+                // Store the available vouchers in $scope.availableVouchers
+                $scope.availableVouchers = response.data || [];
+                console.log("Danh sách voucher khả dụng:", $scope.availableVouchers);
+
+                // Filter vouchers based on the total amount conditions
+                $scope.availableVouchers = $scope.availableVouchers.filter(function (voucher) {
+                    // Only include vouchers where the total amount meets the minimum and maximum limits
+                    return $scope.totalAmount >= voucher.soTienToiThieu && $scope.totalAmount <= voucher.giaTriToiDa;
+                });
+
+                // If no voucher is selected and valid vouchers exist, select the first one automatically
+                if (!$scope.selectedVoucher && $scope.availableVouchers.length > 0) {
+                    $scope.selectedVoucher = $scope.availableVouchers[0];
+                }
+            })
+            .catch(function (error) {
+                // Handle errors in fetching vouchers
+                console.error("Error fetching vouchers:", error);
+                $scope.availableVouchers = [];
+            });
+    };
+
+
+    $scope.calculateTotal = function () {
+        $scope.totalAmount = $scope.cart.reduce((total, item) => {
+            // Kiểm tra giá và tính tổng tiền
+            let donGia = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;
+            return total + (item.soLuongGioHang * donGia);
+        }, 0);
+    };
+
     // ĐặT Hàng
     $scope.placeOrder = function () {
         if ($scope.cart.length === 0) {
@@ -83,7 +137,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
         const orderData = {
             cartId: iduser,
-            idNguoiDung: $scope.userInfo.idNguoiDung,    
+            idNguoiDung: $scope.userInfo.idNguoiDung,
             tinh: $scope.shippingInfo.province,
             huyen: $scope.shippingInfo.district,
             xa: $scope.shippingInfo.ward,
@@ -144,7 +198,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 }
 
 
-               
+
                 // Xóa giỏ hàng sau khi đặt hàng
                 $scope.cart = [];
 
@@ -188,7 +242,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 .catch(error => console.error("Lỗi khi lấy phường xã:", error));
         }
     });
-  
+
 
 
     // Khởi tạo thông tin ban đầu
