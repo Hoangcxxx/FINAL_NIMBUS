@@ -110,7 +110,7 @@
                                         <span ng-if="hoaDon.idtrangthaihoadon === 4">Hủy Bỏ</span>
                                         <span ng-if="hoaDon.idtrangthaihoadon === 5">Thất Bại</span>
                                     </td>
-                                    <td>{{hoaDon.diaChi}}, {{hoaDon.tinh}}, {{hoaDon.huyen}}, {{hoaDon.xa}}</td>
+                                    <td>{{ hoaDon.diaChi }}, {{ hoaDon.tenTinh }}, {{ hoaDon.tenHuyen }}, {{ hoaDon.tenXa }}</td>
                                 </tr>
                                 <!-- Trường hợp không có đơn hàng -->
                                 <tr ng-if="!orderData || orderData.length === 0">

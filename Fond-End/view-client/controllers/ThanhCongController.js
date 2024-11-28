@@ -30,9 +30,9 @@ window.ThanhCongController = function ($scope, $http) {
                         ghiChu: hoaDon.ghiChu,
                         thanhTien: hoaDon.thanhTien,
                         // phiShip: hoaDon.phiShip,
-                        tinh: hoaDon.tinh,
-                        huyen: hoaDon.huyen,
-                        xa: hoaDon.xa
+                        tinh: hoaDon.tenTinh,
+                        huyen: hoaDon.tenHuyen,
+                        xa: hoaDon.tenXa
                     };
                     // Cập nhật chi tiết sản phẩm
                     if (hoaDon.listSanPhamChiTiet && hoaDon.listSanPhamChiTiet.length > 0) {

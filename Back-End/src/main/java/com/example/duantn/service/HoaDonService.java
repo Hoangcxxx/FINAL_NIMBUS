@@ -118,11 +118,33 @@ public class HoaDonService {
 
         // Thông tin địa chỉ vận chuyển
         if (hoaDon.getDiaChiVanChuyen() != null) {
-            dto.setIdDiaChiVanChuyen(hoaDon.getDiaChiVanChuyen().getIdDiaChiVanChuyen());
-            dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh().getIdTinh());
-            dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen().getIdHuyen());
-            dto.setXa(hoaDon.getDiaChiVanChuyen().getXa().getIdXa());
+            DiaChiVanChuyen diaChiVanChuyen = hoaDon.getDiaChiVanChuyen();
+
+            // Ánh xạ ID của địa chỉ vận chuyển
+            dto.setIdDiaChiVanChuyen(diaChiVanChuyen.getIdDiaChiVanChuyen());
+
+            // Ánh xạ các đối tượng Tinh, Huyen, Xa
+            if (diaChiVanChuyen.getTinh() != null) {
+                dto.setTinh(diaChiVanChuyen.getTinh().getIdTinh()); // Lưu ID Tỉnh
+                dto.setTenTinh(diaChiVanChuyen.getTinh().getTenTinh()); // Lấy tên Tỉnh
+            }
+            if (diaChiVanChuyen.getHuyen() != null) {
+                dto.setHuyen(diaChiVanChuyen.getHuyen().getIdHuyen()); // Lưu ID Huyện
+                dto.setTenHuyen(diaChiVanChuyen.getHuyen().getTenHuyen()); // Lấy tên Huyện
+            }
+            if (diaChiVanChuyen.getXa() != null) {
+                dto.setXa(diaChiVanChuyen.getXa().getIdXa()); // Lưu ID Xã
+                dto.setTenXa(diaChiVanChuyen.getXa().getTenXa()); // Lấy tên Xã
+            }
         }
+
+//        // Thông tin địa chỉ vận chuyển
+//        if (hoaDon.getDiaChiVanChuyen() != null) {
+//            dto.setIdDiaChiVanChuyen(hoaDon.getDiaChiVanChuyen().getIdDiaChiVanChuyen());
+//            dto.setTinh(hoaDon.getDiaChiVanChuyen().getTinh().getIdTinh());
+//            dto.setHuyen(hoaDon.getDiaChiVanChuyen().getHuyen().getIdHuyen());
+//            dto.setXa(hoaDon.getDiaChiVanChuyen().getXa().getIdXa());
+//        }
 
 //        // Thông tin trạng thái hóa đơn
 //        if (hoaDon.getTrangThaiHoaDon() != null) {
@@ -136,7 +158,6 @@ public class HoaDonService {
                     .getPhuongThucThanhToan()
                     .getTenPhuongThuc());
         }
-
         // Danh sách sản phẩm chi tiết
         List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon_IdHoaDon(hoaDon.getIdHoaDon());
         dto.setListSanPhamChiTiet(chiTietList.stream()
@@ -370,10 +391,8 @@ public class HoaDonService {
             dto.setTenNguoiNhan(hoaDon.getTenNguoiNhan());
             dto.setSdtNguoiNhan(hoaDon.getSdtNguoiNhan());
             dto.setDiaChi(hoaDon.getDiaChi());
-//            dto.setPhiShip(hoaDon.getPhiShip().doubleValue());
             dto.setThanhTien(hoaDon.getThanhTien());
             dto.setGhiChu(hoaDon.getMoTa());
-
 
             // Thông tin người dùng
             if (hoaDon.getNguoiDung() != null) {
@@ -388,18 +407,20 @@ public class HoaDonService {
                 // Ánh xạ ID của địa chỉ vận chuyển
                 dto.setIdDiaChiVanChuyen(diaChiVanChuyen.getIdDiaChiVanChuyen());
 
-                // Ánh xạ các đối tượng Tinh, Huyen, Xa (thay vì ánh xạ đối tượng, lấy ID)
+                // Ánh xạ các đối tượng Tinh, Huyen, Xa
                 if (diaChiVanChuyen.getTinh() != null) {
-                    dto.setTinh(diaChiVanChuyen.getTinh().getIdTinh()); // Gán ID của Tỉnh vào DTO
+                    dto.setTinh(diaChiVanChuyen.getTinh().getIdTinh()); // Lưu ID Tỉnh
+                    dto.setTenTinh(diaChiVanChuyen.getTinh().getTenTinh()); // Lấy tên Tỉnh
                 }
                 if (diaChiVanChuyen.getHuyen() != null) {
-                    dto.setHuyen(diaChiVanChuyen.getHuyen().getIdHuyen()); // Gán ID của Huyện vào DTO
+                    dto.setHuyen(diaChiVanChuyen.getHuyen().getIdHuyen()); // Lưu ID Huyện
+                    dto.setTenHuyen(diaChiVanChuyen.getHuyen().getTenHuyen()); // Lấy tên Huyện
                 }
                 if (diaChiVanChuyen.getXa() != null) {
-                    dto.setXa(diaChiVanChuyen.getXa().getIdXa()); // Gán ID của Xã vào DTO
+                    dto.setXa(diaChiVanChuyen.getXa().getIdXa()); // Lưu ID Xã
+                    dto.setTenXa(diaChiVanChuyen.getXa().getTenXa()); // Lấy tên Xã
                 }
             }
-
 
             // Thông tin phương thức thanh toán
             if (hoaDon.getPhuongThucThanhToanHoaDon() != null) {
@@ -408,11 +429,6 @@ public class HoaDonService {
                         .getPhuongThucThanhToan()
                         .getTenPhuongThuc());
             }
-
-//            // trangthaihoadon
-//            if (hoaDon.getTrangThaiHoaDon() != null) {
-//                dto.setIdtrangthaihoadon(hoaDon.getTrangThaiHoaDon().getIdTrangThaiHoaDon());
-//            }
 
             // Danh sách sản phẩm chi tiết
             List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon_IdHoaDon(hoaDon.getIdHoaDon());
@@ -435,4 +451,6 @@ public class HoaDonService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+
 }

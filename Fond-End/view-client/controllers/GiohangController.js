@@ -27,10 +27,10 @@ window.GiohangController = function ($scope, $http) {
                 $scope.cartItemCount = $scope.cart.length; // Cập nhật số lượng sản phẩm trong giỏ hàng
 
                 // Lấy hình ảnh cho từng sản phẩm
-                $scope.cart.forEach((element) => {
-                    $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${element.idSanPham}`)
+                $scope.cart.forEach((houss) => {
+                    $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${houss.idSanPham}`)
                         .then(function (response) {
-                            element.urlAnh = response.data[0]?.urlAnh || ''; // Lấy url hình ảnh
+                            houss.urlAnh = response.data[0]?.urlAnh || ''; // Lấy url hình ảnh
                         })
                         .catch(function (error) {
                             console.error("Lỗi khi lấy hình ảnh sản phẩm:", error);

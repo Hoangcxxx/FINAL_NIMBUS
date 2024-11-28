@@ -74,7 +74,14 @@
             <optional>true</optional>
         </dependency>
 
-<!--        &lt;!&ndash; Spring Boot Starter Test: Để viết các bài kiểm tra unit cho ứng dụng &ndash;&gt;-->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version> <!-- Sử dụng phiên bản mới nhất -->
+        </dependency>
+
+
+        <!--        &lt;!&ndash; Spring Boot Starter Test: Để viết các bài kiểm tra unit cho ứng dụng &ndash;&gt;-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-test</artifactId>-->

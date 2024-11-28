@@ -25,6 +25,9 @@ public class HoaDonDTO {
 	private Integer tinh;
 	private Integer huyen;
 	private Integer xa;
+	private String tenTinh; // Thêm trường tên Tỉnh
+	private String tenHuyen; // Thêm trường tên Huyện
+	private String tenXa;    // Thêm trường tên Xã
 	private String email;
 	private Integer idDiaChiVanChuyen;
 	private Integer idNguoiDung;

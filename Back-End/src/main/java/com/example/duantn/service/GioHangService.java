@@ -68,6 +68,8 @@ public class GioHangService {
         gioHangChiTiet.setNgayTao(new Date());
         gioHangChiTiet.setNgayCapNhat(new Date());
 
+
+//        Tăng Số Lượng Mua Sản Phảm vào Giỏ Hàng
         if (gioHangChiTietRepository.existsByIdGioHangAndIdSanPhamChiTiet(gioHang.getIdGioHang(),
                 sanPhamChiTiet.get().getIdSanPhamChiTiet())) {
             GioHangChiTiet chiTietExist = gioHangChiTietRepository.findByGioHang_IdGioHangAndSanPhamChiTiet_IdSanPhamChiTiet(gioHang.getIdGioHang(),
