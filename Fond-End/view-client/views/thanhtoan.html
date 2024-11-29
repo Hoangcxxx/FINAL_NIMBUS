@@ -38,32 +38,31 @@
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="province" class="form-label">Tỉnh thành <span class="text-danger">*</span></label>
-                        <select class="form-select" id="province" ng-model="shippingInfo.province"
-                            ng-options="province.tinh as province.tinh for province in provinces"
-                            ng-change="getShippingFee()" required>
-                            <option value="" disabled selected>Chọn tỉnh thành</option>
+                        <label class="form-label" for="city">Chọn Tỉnh/Thành phố:</label>
+                        <select class="form-select" ng-model="selectedCity"
+                            ng-options="city.name for city in cities track by city.code" ng-change="onCityChange()"
+                            required>
+                            <option value="">--Chọn Tỉnh/Thành phố--</option>
                         </select>
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="district" class="form-label">Quận huyện</label>
-                        <select class="form-select" id="district" ng-model="shippingInfo.district"
-                            ng-options="district.huyen as district.huyen for district in districts"
-                            ng-disabled="!shippingInfo.province" ng-change="getShippingFee()">
-                            <option value="" disabled selected>Chọn quận huyện</option>
+                        <label class="form-label" for="district">Chọn Huyện:</label>
+                        <select class="form-select" ng-model="selectedDistrict"
+                            ng-options="district.name for district in districts track by district.code"
+                            ng-change="onDistrictChange()" ng-disabled="!selectedCity" required>
+                            <option value="">--Chọn Huyện--</option>
                         </select>
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label for="ward" class="form-label">Phường xã</label>
-                        <select class="form-select" id="ward" ng-model="shippingInfo.ward"
-                            ng-options="ward.xa as ward.xa for ward in wards" ng-disabled="!shippingInfo.district"
-                            ng-change="getShippingFee()">
-                            <option value="" disabled selected>Chọn phường xã</option>
+                        <label class="form-label" for="ward">Chọn Xã/Phường:</label>
+                        <select class="form-select" ng-model="selectedWard"
+                            ng-options="ward.name for ward in wards track by ward.code" ng-disabled="!selectedDistrict"
+                            required>
+                            <option value="">--Chọn Xã/Phường--</option>
                         </select>
                     </div>
-
                 </div>
                 <div class="mb-3">
                     <label for="note" class="form-label">Ghi chú</label>
@@ -119,19 +118,19 @@
                             <!-- Hiển thị giá khuyến mãi -->
                             <span ng-if="item.kieuGiamGia && item.giaKhuyenMai != null" class="text-danger mb-2"
                                 style="font-size: 1rem; font-weight: bold;">
-                                {{ item.giaKhuyenMai | currency: '$': 0 }} VND
+                                {{ item.giaKhuyenMai | currency: '':0 }} VND
                             </span>
                             <!-- Hiển thị giá gốc bị gạch ngang -->
                             <span ng-if="item.kieuGiamGia && item.giaKhuyenMai != null"
                                 style="font-size: 0.8rem; color: #999;">
-                                <del>{{ item.giaBan | currency: '$': 0 }} VND</del>
+                                <del>{{ item.giaBan | currency: '':0 }} VND</del>
                             </span>
 
                             <!-- Nếu không có giảm giá hoặc giá khuyến mãi null, chỉ hiển thị giá gốc -->
 
                             <span ng-if="!item.kieuGiamGia || item.giaKhuyenMai == null"
                                 style="font-size: 1rem; font-weight: bold;">
-                                {{ item.giaBan | currency: '$': 0 }} VND
+                                {{ item.giaBan | currency: '': 0 }} VND
                             </span>
                         </p>
                         <p class="mb-1">Số lượng: {{item.soLuongGioHang}}</p>
@@ -230,7 +229,7 @@
                             placeholder="Nhập mã giảm giá tại đây" ng-model="voucherCode" />
                         <button class="btn"
                             style="background: linear-gradient(90deg, #28a745, #218838); color: white; border: none; transition: background 0.3s ease;"
-                            ng-click="getVoucher()">Áp dụng mã</button>
+                            ng-click="applyVoucher()">Áp dụng mã</button>
                     </div>
                     <div class="text-danger mt-2" ng-if="voucherError" style="font-size: 0.875rem; color: #e74c3c;">{{
                         voucherError }}

@@ -17,9 +17,6 @@ public class Tinh {
     @Column(name = "Id_tinh")
     private Integer idTinh;
 
-    @Column(name = "ma_tinh")
-    private String maTinh;
-
     @Column(name = "ten_tinh")
     private String tenTinh;
 

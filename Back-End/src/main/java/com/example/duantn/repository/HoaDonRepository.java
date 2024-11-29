@@ -1,5 +1,6 @@
 package com.example.duantn.repository;
 
+import com.example.duantn.entity.GioHang;
 import com.example.duantn.entity.HoaDon;
 import com.example.duantn.entity.TrangThaiHoaDon;
 import com.example.duantn.query.HoaDonQuery;
@@ -16,4 +17,5 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     Optional<HoaDon> findByMaHoaDon(String maHoaDon);
     @Query(value = HoaDonQuery.GET_TRANG_THAI_HOA_DON_BY_ID_HOA_DON, nativeQuery = true)
     List<Object[]> getTrangThaiHoaDonByIdHoaDon(Integer idHoaDon);
+    List<HoaDon> findByNguoiDung_IdNguoiDung(Integer idNguoiDung);
 }

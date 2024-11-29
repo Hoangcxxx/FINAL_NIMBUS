@@ -23,27 +23,7 @@
                             <input type="text" class="form-control" id="tenPhieu" placeholder="Phiếu giảm tháng mới"
                                 ng-model="selectedVoucher.tenVoucher">
                         </div>
-
-                        <!-- Loại Voucher -->
-                        <div class="mb-3">
-                            <label for="loaiVoucher" class="form-label">Loại Voucher</label>
-                            <div class="d-flex">
-                                <select class="form-select" id="loaiVoucher" ng-model="selectedLoaiVoucher">
-                                    <option value="">Chọn loại voucher</option>
-                                    <option ng-repeat="item in dsLoaiVoucher track by $index"
-                                        ng-value="item.idLoaiVoucher">
-                                        {{item.tenLoaiVoucher}}
-                                    </option>
-                                </select>
-                                <button type="button" class="btn btn-danger ms-2" data-bs-toggle="modal"
-                                    data-bs-target="#loaiVoucherModal">
-                                    <i class="fa-solid fa-circle-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-
-
-
+                        
                         <!-- Kiểu Giảm Giá -->
                         <div class="mb-3">
                             <label for="kieuGiamGia" class="form-label">Kiểu Giảm Giá</label>
@@ -129,7 +109,8 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">
-                                                <input type="checkbox" ng-model="selectAll" ng-change="selectAllCustomers()">
+                                                <input type="checkbox" ng-model="selectAll"
+                                                    ng-change="selectAllCustomers()">
                                             </th>
                                             <th scope="col">Ảnh Đại Diện</th>
                                             <th scope="col">Tên</th>

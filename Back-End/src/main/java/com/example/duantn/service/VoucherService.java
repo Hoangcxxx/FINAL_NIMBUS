@@ -171,7 +171,6 @@ public class VoucherService {
                 VoucherNguoiDung voucherNguoiDung = new VoucherNguoiDung();
                 voucherNguoiDung.setVoucher(savedVoucher);
                 voucherNguoiDung.setNguoiDung(nguoiDung);
-                voucherNguoiDung.setNgayTao(new Date());
 
                 // Lưu VoucherNguoiDung vào cơ sở dữ liệu
                 voucherNguoiDungRepository.save(voucherNguoiDung);

@@ -19,34 +19,53 @@ import java.util.Map;
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class HoaDonController {
 
-	@Autowired
-	private HoaDonService hoaDonService;
+    @Autowired
+    private HoaDonService hoaDonService;
+
+    @PostMapping("/them_thong_tin_nhan_hang")
+    public ResponseEntity<Map<String, String>> placeOrder(@RequestBody HoaDonDTO hoaDonDTO, HttpServletRequest request) {
+        try {
+            // Tạo đơn hàng và lấy mã đơn hàng mới tạo
+            String maHoaDon = hoaDonService.createOrder(hoaDonDTO, request);
+
+            // Tạo phản hồi trả về cho frontend
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Đơn hàng đã được đặt thành công!");
+            response.put("maHoaDon", maHoaDon); // Thêm mã đơn hàng vào phản hồi
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Lỗi khi đặt hàng: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(Map.of("error", "Không thể đặt đơn hàng!"));
+        }
+    }
+
+    // Hiển thị thông tin đơn hàng
+    @GetMapping("/{maHoaDon}")
+    public ResponseEntity<Map<String, Object>> hienthi(@PathVariable String maHoaDon) {
+        try {
+            Map<String, Object> response = new HashMap<>();
+            if (maHoaDon != null && !maHoaDon.isEmpty()) {
+                // Nếu có mã đơn hàng, lấy chi tiết đơn hàng cụ thể
+                List<HoaDonDTO> hoaDon = hoaDonService.hienthi(maHoaDon);
+                if (hoaDon != null) {
+                    response.put("hoaDon", hoaDon);
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("error", "Không tìm thấy đơn hàng với mã " + maHoaDon);
+                    return ResponseEntity.status(404).body(response); // Trả về 404 nếu không tìm thấy
+                }
+            } else {
+                // Nếu không có mã đơn hàng, trả về tất cả đơn hàng
+                List<HoaDonDTO> hoaDons = hoaDonService.hienthi(null);
+                response.put("hoaDons", hoaDons);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy thông tin hóa đơn: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(Map.of("error", "Lỗi khi lấy thông tin hóa đơn!"));
+        }
+    }
 
 
-	// Hiển thị thông tin đơn hàng
-	@GetMapping("/{maHoaDon}")
-	public ResponseEntity<Map<String, Object>> hienthi(@PathVariable(required = false) String maHoaDon) {
-		try {
-			Map<String, Object> response = new HashMap<>();
-			if (maHoaDon != null && !maHoaDon.isEmpty()) {
-				// Nếu có mã đơn hàng, lấy chi tiết đơn hàng cụ thể
-				List<HoaDonDTO> hoaDon = hoaDonService.hienthi(maHoaDon);
-				if (hoaDon != null) {
-					response.put("hoaDon", hoaDon);
-					return ResponseEntity.ok(response);
-				} else {
-					response.put("error", "Không tìm thấy đơn hàng với mã " + maHoaDon);
-					return ResponseEntity.status(404).body(response); // Trả về 404 nếu không tìm thấy
-				}
-			} else {
-				// Nếu không có mã đơn hàng, trả về tất cả đơn hàng
-				List<HoaDonDTO> hoaDons = hoaDonService.hienthi(null);
-				response.put("hoaDons", hoaDons);
-				return ResponseEntity.ok(response);
-			}
-		} catch (Exception e) {
-			log.error("Lỗi khi lấy thông tin hóa đơn: {}", e.getMessage(), e);
-			return ResponseEntity.badRequest().body(Map.of("error", "Lỗi khi lấy thông tin hóa đơn!"));
-		}
-	}
 }

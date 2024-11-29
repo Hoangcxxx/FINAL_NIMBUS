@@ -21,7 +21,5 @@ public class VoucherNguoiDung {
     @ManyToOne
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
-    @Column(name = "ngay_tao", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao = new Date();
+
 }

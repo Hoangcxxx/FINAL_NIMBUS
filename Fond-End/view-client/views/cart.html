@@ -42,25 +42,24 @@
                     <div ng-if="item.kieuGiamGia && item.giaKhuyenMai != null"
                         class="d-flex flex-column align-items-center">
                         <span class="text-danger mb-2">
-                            {{ item.giaKhuyenMai | currency: '$': 0 }} VND
+                            {{ item.giaKhuyenMai | currency: '': 0 }} VND
                         </span>
                         <!-- Hiển thị giá ban đầu nếu có giảm giá và giá bán không null -->
                         <span>
-                            <del>{{ item.giaBan | currency: '$': 0 }}</del> VND
+                            <del>{{ item.giaBan | currency: '': 0 }}</del> VND
                         </span>
                     </div>
 
                     <!-- Nếu không có giảm giá hoặc giá khuyến mãi null, chỉ hiển thị giá gốc -->
                     <div ng-if="!item.kieuGiamGia || item.giaKhuyenMai == null"
                         class="d-flex flex-column align-items-center">
-                        <span>{{ item.giaBan | currency: '$': 0 }} VND</span>
+                        <span>{{ item.giaBan | currency: '': 0 }} VND</span>
                     </div>
                 </td>
                 <td>
                     <input type="number" ng-model="item.soLuongGioHang" min="1" ng-blur="updateCart(item)"
-                        aria-label="Số lượng sản phẩm">
+                        aria-label="Số lượng sản phẩm" class="number-input">
                 </td>
-
                 <td>
                     <!-- Tính toán Thành Tiền dựa trên giá sản phẩm và số lượng -->
                     <span>{{ item.soLuongGioHang * (item.giaKhuyenMai || item.giaBan) | currency: '' : 0 }} VND</span>
@@ -107,3 +106,29 @@
         </div>
     </div>
 </section>
+
+
+
+<style>
+    /* Ẩn nút tăng/giảm trong mặc định */
+    .number-input::-webkit-outer-spin-button,
+    .number-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .number-input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    /* Hiển thị nút tăng/giảm khi hover vào input */
+    .number-input:hover::-webkit-outer-spin-button,
+    .number-input:hover::-webkit-inner-spin-button {
+        -webkit-appearance: auto;
+    }
+
+    /* Firefox: Hiển thị nút tăng/giảm khi hover */
+    .number-input:hover {
+        -moz-appearance: auto;
+    }
+</style>

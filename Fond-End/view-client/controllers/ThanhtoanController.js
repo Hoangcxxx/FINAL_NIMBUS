@@ -61,11 +61,104 @@ window.ThanhToanController = function ($scope, $http, $window) {
             $scope.selectedVoucher = voucher;
             $scope.voucherCode = voucher.maVoucher;  // Gán mã voucher vào input (nếu cần)
             $scope.voucherError = '';  // Reset lỗi
-
         } else {
             $scope.voucherError = 'Voucher này không thể sử dụng.';
         }
     };
+
+    $scope.getVoucher = function () {
+        if ($scope.voucherCode) {
+            // Kiểm tra tổng tiền
+            if (!$scope.totalAmount || $scope.totalAmount <= 0) {
+                $scope.voucherError = 'Tổng tiền phải lớn hơn 0 để áp dụng voucher!';
+                return;
+            }
+
+            // Gửi yêu cầu API kiểm tra voucher
+            $http.post('http://localhost:8080/api/nguoi_dung/vouchers/apma/' + $scope.voucherCode + '/' + $scope.totalAmount)
+                .then(function (response) {
+                    $scope.selectedVoucher = response.data; // Nhận voucher đã chọn từ phản hồi API
+                    console.log("Voucher đã áp dụng:", $scope.selectedVoucher);
+
+                    // Kiểm tra giá trị tối thiểu và tối đa của voucher
+                    if ($scope.totalAmount < $scope.selectedVoucher.soTienToiThieu) {
+                        $scope.voucherError = 'Tổng tiền không đủ để áp dụng voucher này. Bạn cần ít nhất ' + $scope.selectedVoucher.soTienToiThieu + ' để áp dụng.';
+                        return;
+                    }
+
+                    if ($scope.totalAmount > $scope.selectedVoucher.giaTriToiDa) {
+                        $scope.voucherError = 'Tổng tiền vượt quá giá trị tối đa của voucher này. Bạn chỉ có thể sử dụng voucher khi tổng tiền từ ' + $scope.selectedVoucher.soTienToiThieu + ' đến ' + $scope.selectedVoucher.giaTriToiDa + '.';
+                        return;
+                    }
+
+                    // Reset lỗi nếu tất cả điều kiện hợp lệ
+                    $scope.voucherError = '';
+                })
+                .catch(function (error) {
+                    console.error('Lỗi khi áp dụng voucher:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi khi áp dụng voucher!',
+                        text: error.data || 'Mã voucher không hợp lệ hoặc không thể sử dụng.',
+                        confirmButtonText: 'Thử lại'
+                    });
+
+                    $scope.voucherError = error.data || 'Mã voucher không hợp lệ hoặc không thể sử dụng!';
+                });
+        }
+    };
+
+    $scope.applyVoucher = function () {
+        if ($scope.selectedVoucher) {
+            // Kiểm tra giá trị tối thiểu và tối đa của voucher
+            const minValue = $scope.selectedVoucher.soTienToiThieu;
+            const maxValue = $scope.selectedVoucher.giaTriToiDa;
+
+            // In ra giá trị tối thiểu và tối đa
+            console.log("Giá trị tối thiểu voucher: ", minValue);
+            console.log("Giá trị tối đa voucher: ", maxValue);
+
+            // Kiểm tra nếu tổng tiền nhỏ hơn giá trị tối thiểu của voucher, không áp dụng giảm giá
+            if ($scope.totalAmount < minValue) {
+                $scope.voucherError = 'Tổng tiền không đủ điều kiện áp dụng voucher.';
+                return; // Không thực hiện giảm giá nếu tổng tiền nhỏ hơn giá trị tối thiểu
+            }
+
+            if (isNaN($scope.selectedVoucher.giaTriGiamGia) || $scope.selectedVoucher.giaTriGiamGia < 0) {
+                console.error('Giá trị giảm giá không hợp lệ:', $scope.selectedVoucher.giaTriGiamGia);
+                $scope.selectedVoucher.giaTriGiamGia = 0;
+            }
+
+            // Áp dụng giảm giá theo loại voucher
+            let discount = 0;
+            if ($scope.selectedVoucher.kieuGiamGia === false) {
+                // Giảm theo phần trăm
+                discount = $scope.totalAmount * ($scope.selectedVoucher.giaTriGiamGia / 100);
+            } else if ($scope.selectedVoucher.kieuGiamGia === true) {
+                // Giảm theo giá trị cố định
+                discount = $scope.selectedVoucher.giaTriGiamGia;
+            }
+
+            // Trừ giảm giá vào tổng tiền
+            $scope.totalAmount -= discount;
+            $scope.totalAmount = Math.max($scope.totalAmount, 0); // Đảm bảo tổng tiền không âm
+
+            console.log("Giảm giá: ", discount);
+            console.log("Tổng tiền sau giảm: ", $scope.totalAmount);
+
+            // Hiển thị thông báo thành công
+            Swal.fire({
+                icon: 'success',
+                title: 'Voucher đã được áp dụng!',
+                text: 'Mã voucher: ' + $scope.selectedVoucher.maVoucher + ' đã thành công.',
+                confirmButtonText: 'OK'
+            });
+
+            // Tính lại tổng tiền sau khi áp dụng voucher
+            $scope.calculateTotal(); // Tính lại tổng tiền sau khi áp dụng voucher
+        }
+    };
+
     $scope.dsvoucher = function () {
         // Calculate the total amount from the cart
         $scope.totalAmount = $scope.cart.reduce(function (total, item) {
@@ -111,47 +204,87 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
 
     $scope.calculateTotal = function () {
-        $scope.totalAmount = $scope.cart.reduce((total, item) => {
-            // Kiểm tra giá và tính tổng tiền
+        let total = $scope.cart.reduce(function (total, item) {
             let donGia = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;
             return total + (item.soLuongGioHang * donGia);
         }, 0);
+
+        // Nếu có voucher đã chọn, tính toán lại tổng tiền sau khi áp dụng giảm giá
+        if ($scope.selectedVoucher) {
+            let discount = 0;
+            if ($scope.selectedVoucher.kieuGiamGia === false) {
+                // Giảm theo phần trăm
+                discount = total * ($scope.selectedVoucher.giaTriGiamGia / 100);
+            } else if ($scope.selectedVoucher.kieuGiamGia === true) {
+                // Giảm theo giá trị cố định
+                discount = $scope.selectedVoucher.giaTriGiamGia;
+            }
+
+            total -= discount;
+        }
+
+        // Đảm bảo tổng tiền không âm
+        $scope.totalAmount = Math.max(total, 0);
+        console.log("Tổng tiền sau khi tính toán: ", $scope.totalAmount);
     };
 
-    // ĐặT Hàng
+
     $scope.placeOrder = function () {
         if ($scope.cart.length === 0) {
             alert("Giỏ hàng của bạn đang trống!");
             return;
         }
 
+        // Kiểm tra thông tin người dùng
         if (!$scope.userInfo.tenNguoiDung) {
             alert("Vui lòng nhập tên người dùng!");
             return;
         }
-
-        if (!$scope.shippingInfo || !$scope.shippingInfo.province || !$scope.shippingInfo.district || !$scope.shippingInfo.ward) {
-            alert("Vui lòng chọn đầy đủ thông tin nhận hàng!");
+        if (!$scope.userInfo.email) {
+            alert("Vui lòng nhập email!");
+            return;
+        }
+        if (!$scope.userInfo.sdt) {
+            alert("Vui lòng nhập số điện thoại!");
+            return;
+        }
+        if (!$scope.userInfo.diaChi) {
+            alert("Vui lòng nhập địa chỉ!");
             return;
         }
 
+        // Kiểm tra thông tin giao hàng
+        if (!$scope.selectedCity || !$scope.selectedDistrict || !$scope.selectedWard) {
+            alert("Vui lòng chọn đầy đủ thông tin nhận hàng!");
+            return;
+        }
+        // Tạo danh sách sản phẩm chi tiết từ giỏ hàng
+        const listSanPhamChiTiet = $scope.cart.map(item => ({
+            idspct: item.idSanPhamCT,  // Dùng idSanPhamCT thay vì idSanPhamCT trực tiếp
+            soLuong: item.soLuongGioHang,  // Số lượng của sản phẩm trong giỏ hàng
+            giaTien: item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan  // Giá của sản phẩm, nếu có giá khuyến mãi thì dùng, nếu không thì dùng giá bán
+        }));
+
+        // Dữ liệu hóa đơn
         const orderData = {
             cartId: iduser,
             idNguoiDung: $scope.userInfo.idNguoiDung,
-            tinh: $scope.shippingInfo.province,
-            huyen: $scope.shippingInfo.district,
-            xa: $scope.shippingInfo.ward,
+            tinh: $scope.selectedCity.code, // Lấy mã tỉnh từ selectedCity
+            huyen: $scope.selectedDistrict.code, // Lấy mã huyện từ selectedDistrict
+            xa: $scope.selectedWard.code, // Lấy mã xã từ selectedWard
             email: $scope.userInfo.email,
             tenNguoiNhan: $scope.userInfo.tenNguoiDung,
             diaChi: $scope.userInfo.diaChi,
-            sdtNguoiNhan: $scope.userInfo.sdtNguoiDung,
+            sdtNguoiNhan: $scope.userInfo.sdt,
             ghiChu: $scope.shippingInfo.note,
             tenPhuongThucThanhToan: $scope.selectedPaymentMethod,
-            listSanPhamChiTiet: $scope.cart,
+            listSanPhamChiTiet: listSanPhamChiTiet, // Đưa vào danh sách sản phẩm chi tiết
             thanhTien: $scope.totalAmount,
-            idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.id : null,
+            idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.id : null, // Nếu có voucher thì thêm vào
         };
+        console.log("orderData:", orderData);
 
+        // Kiểm tra và tạo thanh toán VNPay
         if ($scope.selectedPaymentMethod === "vnpay") {
             const paymentUrl = `http://localhost:8080/api/nguoi_dung/payment/creat_payment?amount=${$scope.totalAmount}&paymentMethod=vnpay`;
 
@@ -197,8 +330,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
                     localStorage.setItem("maHoaDon", response.data.maHoaDon);
                 }
 
-
-
                 // Xóa giỏ hàng sau khi đặt hàng
                 $scope.cart = [];
 
@@ -215,8 +346,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
             });
     };
-
-
 
     // Lấy thông tin tỉnh thành, quận huyện và phường xã
     $scope.getProvinces = function () {
@@ -242,15 +371,77 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 .catch(error => console.error("Lỗi khi lấy phường xã:", error));
         }
     });
-
-
-
-    // Khởi tạo thông tin ban đầu
-
     $scope.getProvinces(); if (user) $scope.getUserInfo(iduser); $scope.getCartItems();
 
 
+    // Khởi tạo dữ liệu ban đầu
+    $scope.cities = [];
+    $scope.districts = [];
+    $scope.wards = [];
 
+    // Hàm gọi API lấy danh sách tỉnh thành
+    function getCities() {
+        $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/cities")
+            .then(function (response) {
+                $scope.cities = response.data;
+            })
+            .catch(function (error) {
+                console.error('Có lỗi xảy ra khi lấy tỉnh thành:', error);
+            });
+    }
 
+    // Hàm gọi API lấy danh sách huyện theo mã tỉnh
+    $scope.onCityChange = function () {
+        if ($scope.selectedCity) {
+            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/districts/" + $scope.selectedCity.code)
+                .then(function (response) {
+                    $scope.districts = response.data;
+                })
+                .catch(function (error) {
+                    console.error('Có lỗi xảy ra khi lấy huyện:', error);
+                });
+        } else {
+            $scope.districts = [];
+            $scope.wards = [];
+        }
+    };
+
+    // Hàm gọi API lấy danh sách xã theo mã huyện
+    $scope.onDistrictChange = function () {
+        if ($scope.selectedDistrict) {
+            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/wards/" + $scope.selectedDistrict.code)
+                .then(function (response) {
+                    $scope.wards = response.data;
+                })
+                .catch(function (error) {
+                    console.error('Có lỗi xảy ra khi lấy xã:', error);
+                });
+        } else {
+            $scope.wards = [];
+        }
+    };
+
+    // Hàm lưu địa chỉ vào cơ sở dữ liệu
+    $scope.submitForm = function () {
+        if ($scope.selectedCity && $scope.selectedDistrict && $scope.selectedWard) {
+            const userId = $scope.userId;
+            const cityCode = $scope.selectedCity.code;
+            const districtCode = $scope.selectedDistrict.code;
+            const wardCode = $scope.selectedWard.code;
+
+            const url = `http://127.0.0.1:8080/api/nguoi_dung/test/save-location?userId=${userId}&cityCode=${cityCode}&districtCode=${districtCode}&wardCode=${wardCode}`;
+            $http.post(url)
+                .then(function (response) {
+                    $scope.isSuccess = true;
+                })
+                .catch(function (error) {
+                    console.error('Có lỗi xảy ra khi lưu địa chỉ:', error);
+                });
+        } else {
+            alert("Vui lòng chọn đầy đủ địa chỉ.");
+        }
+    };
+    // Gọi API lấy danh sách tỉnh thành khi trang được tải
+    getCities();
 
 };

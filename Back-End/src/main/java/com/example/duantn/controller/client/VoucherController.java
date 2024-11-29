@@ -27,9 +27,9 @@ public class VoucherController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    @PostMapping("/apma/{maVoucher}")
+    @PostMapping("/apma/{maVoucher}/{tongTien}")
     public ResponseEntity<?> useVoucher2(@PathVariable("maVoucher") String maVoucher,
-                                         @RequestBody BigDecimal tongTien) {
+                                         @PathVariable("tongTien") BigDecimal tongTien) {
         try {
             Voucher voucher = voucherService.apdungvoucher(maVoucher, tongTien);
             return ResponseEntity.ok(voucher);
@@ -39,4 +39,5 @@ public class VoucherController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra: " + e.getMessage());
         }
     }
+
 }
