@@ -17,6 +17,9 @@ public class Xa {
     @Column(name = "Id_xa")
     private Integer idXa;
 
+    @Column(name = "ma_xa")
+    private String maXa;
+
     @Column(name = "ten_xa")
     private String tenXa;
 

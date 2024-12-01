@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,10 +38,8 @@ public class NguoiDungService {
             return new ResponseEntity<>("Số điện thoại đã tồn tại!", HttpStatus.BAD_REQUEST);
         }
 
-        // Gán ngày tạo và ngày cập nhật bằng thời gian hiện tại
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        nguoiDung.setNgayTao(currentDateTime);
-        nguoiDung.setNgayCapNhat(currentDateTime);
+        nguoiDung.setNgayTao(new Date());
+        nguoiDung.setNgayCapNhat(new Date());
 
         // Tạo mã người dùng (ma_nguoi_dung) nếu chưa có
         if (nguoiDung.getMaNguoiDung() == null || nguoiDung.getMaNguoiDung().isEmpty()) {
@@ -78,7 +77,7 @@ public class NguoiDungService {
             nguoiDung.setIdNguoiDung(id); // Đảm bảo ID không bị thay đổi
 
             // Cập nhật ngày giờ của người dùng
-            nguoiDung.setNgayCapNhat(LocalDateTime.now()); // Chỉ cần cập nhật ngàyCapNhat
+            nguoiDung.setNgayCapNhat(new Date()); // Chỉ cần cập nhật ngàyCapNhat
 
             NguoiDung updatedNguoiDung = nguoiDungRepository.save(nguoiDung);
             return new ResponseEntity<>(updatedNguoiDung, HttpStatus.OK);
@@ -124,7 +123,7 @@ public class NguoiDungService {
             existingNguoiDung.setDiaChi(nguoiDungDetails.getDiaChi());
             existingNguoiDung.setGioiTinh(nguoiDungDetails.getGioiTinh());
             existingNguoiDung.setAnhDaiDien(nguoiDungDetails.getAnhDaiDien());
-            existingNguoiDung.setNgayCapNhat(LocalDateTime.now());
+            existingNguoiDung.setNgayCapNhat(new Date());
 
             return nguoiDungRepository.save(existingNguoiDung);
         } else {

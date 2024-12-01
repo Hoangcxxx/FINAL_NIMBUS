@@ -2,8 +2,7 @@ window.ThanhCongController = function ($scope, $http) {
     // Lấy mã hóa đơn từ URL hoặc localStorage nếu có
     var maHoaDon = new URLSearchParams(window.location.search).get("maHoaDon") || localStorage.getItem("maHoaDon");
 
-    //Gọi Phải đung sai cái ăn cúc
-
+    // Nếu không có mã hóa đơn thì thông báo lỗi
     if (!maHoaDon) {
         alert("Mã hóa đơn không hợp lệ!");
         return;
@@ -64,6 +63,17 @@ window.ThanhCongController = function ($scope, $http) {
             });
     }
 
+    // Giả sử bạn có một API hoặc sự kiện thanh toán thành công
+    function onPaymentSuccess() {
+        // Xóa mã hóa đơn khỏi localStorage
+        localStorage.removeItem("maHoaDon");
+        console.log("Mã hóa đơn đã được xóa khỏi localStorage.");
+        alert("Thanh toán thành công!");
+        // Bạn có thể điều hướng người dùng tới trang khác sau khi thanh toán thành công
+        window.location.href = "/thank-you"; // Ví dụ chuyển hướng tới trang cảm ơn
+    }
+
     // Gọi API để lấy chi tiết đơn hàng
     getOrderDetails(maHoaDon);
+
 }

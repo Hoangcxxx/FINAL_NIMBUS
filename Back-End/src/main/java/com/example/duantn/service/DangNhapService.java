@@ -49,8 +49,8 @@ public class DangNhapService {
         // Gán vai trò và thời gian tạo
         nguoiDung.setVaiTro(vaiTroRepository.findById(2).orElseThrow(() -> new RuntimeException("Vai trò không tồn tại")));
         LocalDateTime now = LocalDateTime.now();
-        nguoiDung.setNgayTao(now);
-        nguoiDung.setNgayCapNhat(now);
+        nguoiDung.setNgayTao(new Date());
+        nguoiDung.setNgayCapNhat(new Date());
         nguoiDung.setTrangThai(true);
 
         // Lưu người dùng vào cơ sở dữ liệu

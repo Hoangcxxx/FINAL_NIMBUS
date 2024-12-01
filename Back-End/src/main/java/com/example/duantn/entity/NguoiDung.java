@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -26,7 +27,7 @@ public class NguoiDung {
     @Column(name = "ten_nguoi_dung", nullable = false)
     private String tenNguoiDung;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "mat_khau", nullable = false)
@@ -51,13 +52,13 @@ public class NguoiDung {
     @Column(name = "trang_thai")
     private Boolean trangThai;
 
-    @Column(name = "ngay_tao", updatable = false)
+    @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime ngayTao; // Changed to LocalDateTime
+    private Date ngayTao; // Changed to LocalDateTime
 
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime ngayCapNhat; // Changed to LocalDateTime
+    private Date ngayCapNhat; // Changed to LocalDateTime
 
     @ManyToOne
     @JoinColumn(name = "id_vai_tro")

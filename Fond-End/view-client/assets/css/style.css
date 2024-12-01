@@ -1096,12 +1096,37 @@ footer a:hover {
 }
 
 .swatch-option.selected {
-    background-color: deeppink; /* Change to your preferred selected color */
-    color: #ffffff; /* Change text color when selected */
-    border-color: deeppink; /* Match the border color to the selected color */
+    background-color: deeppink;
+    /* Change to your preferred selected color */
+    color: #ffffff;
+    /* Change text color when selected */
+    border-color: deeppink;
+    /* Match the border color to the selected color */
 }
 
 .swatch-option:hover {
-    border-color: deeppink; /* Change to your preferred hover color */
+    border-color: deeppink;
+    /* Change to your preferred hover color */
 }
-    
+
+/* Ẩn nút tăng/giảm trong mặc định */
+.number-input::-webkit-outer-spin-button,
+.number-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.number-input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Hiển thị nút tăng/giảm khi hover vào input */
+.number-input:hover::-webkit-outer-spin-button,
+.number-input:hover::-webkit-inner-spin-button {
+    -webkit-appearance: auto;
+}
+
+/* Firefox: Hiển thị nút tăng/giảm khi hover */
+.number-input:hover {
+    -moz-appearance: auto;
+}

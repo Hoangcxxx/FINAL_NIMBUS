@@ -17,6 +17,9 @@ public class Huyen {
     @Column(name = "Id_huyen")
     private Integer idHuyen;
 
+    @Column(name = "ma_huyen")
+    private String maHuyen;
+
     @Column(name = "ten_huyen")
     private String tenHuyen;
 

@@ -15,12 +15,12 @@ CREATE TABLE [nguoi_dung] (
   [Id_nguoi_dung] INT PRIMARY KEY IDENTITY(1,1),
   [ma_nguoi_dung] NVARCHAR(50) NOT NULL UNIQUE,
   [ten_nguoi_dung] NVARCHAR(100),
-  [email] NVARCHAR(255) NOT NULL UNIQUE,
+  [email] NVARCHAR(255),
   [sdt] NVARCHAR(15),
   [ngay_sinh] DATE,
   [dia_chi] NVARCHAR(255),
   [gioi_tinh] NVARCHAR(10),
-  [mat_khau] NVARCHAR(255) NOT NULL,
+  [mat_khau] NVARCHAR(255),
   [anh_dai_dien] NVARCHAR(255),
   [trang_thai] BIT DEFAULT 1,
   [ngay_tao] DATETIME DEFAULT GETDATE(),
@@ -52,15 +52,6 @@ CREATE TABLE thong_bao (
         FOREIGN KEY (id_loai_thong_bao)
         REFERENCES loai_thong_bao(Id_loai_thong_bao)
 );
--- Insert data for vai_tro
-go
-CREATE TABLE [loai_voucher] (
-  [Id_loai_voucher] INT PRIMARY KEY IDENTITY(1,1),
-  [ten_loai_voucher] NVARCHAR(100) NOT NULL,
-  [mo_ta] NVARCHAR(MAX),
-  [ngay_tao] DATETIME DEFAULT GETDATE(),
-  [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
-);
 go
 CREATE TABLE [trang_thai_giam_gia] (
   [Id_trang_thai_giam_gia] INT PRIMARY KEY IDENTITY(1,1),
@@ -69,6 +60,7 @@ CREATE TABLE [trang_thai_giam_gia] (
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE()
 );
+
 go
 CREATE TABLE [voucher] (
   [Id_voucher] INT PRIMARY KEY IDENTITY(1,1),
@@ -84,11 +76,7 @@ CREATE TABLE [voucher] (
   [ngay_ket_thuc] DATETIME,
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
-  [id_loai_voucher] int,
   [id_trang_thai_giam_gia] int,
-  CONSTRAINT [FK_loai_voucher_id_loai_voucher]
-    FOREIGN KEY ([id_loai_voucher])
-      REFERENCES [loai_voucher]([Id_loai_voucher]),
 	  CONSTRAINT [FK_trang_thai_voucher_id_trang_thai_giam_gia]
     FOREIGN KEY ([id_trang_thai_giam_gia])
       REFERENCES [trang_thai_giam_gia]([Id_trang_thai_giam_gia])
@@ -98,7 +86,6 @@ CREATE TABLE voucher_nguoi_dung (
   Id_voucher_nguoi_dung INT PRIMARY KEY IDENTITY(1,1),
   id_voucher INT,
   id_nguoi_dung INT,
-  ngay_tao DATETIME DEFAULT GETDATE(),
   FOREIGN KEY (id_voucher) REFERENCES voucher(id_voucher),
   FOREIGN KEY (id_nguoi_dung) REFERENCES nguoi_dung(Id_nguoi_dung)
 );
@@ -279,15 +266,6 @@ CREATE TABLE [gio_hang_chi_tiet] (
     FOREIGN KEY ([id_san_pham_chi_tiet])
       REFERENCES [san_pham_chi_tiet]([Id_san_pham_chi_tiet])
 );
-go
-CREATE TABLE gio_hang_voucher (
-  Id_gio_hang_voucher INT PRIMARY KEY IDENTITY(1,1),
-  id_gio_hang INT,
-  id_voucher INT,
-  FOREIGN KEY (id_gio_hang) REFERENCES gio_hang(id_gio_hang),
-  FOREIGN KEY (id_voucher) REFERENCES voucher(id_voucher)
-);
-
 GO
 CREATE TABLE hoa_don (
     [Id_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
@@ -340,7 +318,7 @@ CREATE TABLE trang_thai_hoa_don (
 go
 CREATE TABLE tinh  (
     [Id_tinh] INT PRIMARY KEY IDENTITY(1,1),
-    [ma_tinh] NVARCHAR(10),
+    [ma_tinh] NVARCHAR(100),
     [ten_tinh] NVARCHAR(100),
     [ngay_tao] DATETIME DEFAULT GETDATE(),
     [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
@@ -348,6 +326,7 @@ CREATE TABLE tinh  (
 go
 CREATE TABLE huyen  (
     [Id_huyen] INT PRIMARY KEY IDENTITY(1,1),
+    [ma_huyen] NVARCHAR(100),
     [ten_huyen] NVARCHAR(100),
 	[id_tinh] INT,
 	[ngay_tao] DATETIME DEFAULT GETDATE(),
@@ -359,6 +338,7 @@ CREATE TABLE huyen  (
 go
 CREATE TABLE xa  (
     [Id_xa] INT PRIMARY KEY IDENTITY(1,1),
+    [ma_xa] NVARCHAR(100),
     [ten_xa] NVARCHAR(100),
 	[id_huyen] INT,
 	[ngay_tao] DATETIME DEFAULT GETDATE(),
@@ -470,11 +450,28 @@ go
 CREATE TABLE [lich_su_hoa_don] (
   [Id_lich_su_hoa_don] INT PRIMARY KEY IDENTITY(1,1),
   [so_tien_thanh_toan] DECIMAL(18),
-  [ngay_giao_dich] DATETIME,
+  [ngay_giao_dich] DATETIME DEFAULT GETDATE(),
   [id_nguoi_dung] INT,
   CONSTRAINT [FK_lich_su_hoa_don_id_nguoi_dung]
     FOREIGN KEY ([id_nguoi_dung])
       REFERENCES [nguoi_dung]([Id_nguoi_dung])
+);
+go
+CREATE TABLE [lich_su_thanh_toan] (
+  [Id_lich_su_thanh_toan] INT PRIMARY KEY IDENTITY(1,1),
+  [so_tien_thanh_toan] DECIMAL(18),
+  [ngay_giao_dich] DATETIME DEFAULT GETDATE(),
+  [ngay_tao] DATETIME DEFAULT GETDATE(),
+  [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+  [trang_thai_thanh_toan] BIT DEFAULT 1,
+  [id_nguoi_dung] INT,
+  [id_hoa_don] INT,
+  CONSTRAINT [FK_lich_su_thanh_toan_id_nguoi_dung]
+    FOREIGN KEY ([id_nguoi_dung])
+      REFERENCES [nguoi_dung]([Id_nguoi_dung]),
+	  CONSTRAINT [FK_lich_su_thanh_toan_id_hoa_don]
+    FOREIGN KEY ([id_hoa_don])
+      REFERENCES [hoa_don]([Id_hoa_don])
 );
 go
 
@@ -505,6 +502,7 @@ go
 INSERT INTO vai_tro (ten, mo_ta) VALUES 
 (N'Quản trị viên', N'Người quản lý toàn bộ hệ thống'),
 (N'Khách hàng', N'Người mua hàng trên website'),
+(N'Khách hàng lẽ', N'Khách hàng lẽ mua hàng trên website'),
 (N'Nhân viên bán hàng', N'Nhân viên hỗ trợ bán hàng'),
 (N'Nhân viên giao hàng', N'Người giao hàng đến tay khách hàng'),
 (N'Quản lý kho', N'Người quản lý tồn kho');
@@ -513,9 +511,9 @@ go
 INSERT INTO nguoi_dung (ten_nguoi_dung, ma_nguoi_dung, email, sdt, ngay_sinh, dia_chi, gioi_tinh, mat_khau,id_vai_tro) VALUES 
 (N'Phạm Thùy Dương', 'user001', 'duongpt@gmail.com', '0918829273', '2004-01-02', N'Hà Nội', N'Nữ', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',1),
 (N'Lê Khả Hoàng', 'user002', 'hoanglk@gmail.com', '0912353678', '2004-01-03', N'Hà Nội', N'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',2),
-(N'Nguyễn Trung Hiếu', 'user003', 'hieunt@gmail.com', '0916789535', '2004-01-04', N'Hà Nội', 'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',3),
-(N'Lê Đình Linh', 'user004', 'linhld@gmail.com', '0912679346', '2004-01-05', N'Hà Nội', N'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',4),
-(N'Hoàng Văn Hà', 'user005', 'hahv@gmail.com', '0918934754', '2004-01-06', N'Hà Nội', N'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',5);
+(N'Nguyễn Trung Hiếu', 'user003', 'hieunt@gmail.com', '0916789535', '2004-01-04', N'Hà Nội', 'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',4),
+(N'Lê Đình Linh', 'user004', 'linhld@gmail.com', '0912679346', '2004-01-05', N'Hà Nội', N'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',5),
+(N'Hoàng Văn Hà', 'user005', 'hahv@gmail.com', '0918934754', '2004-01-06', N'Hà Nội', N'Nam', '$2a$10$KBFTerXFW6vJ4IDXgln38ulJg1cjq1ZTNBS/cN0HzLsyicNc76aKG',6);
 go	
 INSERT INTO loai_thong_bao (ten_loai_thong_bao)
 VALUES
@@ -556,23 +554,19 @@ INSERT INTO [trang_thai_giam_gia] (ten_trang_thai_giam_gia, mo_ta) VALUES
 (N'Chưa phát hành', N'Giảm giá đã được tạo nhưng chưa được phát hành cho người dùng.'),
 (N'Bị xóa', N'Giảm giá đã bị xóa và không còn hiệu lực.');
 
-go
-
-INSERT INTO loai_voucher (ten_loai_voucher, mo_ta) VALUES
-(N'Giảm giá theo phần trăm', N'Giảm giá theo tỷ lệ phần trăm của giá sản phẩm.'),
-(N'Giảm giá theo số tiền', N'Giảm giá một số tiền cụ thể cho sản phẩm.'),
-(N'Miễn phí vận chuyển', N'Miễn phí vận chuyển cho đơn hàng trên một mức giá nhất định.')
 
 go
 -- Insert data for voucher
-INSERT INTO voucher (ma_voucher,ten_voucher,kieu_giam_gia, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc, id_loai_voucher,id_trang_thai_giam_gia) VALUES
-(N'KM10',N'Giảm giá cho đơn hàng', 0,10, 100, 500000,2000000, N'Giảm 10% cho đơn hàng từ 50k', '2024-01-01', '2024-01-31', 1,3),
-(N'KM20K',N'Giảm giá cho đơn hàng',1, 20000, 50,500000,2000000, N'Giảm 20.000đ cho đơn hàng từ 100k', '2024-02-01', '2024-02-28', 2,3),
-(N'FREE_SHIP',N'Miễn phí vận chuyển cho đơn hàng',1, 0, 200,500000,2000000, N'Miễn phí vận chuyển cho đơn hàng từ 150k', '2024-03-01', '2024-03-31', 3,3),
-(N'KM30', N'Giảm giá cho đơn hàng', 0, 30, 80, 500000, 1500000, N'Giảm 30% cho đơn hàng từ 100k', '2024-04-01', '2024-04-30', 1, 3),
-(N'BONUS50K', N'Giảm giá cho đơn hàng', 1, 50000, 60, 1000000, 3000000, N'Giảm 50.000đ cho đơn hàng từ 200k', '2024-05-01', '2024-05-31', 2, 3);
+INSERT INTO voucher (ma_voucher,ten_voucher,kieu_giam_gia, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc,id_trang_thai_giam_gia) VALUES
+(N'KM10',N'Giảm giá cho đơn hàng', 0,10, 100, 500000,2000000, N'Giảm 10% cho đơn hàng từ 50k', '2024-01-01', '2024-01-31', 3),
+(N'KM20K',N'Giảm giá cho đơn hàng',1, 20000, 50,500000,2000000, N'Giảm 20.000đ cho đơn hàng từ 100k', '2024-02-01', '2024-02-28', 3),
+(N'FREE_SHIP',N'Miễn phí vận chuyển cho đơn hàng',1, 0, 200,500000,2000000, N'Miễn phí vận chuyển cho đơn hàng từ 150k', '2024-03-01', '2024-03-31', 3),
+(N'KM30', N'Giảm giá cho đơn hàng', 0, 30, 80, 500000, 1500000, N'Giảm 30% cho đơn hàng từ 100k', '2024-04-01', '2024-04-30', 3),
+(N'BONUS50K', N'Giảm giá cho đơn hàng', 1, 50000, 60, 1000000, 3000000, N'Giảm 50.000đ cho đơn hàng từ 200k', '2024-05-01', '2024-05-31', 3);
+
 
 go
+
 -- Insert data for danh_muc
 INSERT INTO danh_muc (ten_danh_muc, mo_ta) VALUES 
 (N'Áo phông', N'Áo phông đa dạng kiểu dành cho nam nữ'),
@@ -772,17 +766,17 @@ VALUES
 (N'Đơn hàng đang chờ xác nhận từ người bán.', 2, 9);  -- Trạng thái "Đã giao"
 
 go
-INSERT INTO tinh ([ma_tinh], [ten_tinh]) VALUES
-('01', N'Hà Nội'),
-('02', N'Hồ Chí Minh'),
-('03', N'Đà Nẵng'),
-('04', N'Hải Phòng'),
-('05', N'Cần Thơ'),
-('06', N'An Giang'),
-('07', N'Bình Dương'),
-('08', N'Đắk Lắk'),
-('09', N'Lâm Đồng'),
-('10', N'Thanh Hóa');
+INSERT INTO tinh ( [ten_tinh]) VALUES
+( N'Hà Nội'),
+( N'Hồ Chí Minh'),
+( N'Đà Nẵng'),
+( N'Hải Phòng'),
+( N'Cần Thơ'),
+( N'An Giang'),
+( N'Bình Dương'),
+( N'Đắk Lắk'),
+( N'Lâm Đồng'),
+( N'Thanh Hóa');
 INSERT INTO huyen ([ten_huyen], [id_tinh]) VALUES
 -- Tỉnh Hà Nội
 (N'Ba Đình', 1),
@@ -908,7 +902,9 @@ go
 INSERT INTO pt_thanh_toan (ma_thanh_toan, ten_phuong_thuc, mo_ta) VALUES 
 (N'TT001', N'Tiền mặt', N'Transfer qua ngân hàng cho đơn hàng.'),
 (N'TT002', N'Ví Điện Tử Vnpay', N'Sử dụng ví điện tử để thanh toán.'),
-(N'TT003', N'MBBank', N'Sử dụng thẻ tín dụng để thanh toán.');
+(N'TT003', N'MBBank', N'Sử dụng thẻ tín dụng để thanh toán.'),
+(N'TT004', N'Thu Tiền Tận Nơi', N'Nhân viên sẽ đến thu tiền tại địa chỉ giao hàng.'),
+(N'TT005', N'Thanh Toán Trực Tiếp', N'Khách hàng thanh toán trực tiếp tại cửa hàng.');
 -- Insert data for phi_van_chuyen
 INSERT INTO phi_van_chuyen (id_dia_chi_van_chuyen,so_tien_van_chuyen,id_hoa_don, mo_ta) VALUES 
 (1,10000,1, N'Phí vận chuyển cho đơn hàng nội tỉnh.'),
@@ -1812,7 +1808,6 @@ select * from nguoi_dung
 select * from voucher_nguoi_dung
 select * from nguoi_dung
 select * from voucher
-select * from loai_voucher
 select * from danh_muc
 select * from danh_gia
 select * from chat_lieu
@@ -1825,6 +1820,9 @@ select * from gio_hang
 select * from gio_hang_chi_tiet
 select * from phi_van_chuyen
 select * from dia_chi_van_chuyen
+select * from tinh
+select * from huyen
+select * from xa
 select * from pt_thanh_toan
 select * from pt_thanh_toan_hoa_don
 select * from trang_thai_hoa_don

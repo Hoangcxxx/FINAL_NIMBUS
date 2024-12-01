@@ -104,17 +104,18 @@ public class TestDemoService {
         NguoiDung nguoiDung = nguoiDungRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
 
-        // Lấy hoặc lưu Tỉnh
-        Tinh selectedCity = tinhRepository.findById(Integer.parseInt(cityCode))
+        // Lấy hoặc lưu Tỉnh theo mã
+        Tinh selectedCity = tinhRepository.findByMaTinh(cityCode)
                 .orElseGet(() -> tinhRepository.save(fetchCityInfo(cityCode)));
 
-        // Lấy hoặc lưu Huyện
-        Huyen selectedDistrict = huyenRepository.findById(Integer.parseInt(districtCode))
+        // Lấy hoặc lưu Huyện theo mã
+        Huyen selectedDistrict = huyenRepository.findByMaHuyen(districtCode)
                 .orElseGet(() -> huyenRepository.save(fetchDistrictInfo(districtCode)));
 
-        // Lấy hoặc lưu Xã
-        Xa selectedWard = xaRepository.findById(Integer.parseInt(wardCode))
+        // Lấy hoặc lưu Xã theo mã
+        Xa selectedWard = xaRepository.findByMaXa(wardCode)
                 .orElseGet(() -> xaRepository.save(fetchWardInfo(wardCode)));
+
 
         // Lưu địa chỉ vận chuyển
         DiaChiVanChuyen diaChi = new DiaChiVanChuyen();
@@ -172,8 +173,6 @@ public class TestDemoService {
         }
         throw new RuntimeException("Không thể lấy dữ liệu xã từ API");
     }
-
-
 
 
 }

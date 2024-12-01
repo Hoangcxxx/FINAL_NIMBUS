@@ -354,24 +354,96 @@ window.ThanhToanController = function ($scope, $http, $window) {
             .catch(error => console.error("Lỗi khi lấy tỉnh thành:", error));
     };
 
-    // Lấy danh sách quận huyện khi chọn tỉnh thành
+
+    // Lắng nghe sự thay đổi khi chọn tỉnh
     $scope.$watch("shippingInfo.province", function (newProvince) {
         if (newProvince) {
-            $http.get(`http://localhost:8080/api/nguoi_dung/dia_chi/tinh/${newProvince}`)
+            $http.get(`http://localhost:8080/api/nguoi_dung/test/districts/${newProvince}`)
                 .then(response => $scope.districts = response.data)
                 .catch(error => console.error("Lỗi khi lấy quận huyện:", error));
+
+            // Tính phí vận chuyển khi tỉnh thay đổi
+            $scope.calculateShippingFee();
         }
     });
 
-    // Lấy danh sách phường xã khi chọn quận huyện
+    // Lắng nghe sự thay đổi khi chọn quận
     $scope.$watch("shippingInfo.district", function (newDistrict) {
         if (newDistrict) {
-            $http.get(`http://localhost:8080/api/nguoi_dung/dia_chi/huyen/${newDistrict}`)
+            $http.get(`http://localhost:8080/api/nguoi_dung/test/wards/${newDistrict}`)
                 .then(response => $scope.wards = response.data)
                 .catch(error => console.error("Lỗi khi lấy phường xã:", error));
+
+            // Tính phí vận chuyển khi quận thay đổi
+            $scope.calculateShippingFee();
         }
     });
+
+    // Lắng nghe sự thay đổi khi chọn xã
+    $scope.$watch("shippingInfo.ward", function (newWard) {
+        if (newWard) {
+            // Tính phí vận chuyển khi xã thay đổi
+            $scope.calculateShippingFee();
+        }
+    });
+
     $scope.getProvinces(); if (user) $scope.getUserInfo(iduser); $scope.getCartItems();
+
+    // Định nghĩa hàm tính phí ship
+    $scope.calculateShippingFee = function () {
+        if ($scope.selectedCity && $scope.selectedDistrict && $scope.selectedWard) {
+            // Lấy thông tin tỉnh, huyện, xã đã chọn
+            const fromProvinceId = 201; // Mã tỉnh gửi hàng (có thể thay đổi theo thực tế)
+            const fromDistrictId = 201; // Mã quận gửi hàng (có thể thay đổi theo thực tế)
+            const toProvinceId = $scope.selectedCity.code;  // Mã tỉnh nhận hàng
+            const toDistrictId = $scope.selectedDistrict.code; // Mã quận nhận hàng
+            const toWardCode = $scope.selectedWard.code; // Mã phường nhận hàng
+
+            // Trọng lượng gói hàng (ví dụ 800g)
+            const weight = 800;
+            // Kích thước gói hàng (ví dụ chiều dài 50cm, chiều rộng 30cm, chiều cao 15cm)
+            const length = 50;
+            const width = 30;
+            const height = 15;
+            // ID dịch vụ (ví dụ dịch vụ mặc định)
+            const serviceId = 53321;
+
+            // Tạo đối tượng gửi request API
+            const requestData = {
+                from_province_id: fromProvinceId,
+                from_district_id: fromDistrictId,
+                to_province_id: toProvinceId,
+                to_district_id: toDistrictId,
+                to_ward_code: toWardCode,
+                weight: weight,
+                length: length,
+                width: width,
+                height: height,
+                service_id: serviceId,
+                insurance_value: null,
+                cod_failed_amount: null,
+                coupon: null
+            };
+
+            // Gửi yêu cầu API tính phí vận chuyển
+            $http.post("http://localhost:8080/api/admin/shipping/get-shipping-fee", requestData)
+                .then(function (response) {
+                    // Khi nhận được phản hồi thành công, cập nhật phí ship
+                    if (response.data.code === 200) {
+                        $scope.shippingFee = response.data.data.total;
+                        // Log ra số tiền phí vận chuyển
+                        console.log("Phí vận chuyển: ", $scope.shippingFee);
+                    } else {
+                        console.error("Lỗi tính phí vận chuyển:", response.data.message);
+                    }
+                })
+                .catch(function (error) {
+                    console.error("Có lỗi xảy ra khi tính phí vận chuyển:", error);
+                });
+        } else {
+            console.log("Vui lòng chọn đầy đủ tỉnh, huyện và xã.");
+        }
+    };
 
 
     // Khởi tạo dữ liệu ban đầu
@@ -428,8 +500,9 @@ window.ThanhToanController = function ($scope, $http, $window) {
             const cityCode = $scope.selectedCity.code;
             const districtCode = $scope.selectedDistrict.code;
             const wardCode = $scope.selectedWard.code;
-
+            console.log("1231313312331313212123" + userId + cityCode + districtCode + wardCode);
             const url = `http://127.0.0.1:8080/api/nguoi_dung/test/save-location?userId=${userId}&cityCode=${cityCode}&districtCode=${districtCode}&wardCode=${wardCode}`;
+            console.log("1231313312331313212123" + url);
             $http.post(url)
                 .then(function (response) {
                     $scope.isSuccess = true;
