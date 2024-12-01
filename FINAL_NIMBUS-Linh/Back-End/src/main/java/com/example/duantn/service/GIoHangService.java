@@ -63,6 +63,7 @@ public class GIoHangService {
             gioHangChiTiet.setNgayCapNhat(new Date());
         }
         sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - request.getSoLuong());
+
         sanPhamChiTietRepository.save(sanPhamChiTiet);
         gioHangChiTietRepository.save(gioHangChiTiet);
     }

@@ -124,21 +124,53 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         window.onload = function () {
-            // Lấy tham số từ hash (không phải từ query string)
+            // Lấy tham số từ hash
             const hash = window.location.hash;
-            const params = new URLSearchParams(hash.split('?')[1]);  // Lấy phần sau dấu '?' từ hash
+            const params = new URLSearchParams(hash.split('?')[1]);
             const message = params.get('message');
-
+    
             if (message) {
-                // Kiểm tra giá trị của message và hiển thị thông báo phù hợp
+                // Hiển thị thông báo dựa trên message
                 Swal.fire({
                     title: message === 'Thanh toan thanh cong' ? 'Thanh toán thành công' : 'Thanh toán thất bại',
                     text: message === 'Thanh toan thanh cong' ? 'Cảm ơn bạn đã thanh toán!' : 'Vui lòng thử lại!',
                     icon: message === 'Thanh toan thanh cong' ? 'success' : 'error',
                     confirmButtonText: 'OK'
+                }).then(() => {
+                    // Nếu thanh toán thành công, thực hiện tạo trạng thái hóa đơn
+                    if (message === 'Thanh toan thanh cong') {
+                        // Lấy ID hóa đơn từ localStorage
+                        const storedInvoice = localStorage.getItem('selectedInvoice');
+                        if (storedInvoice) {
+                            const invoice = JSON.parse(storedInvoice);
+                            const idHoaDon = invoice.idHoaDon;
+    
+                            // Gửi yêu cầu tạo trạng thái hóa đơn
+                            if (idHoaDon) {
+                                fetch(`http://localhost:8080/api/create/${idHoaDon}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Trạng thái hóa đơn được tạo:', data);
+                                    })
+                            } else {
+                                console.error('ID hóa đơn không tồn tại trong localStorage.');
+                            }
+                        } else {
+                            console.error('Hóa đơn không tồn tại trong localStorage.');
+                        }
+                    }
+                    setTimeout(() => {
+                        window.location.href = "http://127.0.0.1:5500/admin.html#!/ban_hang";
+                    }, 1500);
                 });
             }
         };
-
     </script>
+    
+    
 </body>

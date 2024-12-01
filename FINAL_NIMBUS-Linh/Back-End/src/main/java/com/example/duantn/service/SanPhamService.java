@@ -96,8 +96,9 @@ public class SanPhamService {
             return null;  // Trường hợp không có sản phẩm
         }
     }
-
-
+    public List<SanPham> getSanPhamForBanHang() {
+        return sanPhamRepository.findSanPhamForBanHang();
+    }
     @Transactional
     public void toggleStatusById(Integer idSanPham) {
         sanPhamRepository.updateStatusById(idSanPham);

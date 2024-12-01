@@ -3,12 +3,14 @@ package com.example.duantn.controller.admin;
 import com.example.duantn.config.Config;
 import com.example.duantn.dto.HoaDonResponseDTO;
 import com.example.duantn.dto.HoaDonUpdateDTO;
-import com.example.duantn.entity.HoaDon;
-import com.example.duantn.entity.TrangThaiHoaDon;
+import com.example.duantn.entity.*;
 import com.example.duantn.repository.HoaDonRepository;
+import com.example.duantn.repository.LoaiTrangThaiRepository;
+import com.example.duantn.repository.TrangThaiHoaDonRepository;
 import com.example.duantn.service.HoaDonService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,11 @@ public class PaymentController {
 
     @Autowired
     private HoaDonRepository hoaDonRepository;
+    @Autowired
+    private LoaiTrangThaiRepository LoaiTrangThaiRepository;
+    @Autowired
+    private TrangThaiHoaDonRepository trangThaiHoaDonRepository;
+
 
     @Autowired
     private HoaDonService hoaDonService;
@@ -105,21 +112,16 @@ public class PaymentController {
                 "<p>If you are not redirected, <a href='" + paymentUrl + "'>click here</a>.</p></body></html>");
     }
 
-    @RequestMapping("/vnpay_return")
-    public void vnpayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String transactionStatus = request.getParameter("vnp_TransactionStatus");
-        String orderId = request.getParameter("vnp_TxnRef");
-        if ("00".equals(transactionStatus)) {
-            HoaDon hoaDon = hoaDonRepository.findTopByOrderByIdHoaDonDesc();
-            if (hoaDon != null) {
-                TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
-                trangThaiHoaDon.setId(3);
-                hoaDon.setTrangThaiHoaDon(trangThaiHoaDon);
-                hoaDonRepository.save(hoaDon); // Lưu thay đổi
+
+        @RequestMapping("/vnpay_return")
+        public void vnpayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+            String transactionStatus = request.getParameter("vnp_TransactionStatus");
+            String orderId = request.getParameter("vnp_TxnRef");
+            if ("00".equals(transactionStatus)) {
+
+                response.sendRedirect("http://127.0.0.1:5500/admin.html#!/ban_hang?message=Thanh%20toan%20thanh%20cong");
+            } else {
+                response.sendRedirect("http://127.0.0.1:5500/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai");
             }
-            response.sendRedirect("http://127.0.0.1:5500/admin.html#!/ban_hang?message=Thanh%20toan%20thanh%20cong");
-        } else {
-            response.sendRedirect("http://127.0.0.1:5500/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai");
         }
     }
-}

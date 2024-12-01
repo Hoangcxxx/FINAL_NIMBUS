@@ -70,6 +70,19 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
             "ngay_cap_nhat = GETDATE() " +
             "WHERE Id_san_pham = :idSanPham", nativeQuery = true)
     void updateStatusById(@Param("idSanPham") Integer idSanPham);
+    @Query("SELECT sp FROM SanPham sp " +
+            "LEFT JOIN sp.danhMuc dm " +
+            "LEFT JOIN sp.giamGiaSanPham ggsp " +
+            "LEFT JOIN ggsp.dotGiamGia dgg " +
+            "LEFT JOIN sp.hinhAnhSanPham ha " +
+            "WHERE sp.trangThai = true " +
+            "AND ha.thuTu = 1 " +
+            "AND (dgg.ngayKetThuc >= CURRENT_DATE OR dgg.ngayKetThuc IS NULL) " +
+            "ORDER BY " +
+            "  CASE WHEN ggsp.idVoucherSanPham IS NOT NULL THEN 0 ELSE 1 END, " +
+            "  sp.tenSanPham ASC, " +
+            "  sp.giaBan ASC")
+    List<SanPham> findSanPhamForBanHang();
 
 
 

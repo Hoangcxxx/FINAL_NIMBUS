@@ -37,7 +37,7 @@ public class HoaDonChiTietService {
                     .orElseThrow(() -> new ExpressionException("Sản phẩm chi tiết không tìm thấy"));
             hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
             HoaDon hoaDon = hoaDonRepository.findById(dto.getIdHoaDon())
-                    .orElseThrow(() -> new ExpressionException("Hóa đơn không tìm thấy"));
+            .orElseThrow(() -> new ExpressionException("Hóa đơn không tìm thấy"));
             hoaDonChiTiet.setHoaDon(hoaDon);
             hoaDonChiTiet.setSoLuong(dto.getSoLuong());
             hoaDonChiTiet.setTongTien(dto.getTongTien());

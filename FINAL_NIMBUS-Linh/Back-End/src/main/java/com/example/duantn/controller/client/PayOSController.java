@@ -16,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/payos")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class PayOSController {
     private final PayOS payOS;
 

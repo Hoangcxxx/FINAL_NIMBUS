@@ -22,12 +22,14 @@ public class Voucher {
 
     @Column(name = "ma_voucher", nullable = false, unique = true, length = 50)
     private String maVoucher;
+    @Column(name = "kieu_giam_gia")
+    private Boolean kieuGiamGia;
 
     @Column(name = "gia_tri_giam_gia", precision = 18, scale = 2)
-    private BigDecimal gia_tri_giam_gia;
+    private BigDecimal giaTriGiamGia;
 
     @Column(name = "so_luong")
-    private int so_luong;
+    private int soLuong;
 
     @Column(name = "gia_tri_toi_da", precision = 18, scale = 2)
     private BigDecimal giaTriToiDa;
@@ -35,14 +37,11 @@ public class Voucher {
     @Column(name = "so_tien_toi_thieu", precision = 18, scale = 2)
     private BigDecimal soTienToiThieu;
 
-    @Column(name = "trang_thai", columnDefinition = "BIT DEFAULT 1")
-    private boolean trangThai;
-
     @Column(name = "mo_ta", columnDefinition = "NVARCHAR(MAX)")
     private String mo_ta;
 
     @Column(name = "ngay_bat_dau")
-    private Date ngay_bat_dau;
+    private Date ngayBatDau;
 
     @Column(name = "ngay_ket_thuc")
     private Date ngayKetThuc;
@@ -53,7 +52,17 @@ public class Voucher {
     @Column(name = "ngay_cap_nhat", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private Date ngay_cap_nhat;
 
+
     @ManyToOne
-    @JoinColumn(name = "id_loai_voucher", nullable = false)
-    private LoaiVoucher loaiVoucher;
+    @JoinColumn(name = "id_trang_thai_giam_gia", nullable = false)
+    private TrangThaiGiamGia trangThaiGiamGia;
+    @Transient
+    private boolean isUsable;
+    public boolean getIsUsable() {
+        return isUsable;
+    }
+
+    public void setIsUsable(boolean isUsable) {
+        this.isUsable = isUsable;
+    }
 }

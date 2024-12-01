@@ -1,8 +1,8 @@
 package com.example.duantn.controller.admin;
 
-import com.example.duantn.entity.HoaDon;
-import com.example.duantn.entity.PhuongThucThanhToan;
-import com.example.duantn.entity.PtThanhToanHoaDon;
+import com.example.duantn.entity.*;
+import com.example.duantn.repository.LoaiTrangThaiRepository;
+import com.example.duantn.repository.TrangThaiHoaDonRepository;
 import com.example.duantn.service.HoaDonService;
 import com.example.duantn.service.PhuongThucThanhToanService;
 import com.example.duantn.service.PtThanhToanHoaDonService;
@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/hoa-don")
@@ -22,6 +24,10 @@ public class PtThanhToanHoaDonController {
     private PhuongThucThanhToanService phuongThucThanhToanService;
     @Autowired
     private HoaDonService hoaDonService;
+    @Autowired
+    private LoaiTrangThaiRepository LoaiTrangThaiRepository;
+    @Autowired
+    private TrangThaiHoaDonRepository trangThaiHoaDonRepository;
 
     @PostMapping("/{id}/thanh-toan")
     public ResponseEntity<PtThanhToanHoaDon> createPaymentMethod(@PathVariable Integer id, @RequestBody PtThanhToanHoaDon paymentMethod) {
@@ -39,6 +45,7 @@ public class PtThanhToanHoaDonController {
         paymentMethod.setPhuongThucThanhToan(phuongThuc);
         paymentMethod.setHoaDon(hoaDon);
         paymentMethod.setTrangThai("Hoàn Thành");
+
         PtThanhToanHoaDon createdPaymentMethod = ptThanhToanHoaDonService.createPaymentMethod(paymentMethod);
 
         return new ResponseEntity<>(createdPaymentMethod, HttpStatus.CREATED);

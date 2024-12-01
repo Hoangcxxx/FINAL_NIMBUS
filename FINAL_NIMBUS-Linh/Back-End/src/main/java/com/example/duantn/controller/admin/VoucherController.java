@@ -1,7 +1,7 @@
 package com.example.duantn.controller.admin;
 
 import com.example.duantn.entity.Voucher;
-import com.example.duantn.service.VoucherService; // Giả sử bạn đã tạo VoucherService
+import com.example.duantn.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,39 +9,65 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/voucher")
+@RequestMapping("/api/vouchers")
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class VoucherController {
 
     @Autowired
     private VoucherService voucherService;
 
-
-    @PostMapping("/apply")
-    public ResponseEntity<String> applyVoucher(@RequestParam String maVoucher) {
+    @PostMapping("/use/{maVoucher}")
+    public ResponseEntity<?> useVoucher(@PathVariable("maVoucher") String maVoucher,
+                                        @RequestBody BigDecimal tongTien) {
         try {
-            boolean success = voucherService.applyVoucher(maVoucher);
-            if (success) {
-                return ResponseEntity.ok("Voucher applied successfully.");
+            Voucher voucher = voucherService.useVoucher(maVoucher, tongTien);
+            return ResponseEntity.ok(voucher);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/apma/{maVoucher}")
+    public ResponseEntity<?> useVoucher2(@PathVariable("maVoucher") String maVoucher,
+                                        @RequestBody BigDecimal tongTien) {
+        try {
+            Voucher voucher = voucherService.apdungvoucher(maVoucher, tongTien);
+            return ResponseEntity.ok(voucher);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra: " + e.getMessage());
+        }
+    }
+    @GetMapping("/valid/{tongTien}")
+    public ResponseEntity<List<Voucher>> getValidVouchers(@PathVariable BigDecimal tongTien) {
+        try {
+            if (tongTien.compareTo(BigDecimal.ZERO) <= 0) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
+            List<Voucher> validVouchers = voucherService.getValidVouchers(tongTien);
+            if (validVouchers.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             } else {
-                return ResponseEntity.badRequest().body("Voucher is invalid or out of stock.");
+                return ResponseEntity.ok(validVouchers);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
-    @GetMapping("/tuong_ung/{tongTien}")
-    public ResponseEntity<Voucher> getVoucherTuongUng(@PathVariable BigDecimal tongTien) {
-        System.out.println("Tong Tien: " + tongTien); // Ghi log để kiểm tra
-        Optional<Voucher> voucher = voucherService.timVoucherTuongUng(tongTien);
-        if (voucher.isPresent()) {
-            return ResponseEntity.ok(voucher.get());
+        @GetMapping("/allvoucher/{tongTien}")
+        public ResponseEntity<List<Voucher>> getAllVouchers(@PathVariable("tongTien") BigDecimal tongTien) {
+            try {
+                List<Voucher> allVouchers = voucherService.getAllVouchersWithStatus(tongTien);
+                return ResponseEntity.ok(allVouchers);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Không có voucher phù hợp
-    }
 
 }
-

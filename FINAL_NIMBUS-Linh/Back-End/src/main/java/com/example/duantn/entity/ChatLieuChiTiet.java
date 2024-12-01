@@ -1,33 +1,31 @@
 package com.example.duantn.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "chat_lieu_chi_tiet")
 public class ChatLieuChiTiet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id_chat_lieu_tiet")
+    @Column(name = "Id_chat_lieu_chi_tiet")
     private Integer idChatLieuChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_chat_lieu")
+    @JoinColumn(name = "Id_chat_lieu")
     private ChatLieu chatLieu;
 
     @Column(name = "ngay_tao", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
 
     @Column(name = "ngay_cap_nhat")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
-
 }

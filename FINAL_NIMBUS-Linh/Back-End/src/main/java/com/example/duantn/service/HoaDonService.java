@@ -3,8 +3,7 @@ package com.example.duantn.service;
 import com.example.duantn.dto.*;
 
 import com.example.duantn.entity.*;
-import com.example.duantn.repository.HoaDonRepository;
-import com.example.duantn.repository.PhuongThucThanhToanHoaDonRepository;
+import com.example.duantn.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -16,9 +15,9 @@ import java.io.IOException;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -26,6 +25,13 @@ public class HoaDonService {
 
     @Autowired
     private HoaDonRepository hoaDonRepository;
+    @Autowired
+    private VoucherRepository voucherRepository;
+    @Autowired
+    private LoaiTrangThaiRepository loaiTrangThaiRepository;
+    @Autowired
+    private TrangThaiHoaDonRepository trangThaiHoaDonRepository;
+
     @Autowired
     private PhuongThucThanhToanHoaDonRepository ptThanhToanHoaDonRepository;
     public List<HoaDon> getHoaDonChuaThanhToan() {
@@ -46,8 +52,7 @@ public class HoaDonService {
             headerRow.createCell(3).setCellValue("Ngày Tạo");
             headerRow.createCell(4).setCellValue("Phương Thức");
             headerRow.createCell(5).setCellValue("Tổng Tiền");
-            headerRow.createCell(6).setCellValue("Trạng Thái");
-            headerRow.createCell(7).setCellValue("Loại");
+            headerRow.createCell(6).setCellValue("Loại");
 
             // Thêm dữ liệu hóa đơn vào sheet
             int rowNum = 1;
@@ -59,21 +64,22 @@ public class HoaDonService {
                 row.createCell(3).setCellValue(hoaDon.getNgayTao().toString());
                 row.createCell(4).setCellValue(hoaDon.getTenPhuongThuc());
                 row.createCell(5).setCellValue(hoaDon.getTongTien().toString());
-                row.createCell(6).setCellValue(hoaDon.getTenTrangThai());
-                row.createCell(7).setCellValue(hoaDon.getLoai());
+                row.createCell(6).setCellValue(hoaDon.getLoai());
             }
 
             workbook.write(outputStream);
             return outputStream.toByteArray();
         }
     }
+    @Transactional
     public void deleteHoaDon(Integer id) {
         if (!hoaDonRepository.existsById(id)) {
             throw new EntityNotFoundException("Hóa đơn không tồn tại với ID: " + id);
         }
+        trangThaiHoaDonRepository.deleteByHoaDonId(id);
         hoaDonRepository.deleteById(id);
     }
-    //xem danh sách hóa đơn
+
     public List<HoaDonDTO> getHoaDonWithDetails() {
         return hoaDonRepository.getHoaDonWithDetails();
     }
@@ -81,14 +87,39 @@ public class HoaDonService {
     public HoaDon createHoaDon(HoaDon hoaDon) {
         String newMaHoaDon = generateMaHoaDon();
         hoaDon.setMaHoaDon(newMaHoaDon);
-        TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
-        trangThaiHoaDon.setId(1);
-        hoaDon.setTrangThaiHoaDon(trangThaiHoaDon);
-        hoaDon.setLoai("Tại quầy");
-        /// my check
-        hoaDon.setNgayThanhToan(new Date());
-        return hoaDonRepository.save(hoaDon);
+        hoaDon.setLoai(0);
+        HoaDon savedHoaDon = hoaDonRepository.save(hoaDon);
+
+        // Tạo trạng thái hóa đơn với loại trạng thái là 1
+        TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
+        trangThaiHoaDon1.setMoTa("Tạo đơn hàng");
+        trangThaiHoaDon1.setNgayTao(new Date());
+        trangThaiHoaDon1.setNgayCapNhat(new Date());
+
+        LoaiTrangThai loaiTrangThai1 = loaiTrangThaiRepository.findById(1)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+
+        trangThaiHoaDon1.setLoaiTrangThai(loaiTrangThai1);
+        trangThaiHoaDon1.setHoaDon(savedHoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDon1);
+
+        // Tạo trạng thái hóa đơn với loại trạng thái là 4
+        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
+        trangThaiHoaDon2.setMoTa("Chờ Thanh Toán");
+        trangThaiHoaDon2.setNgayTao(new Date());
+        trangThaiHoaDon2.setNgayCapNhat(new Date());
+
+        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(4)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+
+        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+        trangThaiHoaDon2.setHoaDon(savedHoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+
+        return savedHoaDon;
     }
+
+
 
     private String generateMaHoaDon() {
         List<String> lastMaHoaDonList = hoaDonRepository.findLastMaHoaDon();
@@ -113,7 +144,11 @@ public class HoaDonService {
         }
         return false;
     }
-
+    public HoaDon getInvoiceById(Integer id) {
+        // Gọi repository để tìm hóa đơn theo ID
+        return hoaDonRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy hóa đơn với ID: " + id));
+    }
     @Transactional
     public HoaDonResponseDTO updateHoaDon(int idHoaDon, HoaDonUpdateDTO updateHoaDonDTO) {
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
@@ -123,30 +158,69 @@ public class HoaDonService {
         hoaDon.setNgayThanhToan(updateHoaDonDTO.getNgayThanhToan());
         hoaDon.setThanhTien(updateHoaDonDTO.getThanhTien());
         hoaDon.setSdtNguoiNhan(updateHoaDonDTO.getSetSdtNguoiNhan());
+
         PtThanhToanHoaDon ptThanhToan = new PtThanhToanHoaDon();
         ptThanhToan.setId(updateHoaDonDTO.getIdPtThanhToanHoaDon());
+
         PtThanhToanHoaDon existingPtThanhToan = ptThanhToanHoaDonRepository.findById(ptThanhToan.getId())
                 .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không tồn tại."));
         hoaDon.setPtThanhToanHoaDon(existingPtThanhToan);
 
-        TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
-        trangThaiHoaDon.setId(updateHoaDonDTO.getTrangThaiHoaDon());
-        hoaDon.setTrangThaiHoaDon(trangThaiHoaDon);
+        if (updateHoaDonDTO.getIdVoucher() > 0) {
+            Voucher voucher = voucherRepository.findById(updateHoaDonDTO.getIdVoucher())
+                    .orElseThrow(() -> new RuntimeException("Voucher không tồn tại"));
+            hoaDon.setVoucher(voucher);
+        }
+
+        if (!existingPtThanhToan.getPhuongThucThanhToan().getId().equals(2) &&
+                !existingPtThanhToan.getPhuongThucThanhToan().getId().equals(3)) {
+            // Tạo trạng thái hóa đơn loại 5
+            TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
+            trangThaiHoaDon1.setMoTa("Đã thanh toán thành công");
+            trangThaiHoaDon1.setNgayTao(new Date());
+            trangThaiHoaDon1.setNgayCapNhat(new Date());
+            trangThaiHoaDon1.setHoaDon(hoaDon);
+
+            LoaiTrangThai loaiTrangThai1 = loaiTrangThaiRepository.findById(5)
+                    .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+            trangThaiHoaDon1.setLoaiTrangThai(loaiTrangThai1);
+
+            trangThaiHoaDonRepository.save(trangThaiHoaDon1);
+
+            // Tạo trạng thái hóa đơn loại 8
+            TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
+            trangThaiHoaDon2.setMoTa("Hoàn thành    ");
+            trangThaiHoaDon2.setNgayTao(new Date());
+            trangThaiHoaDon2.setNgayCapNhat(new Date());
+            trangThaiHoaDon2.setHoaDon(hoaDon);
+
+            LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(8)
+                    .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+            trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+
+            trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+        }
+
         hoaDonRepository.save(hoaDon);
 
-        return new HoaDonResponseDTO(hoaDon.getPhiShip(), hoaDon.getNgayThanhToan(), hoaDon.getThanhTien(), hoaDon.getPtThanhToanHoaDon().getId());
+        return new HoaDonResponseDTO(
+                hoaDon.getPhiShip(),
+                hoaDon.getNgayThanhToan(),
+                hoaDon.getThanhTien(),
+                hoaDon.getPtThanhToanHoaDon().getId()
+        );
     }
 
 
-    public void capNhatTrangThaiHoaDon(int idHoaDon, TrangThaiHoaDon trangThaiMoi) throws Exception {
-        Optional<HoaDon> optionalHoaDon = hoaDonRepository.findById(idHoaDon);
-        if (optionalHoaDon.isPresent()) {
-            HoaDon hoaDon = optionalHoaDon.get();
-            hoaDon.setTrangThaiHoaDon(trangThaiMoi);
-            hoaDonRepository.save(hoaDon);
-        } else {
-            throw new Exception("Không tìm thấy hóa đơn với ID: " + idHoaDon);
-        }
-    }
+
+//    public void capNhatTrangThaiHoaDon(int idHoaDon, TrangThaiHoaDon trangThaiMoi) throws Exception {
+//        Optional<HoaDon> optionalHoaDon = hoaDonRepository.findById(idHoaDon);
+//        if (optionalHoaDon.isPresent()) {
+//            HoaDon hoaDon = optionalHoaDon.get();
+//            hoaDon.setTrangThaiHoaDon(trangThaiMoi);
+//            hoaDonRepository.save(hoaDon);
+//        } else {
+//            throw new Exception("Không tìm thấy hóa đơn với ID: " + idHoaDon);
+//        }
     }
 

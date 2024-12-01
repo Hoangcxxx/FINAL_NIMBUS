@@ -56,14 +56,19 @@ public class GioHangRestController {
         }
     }
     @DeleteMapping("/xoa-tat-ca/{idNguoiDung}")
-    public ResponseEntity<String> xoaTatCaSanPhamKhoiGioHang(@PathVariable Integer idNguoiDung) {
+    public ResponseEntity<Map<String, String>> xoaTatCaSanPhamKhoiGioHang(@PathVariable Integer idNguoiDung) {
         try {
             gioHangService.xoaTatCaSanPhamKhoiGioHangKhongCapNhatSoLuong(idNguoiDung);
-            return ResponseEntity.ok("Đã xóa tất cả sản phẩm trong giỏ hàng.");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Đã xóa tất cả sản phẩm trong giỏ hàng.");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
+
     @PutMapping("/cap-nhat/{idNguoiDung}/{idSanPhamChiTiet}")
     public ResponseEntity<Map<String, String>> capNhatSoLuong(@PathVariable Integer idNguoiDung,
                                                               @PathVariable Integer idSanPhamChiTiet,

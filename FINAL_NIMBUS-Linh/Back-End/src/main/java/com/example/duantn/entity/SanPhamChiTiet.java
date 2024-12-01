@@ -41,7 +41,7 @@ public class SanPhamChiTiet {
     private MauSacChiTiet mauSacChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_chat_lieu_chi_tiet", referencedColumnName = "Id_chat_lieu_tiet")
+    @JoinColumn(name = "id_chat_lieu_chi_tiet", referencedColumnName = "Id_chat_lieu_chi_tiet")
     private ChatLieuChiTiet chatLieuChiTiet;
 
     @ManyToOne

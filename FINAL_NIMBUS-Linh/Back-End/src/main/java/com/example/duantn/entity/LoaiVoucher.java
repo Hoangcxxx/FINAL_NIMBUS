@@ -15,7 +15,8 @@ public class LoaiVoucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_loai_voucher;
 
-    private String ten_loai_voucher;
+    @Column(name = "ten_loai_voucher", nullable = false)
+    private String tenLoaiVoucher;
     private String mo_ta;
 
     @Column(columnDefinition = "DATETIME DEFAULT GETDATE()")

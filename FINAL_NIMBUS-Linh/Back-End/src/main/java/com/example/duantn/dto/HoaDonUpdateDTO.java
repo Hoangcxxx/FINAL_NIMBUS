@@ -17,4 +17,5 @@ public class HoaDonUpdateDTO {
     private int idPtThanhToanHoaDon;
     private Integer trangThaiHoaDon;
     private String setSdtNguoiNhan;
+    private int idVoucher;
 }

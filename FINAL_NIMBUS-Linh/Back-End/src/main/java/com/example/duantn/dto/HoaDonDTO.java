@@ -12,13 +12,12 @@ import java.util.Date;
 @Data
 public class HoaDonDTO {
     private int idHoaDon;
-    private Integer id;
     private String maHoaDon;
     private String tenNguoiDung;
     private String sdtNguoiDung;
     private Date ngayTao;
     private String tenPhuongThuc;
     private BigDecimal tongTien;
-    private String tenTrangThai;
-    private String loai;
+
+    private int loai;
 }

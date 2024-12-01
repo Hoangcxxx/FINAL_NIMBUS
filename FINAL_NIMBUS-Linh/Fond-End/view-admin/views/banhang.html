@@ -47,7 +47,6 @@
                                             ng-click="openDeleteModal(invoice.idHoaDon)" title="Xóa hóa đơn"></i>
                                     </div> -->
                                 </div>
-
                             </div>
 
 
@@ -97,22 +96,36 @@
                         </div>
 
                         <!-- The Modal -->
+                        <!-- Modal Confirmation Delete -->
                         <div id="myModal" ng-show="invoiceToDelete !== null"
-                            style="display: block; position:fixed; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:1000; justify-content: center; align-items: center; display: flex;">
+                            style="display: block; position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center; display: flex;">
+
+                            <!-- Modal Content -->
                             <div
-                                style="background-color:white; border-radius:8px; padding:20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 300px; text-align: center;">
-                                <h2 style="margin: 0 0 15px;">Xác Nhận Xóa</h2>
-                                <p style="margin-bottom: 20px;">Bạn có muốn xóa?</p>
-                                <button ng-click="confirmDelete()"
-                                    style="padding: 10px 15px; background-color: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; margin-right: 10px;">
-                                    Xóa
-                                </button>
-                                <button ng-click="invoiceToDelete = null"
-                                    style="padding: 10px 15px; background-color: #ccc; color: black; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
-                                    Đóng
-                                </button>
+                                style="background-color: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 350px; text-align: center; transition: all 0.3s ease;">
+                                <!-- Title -->
+                                <h2 style="font-size: 1.5rem; margin-bottom: 15px; color: #333;">Xác Nhận Xóa</h2>
+
+                                <!-- Message -->
+                                <p style="font-size: 1rem; color: #555; margin-bottom: 20px;">Bạn có muốn xóa?</p>
+
+                                <!-- Action Buttons -->
+                                <div style="display: flex; justify-content: center; gap: 10px;">
+                                    <!-- Delete Button -->
+                                    <button ng-click="confirmDelete()"
+                                        style="padding: 12px 20px; background-color: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-size: 1rem; width: 120px;">
+                                        Xóa
+                                    </button>
+
+                                    <!-- Close Button -->
+                                    <button ng-click="invoiceToDelete = null"
+                                        style="padding: 12px 20px; background-color: #ddd; color: black; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-size: 1rem; width: 120px;">
+                                        Đóng
+                                    </button>
+                                </div>
                             </div>
                         </div>
+
 
                         <div id="show-cart">
                             <h4 class="border-bottom pb-2">
@@ -168,7 +181,7 @@
                                                             </button>
                                                         </div>
                                                     </td>
-                                                    <td>{{ item.giaBan | currency: '' : 0 }} ₫</td>
+                                                    <td>{{ item.giaBan | currency: '' : 0 }} VND</td>
                                                     <td>
                                                         <button class="btn btn-danger btn-sm"
                                                             ng-click="deleteCartItem(item.idSanPhamChiTiet)">
@@ -184,11 +197,10 @@
 
                         </div>
 
-                        <!-- Product List Section -->
-                        <h4 class="border-bottom pb-2">
-                            <i class="fas fa-tshirt"></i> Sản phẩm
-                        </h4>
-
+                        <!-- Product List Section
+                            <h4 class="border-bottom pb-2">
+                                <i class="fas fa-tshirt"></i> Sản phẩm
+                            </h4>
                         <div id="show-product">
                             <div class="card shadow mb-4">
                                 <div class="card-body">
@@ -198,99 +210,7 @@
                                         </label>
                                         <input type="text" class="form-control" ng-model="search.tenSanPham"
                                             placeholder="Tìm theo tên sản phẩm..." style="border-radius: 10px;">
-                                    </div>
-                                
-                                    <div class="row">
-                                        <!-- Tìm theo tên sản phẩm -->
-
-                                        <!-- Tìm theo danh mục -->
-                                        <div class="col-md-3">
-                                            <label class="form-label" style="font-weight: bold;">
-                                                <i class="fas fa-list"></i> Danh mục
-                                            </label>
-                                            <select class="form-control" ng-model="search.danhMuc"
-                                                style="border-radius: 10px;">
-                                                <option value="">Chọn danh mục</option>
-                                                <optgroup label="Áo">
-                                                    <option value="Áo phông"><i class="fas fa-tshirt"></i> Áo phông
-                                                    </option>
-                                                    <option value="Áo sơ mi"><i class="fas fa-user-tie"></i> Áo sơ mi
-                                                    </option>
-                                                    <option value="Áo phao"><i class="fas fa-jacket"></i> Áo phao
-                                                    </option>
-                                                    <option value="Áo chống nắng"><i class="fas fa-sun"></i> Áo chống
-                                                        nắng</option>
-                                                </optgroup>
-                                                <optgroup label="Quần">
-                                                    <option value="Quần kaki"><i class="fas fa-trousers"></i> Quần kaki
-                                                    </option>
-                                                    <option value="Quần sort & jean"><i class="fas fa-jeans"></i> Quần
-                                                        sort & jean</option>
-                                                </optgroup>
-                                            </select>
-                                        </div>
-
-                                        <!-- Tìm theo chất liệu -->
-                                        <div class="col-md-3">
-                                            <label class="form-label" style="font-weight: bold;">
-                                                <i class="fas fa-box"></i> Chất liệu
-                                            </label>
-                                            <select class="form-control" ng-model="search.tenChatLieu"
-                                                style="border-radius: 10px;">
-                                                <option value="">Chọn chất liệu</option>
-                                                <optgroup label="Vải tự nhiên">
-                                                    <option value="Cotton"><i class="fas fa-fabric"></i> Cotton</option>
-                                                    <option value="Linen"><i class="fas fa-leaf"></i> Linen</option>
-                                                    <option value="Tencel"><i class="fas fa-tree"></i> Tencel</option>
-                                                </optgroup>
-                                                <optgroup label="Vải tổng hợp">
-                                                    <option value="Polyester"><i class="fas fa-industry"></i> Polyester
-                                                    </option>
-                                                    <option value="Nylon"><i class="fas fa-wind"></i> Nylon</option>
-                                                    <option value="Denim"><i class="fas fa-jeans"></i> Denim</option>
-                                                </optgroup>
-                                            </select>
-                                        </div>
-
-                                        <!-- Tìm theo kích thước -->
-                                        <div class="col-md-3">
-                                            <label class="form-label" style="font-weight: bold;">
-                                                <i class="fas fa-ruler"></i> Kích thước
-                                            </label>
-                                            <select class="form-control" ng-model="search.tenKichThuoc"
-                                                style="border-radius: 10px;">
-                                                <option value="">Chọn kích thước</option>
-                                                <optgroup label="Nhỏ">
-                                                    <option value="S"><i class="fas fa-ruler"></i> S</option>
-                                                    <option value="M"><i class="fas fa-ruler"></i> M</option>
-                                                </optgroup>
-                                                <optgroup label="Lớn">
-                                                    <option value="L"><i class="fas fa-ruler"></i> L</option>
-                                                    <option value="XL"><i class="fas fa-ruler"></i> XL</option>
-                                                    <option value="XXL"><i class="fas fa-ruler"></i> XXL</option>
-                                                </optgroup>
-                                            </select>
-                                        </div>
-
-                                        <!-- Tìm theo màu sắc -->
-                                        <div class="col-md-3">
-                                            <label class="form-label" style="font-weight: bold;">
-                                                <i class="fas fa-palette"></i> Màu sắc
-                                            </label>
-                                            <select class="form-control" ng-model="search.tenMauSac"
-                                                style="border-radius: 10px;">
-                                                <option value="">Chọn màu sắc</option>
-                                                <option value="Đỏ">Đỏ</option>
-                                                <option value="Xanh">Xanh</option>
-                                                <option value="Vàng">Vàng</option>
-                                                <option value="Trắng">Trắng</option>
-                                                <option value="Đen">Đen</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    >
-
-                                    <!-- Bảng hiển thị sản phẩm -->
+                                    </div> 
                                     <div class="table-responsive text-center mt-4"
                                         style="max-height: 540px; overflow-y: auto;">
                                         <table class="table table-hover" width="100%">
@@ -337,7 +257,155 @@
 
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
+                        <h4 class="border-bottom pb-2">
+                            <i class="fas fa-tshirt"></i> Sản phẩm
+                        </h4>
+                        <div id="show-product">
+                            <div class="card shadow mb-4">
+                                <div class="card-body">
+                                    <div class="col-md-3">
+                                        <label class="form-label" style="font-weight: bold;">
+                                            <i class="fas fa-search"></i> Tên sản phẩm
+                                        </label>
+                                        <input type="text" class="form-control" ng-model="search.tenSanPham"
+                                            placeholder="Tìm theo tên sản phẩm..." style="border-radius: 10px;">
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-weight: bold;">
+                                                <i class="fas fa-list"></i> Danh mục
+                                            </label>
+                                            <select class="form-control" ng-model="search.danhMuc"
+                                                style="border-radius: 10px;">
+                                                <option value="">Chọn danh mục</option>
+                                                <optgroup label="Áo">
+                                                    <option value="Áo phông"><i class="fas fa-tshirt"></i> Áo phông
+                                                    </option>
+                                                    <option value="Áo sơ mi"><i class="fas fa-user-tie"></i> Áo sơ mi
+                                                    </option>
+                                                    <option value="Áo phao"><i class="fas fa-jacket"></i> Áo phao
+                                                    </option>
+                                                    <option value="Áo chống nắng"><i class="fas fa-sun"></i> Áo chống
+                                                        nắng</option>
+                                                </optgroup>
+                                                <optgroup label="Quần">
+                                                    <option value="Quần kaki"><i class="fas fa-trousers"></i> Quần kaki
+                                                    </option>
+                                                    <option value="Quần sort & jean"><i class="fas fa-jeans"></i> Quần
+                                                        sort & jean</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+
+
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-weight: bold;">
+                                                <i class="fas fa-box"></i> Chất liệu
+                                            </label>
+                                            <select class="form-control" ng-model="search.tenChatLieu"
+                                                style="border-radius: 10px;">
+                                                <option value="">Chọn chất liệu</option>
+                                                <optgroup label="Vải tự nhiên">
+                                                    <option value="Cotton"><i class="fas fa-fabric"></i> Cotton</option>
+                                                    <option value="Linen"><i class="fas fa-leaf"></i> Linen</option>
+                                                    <option value="Tencel"><i class="fas fa-tree"></i> Tencel</option>
+                                                </optgroup>
+                                                <optgroup label="Vải tổng hợp">
+                                                    <option value="Polyester"><i class="fas fa-industry"></i> Polyester
+                                                    </option>
+                                                    <option value="Nylon"><i class="fas fa-wind"></i> Nylon</option>
+                                                    <option value="Denim"><i class="fas fa-jeans"></i> Denim</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-weight: bold;">
+                                                <i class="fas fa-ruler"></i> Kích thước
+                                            </label>
+                                            <select class="form-control" ng-model="search.tenKichThuoc"
+                                                style="border-radius: 10px;">
+                                                <option value="">Chọn kích thước</option>
+                                                <optgroup label="Nhỏ">
+                                                    <option value="S"><i class="fas fa-ruler"></i> S</option>
+                                                    <option value="M"><i class="fas fa-ruler"></i> M</option>
+                                                </optgroup>
+                                                <optgroup label="Lớn">
+                                                    <option value="L"><i class="fas fa-ruler"></i> L</option>
+                                                    <option value="XL"><i class="fas fa-ruler"></i> XL</option>
+                                                    <option value="XXL"><i class="fas fa-ruler"></i> XXL</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+
+
+                                        <div class="col-md-3">
+                                            <label class="form-label" style="font-weight: bold;">
+                                                <i class="fas fa-palette"></i> Màu sắc
+                                            </label>
+                                            <select class="form-control" ng-model="search.tenMauSac"
+                                                style="border-radius: 10px;">
+                                                <option value="">Chọn màu sắc</option>
+                                                <option value="Đỏ">Đỏ</option>
+                                                <option value="Xanh">Xanh</option>
+                                                <option value="Vàng">Vàng</option>
+                                                <option value="Trắng">Trắng</option>
+                                                <option value="Đen">Đen</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    >
+
+
+                                    <div class="table-responsive text-center mt-4"
+                                        style="max-height: 540px; overflow-y: auto;">
+                                        <table class="table table-hover" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Hình ảnh</th>
+                                                    <th scope="col">Tên sản phẩm</th>
+                                                    <th scope="col">Thể loại</th>
+                                                    <th scope="col">Chất liệu</th>
+                                                    <th scope="col">Kích thước</th>
+                                                    <th scope="col">Màu sắc</th>
+                                                    <th scope="col">Số lượng</th>
+                                                    <th scope="col">Đơn giá</th>
+                                                    <th scope="col">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="show-user">
+                                                <tr ng-repeat="sp in sanPhamChiTietList | filter:search">
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>
+                                                        <img ng-if="sp.urlAnh" ng-src="{{sp.urlAnh}}"
+                                                            alt="{{sp.tenSanPham}}" class="img-fluid"
+                                                            style="max-width: 100px; height: auto;">
+
+                                                    </td>
+                                                    <td>{{ sp.tenSanPham }}</td>
+                                                    <td>{{ sp.danhMuc }}</td>
+                                                    <td>{{ sp.tenChatLieu }}</td>
+                                                    <td>{{ sp.tenKichThuoc }}</td>
+                                                    <td>{{ sp.tenMauSac }}</td>
+                                                    <td>{{ sp.soLuong }}</td>
+                                                    <td>{{ sp.giaBan | currency: '' : 0 }} VND</td>
+                                                    <td>
+                                                        <button class="btn btn-dark"
+                                                            ng-click="addToCart(sp.idSanPhamChiTiet)">
+                                                            <i class="fa fa-shopping-cart"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div> -->
 
                     </div>
 
@@ -401,23 +469,11 @@
                                 <input type="text" class="form-control" id="invoiceCode" placeholder="0" readonly
                                     style="font-size: 1rem;" ng-model="selectedInvoice.maHoaDon" />
                             </div>
-                            <div class="mb-3">
-                                <label for="totalPrice" class="form-label" style="font-weight: 600;">
-                                    <i class="fa-solid fa-money-bill-wave"></i> Tổng tiền hàng
-                                </label>
-                                <input type="text" class="form-control" ng-value="totalPrice" placeholder="0" readonly
-                                    style="font-size: 1rem;">
-                            </div>
-                            <div class="mb-3">
-                                <label for="description" class="form-label" style="font-weight: 600;">
-                                    <i class="fa-solid fa-comments"></i>Mô tả
-                                </label>
-                                <textarea class="form-control" id="description" ng-model="description"
-                                    placeholder="Nhập mô tả tại đây..."
-                                    style="font-size: 1rem; border-radius: 5px; height: 100px;"></textarea>
-                            </div>
 
-                            <!-- <div class="mb-3">
+                        </div>
+
+
+                        <!-- <div class="mb-3">
                                 <label for="paymentMethod" class="form-label" style="font-weight: 600;">
                                     <i class="fa-solid fa-credit-card"></i> Phương thức Thanh toán
                                 </label>
@@ -430,388 +486,312 @@
                                     </button>
                                 </div>
                             </div> -->
-                            <div class="mb-3">
-                                <label for="paymentMethod" class="form-label" style="font-weight: 600;">
-                                    <i class="fa-solid fa-credit-card"></i> Khách hàng thanh toán
-                                </label>
-                                <i class="fas fa-plus-circle ml-2" id="show-discount-modal" style="cursor:pointer;"
-                                    data-bs-toggle="modal" data-bs-target="#paymentModal"></i>
-                                </button>
+                        <!-- Form phiếu giảm giá -->
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label" style="font-weight: 600;">
+                                <i class="fas fa-tag"></i> Phiếu giảm giá:
+                            </label>
+                            <i class="fas fa-plus-circle ml-2" id="show-discount-modal" style="cursor:pointer;"
+                                data-bs-toggle="modal" data-bs-target="#voucherModal"></i>
+                        </div>
 
-                                </button>
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label" style="font-weight: 600;">
+                                <i class="fa-solid fa-credit-card"></i> Khách hàng thanh toán
+                            </label>
+                            <i class="fas fa-plus-circle ml-2" id="show-discount-modal" style="cursor:pointer;"
+                                data-bs-toggle="modal" data-bs-target="#paymentModal"></i>
+                            </button>
+
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <div class="total-price-info"
+                                style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                                <h3 style="font-size: 1.2em; color: #333;">
+                                    <!-- Biểu tượng Font Awesome cho tổng tiền -->
+                                    <i class="fa-solid fa-money-bill-wave"></i>
+                                    Tổng tiền:
+                                    <span style="font-size: 1.5em; color: #ff0000;">
+                                        {{ totalPrice | currency: '' : 0 }} VND
+                                    </span>
+                                </h3>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label" style="font-weight: 600;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label" style="font-weight: 600;">
+                                <i class="fa-solid fa-comments"></i>Mô tả
+                            </label>
+                            <textarea class="form-control" id="description" ng-model="description"
+                                placeholder="Nhập mô tả tại đây..."
+                                style="font-size: 1rem; border-radius: 5px; height: 100px;"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <!-- <label class="form-label" style="font-weight: 600;">
                                     <i class="fa-solid fa-truck"></i> Giao hàng
-                                </label>
-                                <!-- Nút bật/tắt (Toggle Switch) -->
-                                <div class="form-check form-switch">
+                                </label> -->
+                            <!-- Nút bật/tắt (Toggle Switch) -->
+                            <!-- <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="giaoHangSwitch"
                                         ng-model="isGiaoHang">
                                     <label class="form-check-label" for="giaoHangSwitch"></label>
-                                </div>
-                            </div>
-                            <!-- Modal form hiển thị khi isGiaoHang bật -->
-                            <div class="modal fade show-custom" ng-if="isGiaoHang" tabindex="-1"
-                                aria-labelledby="giaoHangModalLabel" aria-hidden="true"
-                                style="display:block; opacity:1;">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content shadow-lg border-0 rounded-4">
-                                        <!-- Modal header -->
-                                        <div class="modal-header bg-primary text-white rounded-top">
-                                            <h5 class="modal-title" id="giaoHangModalLabel">Thông tin giao hàng</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close" ng-click="isGiaoHang = false"></button>
-                                        </div>
-
-                                        <!-- Modal body -->
-                                        <div class="modal-body p-4" style="background-color: #f7f7f7;">
-                                            <form>
-                                                <div class="mb-3">
-                                                    <input type="text" class="form-control shadow-sm"
-                                                        placeholder="Nhập họ và tên" required
-                                                        style="border-radius: .375rem; padding: 10px; font-size: 1.1rem;">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <input type="text" class="form-control shadow-sm"
-                                                        placeholder="Nhập số điện thoại" required
-                                                        style="border-radius: .375rem; padding: 10px; font-size: 1.1rem;">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <input type="email" class="form-control shadow-sm"
-                                                        placeholder="Nhập email"
-                                                        style="border-radius: .375rem; padding: 10px; font-size: 1.1rem;">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <input type="text" class="form-control shadow-sm"
-                                                        placeholder="Nhập địa chỉ"
-                                                        style="border-radius: .375rem; padding: 10px; font-size: 1.1rem;">
-                                                </div>
-
-                                                <!-- Select dropdowns -->
-                                                <div class="row">
-                                                    <div class="col-md-4 mb-3">
-                                                        <select class="form-select shadow-sm" required
-                                                            style="border-radius: .375rem; padding: 10px; font-size: 1.1rem;">
-                                                            <option selected>Chọn tỉnh</option>
-                                                            <!-- Thêm các option tỉnh -->
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <select class="form-select shadow-sm" required
-                                                            style="border-radius: .375rem; padding: 10px; font-size: 1.1rem;">
-                                                            <option selected>Chọn quận</option>
-                                                            <!-- Thêm các option quận -->
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <select class="form-select shadow-sm" required
-                                                            style="border-radius: .375rem; padding: 10px; font-size: 1.1rem;">
-                                                            <option selected>Chọn phường/xã</option>
-                                                            <!-- Thêm các option phường/xã -->
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Ghi chú -->
-                                                <div class="mb-3">
-                                                    <textarea class="form-control shadow-sm" placeholder="Ghi chú"
-                                                        style="border-radius: .375rem; padding: 10px; font-size: 1.1rem;"></textarea>
-                                                </div>
-                                            </form>
-                                        </div>
-
-                                        <!-- Modal footer -->
-                                        <div class="modal-footer"
-                                            style="background-color: #f1f1f1; border-bottom-left-radius: .375rem; border-bottom-right-radius: .375rem;">
-                                            <button type="button" class="btn btn-secondary shadow-sm"
-                                                ng-click="isGiaoHang = false"
-                                                style="border-radius: .375rem; padding: 10px 20px;">Đóng</button>
-                                            <button type="button" class="btn btn-primary shadow-sm"
-                                                style="border-radius: .375rem; padding: 10px 20px;">Xác nhận</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Modal form hiển thị khi isGiaoHang bật -->
-                            <div class="modal fade show-custom" ng-show="isGiaoHang" tabindex="-1"
-                                aria-labelledby="giaoHangModalLabel" aria-hidden="true"
-                                style="display:block; opacity:1;">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content shadow-lg border-0 rounded-4">
-                                        <div class="modal-header bg-dark text-white rounded-top">
-                                            <h5 class="modal-title" id="giaoHangModalLabel">Thông tin giao hàng</h5>
-                                            <button type="button" class="btn-close" aria-label="Close"
-                                                ng-click="closeModal()"></button>
-                                        </div>
-                                        <div class="modal-body p-4">
-                                            <form>
-                                                <!-- Nhập họ và tên -->
-                                                <div class="mb-4">
-                                                    <label for="hoTen" class="form-label fw-semibold">Họ và tên</label>
-                                                    <input type="text" class="form-control shadow-sm" id="hoTen"
-                                                        placeholder="Nhập họ và tên" required
-                                                        style="font-size: 1.1rem; border-radius: .375rem;">
-                                                </div>
-
-                                                <!-- Nhập số điện thoại -->
-                                                <div class="mb-4">
-                                                    <label for="soDienThoai" class="form-label fw-semibold">Số điện
-                                                        thoại</label>
-                                                    <input type="text" class="form-control shadow-sm" id="soDienThoai"
-                                                        placeholder="Nhập số điện thoại" required
-                                                        style="font-size: 1.1rem; border-radius: .375rem;">
-                                                </div>
-
-                                                <!-- Nhập email -->
-                                                <div class="mb-4">
-                                                    <label for="email" class="form-label fw-semibold">Email</label>
-                                                    <input type="email" class="form-control shadow-sm" id="email"
-                                                        placeholder="Nhập email"
-                                                        style="font-size: 1.1rem; border-radius: .375rem;">
-                                                </div>
-
-                                                <!-- Nhập địa chỉ -->
-                                                <div class="mb-4">
-                                                    <label for="diaChi" class="form-label fw-semibold">Địa chỉ</label>
-                                                    <input type="text" class="form-control shadow-sm" id="diaChi"
-                                                        placeholder="Nhập địa chỉ"
-                                                        style="font-size: 1.1rem; border-radius: .375rem;">
-                                                </div>
-
-                                                <!-- Chọn tỉnh, quận, phường -->
-                                                <div class="row mb-4">
-                                                    <div class="col-md-4">
-                                                        <label for="tinh" class="form-label fw-semibold">Tỉnh</label>
-                                                        <select class="form-select shadow-sm" id="tinh"
-                                                            ng-model="selectedProvince"
-                                                            ng-change="onProvinceChange(selectedProvince)" required
-                                                            style="font-size: 1.1rem; border-radius: .375rem;">
-                                                            <option value="" disabled selected>Chọn tỉnh</option>
-                                                            <option ng-repeat="province in provinces"
-                                                                value="{{province.province_id}}">
-                                                                {{province.province_name}}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label for="quan" class="form-label fw-semibold">Quận</label>
-                                                        <select class="form-select shadow-sm" id="quan"
-                                                            ng-model="selectedDistrict"
-                                                            ng-change="onDistrictChange(selectedDistrict)" required
-                                                            style="font-size: 1.1rem; border-radius: .375rem;">
-                                                            <option value="" disabled selected>Chọn quận</option>
-                                                            <option ng-repeat="district in districts"
-                                                                value="{{district.district_id}}">
-                                                                {{district.district_name}}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label for="phuong"
-                                                            class="form-label fw-semibold">Phường</label>
-                                                        <select class="form-select shadow-sm" id="phuong"
-                                                            ng-model="selectedWard" required
-                                                            style="font-size: 1.1rem; border-radius: .375rem;">
-                                                            <option value="" disabled selected>Chọn phường/xã</option>
-                                                            <option ng-repeat="ward in wards" value="{{ward.ward_id}}">
-                                                                {{ward.ward_name}}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Nhập ghi chú -->
-                                                <div class="mb-4">
-                                                    <label for="ghiChu" class="form-label fw-semibold">Ghi chú</label>
-                                                    <textarea class="form-control shadow-sm" id="ghiChu"
-                                                        placeholder="Ghi chú"
-                                                        style="font-size: 1.1rem; border-radius: .375rem;"></textarea>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" ng-click="closeModal()"
-                                                style="border-radius: .375rem; padding: 10px 20px;">Đóng</button>
-                                            <button type="button" class="btn btn-dark"
-                                                style="border-radius: .375rem; padding: 10px 20px;">Xác nhận</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Nút để mở modal -->
-
-                            <!-- Modal thanh toán -->
-                            <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content shadow-lg border-0 rounded-4">
-                                        <div class="modal-header bg-dark text-white rounded-top">
-                                            <h5 class="modal-title" id="paymentModalLabel">Thanh Toán</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body p-4">
-                                            <div class="mb-4" ng-show="selectedPhuongThucThanhToan !== 2">
-                                                <label for="customerPaid" class="form-label fw-semibold">
-                                                    <i class="fa-solid fa-hand-holding-dollar"></i> Tiền Khách Đưa
-                                                </label>
-                                                <input type="text" class="form-control shadow-sm"
-                                                    ng-model="tienKhachDua" ng-change="calculateChange()"
-                                                    placeholder="Nhập số tiền khách đưa"
-                                                    style="font-size: 1.1rem; border-radius: .375rem;">
-                                            </div>
-
-
-                                            <!-- Phương thức thanh toán -->
-                                            <div class="mb-4">
-                                                <label for="paymentMethod" class="form-label fw-semibold">
-                                                    <i class="fa-solid fa-credit-card"></i> Phương Thức Thanh Toán
-                                                </label>
-                                                <div id="paymentMethod" class="btn-group d-flex flex-wrap" role="group">
-                                                    <button type="button" class="btn"
-                                                        ng-class="{'btn-primary': selectedPhuongThucThanhToan === pt.id, 'btn-outline-primary': selectedPhuongThucThanhToan !== pt.id}"
-                                                        ng-repeat="pt in phuongThucThanhToan"
-                                                        ng-click="selectPhuongThucThanhToan(pt.id)">
-                                                        {{pt.tenPhuongThuc}}
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            <!-- Bảng giao dịch -->
-                                            <div class="mb-4">
-                                                <table class="table table-bordered table-striped table-hover">
-                                                    <thead class="table-light">
-                                                        <tr>
-                                                            <th>STT</th>
-                                                            <th>Mã Giao Dịch</th>
-                                                            <th>Số Tiền Thừa</th>
-                                                            <th>Phương Thức</th>
-                                                            <th>Hành Động</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="show-user">
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>GD1</td>
-                                                            <td>{{ tienThua | currency:'':0 }} VND</td>
-                                                            <td>{{ phuongThuc }}</td>
-                                                            <td>
-                                                                <button class="btn btn-danger" ng-click="xoaGiaoDich()">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-                                            <!-- Tổng kết thanh toán -->
-                                            <div>
-                                                <h5 class="fw-semibold">Tổng Kết Thanh Toán</h5>
-                                                <div class="mb-3">
-                                                    <label for="totalPrice" class="form-label fw-semibold">
-                                                        <i class="fa-solid fa-wallet"></i> Tổng Số Tiền cần Thanh Toán
-                                                    </label>
-                                                    <input type="text" class="form-control shadow-sm"
-                                                        ng-value="totalPrice" placeholder="0" readonly
-                                                        style="font-size: 1.1rem; background-color: #f8f9fa; border-radius: .375rem;">
-                                                </div>
-
-                                                <!-- Tiền thừa -->
-                                                <div class="mb-3" ng-show="selectedPhuongThucThanhToan !== 2">
-                                                    <label for="changeDue" class="form-label fw-semibold">
-                                                        <i class="fa-solid fa-money-bill-wave-alt"></i> Tiền Thừa
-                                                    </label>
-                                                    <input type="text" class="form-control shadow-sm"
-                                                        ng-model="tienThua" placeholder="0" readonly
-                                                        style="font-size: 1.1rem; background-color: #f8f9fa; border-radius: .375rem;">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Hủy</button>
-                                            <button type="button" class="btn btn-dark" data-bs-dismiss="modal"
-                                                ng-click="xacNhanThanhToan()">
-                                                Xác Nhận
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="mb-3" ng-if="!isCartEmpty">
-                                <!-- Chỉ hiển thị voucher khi giỏ hàng không rỗng -->
-                                <div class="voucher-info"
-                                    style="border-radius: 10px; padding: 20px; background-color: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); margin: 20px 0; transition: transform 0.2s;">
-                                    <div class="voucher-header"
-                                        style="display: flex; align-items: center; border-bottom: 2px solid #ff0000; padding-bottom: 10px; margin-bottom: 10px;">
-                                        <i class="fas fa-tags"
-                                            style="font-size: 1.5em; color: #ff0000; margin-right: 10px;"></i>
-                                        <h2 style="font-size: 1.5em; color: #333;">Voucher áp dụng: <strong>{{
-                                                selectedVoucher.maVoucher }}</strong></h2>
-                                    </div>
-                                    <div class="voucher-details"
-                                        style="background-color: #f9f9f9; border-radius: 5px; padding: 15px; border-left: 5px solid #ff0000;">
-                                        <p class="voucher-description" style="font-size: 1em; color: #666; margin: 0;">
-                                            {{ selectedVoucher.mo_ta }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <!-- <i class="fas fa-plus-circle ml-2" id="show-discount-modal" style="cursor:pointer;"
-                                        ng-click="openDiscountModal()"></i> -->
-
-
-                            <!-- Modal giảm giá -->
-                            <div class="modal fade" id="discountModal" tabindex="-1"
-                                aria-labelledby="discountModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="discountModalLabel">Nhập mã giảm giá</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p id="discount-description">Thông tin phiếu giảm giá:</p>
-                                            <input type="text" class="form-control" id="discount-code"
-                                                placeholder="Nhập mã giảm giá tại đây" />
-                                            <div class="text-danger" id="discount-error" style="display: none;">Mã
-                                                giảm giá không hợp lệ.</div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Đóng</button>
-                                            <button type="button" class="btn btn-primary" id="apply-discount"
-                                                onclick="applyDiscount()">Áp dụng</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
+                                </div> -->
                         </div>
 
-                        <!-- <div class="mb-3">
-                            <label for="customerPaid" class="form-label" style="font-weight: 600;">
-                                <i class="fa-solid fa-hand-holding-dollar"></i> Tiền khách đưa
-                            </label>
-                            <input type="text" class="form-control" ng-model="tienKhachDua"
-                                ng-change="calculateChange()" placeholder="0" style="font-size: 1rem;">
-                        </div> -->
+                        <!-- Nút để mở modal -->
+                        <!-- Modal thanh toán -->
+                        <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content"
+                                    style="border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden;">
 
-                        <!-- <div class="mb-3">
-                            <label for="changeDue" class="form-label" style="font-weight: 600;">
-                                <i class="fa-solid fa-money-bill-wave-alt"></i> Tiền thừa
-                            </label>
-                            <input type="text" class="form-control" ng-value="tienThua" placeholder="0" readonly
-                                style="font-size: 1rem;">
-                        </div> -->
+                                    <!-- Modal Header -->
+                                    <div class="modal-header"
+                                        style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white; padding: 20px; border-bottom: 1px solid #ddd;">
+                                        <h5 class="modal-title" id="paymentModalLabel"><i
+                                                class="fa-solid fa-credit-card"></i> Thanh Toán</h5>
+                                        <button type="button" class="btn-close text-white" data-bs-dismiss="modal"
+                                            aria-label="Close"
+                                            style="border: none; background: transparent; font-size: 1.25rem;"></button>
+                                    </div>
+
+                                    <!-- Modal Body -->
+                                    <div class="modal-body" style="padding: 25px; background-color: #f8f9fa;">
+
+                                        <!-- Tiền khách đưa -->
+                                        <div class="mb-4"
+                                            ng-show="selectedPhuongThucThanhToan !== 2 && selectedPhuongThucThanhToan !== 3">
+                                            <label for="customerPaid" class="form-label"
+                                                style="font-weight: 600; color: #333;">
+                                                <i class="fa-solid fa-hand-holding-dollar"></i> Tiền Khách Đưa
+                                            </label>
+                                            <input type="text" class="form-control" ng-model="tienKhachDua"
+                                                ng-change="calculateChange()" placeholder="Nhập số tiền khách đưa"
+                                                style="font-size: 1.1rem; border-radius: 8px; padding: 12px; border: 1px solid #ddd; transition: all 0.3s ease-in-out; background-color: #fff;">
+                                        </div>
+
+                                        <!-- Phương thức thanh toán -->
+                                        <div class="mb-4">
+                                            <label for="paymentMethod" class="form-label"
+                                                style="font-weight: 600; color: #333;">
+                                                <i class="fa-solid fa-credit-card"></i> Phương Thức Thanh Toán
+                                            </label>
+                                            <div id="paymentMethod" class="btn-group d-flex flex-wrap" role="group">
+                                                <button type="button" class="btn"
+                                                    ng-class="{'btn-primary': selectedPhuongThucThanhToan === pt.id, 'btn-outline-primary': selectedPhuongThucThanhToan !== pt.id}"
+                                                    ng-repeat="pt in phuongThucThanhToan"
+                                                    ng-click="selectPhuongThucThanhToan(pt.id)"
+                                                    style="font-size: 1rem; border-radius: 8px; padding: 10px 20px; margin: 5px; transition: all 0.3s ease;">
+                                                    {{pt.tenPhuongThuc}}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Bảng giao dịch -->
+                                        <div class="mb-4">
+                                            <table class="table" style="border-radius: 8px; border-collapse: collapse;">
+                                                <thead class="table-light" style="background-color: #f1f1f1;">
+                                                    <tr>
+                                                        <th style="padding: 10px; text-align: left;">STT</th>
+                                                        <th style="padding: 10px; text-align: left;">Mã Giao Dịch
+                                                        </th>
+                                                        <th style="padding: 10px; text-align: left;">Số Tiền Thừa
+                                                        </th>
+                                                        <th style="padding: 10px; text-align: left;">Phương Thức
+                                                        </th>
+                                                        <th style="padding: 10px; text-align: center;">Hành Động
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="show-user">
+                                                    <tr>
+                                                        <td style="padding: 10px;">1</td>
+                                                        <td style="padding: 10px;">GD1</td>
+                                                        <td style="padding: 10px;">{{tienThua | currency:'':0}} VND
+                                                        </td>
+                                                        <td style="padding: 10px;">{{phuongThuc}}</td>
+                                                        <td style="padding: 10px; text-align: center;">
+                                                            <button class="btn btn-danger" ng-click="xoaGiaoDich()"
+                                                                style="border-radius: 8px; padding: 8px 16px; font-size: 0.9rem; background-color: #dc3545; border: none; color: white;">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Tổng kết thanh toán -->
+                                        <div>
+                                            <h5 class="fw-semibold" style="font-weight: 600; color: #333;">Tổng Kết
+                                                Thanh Toán</h5>
+                                            <div class="mb-3">
+                                                <div class="total-price-info"
+                                                    style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                                                    <h3 style="font-size: 1.2em; color: #333;">
+                                                        <!-- Biểu tượng Font Awesome cho tổng tiền -->
+                                                        <i class="fa-solid fa-money-bill-wave"></i>
+                                                        Tổng tiền cần thanh toán:
+                                                        <span style="font-size: 1.5em; color: #ff0000;">
+                                                            {{ totalPrice | currency: '' : 0 }} VND
+                                                        </span>
+                                                    </h3>
+                                                </div>
+                                            </div>
+
+                                            <!-- Tiền thừa -->
+                                            <div class="mb-3"
+                                                ng-show="selectedPhuongThucThanhToan !== 2 && selectedPhuongThucThanhToan !== 3">
+                                                <label for="changeDue" class="form-label"
+                                                    style="font-weight: 600; color: #333;">
+                                                    <i class="fa-solid fa-money-bill-wave-alt"></i> Tiền Thừa
+                                                </label>
+                                                <input type="text" class="form-control" ng-model="tienThua"
+                                                    placeholder="0" readonly
+                                                    style="font-size: 1.1rem; background-color: #f8f9fa; border-radius: 8px; padding: 12px; border: 1px solid #ddd;">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal Footer -->
+                                    <div class="modal-footer"
+                                        style="padding: 20px; border-top: 1px solid #ddd; background-color: #f8f9fa;">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                            style="border-radius: 8px; padding: 10px 20px; background-color: #6c757d; color: white;">
+                                            Hủy
+                                        </button>
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                                            ng-click="xacNhanThanhToan()"
+                                            style="border-radius: 8px; padding: 10px 20px; background-color: #007bff; color: white;">
+                                            Xác Nhận
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" ng-if="selectedVoucher || !selectedVoucher">
+                            <div class="voucher-info"
+                                style="border-radius: 10px; padding: 20px; background-color: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); margin: 20px 0;">
+
+                                <div class="voucher-header"
+                                    style="display: flex; align-items: center; border-bottom: 2px solid #ff0000; padding-bottom: 10px; margin-bottom: 10px;">
+                                    <i class="fas fa-tags"
+                                        style="font-size: 1.5em; color: #ff0000; margin-right: 10px;"></i>
+                                    <h2 style="font-size: 1.5em; color: #333;">
+                                        Voucher áp dụng:
+                                        <strong>{{ selectedVoucher ? selectedVoucher.maVoucher : 'Chưa áp dụng
+                                            voucher' }}</strong>
+                                    </h2>
+                                </div>
+
+                                <div class="voucher-details"
+                                    style="background-color: #f9f9f9; border-radius: 5px; padding: 15px; border-left: 5px solid #ff0000;">
+                                    <p class="voucher-description" style="font-size: 1em; color: #666; margin: 0;">
+                                        {{ selectedVoucher ? selectedVoucher.mo_ta : 'Chưa có mô tả voucher' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Modal chọn voucher -->
+                        <div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content rounded-5 shadow-lg"
+                                    style="border: none; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);">
+                                    <div class="modal-header"
+                                        style="background: linear-gradient(to right, #00bcd4, #f32121); color: white;">
+                                        <h5 class="modal-title" id="voucherModalLabel"
+                                            style="font-weight: 700; font-size: 1.25rem;">Chọn hoặc Nhập Voucher
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Nhập mã giảm giá -->
+                                        <div class="mb-4">
+                                            <label for="voucherCodeInput" class="form-label"
+                                                style="font-weight: 600; color: #333;">Nhập mã giảm giá:</label>
+                                            <div class="input-group">
+                                                <input type="text" id="voucherCodeInput" class="form-control"
+                                                    style="border-radius: 12px; border: 1px solid #ccc; transition: border-color 0.3s ease, box-shadow 0.3s ease;"
+                                                    placeholder="Nhập mã giảm giá tại đây" ng-model="voucherCode" />
+                                            </div>
+                                            <div class="text-danger mt-2" ng-if="voucherError"
+                                                style="font-size: 0.875rem; color: #e74c3c;">{{ voucherError }}
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-4" style="border-top: 1px solid #ddd;" />
+
+                                        <div>
+                                            <h5 class="fw-semibold" style="font-size: 1.1rem; color: #333;">Danh
+                                                sách voucher khả dụng:</h5>
+                                            <div class="list-group">
+                                                <button type="button"
+                                                    class="list-group-item list-group-item-action p-4 mb-3 rounded-3"
+                                                    ng-repeat="voucher in availableVouchers"
+                                                    ng-click="selectVoucher(voucher)" ng-style="{
+                                                            'opacity': voucher.isUsable ? '1' : '0.5', 
+                                                            'pointer-events': voucher.isUsable ? 'auto' : 'none', 
+                                                            'cursor': voucher.isUsable ? 'pointer' : 'not-allowed'
+                                                        }">
+                                                    <div class="d-flex justify-content-between">
+                                                        <div>
+                                                            <strong class="text-dark" style="font-size: 1.1rem;">{{
+                                                                voucher.maVoucher }}</strong> - {{ voucher.mo_ta }}
+                                                        </div>
+                                                        <span class="badge" ng-style="{
+                                                                    'background': voucher.isUsable ? 'linear-gradient(to right, #28a745, #218838)' : '#e74c3c',
+                                                                    'color': 'white',
+                                                                    'font-size': '14px',
+                                                                    'font-weight': '600',
+                                                                    'border-radius': '15px',
+                                                                    'padding': '5px 10px'
+                                                                }">
+                                                            {{ voucher.trangThaiGiamGia.tenTrangThaiGiamGia }}
+                                                        </span>
+                                                    </div>
+                                                    <small class="text-muted d-block mt-2" style="color: #6c757d;">
+                                                        Trạng thái: {{ voucher.isUsable ? 'Có thể sử dụng' : 'Không
+                                                        thể sử dụng' }}
+                                                    </small>
+                                                    <div ng-if="voucher.isUsable"
+                                                        style="color: #28a745; font-weight: bold; font-size: 14px;">
+                                                        <i class="fas fa-check-circle"
+                                                            style="color: #28a745; margin-right: 5px;"></i>Có thể sử
+                                                        dụng
+                                                    </div>
+                                                    <div ng-if="!voucher.isUsable"
+                                                        style="color: #e74c3c; font-weight: bold; font-size: 14px;">
+                                                        <i class="fas fa-times-circle"
+                                                            style="color: #e74c3c; margin-right: 5px;"></i>Không thể
+                                                        sử dụng
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="modal-footer"
+                                    style="background-color: #f8f9fa; border-top: 1px solid #ddd; padding: 15px;">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                        style="font-weight: 600; color: #495057; border-color: #ccc;">Đóng</button>
+                                    <button type="button" class="btn" ng-click="confirmVoucher()"
+                                        style="background-color: #090b0d; color: white; font-weight: 600; padding: 12px 20px; border-radius: 25px;">
+                                        Xác nhận
+                                    </button>
+                                </div>                                
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="d-grid gap-2">
                             <button class="btn btn-dark"
                                 style="font-size: 1.1rem; padding: 10px 20px; border-radius: 5px;"
@@ -901,33 +881,52 @@
                 <!-- Modal Thêm Khách Hàng -->
                 <div id="addCustomerModal" ng-show="isAddCustomerModalOpen"
                     style="position: fixed; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+
+                    <!-- Modal Content -->
                     <div
-                        style="background-color: white; border-radius: 8px; padding: 30px; width: 400px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);">
-                        <h3 style="text-align: center; margin-bottom: 20px;">
+                        style="background-color: white; border-radius: 12px; padding: 30px; width: 400px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); transition: all 0.3s ease;">
+
+                        <!-- Title -->
+                        <h3 style="font-size: 1.5rem; text-align: center; margin-bottom: 20px; color: #333;">
                             <i class="fa-solid fa-user-plus"></i> Thêm nhanh Khách Hàng Mới
                         </h3>
+
+                        <!-- Customer Name -->
                         <div class="mb-3">
-                            <label for="newCustomerName" style="font-weight: bold;">Tên Khách Hàng:</label>
+                            <label for="newCustomerName" style="font-weight: 600; color: #555; font-size: 1rem;">
+                                Tên Khách Hàng:
+                            </label>
                             <input type="text" id="newCustomerName" ng-model="newCustomer.tenNguoiDung"
-                                style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;" />
+                                style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; transition: all 0.3s ease; background-color: #f8f9fa;">
                         </div>
+
+                        <!-- Customer Phone -->
                         <div class="mb-3">
-                            <label for="newCustomerPhone" style="font-weight: bold;">SĐT:</label>
+                            <label for="newCustomerPhone" style="font-weight: 600; color: #555; font-size: 1rem;">
+                                SĐT:
+                            </label>
                             <input type="text" id="newCustomerPhone" ng-model="newCustomer.sdtNguoiDung"
-                                style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px;" />
+                                style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #ddd; font-size: 1rem; transition: all 0.3s ease; background-color: #f8f9fa;">
                         </div>
-                        <div style="text-align: center;">
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; justify-content: center; gap: 15px;">
+                            <!-- Add Button -->
                             <button class="btn btn-success" ng-click="addCustomer()"
-                                style="padding: 10px 20px; border-radius: 5px; font-size: 16px; margin-right: 10px;">
+                                style="padding: 12px 20px; background-color: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 120px; transition: background-color 0.3s ease;">
                                 <i class="fa-solid fa-plus"></i> Thêm
                             </button>
+
+                            <!-- Close Button -->
                             <button class="btn btn-danger" ng-click="closeAddCustomerModal()"
-                                style="padding: 10px 20px; border-radius: 5px; font-size: 16px;">
+                                style="padding: 12px 20px; background-color: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 120px; transition: background-color 0.3s ease;">
                                 <i class="fa-solid fa-times"></i> Đóng
                             </button>
                         </div>
+
                     </div>
                 </div>
+
             </div>
 
         </div>

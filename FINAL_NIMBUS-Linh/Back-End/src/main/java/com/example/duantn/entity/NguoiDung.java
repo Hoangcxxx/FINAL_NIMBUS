@@ -27,7 +27,7 @@ public class NguoiDung {
     @Column(name = "Email")
     private String email;
 
-    @Column(name = "sdt_nguoi_dung", length = 15)
+    @Column(name = "sdt", length = 15)
     private String sdtNguoiDung;
 
     @Column(name = "Ngay_Sinh")

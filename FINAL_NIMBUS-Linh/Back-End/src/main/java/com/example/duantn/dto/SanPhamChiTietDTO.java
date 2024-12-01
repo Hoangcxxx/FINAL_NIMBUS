@@ -13,7 +13,7 @@ package com.example.duantn.dto;
     @AllArgsConstructor
     @NoArgsConstructor
 
-    public class SanPhamChiTietDTO {
+    public class  SanPhamChiTietDTO {
         private int idSanPhamChiTiet;
         private int soLuong;
         private String danhMuc;

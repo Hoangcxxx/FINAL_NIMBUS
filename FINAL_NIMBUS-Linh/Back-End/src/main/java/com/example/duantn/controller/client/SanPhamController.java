@@ -1,5 +1,6 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.entity.SanPham;
 import com.example.duantn.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,10 @@ import java.util.stream.Collectors;
 public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
+    @GetMapping("/all")
+    public List<SanPham> getSanPhamForBanHang() {
+        return sanPhamService.getSanPhamForBanHang();
+    }
 
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
