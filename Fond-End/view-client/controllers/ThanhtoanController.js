@@ -126,6 +126,10 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 localStorage.setItem("maHoaDon", response.data.maHoaDon);
                 $scope.cart = [];
                 $window.location.href = "/#!thanhcong?maHoaDon=" + response.data.maHoaDon;
+                // Gửi email xác nhận sau khi đặt hàng thành công
+                $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
+                    .then(response => console.log("Email đã được gửi thành công"))
+                    .catch(error => console.error("Lỗi khi gửi email:", error));
             })
             .catch(error => {
                 console.error("Order placement error:", error);

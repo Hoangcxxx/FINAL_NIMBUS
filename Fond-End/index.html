@@ -27,6 +27,7 @@
     <script src="view-client/controllers/ThongTinNguoiDungController.js"></script>
     <script src="view-client/controllers/ThanhCongController.js"></script>
     <script src="view-client/controllers/DonhangController.js"></script>
+    <script src="view-client/controllers/QuenMatKhauController.js"></script>
 </head>
 
 <body ng-app="myApp">
@@ -47,6 +48,10 @@
                 .when("/about", {
                     templateUrl: "view-client/views/about.html",
                     controller: AboutController
+                })
+                .when("/quenmatkhau", {
+                    templateUrl: "view-client/views/QuenMatKhau.html",
+                    controller: QuenMatKhauController
                 })
                 .when("/register", {
                     templateUrl: "view-client/views/register.html",
@@ -200,6 +205,8 @@
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <!-- Thêm SweetAlert CDN vào trong phần head của file HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="lib/bootstrap.js"></script>
     <!-- Nội dung HTML khác -->
     <script src="view-client/assets/javascript/script.js"></script>

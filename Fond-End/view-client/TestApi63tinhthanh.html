@@ -2,227 +2,262 @@
 <html lang="vi">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Địa chỉ</title>
-    <link rel="stylesheet">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Địa chỉ</title>
+  <link rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
 
-        .form-container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    .form-container {
+      max-width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
 
-        label {
-            margin-bottom: 5px;
-        }
+    label {
+      margin-bottom: 5px;
+    }
 
-        select,
-        button {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
+    select,
+    input,
+    button {
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
 
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
 
-        button:hover {
-            background-color: #45a049;
-        }
+    button:hover {
+      background-color: #45a049;
+    }
 
-        select:disabled {
-            background-color: #e0e0e0;
-        }
+    select:disabled {
+      background-color: #e0e0e0;
+    }
 
-        .notification {
-            padding: 10px;
-            margin-top: 20px;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 5px;
-            display: none;
-            text-align: center;
-        }
-    </style>
+    .notification {
+      padding: 10px;
+      margin-top: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      display: none;
+      text-align: center;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
 
-    <div class="form-container">
-        <h2>Chọn Địa chỉ</h2>
+  <div class="form-container">
+    <h2>Chọn Địa chỉ</h2>
 
-        <form id="location-form">
-            <label for="city">Chọn Tỉnh/Thành phố:</label>
-            <select id="city" name="city" required>
-                <option value="">--Chọn Tỉnh/Thành phố--</option>
-            </select>
+    <form id="location-form">
+      <label for="city">Chọn Tỉnh:</label>
+      <select id="city" name="city">
+        <option value="">Chọn tỉnh</option>
+        <!-- Các tỉnh sẽ được điền vào đây -->
+      </select>
 
-            <label for="district">Chọn Huyện:</label>
-            <select id="district" name="district" required disabled>
-                <option value="">--Chọn Huyện--</option>
-            </select>
+      <label for="district">Chọn Huyện:</label>
+      <select id="district" name="district" disabled>
+        <option value="">Chọn huyện</option>
+        <!-- Các huyện sẽ được điền vào đây -->
+      </select>
 
-            <label for="ward">Chọn Xã/Phường:</label>
-            <select id="ward" name="ward" required disabled>
-                <option value="">--Chọn Xã/Phường--</option>
-            </select>
+      <label for="ward">Chọn Xã:</label>
+      <select id="ward" name="ward" disabled>
+        <option value="">Chọn xã/phường</option>
+        <!-- Các xã/phường sẽ được điền vào đây -->
+      </select>
 
-            <input type="hidden" id="userId" value="7"> <!-- Giả sử userId là 1 -->
+      <label for="shipping-fee">Phí Vận Chuyển:</label>
+      <input type="text" id="shipping-fee" name="shipping-fee" disabled placeholder="Phí vận chuyển sẽ hiển thị ở đây">
 
-            <button type="submit">Lưu Địa Chỉ</button>
-        </form>
+      <button type="submit">Lưu Địa Chỉ</button>
+    </form>
 
-        <!-- Thông báo thành công -->
-        <div class="notification" id="success-notification">
-            Địa chỉ đã được lưu thành công!
-        </div>
+    <!-- Thông báo thành công -->
+    <div class="notification" id="success-notification">
+      Địa chỉ đã được lưu thành công!
     </div>
 
-    <script>
-        // Lấy các phần tử HTML
-        const citySelect = document.getElementById("city");
-        const districtSelect = document.getElementById("district");
-        const wardSelect = document.getElementById("ward");
-        const form = document.getElementById("location-form");
-        const successNotification = document.getElementById("success-notification");
-
-        // Hàm gọi API lấy danh sách tỉnh thành
-        function getCities() {
-            fetch("http://127.0.0.1:8080/api/nguoi_dung/test/cities")
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(city => {
-                        const option = document.createElement("option");
-                        option.value = city.code;
-                        option.textContent = city.name;
-                        citySelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Có lỗi xảy ra khi lấy tỉnh thành:', error));
-        }
-
-
-        // Hàm gọi API lấy danh sách huyện theo mã tỉnh
-        function getDistricts(cityCode) {
-            fetch(`http://127.0.0.1:8080/api/nguoi_dung/test/districts/${cityCode}`)
-                .then(response => response.json())
-                .then(data => {
-                    districtSelect.innerHTML = '<option value="">--Chọn Huyện--</option>'; // Reset
-                    data.forEach(district => {
-                        const option = document.createElement("option");
-                        option.value = district.code;
-                        option.textContent = district.name;
-                        districtSelect.appendChild(option);
-                    });
-                    districtSelect.disabled = false;
-                })
-                .catch(error => console.error('Có lỗi xảy ra khi lấy huyện:', error));
-        }
-
-        // Hàm gọi API lấy danh sách xã theo mã huyện
-        function getWards(districtCode) {
-            fetch(`http://127.0.0.1:8080/api/nguoi_dung/test/wards/${districtCode}`)
-                .then(response => response.json())
-                .then(data => {
-                    wardSelect.innerHTML = '<option value="">--Chọn Xã/Phường--</option>'; // Reset
-                    data.forEach(ward => {
-                        const option = document.createElement("option");
-                        option.value = ward.code;
-                        option.textContent = ward.name;
-                        wardSelect.appendChild(option);
-                    });
-                    wardSelect.disabled = false;
-                })
-                .catch(error => console.error('Có lỗi xảy ra khi lấy xã:', error));
-        }
-
-        // Hàm lưu địa chỉ vào cơ sở dữ liệu
-        // Hàm lưu địa chỉ vào cơ sở dữ liệu
-        function saveLocationToDB(userId, cityCode, districtCode, wardCode) {
-            const url = `http://127.0.0.1:8080/api/nguoi_dung/test/save-location?userId=${userId}&cityCode=${cityCode}&districtCode=${districtCode}&wardCode=${wardCode}`;
-            fetch(url, {
-                method: "POST",
-            })
-                .then(response => response.text())  // Dùng .text() để lấy phản hồi dưới dạng văn bản
-                .then(data => {
-                    try {
-                        // Kiểm tra xem phản hồi có phải là JSON không
-                        const jsonData = JSON.parse(data);  // Cố gắng parse nếu có thể
-                        alert(jsonData.message || "Địa chỉ đã được lưu thành công.");
-                    } catch (error) {
-                        // Nếu không phải JSON, hiển thị thông báo lỗi trả về từ server
-                        alert(data); // Đây là thông báo lỗi từ server
-                    }
-                })
-                .catch(error => console.error('Có lỗi xảy ra khi lưu địa chỉ:', error));
-        }
-
-
-        // Gọi API lấy danh sách tỉnh thành khi trang được tải
-        getCities();
-
-        // Lắng nghe sự kiện thay đổi Tỉnh/Thành phố
-        citySelect.addEventListener("change", function () {
-            const cityCode = citySelect.value;
-            if (cityCode) {
-                getDistricts(cityCode);
-            } else {
-                districtSelect.disabled = true;
-                wardSelect.disabled = true;
+    <!-- Thông báo lỗi -->
+    <div class="error" id="error-notification">
+      Đã xảy ra lỗi khi lấy dữ liệu. Vui lòng thử lại sau.
+    </div>
+  </div>
+  <script>
+    // Lấy các phần tử HTML
+    const citySelect = document.getElementById("city");
+    const districtSelect = document.getElementById("district");
+    const wardSelect = document.getElementById("ward");
+    const shippingFeeInput = document.getElementById("shipping-fee");
+    const form = document.getElementById("location-form");
+    const successNotification = document.getElementById("success-notification");
+    const errorNotification = document.getElementById("error-notification");
+  
+    // Hàm tính phí vận chuyển
+    function getShippingFee(districtCode, wardCode) {
+      if (districtCode && wardCode) {
+        fetch('http://localhost:8080/api/nguoi_dung/test/calculate-fee?&toDistrictId=' + districtCode + '&toWardCode=' + wardCode)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('API trả về lỗi: ' + response.statusText);
             }
+            return response.json();
+          })
+          .then(data => {
+            // Xử lý dữ liệu trả về từ backend, ví dụ hiển thị phí vận chuyển
+            shippingFeeInput.value = data.shippingFee || 'Không có dữ liệu phí';
+          })
+          .catch(error => {
+            console.error('Có lỗi xảy ra khi tính phí vận chuyển:', error);
+            alert('Có lỗi xảy ra, vui lòng thử lại!');
+          });
+      } else {
+        shippingFeeInput.value = ''; // Nếu chưa chọn đủ thông tin, xóa phí vận chuyển
+      }
+    }
+  
+    // Lắng nghe sự kiện khi thay đổi tỉnh thành
+    citySelect.addEventListener("change", function () {
+      const cityCode = citySelect.value;
+      if (cityCode) {
+        getDistricts(cityCode);
+        // Không tính phí vận chuyển ở cấp tỉnh, chỉ khi có huyện và xã
+        shippingFeeInput.value = ''; // Xóa phí vận chuyển
+      } else {
+        districtSelect.disabled = true;
+        wardSelect.disabled = true;
+        shippingFeeInput.value = ''; // Xóa phí vận chuyển
+      }
+    });
+  
+    // Lắng nghe sự kiện khi thay đổi huyện
+    districtSelect.addEventListener("change", function () {
+      const districtCode = districtSelect.value;
+      if (districtCode) {
+        getWards(districtCode);
+        // Tính phí vận chuyển khi chọn huyện và xã
+        getShippingFee(districtCode, wardSelect.value);
+      } else {
+        wardSelect.disabled = true;
+        shippingFeeInput.value = ''; // Xóa phí vận chuyển
+      }
+    });
+  
+    // Lắng nghe sự kiện khi thay đổi xã
+    wardSelect.addEventListener("change", function () {
+      const wardCode = wardSelect.value;
+      // Tính phí vận chuyển chỉ khi đã chọn xã và huyện
+      getShippingFee(districtSelect.value, wardCode);
+    });
+  
+    // Hàm gọi API lấy danh sách tỉnh thành
+    function getCities() {
+      fetch("http://127.0.0.1:8080/api/nguoi_dung/test/cities")
+        .then(response => response.json())
+        .then(data => {
+          data.forEach(city => {
+            const option = document.createElement("option");
+            option.value = city.code;
+            option.textContent = city.name;
+            citySelect.appendChild(option);
+          });
+        })
+        .catch(error => {
+          console.error('Có lỗi xảy ra khi lấy tỉnh thành:', error);
+          errorNotification.style.display = "block";
         });
-
-        // Lắng nghe sự kiện thay đổi Huyện
-        districtSelect.addEventListener("change", function () {
-            const districtCode = districtSelect.value;
-            if (districtCode) {
-                getWards(districtCode);
-            } else {
-                wardSelect.disabled = true;
-            }
+    }
+  
+    // Hàm gọi API lấy danh sách huyện theo mã tỉnh
+    function getDistricts(cityCode) {
+      fetch(`http://127.0.0.1:8080/api/nguoi_dung/test/districts/${cityCode}`)
+        .then(response => response.json())
+        .then(data => {
+          districtSelect.innerHTML = '<option value="">--Chọn Huyện--</option>'; // Reset
+          data.forEach(district => {
+            const option = document.createElement("option");
+            option.value = district.code;
+            option.textContent = district.name;
+            districtSelect.appendChild(option);
+          });
+          districtSelect.disabled = false;
+        })
+        .catch(error => {
+          console.error('Có lỗi xảy ra khi lấy huyện:', error);
+          errorNotification.style.display = "block";
         });
-
-        // Lắng nghe sự kiện submit form
-        form.addEventListener("submit", function (event) {
-            event.preventDefault(); // Ngừng hành động mặc định của form
-            const userId = document.getElementById("userId").value;
-            const cityCode = citySelect.value;
-            const districtCode = districtSelect.value;
-            const wardCode = wardSelect.value;
-
-            if (cityCode && districtCode && wardCode) {
-                saveLocationToDB(userId, cityCode, districtCode, wardCode);
-            } else {
-                alert("Vui lòng chọn đầy đủ địa chỉ.");
-            }
+    }
+  
+    // Hàm gọi API lấy danh sách xã theo mã huyện
+    function getWards(districtCode) {
+      fetch(`http://127.0.0.1:8080/api/nguoi_dung/test/wards/${districtCode}`)
+        .then(response => response.json())
+        .then(data => {
+          wardSelect.innerHTML = '<option value="">--Chọn Xã/Phường--</option>'; // Reset
+          data.forEach(ward => {
+            const option = document.createElement("option");
+            option.value = ward.code;
+            option.textContent = ward.name;
+            wardSelect.appendChild(option);
+          });
+          wardSelect.disabled = false;
+        })
+        .catch(error => {
+          console.error('Có lỗi xảy ra khi lấy xã/phường:', error);
+          errorNotification.style.display = "block";
         });
-    </script>
+    }
+  
+    // Lắng nghe sự kiện submit form
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+  
+      successNotification.style.display = "block";
+      setTimeout(() => {
+        successNotification.style.display = "none";
+      }, 3000); // Ẩn thông báo thành công sau 3 giây
+    });
+  
+    // Khởi tạo danh sách tỉnh thành
+    getCities();
+  </script>
+  
 </body>
 
 </html>

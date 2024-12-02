@@ -34,9 +34,9 @@ public class PaymentController {
                 "<p>If you are not redirected, <a href='" + paymentUrl + "'>click here</a>.</p></body></html>");
     }
 
-    @RequestMapping("/vnpay_return")
+    @GetMapping("/vnpay_return")
     public void vnpayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String redirectUrl = paymentService.handleVnpayReturn(request,response);
+        String redirectUrl = paymentService.handleVnpayReturn(request);
         response.sendRedirect(redirectUrl);
     }
 }

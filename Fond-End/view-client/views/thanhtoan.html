@@ -41,33 +41,32 @@
                     <div class="col-md-4 mb-3">
                         <label for="province" class="form-label">Tỉnh thành <span class="text-danger">*</span></label>
                         <select class="form-select" id="province" ng-model="shippingInfo.province"
-                                ng-options="province.code as province.name for province in dsTinh"
-                                ng-change="getDistricts(shippingInfo.province)" required>
+                            ng-options="province.code as province.name for province in dsTinh"
+                            ng-change="getDistricts(shippingInfo.province)" required>
                             <option value="" disabled selected>Chọn tỉnh thành</option>
                         </select>
                     </div>
-                
+
                     <!-- Dropdown Quận huyện -->
                     <div class="col-md-4 mb-3">
                         <label for="district" class="form-label">Quận huyện</label>
                         <select class="form-select" id="district" ng-model="shippingInfo.district"
-                                ng-options="district.code as district.name for district in dsHuyen"
-                                ng-disabled="!shippingInfo.province" ng-change="getWards(shippingInfo.district)">
+                            ng-options="district.code as district.name for district in dsHuyen"
+                            ng-disabled="!shippingInfo.province" ng-change="getWards(shippingInfo.district)">
                             <option value="" disabled selected>Chọn quận huyện</option>
                         </select>
                     </div>
-                
+
                     <!-- Dropdown Phường xã -->
                     <div class="col-md-4 mb-3">
                         <label for="ward" class="form-label">Phường xã</label>
                         <select class="form-select" id="ward" ng-model="shippingInfo.ward"
-                                ng-options="ward.code as ward.name for ward in dsXa"
-                                ng-disabled="!shippingInfo.district">
+                            ng-options="ward.code as ward.name for ward in dsXa" ng-disabled="!shippingInfo.district">
                             <option value="" disabled selected>Chọn phường xã</option>
                         </select>
                     </div>
                 </div>
-                          
+
                 <div class="mb-3">
                     <label for="note" class="form-label">Ghi chú</label>
                     <textarea class="form-control" id="note" ng-model="shippingInfo.note" rows="2"
@@ -121,6 +120,12 @@
                     </div>
                 </div>
                 <hr>
+                <!-- Button to trigger the modal -->
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                    data-bs-target="#addressModal">
+                    Chọn địa chỉ
+                </button>
+
 
                 <!-- Promo Code -->
                 <div class="mb-3">

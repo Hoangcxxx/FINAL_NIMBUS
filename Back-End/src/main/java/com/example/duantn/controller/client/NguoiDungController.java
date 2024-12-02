@@ -2,6 +2,7 @@ package com.example.duantn.controller.client;
 
 import com.example.duantn.dto.LoginRequest;
 import com.example.duantn.entity.NguoiDung;
+import com.example.duantn.repository.NguoiDungRepository;
 import com.example.duantn.service.DangNhapService;
 import com.example.duantn.service.NguoiDungService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/nguoi_dung")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
@@ -20,6 +25,9 @@ public class NguoiDungController {
     private DangNhapService dangNhapService;
     @Autowired
     private NguoiDungService nguoiDungService;
+    @Autowired
+    private NguoiDungRepository nguoiDungRepository;
+
 
     // Phương thức đăng ký
     @PostMapping("/dang_ky")
@@ -72,6 +80,7 @@ public class NguoiDungController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đăng xuất thất bại");
         }
     }
+
     // Lấy thông tin người dùng theo id
     @GetMapping("/{id}")
     public ResponseEntity<NguoiDung> getNguoiDungById(@PathVariable Integer id) {
@@ -93,5 +102,40 @@ public class NguoiDungController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+    // Phương thức quên mật khẩu
+    @PostMapping("/quen_mat_khau")
+    public ResponseEntity<?> quenMatKhau(@RequestParam String email) {
+        try {
+            String message = dangNhapService.quenMatKhau(email);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tìm thấy tài khoản với email đã cung cấp");
+        }
+    }
+
+    // Phương thức xác nhận mã khôi phục
+    @PostMapping("/xac-nhan-ma-khoi-phuc")
+    public ResponseEntity<String> xacNhanMaKhôiPhuc(@RequestParam String makhophuc) {
+        try {
+            String response = dangNhapService.xacnhandoimatkhau(makhophuc);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    // Phương thức đổi mật khẩu mới
+    @PostMapping("/doi-mat-khau")
+    public ResponseEntity<String> doiMatKhau(@RequestParam String email, @RequestParam String matKhauMoi) {
+        try {
+            String response = dangNhapService.doiMatKhau(email, matKhauMoi);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 }
+
+
+

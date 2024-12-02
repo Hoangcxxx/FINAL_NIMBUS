@@ -158,6 +158,7 @@ public class HoaDonService {
                     .getPhuongThucThanhToan()
                     .getTenPhuongThuc());
         }
+
         // Danh sách sản phẩm chi tiết
         List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon_IdHoaDon(hoaDon.getIdHoaDon());
         dto.setListSanPhamChiTiet(chiTietList.stream()

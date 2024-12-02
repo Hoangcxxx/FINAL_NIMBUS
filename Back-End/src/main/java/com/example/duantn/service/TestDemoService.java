@@ -2,14 +2,15 @@ package com.example.duantn.service;
 
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class TestDemoService {
 
@@ -19,6 +20,10 @@ public class TestDemoService {
     private final TinhRepository tinhRepository;
     private final HuyenRepository huyenRepository;
     private final XaRepository xaRepository;
+
+    private static final String GHN_API_BASE_URL = "https://online-gateway.ghn.vn/shiip/public-api/v2";
+    private static final String TOKEN = "347f8e0e-981c-11ef-a905-420459bb4727";
+    private static final String SHOP_ID = "5427817";
 
     public TestDemoService(RestTemplate restTemplate, DiaChiVanChuyenRepository diaChiVanChuyenRepository,
                            NguoiDungRepository nguoiDungRepository, TinhRepository tinhRepository,
@@ -31,70 +36,97 @@ public class TestDemoService {
         this.xaRepository = xaRepository;
     }
 
-    // Cấu hình headers cho các yêu cầu API
-    private HttpHeaders prepareHeaders() {
+    // Tạo headers
+    private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Token", "347f8e0e-981c-11ef-a905-420459bb4727");
-        headers.set("shop_id", "5427817");  // Mã shop của bạn
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Token", TOKEN);
+        headers.set("ShopId", SHOP_ID);
         return headers;
     }
 
-    // 1. Lấy danh sách các phương thức vận chuyển khả dụng
-    public List<Map<String, Object>> getShippingServices() {
-        String url = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services";
-        HttpHeaders headers = prepareHeaders();
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
-        return response.getBody();
+    public Map<String, Object> calculateShippingFee(
+            int toDistrictId,
+            String toWardCode
+    ) {
+        String url = GHN_API_BASE_URL + "/shipping-order/fee";
+
+        // Giá trị cố định
+        int serviceId = 53321;
+        int fromDistrictId = 1452; // Set cứng giá trị fromDistrictId, ví dụ là 1452
+
+        // Tạo request body
+        Map<String, Object> requestBody = Map.of(
+                "service_id", serviceId,
+                "from_district_id", fromDistrictId,
+                "to_district_id", toDistrictId,
+                "to_ward_code", toWardCode,
+                "height", 20,
+                "length", 30,
+                "weight", 1000,
+                "width", 15
+        );
+
+        HttpHeaders headers = createHeaders();
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return response.getBody();
+            } else {
+                log.error("Không thể tính phí ship, mã lỗi: {}", response.getStatusCode());
+                throw new RuntimeException("Không thể tính phí ship: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            log.error("Lỗi khi gọi API tính phí ship: {}", e.getMessage());
+            throw new RuntimeException("Lỗi khi gọi API tính phí ship", e);
+        }
     }
 
+    // Lấy danh sách các dịch vụ vận chuyển có sẵn
+    public Map<String, Object> getAvailableServices(int fromDistrictId, int toDistrictId) {
+        String url = GHN_API_BASE_URL + "/shipping-order/available-services";
 
-    // Tính phí vận chuyển
-    public Map<String, Object> calculateShippingFee(Integer service_id, Integer districtId, Integer wardId, Integer weight) {
-        String url = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+        Map<String, Object> requestBody = Map.of(
+                "shop_id", Integer.parseInt(SHOP_ID),
+                "from_district", fromDistrictId,
+                "to_district", toDistrictId
+        );
 
-        // Tạo đối tượng request body
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("service_id", service_id);  // Mã dịch vụ
-        requestBody.put("from_district", 1001);  // Mã quận, huyện nơi gửi (tùy chỉnh)
-        requestBody.put("to_district", districtId);  // Mã quận, huyện nơi nhận, trường này cần phải có
-        requestBody.put("to_ward", wardId);  // Mã xã, phường nơi nhận
-        requestBody.put("weight", weight);  // Trọng lượng sản phẩm (gram)
-        requestBody.put("length", 10);  // Chiều dài (cm)
-        requestBody.put("width", 10);  // Chiều rộng (cm)
-        requestBody.put("height", 10);  // Chiều cao (cm)
-
-
-        HttpHeaders headers = prepareHeaders();
+        HttpHeaders headers = createHeaders();
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
-        return response.getBody();
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody(); // Trả về danh sách dịch vụ
+        } else {
+            throw new RuntimeException("Không thể lấy danh sách dịch vụ: " + response.getStatusCode());
+        }
     }
 
-
-    // 1. Hiển thị danh sách Tỉnh
+    // Lấy danh sách các tỉnh từ Open API
     public List<Map<String, Object>> getCities() {
         String url = "https://provinces.open-api.vn/api/?depth=1";
         return restTemplate.getForObject(url, List.class);
     }
 
-    // 2. Hiển thị danh sách Huyện dựa trên Tỉnh
+    // Lấy danh sách các quận của tỉnh từ Open API
     public List<Map<String, Object>> getDistricts(String cityCode) {
         String url = "https://provinces.open-api.vn/api/p/" + cityCode + "?depth=2";
         Map<String, Object> cityDetails = restTemplate.getForObject(url, Map.class);
         return (List<Map<String, Object>>) cityDetails.get("districts");
     }
 
-    // 3. Hiển thị danh sách Xã dựa trên Huyện
+    // Lấy danh sách các xã từ Open API
     public List<Map<String, Object>> getWards(String districtCode) {
         String url = "https://provinces.open-api.vn/api/d/" + districtCode + "?depth=2";
         Map<String, Object> districtDetails = restTemplate.getForObject(url, Map.class);
         return (List<Map<String, Object>>) districtDetails.get("wards");
     }
 
-    // 4. Lưu dữ liệu vào DB
+    // Lưu dữ liệu vào DB
     public void saveCityDistrictWardToDB(Integer userId, String cityCode, String districtCode, String wardCode) {
         if (userId == null) {
             throw new IllegalArgumentException("UserId must not be null");
@@ -131,7 +163,7 @@ public class TestDemoService {
         diaChiVanChuyenRepository.save(diaChi);
     }
 
-    // Lấy thông tin Tỉnh từ API
+    // Lấy thông tin Tỉnh từ Open API
     private Tinh fetchCityInfo(String cityCode) {
         String url = "https://provinces.open-api.vn/api/p/" + cityCode;
         Map<String, Object> cityData = restTemplate.getForObject(url, Map.class);
@@ -145,7 +177,7 @@ public class TestDemoService {
         throw new RuntimeException("Không thể lấy dữ liệu tỉnh từ API");
     }
 
-    // Lấy thông tin Huyện từ API
+    // Lấy thông tin Huyện từ Open API
     private Huyen fetchDistrictInfo(String districtCode) {
         String url = "https://provinces.open-api.vn/api/d/" + districtCode;
         Map<String, Object> districtData = restTemplate.getForObject(url, Map.class);
@@ -159,7 +191,7 @@ public class TestDemoService {
         throw new RuntimeException("Không thể lấy dữ liệu huyện từ API");
     }
 
-    // Lấy thông tin Xã từ API
+    // Lấy thông tin Xã từ Open API
     private Xa fetchWardInfo(String wardCode) {
         String url = "https://provinces.open-api.vn/api/w/" + wardCode;
         Map<String, Object> wardData = restTemplate.getForObject(url, Map.class);
@@ -172,8 +204,4 @@ public class TestDemoService {
         }
         throw new RuntimeException("Không thể lấy dữ liệu xã từ API");
     }
-
-
-
-
 }

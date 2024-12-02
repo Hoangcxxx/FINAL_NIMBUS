@@ -1,106 +1,127 @@
 package com.example.duantn.controller.client;
 
 import com.example.duantn.service.TestDemoService;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/test/")
-@CrossOrigin(origins = "http://127.0.0.1:5500") // Đảm bảo frontend có thể gọi được API từ domain này
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class LocationController {
+
+    private final TestDemoService testDemoService;
+
     @Autowired
-    private final TestDemoService testDemoSevice;
-
-
-    public LocationController(TestDemoService testDemoSevice) {
-        this.testDemoSevice = testDemoSevice;
+    public LocationController(TestDemoService testDemoService) {
+        this.testDemoService = testDemoService;
     }
 
-    // API để lấy danh sách tỉnh thành
+    // Lấy danh sách tỉnh thành
     @GetMapping("/cities")
     public ResponseEntity<?> getCities() {
         try {
-            return ResponseEntity.ok(testDemoSevice.getCities());  // Trả về danh sách tỉnh/thành phố
+            List<Map<String, Object>> cities = testDemoService.getCities();
+            if (cities.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy tỉnh thành");
+            }
+            return ResponseEntity.ok(cities);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Có lỗi khi lấy tỉnh thành");
+            return handleError("Có lỗi khi lấy danh sách tỉnh thành", e);
         }
     }
 
-
-    // API để lấy danh sách huyện theo mã tỉnh
+    // Lấy danh sách huyện theo mã tỉnh
     @GetMapping("/districts/{cityCode}")
     public ResponseEntity<?> getDistricts(@PathVariable String cityCode) {
         try {
-            return ResponseEntity.ok(testDemoSevice.getDistricts(cityCode)); // Trả về danh sách huyện của tỉnh
+            List<Map<String, Object>> districts = testDemoService.getDistricts(cityCode);
+            if (districts.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy huyện");
+            }
+            return ResponseEntity.ok(districts);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Có lỗi khi lấy huyện");
+            return handleError("Có lỗi khi lấy danh sách huyện", e);
         }
     }
 
-    // API để lấy danh sách xã theo mã huyện
+    // Lấy danh sách xã theo mã huyện
     @GetMapping("/wards/{districtCode}")
     public ResponseEntity<?> getWards(@PathVariable String districtCode) {
         try {
-            return ResponseEntity.ok(testDemoSevice.getWards(districtCode)); // Trả về danh sách xã của huyện
+            List<Map<String, Object>> wards = testDemoService.getWards(districtCode);
+            if (wards.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy xã");
+            }
+            return ResponseEntity.ok(wards);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Có lỗi khi lấy xã");
+            return handleError("Có lỗi khi lấy danh sách xã", e);
         }
     }
 
+    // Lưu địa chỉ vào DB
     @PostMapping("/save-location")
-    public ResponseEntity<String> saveLocationToDB(
+    public ResponseEntity<?> saveLocationToDB(
             @RequestParam Integer userId,
             @RequestParam String cityCode,
             @RequestParam String districtCode,
             @RequestParam String wardCode) {
         try {
-            // Gọi service để lưu tỉnh, huyện, xã vào DB
-            testDemoSevice.saveCityDistrictWardToDB(userId, cityCode, districtCode, wardCode);
+            if (userId == null || userId <= 0 || cityCode == null || districtCode == null || wardCode == null) {
+                return ResponseEntity.badRequest().body("Các tham số không hợp lệ");
+            }
+            testDemoService.saveCityDistrictWardToDB(userId, cityCode, districtCode, wardCode);
             return ResponseEntity.ok("Lưu địa chỉ thành công");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Lỗi hợp lệ: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body("Có lỗi khi lưu địa chỉ");
+            return handleError("Có lỗi khi lưu địa chỉ", e);
         }
     }
 
-
-    // API lấy danh sách các phương thức vận chuyển khả dụng
-    @GetMapping("/available-services")
-    public ResponseEntity<List<Map<String, Object>>> getShippingServices() {
+    // Tính phí ship
+    @GetMapping("/calculate-fee")
+    public ResponseEntity<?> calculateShippingFee(
+            @RequestParam int toDistrictId,
+            @RequestParam String toWardCode) {
         try {
-            List<Map<String, Object>> services = testDemoSevice.getShippingServices();
+            Map<String, Object> fee = testDemoService.calculateShippingFee(toDistrictId, toWardCode);
+            if (fee == null || fee.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không thể tính phí vận chuyển");
+            }
+            return ResponseEntity.ok(fee);
+        } catch (Exception e) {
+            return handleError("Có lỗi khi tính phí vận chuyển", e);
+        }
+    }
+
+    // Lấy danh sách dịch vụ vận chuyển khả dụng
+    @GetMapping("/available-services")
+    public ResponseEntity<?> getAvailableServices(
+            @RequestParam int fromDistrictId,
+            @RequestParam int toDistrictId) {
+        try {
+            Map<String, Object> services = testDemoService.getAvailableServices(fromDistrictId, toDistrictId);
+            if (services == null || services.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không có dịch vụ vận chuyển khả dụng");
+            }
             return ResponseEntity.ok(services);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
+            return handleError("Có lỗi khi lấy dịch vụ vận chuyển", e);
         }
     }
 
-    // API tính phí vận chuyển
-    @PostMapping("/fee")
-    public ResponseEntity<Map<String, Object>> calculateShippingFee(
-            @RequestParam Integer service_id,
-            @RequestParam Integer districtId,  // Truyền mã quận huyện
-            @RequestParam Integer wardId,
-            @RequestParam Integer weight) {
-
-        try {
-            Map<String, Object> feeDetails = testDemoSevice.calculateShippingFee(service_id, districtId, wardId, weight);
-            return ResponseEntity.ok(feeDetails);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
-        }
+    // Xử lý lỗi và trả về phản hồi lỗi
+    private ResponseEntity<?> handleError(String message, Exception e) {
+        e.printStackTrace();
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", message);
+        response.put("details", e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
-
-
-
 }

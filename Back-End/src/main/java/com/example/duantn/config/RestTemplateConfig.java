@@ -1,5 +1,6 @@
 package com.example.duantn.config;
 
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -14,6 +15,11 @@ public class RestTemplateConfig {
         factory.setConnectTimeout(5000); // Timeout kết nối
         factory.setReadTimeout(5000);    // Timeout đọc
         return new RestTemplate(factory);
+    }
+
+    @Bean
+    public RestTemplateBuilder restTemplateBuilder() {
+        return new RestTemplateBuilder();
     }
 
 

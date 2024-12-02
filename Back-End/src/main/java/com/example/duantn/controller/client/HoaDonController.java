@@ -44,7 +44,7 @@ public class HoaDonController {
 
 	// Hiển thị thông tin đơn hàng
 	@GetMapping("/{maHoaDon}")
-	public ResponseEntity<Map<String, Object>> hienthi(@PathVariable(required = false) String maHoaDon) {
+	public ResponseEntity<Map<String, Object>> hienthimahodon(@PathVariable(required = false) String maHoaDon) {
 		try {
 			Map<String, Object> response = new HashMap<>();
 			if (maHoaDon != null && !maHoaDon.isEmpty()) {

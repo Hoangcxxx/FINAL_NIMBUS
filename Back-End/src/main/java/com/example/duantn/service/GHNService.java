@@ -1,97 +1,59 @@
 package com.example.duantn.service;
 
-import com.example.duantn.city.District;
-import com.example.duantn.city.Province;
-import com.example.duantn.city.Ward;
-import com.example.duantn.dto.Response;
-import com.example.duantn.reponse.ResponseDTO;
-import com.example.duantn.request.RequestDTO;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class GHNService {
 
-    private final String token = "f7a6a8d9-a552-11ef-a89d-dab02cbaab48";
-    private final String API_BASE_URL = "https://online-gateway.ghn.vn/shiip/public-api";
+    private static final String API_URL = "https://dev-online-gateway.ghn.vn/shiip/public-api/v2";
+    private static final String TOKEN = "337cc41f-844d-11ef-8e53-0a00184fe694";
 
-    // Lấy danh sách tỉnh/thành phố
-    public List<Province> getProvinces() {
-        return getDataFromApi("/master-data/province", new ParameterizedTypeReference<>() {});
+    private final RestTemplate restTemplate;
+
+    public GHNService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
-    // Lấy danh sách quận/huyện theo tỉnh
-    public List<District> getDistricts(int provinceId) {
-        String url = "/master-data/district?province_id=" + provinceId;
-        return getDataFromApi(url, new ParameterizedTypeReference<>() {});
-    }
+    // Hàm tính phí vận chuyển
+    public Map<String, Object> calculateShippingFee(Integer fromProvinceId, Integer fromDistrictId, Integer toProvinceId,
+                                                    Integer toDistrictId, String toWardCode, Integer weight, Integer length,
+                                                    Integer width, Integer height, Integer serviceId, Integer insuranceValue) {
+        String url = API_URL + "/shipping-order/fee";
 
-    // Lấy danh sách phường/xã theo quận/huyện
-    public List<Ward> getWards(int districtId) {
-        String url = "/master-data/ward?district_id=" + districtId;
-        return getDataFromApi(url, new ParameterizedTypeReference<>() {});
-    }
-    // Hàm tính khoảng cách giữa hai địa điểm dựa trên vĩ độ và kinh độ
-    public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        final double R = 6371; // Bán kính Trái Đất tính bằng km
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // Khoảng cách theo km
-    }
-
-
-    // Tính phí giao hàng theo khoảng cách và trọng lượng
-    public ResponseDTO getShippingFee(RequestDTO requestDTO) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = API_BASE_URL + "/v2/shipping-order/fee";
+        // Tạo headers cho yêu cầu
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Token", token);
+        headers.set("Content-Type", "application/json");
+        headers.set("Token", TOKEN);
 
-        HttpEntity<RequestDTO> entity = new HttpEntity<>(requestDTO, headers);
-        try {
-            // Gửi yêu cầu POST để tính phí giao hàng
-            ResponseEntity<ResponseDTO> response = restTemplate.exchange(
-                    url, HttpMethod.POST, entity, ResponseDTO.class);
+        // Tạo body yêu cầu
+        Map<String, Object> body = new HashMap<>();
+        body.put("from_province_id", fromProvinceId);    // Mã tỉnh gửi hàng
+        body.put("from_district_id", fromDistrictId);    // Mã quận gửi hàng
+        body.put("to_province_id", toProvinceId);        // Mã tỉnh nhận hàng
+        body.put("to_district_id", toDistrictId);        // Mã quận nhận hàng
+        body.put("to_ward_code", toWardCode);            // Mã phường nhận hàng
+        body.put("weight", weight);                      // Trọng lượng gói hàng
+        body.put("length", length);                      // Chiều dài gói hàng
+        body.put("width", width);                        // Chiều rộng gói hàng
+        body.put("height", height);                      // Chiều cao gói hàng
+        body.put("service_id", serviceId);               // ID loại dịch vụ
+        body.put("insurance_value", insuranceValue);     // Giá trị bảo hiểm
 
-            // Trả về dữ liệu tính phí nếu thành công
-            return response.getBody();
-        } catch (HttpClientErrorException e) {
-            System.err.println("Lỗi khi gọi API GHN: " + e.getMessage());
-            e.printStackTrace();
-            return null; // Hoặc bạn có thể xử lý lỗi cụ thể hơn
-        } catch (Exception e) {
-            System.err.println("Lỗi không xác định: " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
-    }
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-    // Hàm chung để lấy dữ liệu từ GHN API
-    private <T> List<T> getDataFromApi(String endpoint, ParameterizedTypeReference<Response<List<T>>> typeReference) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = API_BASE_URL + endpoint;
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Token", token);
+        // Gửi yêu cầu tới API GHN
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        try {
-            ResponseEntity<Response<List<T>>> response = restTemplate.exchange(
-                    url, HttpMethod.GET, entity, typeReference);
-            return response.getBody().getData();
-        } catch (HttpClientErrorException e) {
-            System.err.println("Lỗi khi lấy dữ liệu từ API GHN: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+        // Kiểm tra phản hồi
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();  
+        } else {
+            throw new RuntimeException("Lỗi khi tính phí vận chuyển: " + response.getStatusCode());
         }
     }
 }

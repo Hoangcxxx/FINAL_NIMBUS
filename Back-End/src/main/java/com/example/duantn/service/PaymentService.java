@@ -81,23 +81,18 @@ public class PaymentService {
         return Config.vnp_PayUrl + "?" + queryUrl;
     }
 
-    public String handleVnpayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String handleVnpayReturn(HttpServletRequest request) {
         String transactionStatus = request.getParameter("vnp_TransactionStatus");
         String transactionNo = request.getParameter("vnp_TransactionNo");
         String amount = request.getParameter("vnp_Amount");
         String bankCode = request.getParameter("vnp_BankCode");
         String orderInfo = request.getParameter("vnp_OrderInfo");
 
-        // Kiểm tra trạng thái giao dịch
         if ("00".equals(transactionStatus)) {
-            // Giao dịch thành công, chuyển hướng người dùng đến trang thành công
-            response.sendRedirect("http://127.0.0.1:5500/#!/thanhcong");
+            return "http://127.0.0.1:5501/#!/thanhcong"; // Giao dịch thành công
         } else {
-            // Giao dịch không thành công, chuyển hướng người dùng đến trang thất bại
-            response.sendRedirect("http://127.0.0.1:5500/admin.html#!/thanh_toan_that_bai");
+            return "http://127.0.0.1:5500/admin.html#!/thanh_toan_that_bai"; // Giao dịch không thành công
         }
-
-        return null; // Trả về null để không cần trả form nữa
     }
 
 }

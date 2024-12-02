@@ -25,7 +25,9 @@ public class SanPhamChiTietDTO {
 	}
 
 	private String tenkichthuoc;
+
 	private BigDecimal giaTien;
+
 	private String tenmausac;
 
 	private String tenchatlieu;
