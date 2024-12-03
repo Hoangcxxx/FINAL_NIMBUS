@@ -11,13 +11,12 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 public class HoaDonDTO {
-    private int idHoaDon;
-    private String maHoaDon;
-    private String tenNguoiDung;
-    private String sdtNguoiDung;
-    private Date ngayTao;
-    private String tenPhuongThuc;
-    private BigDecimal tongTien;
-
-    private int loai;
+        private int idHoaDon;
+        private String maHoaDon;
+        private String tenNguoiDung;
+        private String sdtNguoiDung;
+        private Date ngayTao;
+        private String tenPhuongThuc;
+        private BigDecimal tongTien;
+        private int loai;
 }

@@ -49,15 +49,16 @@ public class GIoHangService {
                 .orElse(null);
         if (gioHangChiTiet != null) {
             gioHangChiTiet.setSoLuong(gioHangChiTiet.getSoLuong() + request.getSoLuong());
-            gioHangChiTiet.setThanhTien(gioHangChiTiet.getDonGia() * gioHangChiTiet.getSoLuong());
+            gioHangChiTiet.setDonGia(request.getDonGia());
+            gioHangChiTiet.setThanhTien(request.getThanhTien());
             gioHangChiTiet.setNgayCapNhat(new Date());
         } else {
             gioHangChiTiet = new GioHangChiTiet();
             gioHangChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
             gioHangChiTiet.setGioHang(gioHang);
             gioHangChiTiet.setSoLuong(request.getSoLuong());
-            gioHangChiTiet.setDonGia(sanPhamChiTiet.getSanPham().getGiaBan().doubleValue());
-            gioHangChiTiet.setThanhTien(sanPhamChiTiet.getSanPham().getGiaBan().doubleValue() * request.getSoLuong());
+            gioHangChiTiet.setThanhTien(request.getThanhTien());
+            gioHangChiTiet.setDonGia(request.getDonGia());
             gioHangChiTiet.setTrangThai(true);
             gioHangChiTiet.setNgayTao(new Date());
             gioHangChiTiet.setNgayCapNhat(new Date());

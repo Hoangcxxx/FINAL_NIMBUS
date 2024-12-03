@@ -3,9 +3,7 @@ package com.example.duantn.controller.admin;
 import com.example.duantn.dto.*;
 import com.example.duantn.entity.HoaDon;
 import com.example.duantn.entity.NguoiDung;
-import com.example.duantn.entity.TrangThaiHoaDon;
 import com.example.duantn.service.HoaDonService;
-import com.example.duantn.service.InvoicePDFService;
 import com.example.duantn.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -14,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/hoa-don")
@@ -28,8 +23,7 @@ public class HoaDonRestController {
 
     @Autowired
     private NguoiDungService nguoiDungService;
-    @Autowired
-    private InvoicePDFService invoicePDFService;
+
 
     @GetMapping("/nguoi-dung")
     public List<NguoiDung> getNguoiDung() {
@@ -63,17 +57,6 @@ public class HoaDonRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại.");
         }
     }
-//    @PostMapping("/create/{id_hoa_don}")
-//    public ResponseEntity<TrangThaiHoaDon> createTrangThaiHoaDonForHoaDon(
-//            @PathVariable("id_hoa_don") int idHoaDon,
-//            @RequestBody TrangThaiHoaDon trangThaiHoaDon) {
-//
-//        // Tạo trạng thái hóa đơn cho hóa đơn có id_hoa_don
-//        TrangThaiHoaDon newTrangThaiHoaDon = hoaDonService.createTrangThaiHoaDonForHoaDon(idHoaDon, trangThaiHoaDon);
-//
-//        // Trả về trạng thái hóa đơn mới
-//        return ResponseEntity.ok(newTrangThaiHoaDon);
-//    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteHoaDon(@PathVariable Integer id) {
@@ -133,23 +116,4 @@ public class HoaDonRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-//    @PutMapping("/cap-nhat-trang-thai/{idHoaDon}")
-//    public ResponseEntity<Map<String, String>> capNhatTrangThaiHoaDon(
-//            @PathVariable int idHoaDon,
-//            @RequestParam("idTrangThaiMoi") int idTrangThaiMoi) {
-//        try {
-//            TrangThaiHoaDon trangThaiMoi = new TrangThaiHoaDon();
-//            trangThaiMoi.setId(idTrangThaiMoi);
-//            hoaDonService.capNhatTrangThaiHoaDon(idHoaDon, trangThaiMoi);
-//            Map<String, String> response = new HashMap<>();
-//            response.put("message", "Cập nhật trạng thái hóa đơn thành công.");
-//
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            Map<String, String> errorResponse = new HashMap<>();
-//            errorResponse.put("error", "Không tìm thấy hóa đơn với ID: " + idHoaDon);
-//
-//            return ResponseEntity.status(404).body(errorResponse);
-//        }
-//    }
 }

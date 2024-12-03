@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.ByteArrayOutputStream;
@@ -34,9 +35,11 @@ public class HoaDonService {
 
     @Autowired
     private PhuongThucThanhToanHoaDonRepository ptThanhToanHoaDonRepository;
+
     public List<HoaDon> getHoaDonChuaThanhToan() {
         return hoaDonRepository.findAllByTrangThaiFalse();
     }
+
     public byte[] exportInvoicesToExcel() throws IOException {
         List<HoaDonDTO> hoaDons = getHoaDonWithDetails(); // Lấy danh sách hóa đơn
 
@@ -71,6 +74,7 @@ public class HoaDonService {
             return outputStream.toByteArray();
         }
     }
+
     @Transactional
     public void deleteHoaDon(Integer id) {
         if (!hoaDonRepository.existsById(id)) {
@@ -120,7 +124,6 @@ public class HoaDonService {
     }
 
 
-
     private String generateMaHoaDon() {
         List<String> lastMaHoaDonList = hoaDonRepository.findLastMaHoaDon();
         if (!lastMaHoaDonList.isEmpty()) {
@@ -131,9 +134,11 @@ public class HoaDonService {
             return "HD001";
         }
     }
+
     public HoaDon findById(Integer id) {
         return hoaDonRepository.findById(id).orElse(null);
     }
+
     public boolean updateInvoiceStatus(Integer id, boolean trangThai) {
         Optional<HoaDon> optionalHoaDon = hoaDonRepository.findById(id);
         if (optionalHoaDon.isPresent()) {
@@ -144,11 +149,13 @@ public class HoaDonService {
         }
         return false;
     }
+
     public HoaDon getInvoiceById(Integer id) {
         // Gọi repository để tìm hóa đơn theo ID
         return hoaDonRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Không tìm thấy hóa đơn với ID: " + id));
     }
+
     @Transactional
     public HoaDonResponseDTO updateHoaDon(int idHoaDon, HoaDonUpdateDTO updateHoaDonDTO) {
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
@@ -211,16 +218,5 @@ public class HoaDonService {
         );
     }
 
-
-
-//    public void capNhatTrangThaiHoaDon(int idHoaDon, TrangThaiHoaDon trangThaiMoi) throws Exception {
-//        Optional<HoaDon> optionalHoaDon = hoaDonRepository.findById(idHoaDon);
-//        if (optionalHoaDon.isPresent()) {
-//            HoaDon hoaDon = optionalHoaDon.get();
-//            hoaDon.setTrangThaiHoaDon(trangThaiMoi);
-//            hoaDonRepository.save(hoaDon);
-//        } else {
-//            throw new Exception("Không tìm thấy hóa đơn với ID: " + idHoaDon);
-//        }
-    }
+}
 

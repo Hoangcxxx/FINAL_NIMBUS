@@ -25,16 +25,6 @@ import java.util.*;
 @RequestMapping("/api/payment")
 public class PaymentController {
 
-    @Autowired
-    private HoaDonRepository hoaDonRepository;
-    @Autowired
-    private LoaiTrangThaiRepository LoaiTrangThaiRepository;
-    @Autowired
-    private TrangThaiHoaDonRepository trangThaiHoaDonRepository;
-
-
-    @Autowired
-    private HoaDonService hoaDonService;
     @PostMapping("/creat_payment")
     public void createPayment(
             @RequestParam(required = false, defaultValue = "0") long amount,

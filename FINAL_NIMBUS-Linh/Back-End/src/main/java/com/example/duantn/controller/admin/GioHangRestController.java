@@ -1,13 +1,7 @@
 package com.example.duantn.controller.admin;
 
 import com.example.duantn.dto.*;
-import com.example.duantn.entity.GioHang;
-import com.example.duantn.entity.GioHangChiTiet;
-import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.service.GIoHangService;
-import com.example.duantn.service.GioHangChiTietService;
-import com.example.duantn.service.SanPhamChiTietService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +15,6 @@ import java.util.*;
 public class GioHangRestController {
     @Autowired
     private GIoHangService gioHangService;
-    @Autowired
-    private GioHangChiTietService gioHangChiTietService;
-    @Autowired
-    private SanPhamChiTietService sanPhamChiTietService;
     @PostMapping("/them/{idNguoiDung}")
     public ResponseEntity<Map<String, String>> themSanPhamVaoGioHang(@PathVariable Integer idNguoiDung, @RequestBody GioHangRequest request) {
         gioHangService.themSanPhamVaoGioHang(idNguoiDung, request);

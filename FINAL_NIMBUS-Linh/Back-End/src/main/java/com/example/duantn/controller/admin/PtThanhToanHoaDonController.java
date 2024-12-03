@@ -24,10 +24,6 @@ public class PtThanhToanHoaDonController {
     private PhuongThucThanhToanService phuongThucThanhToanService;
     @Autowired
     private HoaDonService hoaDonService;
-    @Autowired
-    private LoaiTrangThaiRepository LoaiTrangThaiRepository;
-    @Autowired
-    private TrangThaiHoaDonRepository trangThaiHoaDonRepository;
 
     @PostMapping("/{id}/thanh-toan")
     public ResponseEntity<PtThanhToanHoaDon> createPaymentMethod(@PathVariable Integer id, @RequestBody PtThanhToanHoaDon paymentMethod) {

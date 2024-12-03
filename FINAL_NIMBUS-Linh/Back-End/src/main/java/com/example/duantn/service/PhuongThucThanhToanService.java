@@ -16,10 +16,14 @@ public class PhuongThucThanhToanService {
     private PhuongThucThanhToanRepository phuongThucThanhToanRepository;
     public List<PhuongThucThanhToanDTO> getAllTenPhuongThucThanhToan() {
         List<PhuongThucThanhToan> danhSachPhuongThuc = phuongThucThanhToanRepository.findAll();
+
+        // Lọc danh sách phương thức thanh toán để chỉ lấy các id là 1, 2, 3
         return danhSachPhuongThuc.stream()
+                .filter(pt -> pt.getId() == 1 || pt.getId() == 2 || pt.getId() == 3)
                 .map(pt -> new PhuongThucThanhToanDTO(pt.getId(), pt.getTenPhuongThuc()))
                 .collect(Collectors.toList());
     }
+
     public PhuongThucThanhToan findById(Integer id) {
         return phuongThucThanhToanRepository.findById(id).orElse(null);
     }

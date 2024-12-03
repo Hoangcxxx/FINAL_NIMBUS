@@ -21,7 +21,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
             "hd.maHoaDon, " +
             "nd.tenNguoiDung, " +
-            "nd.sdtNguoiDung, " +
+            "nd.sdt, " +
             "hd.ngayTao, " +
             "ptt.tenPhuongThuc, " +
             "SUM(hdct.tongTien), " +
@@ -32,7 +32,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "LEFT JOIN hd.ptThanhToanHoaDon ptthd " +
             "LEFT JOIN ptthd.phuongThucThanhToan ptt " +
             "LEFT JOIN hd.hoaDonChiTietList hdct " +
-            "GROUP BY  hd.idHoaDon, hd.maHoaDon, nd.tenNguoiDung, nd.sdtNguoiDung, hd.ngayTao, ptt.tenPhuongThuc, hd.loai")
+            "GROUP BY  hd.idHoaDon, hd.maHoaDon, nd.tenNguoiDung, nd.sdt, hd.ngayTao, ptt.tenPhuongThuc, hd.loai")
     List<HoaDonDTO> getHoaDonWithDetails();
 
 }

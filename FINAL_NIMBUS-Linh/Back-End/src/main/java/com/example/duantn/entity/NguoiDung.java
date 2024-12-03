@@ -28,7 +28,7 @@ public class NguoiDung {
     private String email;
 
     @Column(name = "sdt", length = 15)
-    private String sdtNguoiDung;
+    private String sdt;
 
     @Column(name = "Ngay_Sinh")
     @Temporal(TemporalType.DATE)

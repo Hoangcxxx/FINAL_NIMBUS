@@ -29,18 +29,6 @@ public class NguoiDungService {
         return nguoiDungRepository.save(nguoiDung);
     }
 
-    private String generatePassword() {
-        return "password_" + System.currentTimeMillis();
-    }
-    private boolean isMaNguoiDungExist(String maNguoiDung) {
-
-        return nguoiDungRepository.findByMaNguoiDung(maNguoiDung) != null;
-    }
-
-    public NguoiDung getNguoiDungById(Integer idNguoiDung) {
-        return nguoiDungRepository.findById(idNguoiDung)
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
-    }
 
     public NguoiDung findById(long id) {
         return nguoiDungRepository.findById(id);

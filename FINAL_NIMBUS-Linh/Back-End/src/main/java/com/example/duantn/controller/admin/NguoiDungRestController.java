@@ -11,22 +11,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/nguoi-dung")
+@RequestMapping("/api/admin")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class NguoiDungRestController {
     @Autowired
     private NguoiDungService nguoiDungService;
 
-    @GetMapping
+    @GetMapping("/khach_hang")
     public List<NguoiDung> getAllNguoiDung() {
         return nguoiDungService.getAllNguoiDung();
     }
-    @GetMapping("/ban-hang")
+    @GetMapping("/nhan_vien")
     public List<NguoiDung> getAllNhanVienBH() {
         return nguoiDungService.getAllNhanVienBanHang() ;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/khach_hang/add")
     public ResponseEntity<NguoiDung> themNguoiDung(@RequestBody NguoiDung nguoiDung) {
         VaiTro vaiTro = new VaiTro();
         vaiTro.setIdVaiTro(2);

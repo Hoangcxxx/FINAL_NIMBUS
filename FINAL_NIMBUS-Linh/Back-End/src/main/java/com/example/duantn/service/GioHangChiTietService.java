@@ -12,8 +12,6 @@ public class GioHangChiTietService {
     @Autowired
     private GioHangChiTietRepository gioHangChiTietRepository;
 
-    public void deleteById(int idGioHangChiTiet) {
-    }
     public Optional<GioHangChiTiet> findById(Integer id) {
         System.out.println("Tìm kiếm chi tiết giỏ hàng với ID: " + id);
         return gioHangChiTietRepository.findById(id);

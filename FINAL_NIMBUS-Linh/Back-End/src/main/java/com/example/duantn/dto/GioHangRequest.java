@@ -12,5 +12,6 @@ import java.math.BigDecimal;
 public class GioHangRequest {
     private int idSanPhamChiTiet;
     private int soLuong;
-    private BigDecimal giaBan;
+    private Double donGia;
+    private Double thanhTien;
 }
