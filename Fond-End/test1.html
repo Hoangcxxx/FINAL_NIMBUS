@@ -1,89 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách hóa đơn</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Tra Cứu Đơn Hàng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        .order-info {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="container my-4">
-        <!-- Tiêu đề -->
-        <h2 class="mb-4">Danh sách hóa đơn</h2>
-
-        <!-- Bộ lọc -->
-        <ul class="nav nav-pills mb-3">
-            <li class="nav-item">
-                <a class="nav-link active" href="#">Tất cả</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Chờ xác nhận</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Chờ giao</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Hoàn thành</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Đã hủy</a>
-            </li>
-
-        </ul>
-
-        <!-- Bảng danh sách hóa đơn -->
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th>#</th>
-                    <th>Mã</th>
-                    <th>Khách hàng</th>
-                    <th>SĐT</th>
-                    <th>Tổng tiền</th>
-                    <th>Loại đơn hàng</th>
-                    <th>Ngày tạo</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>HD15030032</td>
-                    <td>Nguyễn Anh Dũng</td>
-                    <td>0387880000</td>
-                    <td>238,501đ</td>
-                    <td>Giao hàng</td>
-                    <td>17:52:50 21/12/2023</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm">Giao hàng</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>HD15030034</td>
-                    <td>Khách hàng lẻ</td>
-                    <td>-</td>
-                    <td>423,000đ</td>
-                    <td>Tại quầy</td>
-                    <td>18:11:21 21/12/2023</td>
-                    <td>
-                        <button class="btn btn-success btn-sm">Tại quầy</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>HD15030033</td>
-                    <td>Khách hàng lẻ</td>
-                    <td>-</td>
-                    <td>400,000đ</td>
-                    <td>Tại quầy</td>
-                    <td>17:52:51 21/12/2023</td>
-                    <td>
-                        <button class="btn btn-success btn-sm">Tại quầy</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">Thông Tin Cá Nhân</a></li>
+        <li><a class="dropdown-item" href="#">Đơn Hàng Của Tôi</a></li>
+        <li><a class="dropdown-item" href="#">Sản Phẩm Yêu Thích</a></li>
+    </ul>
+    </li>
+    </ul>
     </div>
+    </div>
+    </nav>
+
+    <!-- Nội dung chính -->
+    <div class="container">
+        <h2 class="text-center my-4">Tra Cứu Trạng Thái Đơn Hàng</h2>
+
+        <!-- Form tra cứu -->
+        <div class="mb-3">
+            <label for="orderCode" class="form-label">Mã Đơn Hàng</label>
+            <input type="text" id="orderCode" class="form-control" placeholder="Nhập mã đơn hàng...">
+        </div>
+        <button class="btn btn-danger" id="searchOrder">Tra Cứu</button>
+
+        <!-- Khu vực hiển thị thông tin đơn hàng -->
+        <div class="order-info" id="orderInfo" style="display: none;">
+            <h4>Thông Tin Đơn Hàng</h4>
+            <p><strong>Mã Đơn Hàng:</strong> <span id="infoOrderCode"></span></p>
+            <p><strong>Khách Hàng:</strong> <span id="infoCustomerName"></span></p>
+            <p><strong>Ngày Đặt Hàng:</strong> <span id="infoOrderDate"></span></p>
+            <p><strong>Trạng Thái:</strong> <span id="infoOrderStatus"></span></p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Xử lý nút Tra Cứu
+        document.getElementById("searchOrder").addEventListener("click", () => {
+            const orderCode = document.getElementById("orderCode").value;
+
+            if (!orderCode) {
+                alert("Vui lòng nhập mã đơn hàng!");
+                return;
+            }
+
+            // Gửi yêu cầu GET đến API để lấy thông tin đơn hàng
+            fetch(`http://127.0.0.1:8080/api/nguoi_dung/hoa_don/${orderCode}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Không tìm thấy đơn hàng với mã này");
+                    }
+                })
+                .then(data => {
+                    const hoaDon = data.hoaDon && data.hoaDon[0]; // Chỉ lấy phần tử đầu tiên
+                    if (hoaDon) {
+                        // Hiển thị thông tin đơn hàng
+                        document.getElementById("infoOrderCode").textContent = hoaDon.maHoaDon;
+                        document.getElementById("infoCustomerName").textContent = hoaDon.tenNguoiNhan;
+
+                        // Convert Ngày Đặt Hàng (ngayTao) to readable date format (e.g., YYYY-MM-DD)
+                        const orderDate = new Date(hoaDon.ngayTao);
+                        document.getElementById("infoOrderDate").textContent = orderDate.toLocaleDateString('vi-VN');
+
+                        // Hiển thị trạng thái đơn hàng
+                        const orderStatus = hoaDon.listtrangthaihoadon && hoaDon.listtrangthaihoadon.length > 0
+                            ? hoaDon.listtrangthaihoadon[0].tenTrangThaiHoaDon
+                            : "Chưa có trạng thái";
+                        document.getElementById("infoOrderStatus").textContent = orderStatus;
+
+                        // Hiển thị thông tin đơn hàng
+                        document.getElementById("orderInfo").style.display = "block";
+                    } else {
+                        alert("Không tìm thấy đơn hàng!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi khi truy vấn đơn hàng: ", error);
+                    alert("Có lỗi xảy ra khi lấy thông tin đơn hàng!");
+                });
+        });
+    </script>
 </body>
+
 </html>

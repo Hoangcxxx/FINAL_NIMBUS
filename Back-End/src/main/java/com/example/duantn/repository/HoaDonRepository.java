@@ -13,5 +13,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     List<Object[]> getAllHoaDon();
     Optional<HoaDon> findByMaHoaDon(String maHoaDon);
 
+
     List<HoaDon> findByNguoiDung_IdNguoiDung(Integer idNguoiDung);
 }

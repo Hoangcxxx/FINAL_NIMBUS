@@ -1,5 +1,6 @@
 package com.example.duantn.dto;
 
+import com.example.duantn.entity.TrangThaiHoaDon;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,9 +34,10 @@ public class HoaDonDTO {
 	private Integer idNguoiDung;
 	private Date ngayTao;
 	private Integer idvoucher;
-//	private Integer idtrangthaihoadon;
+	private List<TrangThaiHoaDon> listtrangthaihoadon;
 	private Integer idphuongthucthanhtoanhoadon;
 	private String tenPhuongThucThanhToan;
 	private BigDecimal thanhTien;
 	private List<SanPhamChiTietDTO> listSanPhamChiTiet;
+	private List<String> tenLoaiTrangThai; // Thêm trường tên loại trạng thái
 }

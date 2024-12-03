@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,6 +41,15 @@ public class NguoiDungController {
             e.printStackTrace(); // In ra stack trace để dễ dàng theo dõi lỗi
             return ResponseEntity.badRequest().body(null);
         }
+    }
+    // Lấy tất cả người dùng
+    @GetMapping("/all")
+    public ResponseEntity<List<NguoiDung>> getAllNguoiDungs() {
+        List<NguoiDung> nguoiDungs = nguoiDungService.getAllNguoiDungs();
+        if (nguoiDungs.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Trả về No Content nếu không có người dùng
+        }
+        return new ResponseEntity<>(nguoiDungs, HttpStatus.OK); // Trả về danh sách người dùng nếu có
     }
 
     // Phương thức đăng nhập

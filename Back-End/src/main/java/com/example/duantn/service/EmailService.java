@@ -78,7 +78,7 @@ public class EmailService {
                     .append("<p><strong>Tổng giá trị đơn hàng:</strong> " + hoaDonDTO.getThanhTien() + " VND</p>")
                     .append("<p>Chúng tôi sẽ thông báo cho bạn khi đơn hàng đã được gửi đi.</p>")
                     .append("<p>Mọi thắc mắc, xin vui lòng liên hệ: <strong>HOTLINE 0376941599</strong>.</p>")
-                    .append("<a href='https://yourshop.com/order-tracking' class='button'>Theo Dõi Đơn Hàng</a>")
+                    .append("<a href='http://127.0.0.1:5500/#!/theogiodonhang' class='button'>Theo Dõi Đơn Hàng</a>")
                     .append("</div>")
                     .append("<div class='footer'>")
                     .append("<p>&copy; 2024 NimBus Shop. Mọi quyền được bảo lưu.</p>")

@@ -27,13 +27,11 @@ public class TrangThaiHoaDonController {
     public TrangThaiHoaDon getTrangThaiHoaDonByHoaDonId(@PathVariable Integer hoaDonId) {
         return trangThaiHoaDonService.getTrangThaiHoaDonByHoaDonId(hoaDonId);
     }
-
     // API để cập nhật trạng thái của đơn hàng
     @PostMapping("/cap-nhat")
     public TrangThaiHoaDon capNhatTrangThai(@RequestBody CapNhatTrangThaiRequest request) {
         HoaDon hoaDon = new HoaDon();  // Giả sử bạn lấy hoaDon từ DB
         hoaDon.setIdHoaDon(request.getHoaDonId()); // ID đơn hàng truyền vào
-
         return trangThaiHoaDonService.capNhatTrangThai(hoaDon, request.getLoaiTrangThaiId());
     }
 }

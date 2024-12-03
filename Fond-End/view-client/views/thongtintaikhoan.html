@@ -93,8 +93,8 @@
                                     <th scope="col">Mã đơn hàng</th>
                                     <th scope="col">Ngày đặt</th>
                                     <th scope="col">Thành tiền</th>
-                                    <th scope="col">Trạng thái Đơn Hàng</th>
-                                    <th scope="col">Vận chuyển</th>
+                                    <th scope="col">Trạng thái Thanh Toán</th>
+                                    <th scope="col">Địa Chỉ Vận chuyển</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -103,14 +103,9 @@
                                     <td>#{{ hoaDon.maHoaDon }}</td>
                                     <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
                                     <td>{{ hoaDon.thanhTien | currency:"":0 }}đ</td>
-                                    <td>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 1">Chờ Xử Lý</span>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 2">Đang Giao Hàng</span>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 3">Hoàn Thành</span>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 4">Hủy Bỏ</span>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 5">Thất Bại</span>
-                                    </td>
-                                    <td>{{ hoaDon.diaChi }}, {{ hoaDon.tenTinh }}, {{ hoaDon.tenHuyen }}, {{ hoaDon.tenXa }}</td>
+                                    <td>sdsd</td>
+                                    <td>{{ hoaDon.diaChi }}, {{ hoaDon.tenTinh }}, {{ hoaDon.tenHuyen }}, {{
+                                        hoaDon.tenXa }}</td>
                                 </tr>
                                 <!-- Trường hợp không có đơn hàng -->
                                 <tr ng-if="!orderData || orderData.length === 0">

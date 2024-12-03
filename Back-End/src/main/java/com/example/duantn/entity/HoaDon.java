@@ -72,4 +72,9 @@ public class HoaDon {
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HoaDonChiTiet> hoaDonChiTiets;
 
+
+    // Quan hệ với TrangThaiHoaDon
+    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TrangThaiHoaDon> trangThaiHoaDons;
+
 }

@@ -23,6 +23,11 @@ public class NguoiDungService {
         return nguoiDungRepository.getSanPhamById();
     }
 
+    // Lấy tất cả người dùng
+    public List<NguoiDung> getAllNguoiDungs() {
+        return nguoiDungRepository.findAll(); // Lấy tất cả người dùng từ repository
+    }
+
     // Lấy người dùng theo ID
     public Optional<NguoiDung> getNguoiDungById(int id) {
         return nguoiDungRepository.findById(id);
