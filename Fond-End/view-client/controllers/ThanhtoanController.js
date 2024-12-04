@@ -203,29 +203,47 @@ window.ThanhToanController = function ($scope, $http, $window) {
     };
 
 
+    
     $scope.calculateTotal = function () {
-        let total = $scope.cart.reduce(function (total, item) {
+        let totalProductPrice = $scope.cart.reduce(function (total, item) {
             let donGia = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;
             return total + (item.soLuongGioHang * donGia);
         }, 0);
 
-        // Nếu có voucher đã chọn, tính toán lại tổng tiền sau khi áp dụng giảm giá
+        let totalDiscountedPrice = $scope.cart.reduce(function (total, item) {
+            // Tính tổng tiền sản phẩm theo giá khuyến mãi và số lượng
+            let price = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;  // Giá khuyến mãi nếu có, nếu không lấy giá bán cơ bản
+            return total + (item.soLuongGioHang * price);
+        }, 0);
+
+        // Tính tổng tiền sau khi áp dụng voucher
         if ($scope.selectedVoucher) {
             let discount = 0;
             if ($scope.selectedVoucher.kieuGiamGia === false) {
                 // Giảm theo phần trăm
-                discount = total * ($scope.selectedVoucher.giaTriGiamGia / 100);
+                discount = totalDiscountedPrice * ($scope.selectedVoucher.giaTriGiamGia / 100);
             } else if ($scope.selectedVoucher.kieuGiamGia === true) {
                 // Giảm theo giá trị cố định
                 discount = $scope.selectedVoucher.giaTriGiamGia;
             }
 
-            total -= discount;
+            totalDiscountedPrice -= discount; // Trừ giảm giá
+        }
+
+        // Nếu có phí vận chuyển, cộng vào tổng tiền
+        if ($scope.shippingFee) {
+            totalDiscountedPrice += $scope.shippingFee;
         }
 
         // Đảm bảo tổng tiền không âm
-        $scope.totalAmount = Math.max(total, 0);
-        console.log("Tổng tiền sau khi tính toán: ", $scope.totalAmount);
+        $scope.totalAmount = Math.max(totalDiscountedPrice, 0);
+
+        // Cập nhật lại các giá trị để hiển thị trong UI
+        $scope.totalProductPrice = totalProductPrice;
+        $scope.totalDiscountedPrice = totalDiscountedPrice;
+
+        console.log("Tổng tiền sản phẩm (theo giá bán cơ bản): ", totalProductPrice);
+        console.log("Tổng tiền sản phẩm và giá khuyến mãi (cộng phí ship): ", totalDiscountedPrice);
     };
 
 

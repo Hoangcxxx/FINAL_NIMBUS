@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
     @Query(value = "SELECT * FROM nguoi_dung nd WHERE nd.id_vai_tro = 2", nativeQuery = true)
     List<NguoiDung> getSanPhamById();
+    List<NguoiDung> findByVaiTro_IdVaiTro(Integer idVaiTro);
+
     Optional<NguoiDung> findByEmail(String email);
 
     Optional<NguoiDung> findBySdt(String sdt);

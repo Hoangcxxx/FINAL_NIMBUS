@@ -1,5 +1,6 @@
 package com.example.duantn.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,7 +32,7 @@ public class HoaDon {
     private Voucher voucher;
 
     @ManyToOne
-    @JoinColumn(name = "Id_dia_chi_van_chuyen")
+    @JoinColumn(name = "id_dia_chi_van_chuyen")
     private DiaChiVanChuyen diaChiVanChuyen;
 
     @Column(name = "ten_nguoi_nhan", nullable = false)
@@ -60,11 +61,23 @@ public class HoaDon {
     @Column(name = "ngay_thanh_toan")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayThanhToan;
+    @Column(name = "loai")
+    private int loai;
 
     @ManyToOne
     @JoinColumn(name = "id_pt_thanh_toan_hoa_don")
     private PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon;
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HoaDonChiTiet> hoaDonChiTiets;
+    @OneToMany(mappedBy = "hoaDon")
+    @JsonIgnore // Bỏ qua danh sách chi tiết hóa đơn khi serialize
+    private List<HoaDonChiTiet> hoaDonChiTietList;
+
+    @OneToMany(mappedBy = "hoaDon")
+    @JsonIgnore // Bỏ qua danh sách trạng thái hóa đơn khi serialize
+    private List<TrangThaiHoaDon> trangThaiHoaDons;
+    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
+    private List<PhuongThucThanhToanHoaDon> phuongThucThanhToanHoaDons;
+
 
 }

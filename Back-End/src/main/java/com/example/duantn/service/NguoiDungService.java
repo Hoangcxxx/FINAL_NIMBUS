@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class NguoiDungService {
@@ -27,7 +28,9 @@ public class NguoiDungService {
     public Optional<NguoiDung> getNguoiDungById(int id) {
         return nguoiDungRepository.findById(id);
     }
-
+    public List<NguoiDung> getAllNhanVienBanHang() {
+        return nguoiDungRepository.findByVaiTro_IdVaiTro(3);
+    }
     // Thêm mới người dùng
     public ResponseEntity<?> addNguoiDung(NguoiDung nguoiDung) {
         // Kiểm tra nếu email hoặc số điện thoại đã tồn tại trong cơ sở dữ liệu
@@ -129,5 +132,16 @@ public class NguoiDungService {
         } else {
             return null;
         }
+    }
+    public NguoiDung addNguoiDung1(NguoiDung nguoiDung) {
+        nguoiDung.setMaNguoiDung("user" + System.currentTimeMillis());
+        String email = nguoiDung.getTenNguoiDung().replaceAll(" ", "").toLowerCase() + "@gmail.com";
+        nguoiDung.setEmail(email);
+        nguoiDung.setMatKhau(UUID.randomUUID().toString().replace("-", "").substring(0, 8));
+
+        return nguoiDungRepository.save(nguoiDung);
+    }
+    public NguoiDung findById(Integer idNguoiDung) {
+        return nguoiDungRepository.findById(idNguoiDung).orElse(null);
     }
 }

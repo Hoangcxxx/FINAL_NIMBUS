@@ -12,13 +12,10 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/nguoi_dung/payment")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
-public class PaymentController {
+public class PaymentClientController {
 
     @Autowired
     private PaymentService paymentService;
-
-    @Autowired
-    private HoaDonService hoaDonService;
 
     @PostMapping("/creat_payment")
     public void createPayment(

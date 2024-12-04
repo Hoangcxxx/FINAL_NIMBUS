@@ -1,10 +1,14 @@
 package com.example.duantn.service;
 
 import com.example.duantn.dto.HoaDonDTO;
+import com.example.duantn.dto.HoaDonResponseDTO;
+import com.example.duantn.dto.HoaDonUpdateDTO;
 import com.example.duantn.dto.SanPhamChiTietDTO;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -57,6 +61,16 @@ public class HoaDonService {
 
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
+    @Autowired
+    private LoaiTrangThaiRepository loaiTrangThaiRepository;
+    @Autowired
+    private TrangThaiHoaDonRepository trangThaiHoaDonRepository;
+
+    @Autowired
+    private PhuongThucThanhToanHoaDonRepository ptThanhToanHoaDonRepository;
 
     public List<Object[]> getAllHoaDon() {
         return hoaDonRepository.getAllHoaDon();
@@ -352,77 +366,159 @@ public class HoaDonService {
         }
         throw new RuntimeException("Không thể lấy dữ liệu xã từ API");
     }
-    public List<HoaDonDTO> getHoaDonByUserId(Integer idNguoiDung) {
-        // Lấy danh sách hóa đơn từ repository
-        List<HoaDon> hoaDonList = hoaDonRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
 
-        // Chuyển đổi từ HoaDon sang HoaDonDTO
-        return hoaDonList.stream().map(hoaDon -> {
-            HoaDonDTO dto = new HoaDonDTO();
-            dto.setIdHoaDon(hoaDon.getIdHoaDon());
-            dto.setMaHoaDon(hoaDon.getMaHoaDon());
-            dto.setNgayTao(hoaDon.getNgayTao());
-            dto.setTenNguoiNhan(hoaDon.getTenNguoiNhan());
-            dto.setSdtNguoiNhan(hoaDon.getSdtNguoiNhan());
-            dto.setDiaChi(hoaDon.getDiaChi());
-            dto.setThanhTien(hoaDon.getThanhTien());
-            dto.setGhiChu(hoaDon.getMoTa());
 
-            // Thông tin người dùng
-            if (hoaDon.getNguoiDung() != null) {
-                dto.setIdNguoiDung(hoaDon.getNguoiDung().getIdNguoiDung());
-                dto.setEmail(hoaDon.getNguoiDung().getEmail());
-            }
 
-            // Thông tin địa chỉ vận chuyển
-            if (hoaDon.getDiaChiVanChuyen() != null) {
-                DiaChiVanChuyen diaChiVanChuyen = hoaDon.getDiaChiVanChuyen();
 
-                // Ánh xạ ID của địa chỉ vận chuyển
-                dto.setIdDiaChiVanChuyen(diaChiVanChuyen.getIdDiaChiVanChuyen());
 
-                // Ánh xạ các đối tượng Tinh, Huyen, Xa
-                if (diaChiVanChuyen.getTinh() != null) {
-                    dto.setTinh(diaChiVanChuyen.getTinh().getIdTinh()); // Lưu ID Tỉnh
-                    dto.setTenTinh(diaChiVanChuyen.getTinh().getTenTinh()); // Lấy tên Tỉnh
-                }
-                if (diaChiVanChuyen.getHuyen() != null) {
-                    dto.setHuyen(diaChiVanChuyen.getHuyen().getIdHuyen()); // Lưu ID Huyện
-                    dto.setTenHuyen(diaChiVanChuyen.getHuyen().getTenHuyen()); // Lấy tên Huyện
-                }
-                if (diaChiVanChuyen.getXa() != null) {
-                    dto.setXa(diaChiVanChuyen.getXa().getIdXa()); // Lưu ID Xã
-                    dto.setTenXa(diaChiVanChuyen.getXa().getTenXa()); // Lấy tên Xã
-                }
-            }
-
-            // Thông tin phương thức thanh toán
-            if (hoaDon.getPhuongThucThanhToanHoaDon() != null) {
-                dto.setIdphuongthucthanhtoanhoadon(hoaDon.getPhuongThucThanhToanHoaDon().getIdThanhToanHoaDon());
-                dto.setTenPhuongThucThanhToan(hoaDon.getPhuongThucThanhToanHoaDon()
-                        .getPhuongThucThanhToan()
-                        .getTenPhuongThuc());
-            }
-
-            // Danh sách sản phẩm chi tiết
-            List<HoaDonChiTiet> chiTietList = hoaDonChiTietRepository.findByHoaDon_IdHoaDon(hoaDon.getIdHoaDon());
-            dto.setListSanPhamChiTiet(chiTietList.stream()
-                    .map(chiTiet -> {
-                        SanPhamChiTietDTO spDTO = new SanPhamChiTietDTO();
-                        spDTO.setIdspct(chiTiet.getSanPhamChiTiet().getIdSanPhamChiTiet());
-                        spDTO.setSoLuong(chiTiet.getSoLuong());
-                        spDTO.setGiaTien(chiTiet.getTongTien());
-                        spDTO.setTenkichthuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
-                        spDTO.setTenmausac(chiTiet.getSanPhamChiTiet().getMauSacChiTiet().getMauSac().getTenMauSac());
-                        spDTO.setTenchatlieu(chiTiet.getSanPhamChiTiet().getChatLieuChiTiet().getChatLieu().getTenChatLieu());
-                        spDTO.setTenSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getTenSanPham());
-                        spDTO.setMoTa(chiTiet.getSanPhamChiTiet().getSanPham().getMoTa());
-                        spDTO.setIdSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getIdSanPham());
-                        return spDTO;
-                    })
-                    .collect(Collectors.toList()));
-
-            return dto;
-        }).collect(Collectors.toList());
+    public List<HoaDon> getHoaDonChuaThanhToan() {
+        return hoaDonRepository.findAllByTrangThaiFalse();
     }
+
+
+    @Transactional
+    public void deleteHoaDon(Integer id) {
+        if (!hoaDonRepository.existsById(id)) {
+            throw new EntityNotFoundException("Hóa đơn không tồn tại với ID: " + id);
+        }
+        trangThaiHoaDonRepository.deleteByHoaDonId(id);
+        hoaDonRepository.deleteById(id);
+    }
+
+    public List<HoaDonDTO> getHoaDonWithDetails() {
+        return hoaDonRepository.getHoaDonWithDetails();
+    }
+
+    public HoaDon createHoaDon(HoaDon hoaDon) {
+        String newMaHoaDon = generateMaHoaDon();
+        hoaDon.setMaHoaDon(newMaHoaDon);
+        hoaDon.setLoai(0);
+        hoaDon.setTrangThai(false);
+        HoaDon savedHoaDon = hoaDonRepository.save(hoaDon);
+
+        // Tạo trạng thái hóa đơn với loại trạng thái là 1
+        TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
+        trangThaiHoaDon1.setMoTa("Tạo đơn hàng");
+        trangThaiHoaDon1.setNgayTao(new Date());
+        trangThaiHoaDon1.setNgayCapNhat(new Date());
+
+        LoaiTrangThai loaiTrangThai1 = loaiTrangThaiRepository.findById(1)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+
+        trangThaiHoaDon1.setLoaiTrangThai(loaiTrangThai1);
+        trangThaiHoaDon1.setHoaDon(savedHoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDon1);
+
+        // Tạo trạng thái hóa đơn với loại trạng thái là 4
+        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
+        trangThaiHoaDon2.setMoTa("Chờ Thanh Toán");
+        trangThaiHoaDon2.setNgayTao(new Date());
+        trangThaiHoaDon2.setNgayCapNhat(new Date());
+
+        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(4)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+
+        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+        trangThaiHoaDon2.setHoaDon(savedHoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+
+        return savedHoaDon;
+    }
+
+
+    private String generateMaHoaDon() {
+        List<String> lastMaHoaDonList = hoaDonRepository.findLastMaHoaDon();
+        if (!lastMaHoaDonList.isEmpty()) {
+            String lastMaHoaDon = lastMaHoaDonList.get(0);
+            int newId = Integer.parseInt(lastMaHoaDon.substring(2)) + 1;
+            return String.format("HD%03d", newId);
+        } else {
+            return "HD001";
+        }
+    }
+
+    public HoaDon findById(Integer id) {
+        return hoaDonRepository.findById(id).orElse(null);
+    }
+
+    public boolean updateInvoiceStatus(Integer id, boolean trangThai) {
+        Optional<HoaDon> optionalHoaDon = hoaDonRepository.findById(id);
+        if (optionalHoaDon.isPresent()) {
+            HoaDon hoaDon = optionalHoaDon.get();
+            hoaDon.setTrangThai(trangThai);
+            hoaDonRepository.save(hoaDon);
+            return true;
+        }
+        return false;
+    }
+
+    public HoaDon getInvoiceById(Integer id) {
+        // Gọi repository để tìm hóa đơn theo ID
+        return hoaDonRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy hóa đơn với ID: " + id));
+    }
+
+    @Transactional
+    public HoaDonResponseDTO updateHoaDon(int idHoaDon, HoaDonUpdateDTO updateHoaDonDTO) {
+        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
+                .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
+
+        hoaDon.setPhiShip(updateHoaDonDTO.getPhiShip());
+        hoaDon.setNgayThanhToan(updateHoaDonDTO.getNgayThanhToan());
+        hoaDon.setThanhTien(updateHoaDonDTO.getThanhTien());
+        hoaDon.setSdtNguoiNhan(updateHoaDonDTO.getSetSdtNguoiNhan());
+
+        PhuongThucThanhToanHoaDon ptThanhToan = new PhuongThucThanhToanHoaDon();
+        ptThanhToan.setIdThanhToanHoaDon(updateHoaDonDTO.getIdThanhToanHoaDon());
+
+        PhuongThucThanhToanHoaDon existingPtThanhToan = ptThanhToanHoaDonRepository.findById(ptThanhToan.getIdThanhToanHoaDon())
+                .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không tồn tại."));
+        hoaDon.setPhuongThucThanhToanHoaDon(existingPtThanhToan);
+
+        if (updateHoaDonDTO.getIdVoucher() > 0) {
+            Voucher voucher = voucherRepository.findById(updateHoaDonDTO.getIdVoucher())
+                    .orElseThrow(() -> new RuntimeException("Voucher không tồn tại"));
+            hoaDon.setVoucher(voucher);
+        }
+
+        if (!existingPtThanhToan.getPhuongThucThanhToan().getIdPTThanhToan().equals(2) &&
+                !existingPtThanhToan.getPhuongThucThanhToan().getIdPTThanhToan().equals(3)) {
+            // Tạo trạng thái hóa đơn loại 5
+            TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
+            trangThaiHoaDon1.setMoTa("Đã thanh toán thành công");
+            trangThaiHoaDon1.setNgayTao(new Date());
+            trangThaiHoaDon1.setNgayCapNhat(new Date());
+            trangThaiHoaDon1.setHoaDon(hoaDon);
+
+            LoaiTrangThai loaiTrangThai1 = loaiTrangThaiRepository.findById(5)
+                    .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+            trangThaiHoaDon1.setLoaiTrangThai(loaiTrangThai1);
+
+            trangThaiHoaDonRepository.save(trangThaiHoaDon1);
+
+            // Tạo trạng thái hóa đơn loại 8
+            TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
+            trangThaiHoaDon2.setMoTa("Hoàn thành    ");
+            trangThaiHoaDon2.setNgayTao(new Date());
+            trangThaiHoaDon2.setNgayCapNhat(new Date());
+            trangThaiHoaDon2.setHoaDon(hoaDon);
+
+            LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(8)
+                    .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+            trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+
+            trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+        }
+
+        hoaDonRepository.save(hoaDon);
+
+        return new HoaDonResponseDTO(
+                hoaDon.getPhiShip(),
+                hoaDon.getNgayThanhToan(),
+                hoaDon.getThanhTien(),
+                hoaDon.getPhuongThucThanhToanHoaDon().getIdThanhToanHoaDon()
+        );
+    }
+
+
 }

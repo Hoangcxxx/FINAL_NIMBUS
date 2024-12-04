@@ -22,7 +22,9 @@ public class HoaDonChiTiet {
     @ManyToOne
     @JoinColumn(name = "id_san_pham_chi_tiet", nullable = false)
     private SanPhamChiTiet sanPhamChiTiet;
-
+    @ManyToOne
+    @JoinColumn(name = "id_lich_su_hoa_don")
+    private LichSuHoaDon lichSuHoaDon;
     @ManyToOne
     @JoinColumn(name = "id_hoa_don", nullable = false)
     private HoaDon hoaDon;

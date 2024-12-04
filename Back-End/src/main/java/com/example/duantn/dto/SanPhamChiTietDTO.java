@@ -37,4 +37,5 @@ public class SanPhamChiTietDTO {
 	private Integer idSanPham;
 
 	private  Integer DotGiamGia;
+
 }

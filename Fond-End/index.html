@@ -27,6 +27,7 @@
     <script src="view-client/controllers/ThongTinNguoiDungController.js"></script>
     <script src="view-client/controllers/ThanhCongController.js"></script>
     <script src="view-client/controllers/DonhangController.js"></script>
+    <script src="view-client/controllers/QuenMatKhauController.js"></script>
 </head>
 
 <body ng-app="myApp">
@@ -91,6 +92,10 @@
                 .when("/donhang", {
                     templateUrl: "view-client/views/theodoidonhang.html",
                     controller: DonHangController
+                })
+                .when("/quenmatkhau", {
+                    templateUrl: "view-client/views/quenmatkhau.html",
+                    controller: QuenMatKhauController
                 })
                 .otherwise({
                     redirectTo: "/"

@@ -94,4 +94,40 @@ public class NguoiDungController {
         }
     }
 
+
+
+
+    // Phương thức quên mật khẩu
+    @PostMapping("/quen_mat_khau")
+    public ResponseEntity<?> quenMatKhau(@RequestParam String email) {
+        try {
+            String message = dangNhapService.quenMatKhau(email);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không thể tìm thấy tài khoản với email đã cung cấp");
+        }
+    }
+
+    // Phương thức xác nhận mã khôi phục
+    @PostMapping("/xac-nhan-ma-khoi-phuc")
+    public ResponseEntity<String> xacNhanMaKhôiPhuc(@RequestParam String makhophuc) {
+        try {
+            String response = dangNhapService.xacnhandoimatkhau(makhophuc);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    // Phương thức đổi mật khẩu mới
+    @PostMapping("/doi-mat-khau")
+    public ResponseEntity<String> doiMatKhau(@RequestParam String email, @RequestParam String matKhauMoi) {
+        try {
+            String response = dangNhapService.doiMatKhau(email, matKhauMoi);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }
