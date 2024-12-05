@@ -1,6 +1,7 @@
 package com.example.duantn.repository;
 
 import com.example.duantn.entity.NguoiDung;
+import com.example.duantn.query.NguoiDungQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,5 +18,7 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
     Optional<NguoiDung> findBySdt(String sdt);
     boolean existsByMaNguoiDung(String maNguoiDung);
     boolean existsByEmail(String email);
+    @Query(value = NguoiDungQuery.GET_TIM_KIEM_SDT_KH, nativeQuery = true)
+    List<Object[]> getSearchKhachHang(String phonePrefix);
 
 }

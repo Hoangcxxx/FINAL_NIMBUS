@@ -1,8 +1,10 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.dto.HoaDonDTO;
 import com.example.duantn.dto.LoginRequest;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.service.DangNhapService;
+import com.example.duantn.service.HoaDonService;
 import com.example.duantn.service.NguoiDungService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -12,15 +14,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/nguoi_dung")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
 public class NguoiDungController {
     @Autowired
     private DangNhapService dangNhapService;
     @Autowired
     private NguoiDungService nguoiDungService;
-
+    @Autowired
+    private HoaDonService hoaDonService;
     // Phương thức đăng ký
     @PostMapping("/dang_ky")
     public ResponseEntity<NguoiDung> dangKy(@RequestBody NguoiDung nguoiDung) {
@@ -44,11 +51,8 @@ public class NguoiDungController {
             System.out.println("Người dùng '" + nguoiDung.getEmail() + "' đăng nhập thành công với vai trò: " + nguoiDung.getVaiTro().getTen());
 
             // Kiểm tra vai trò của người dùng để phân quyền truy cập
-            if (nguoiDung.getVaiTro().getIdVaiTro() == 1) {
+            if (nguoiDung.getVaiTro().getIdVaiTro() == 2) {
                 // Quản trị viên, trả về quyền truy cập đầy đủ
-                return ResponseEntity.ok(nguoiDung);
-            } else if (nguoiDung.getVaiTro().getIdVaiTro() == 2) {
-                // Khách hàng, chỉ trả về thông tin người dùng cơ bản
                 return ResponseEntity.ok(nguoiDung);
             } else {
                 // Vai trò không hợp lệ

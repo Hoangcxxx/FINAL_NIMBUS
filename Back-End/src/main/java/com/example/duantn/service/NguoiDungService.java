@@ -1,5 +1,6 @@
 package com.example.duantn.service;
 
+import com.example.duantn.dto.TimKiemNguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.repository.NguoiDungRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class NguoiDungService {
@@ -144,4 +142,24 @@ public class NguoiDungService {
     public NguoiDung findById(Integer idNguoiDung) {
         return nguoiDungRepository.findById(idNguoiDung).orElse(null);
     }
+
+
+    public List<TimKiemNguoiDungDTO> searchKhachHangByPhone(String phonePrefix) {
+        String searchPattern = phonePrefix + "%"; // Tạo pattern tìm kiếm
+        List<Object[]> results = nguoiDungRepository.getSearchKhachHang(searchPattern);
+
+        // Ánh xạ Object[] thành TimKiemNguoiDungDTO
+        List<TimKiemNguoiDungDTO> nguoiDungDTOList = new ArrayList<>();
+        for (Object[] result : results) {
+            Integer idNguoiDung = (Integer) result[0];  // Lấy giá trị id_nguoi_dung
+            String tenNguoiDung = (String) result[1];   // Lấy giá trị ten_nguoi_dung
+            String sdt = (String) result[2];           // Lấy giá trị sdt
+
+            TimKiemNguoiDungDTO dto = new TimKiemNguoiDungDTO(idNguoiDung, tenNguoiDung, sdt);
+            nguoiDungDTOList.add(dto);
+        }
+
+        return nguoiDungDTOList;
+    }
+
 }

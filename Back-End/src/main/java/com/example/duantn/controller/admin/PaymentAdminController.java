@@ -3,10 +3,7 @@ package com.example.duantn.controller.admin;
 import com.example.duantn.config.Config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -16,6 +13,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/admin/payment")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class PaymentAdminController {
 
     @PostMapping("/creat_payment")

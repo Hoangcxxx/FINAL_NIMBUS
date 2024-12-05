@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/san_pham_chi_tiet")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
 public class SanPhamCTController {
     @Autowired
     private SanPhamChiTietService service;
@@ -40,10 +40,7 @@ public class SanPhamCTController {
     public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
         return getResponse(service.getById(idSanPhamCT), "idSanPham","maSanPham", "tenSanPham","tenDanhMuc","giaBan", "moTa", "ngayTao","tenDotGiamGia","giaKhuyenMai","giaTriGiamGia","kieuGiamGia","ngayBatDau","ngayKetThuc");
     }
-    @GetMapping("/findAllSanPhamCT/{idSanPham}")
-    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPham) {
-        return getResponse(service.getAllSanPhamCTById(idSanPham), "idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa","idSanPhamCT");
-    }
+
     // Cập nhật lại method để tìm kiếm sản phẩm chi tiết theo idSanPham và các tham số tùy chọn
     @GetMapping("/findSanPhamCT/{idSanPham}")
     public List<SanPhamChiTiet> timSanPhamChiTiet(
@@ -54,10 +51,6 @@ public class SanPhamCTController {
     ) {
         // Gọi service để tìm kiếm và trả về danh sách sản phẩm chi tiết
         return service.timSanPhamChiTiet(idSanPham, idChatLieu, idMauSac, idKichThuoc);
-    }
-    @GetMapping("/findSanPhamCTLonHon0/{idSanPhamCT}")
-    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTByIdSanPhamLonHon0(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getSanPhamCTByIdSanPhamLonHon0(idSanPhamCT), "idSanPhamCT","idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
     }
 
     @GetMapping("/mau_sac/{idSanPhamCT}")

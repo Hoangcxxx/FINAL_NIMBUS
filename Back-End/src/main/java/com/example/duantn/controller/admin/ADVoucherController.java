@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/vouchers")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class ADVoucherController {
 
     @Autowired
@@ -21,7 +21,21 @@ public class ADVoucherController {
     public List<Voucher> getAllVouchers() {
         return voucherService.getAllVouchers();
     }
+    // Tìm kiếm voucher theo mã voucher
+    @GetMapping("/search/maVoucher")
+    public Voucher searchByMaVoucher(@RequestParam String maVoucher) {
+        return voucherService.findByMaVoucher(maVoucher);
+    }
 
+    // Tìm kiếm voucher theo tên voucher (tìm theo tên chứa chuỗi con)
+    @GetMapping("/search/tenVoucher")
+    public List<Voucher> searchByTenVoucher(@RequestParam String tenVoucher) {
+        return voucherService.findByTenVoucher(tenVoucher);
+    }
+    @GetMapping("/search/kieuGiamGia")
+    public List<Voucher> searchByKieuGiamGia(@RequestParam Boolean kieuGiamGia) {
+        return voucherService.findByKieuGiamGia(kieuGiamGia);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Voucher> getVoucherById(@PathVariable Integer id) {
         return voucherService.getVoucherById(id)

@@ -1,7 +1,9 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.entity.HinhAnhSanPham;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
+import com.example.duantn.service.HinhAnhSanPhamService;
 import com.example.duantn.service.SanPhamChiTietService;
 import com.example.duantn.service.SanPhamService;
 import jakarta.transaction.Transactional;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/san_pham")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class ADSanPhamController {
 
     @Autowired
@@ -31,6 +33,17 @@ public class ADSanPhamController {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int SANPHAM_CODE_LENGTH = 5;
     private static final SecureRandom RANDOM = new SecureRandom();
+    @Autowired
+    private HinhAnhSanPhamService hinhAnhSanPhamService;
+
+    @GetMapping("/hinh_anh/{idSanPham}")
+    public ResponseEntity<List<HinhAnhSanPham>> getHinhAnhBySanPhamId(@PathVariable Integer idSanPham) {
+        List<HinhAnhSanPham> hinhAnhs = hinhAnhSanPhamService.getHinhAnhBySanPhamId(idSanPham);
+        if (hinhAnhs != null && !hinhAnhs.isEmpty()) {
+            return ResponseEntity.ok(hinhAnhs);
+        }
+        return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy hình ảnh
+    }
 
     // Hàm tạo mã sản phẩm ngẫu nhiên
     private String generateRandomProductCode() {

@@ -38,4 +38,9 @@ public class HoaDonDTO {
 	private String tenPhuongThucThanhToan;
 	private BigDecimal thanhTien;
 	private List<SanPhamChiTietDTO> listSanPhamChiTiet;
+	private Integer idTrangThaiHoaDon;
+	private String tenTrangThai;
+	private Integer idLoaiTrangThai;
+	private String tenLoaiTrangThai;
+	private Integer Loai;
 }

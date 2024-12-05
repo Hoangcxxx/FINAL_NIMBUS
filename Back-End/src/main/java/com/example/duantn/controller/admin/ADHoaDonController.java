@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/hoa_don")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class ADHoaDonController {
     @Autowired
     private HoaDonService hoaDonService;
@@ -65,6 +65,40 @@ public class ADHoaDonController {
     private List<Map<String, Object>> mapTrangThais(List<Object[]> results) {
         return results.stream().map(this::mapTrangThai).collect(Collectors.toList());
     }
+    private Map<String, Object> mapVoucher(Object[] row) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("maVoucher", row[0]);
+        map.put("tenVoucher", row[1]);
+        map.put("giaTriGiamGia", row[2]);
+        map.put("kieuGiamGia", row[3]);
+        return map;
+    }
+
+    private List<Map<String, Object>> mapVouchers(List<Object[]> results) {
+        return results.stream().map(this::mapVoucher).collect(Collectors.toList());
+    }
+    private Map<String, Object> mapSanPhamCT(Object[] row) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("idSanPhamCT", row[0]);
+        map.put("soLuong", row[1]);
+        map.put("trangThai", row[2]);
+        map.put("maSanPham", row[3]);
+        map.put("tenSanPham", row[4]);
+        map.put("giaBan", row[5]);
+        map.put("tenChatLieu", row[6]);
+        map.put("tenMauSac", row[7]);
+        map.put("tenKichThuoc", row[8]);
+        map.put("giaKhuyenMai", row[9]);
+        map.put("giaTriGiamGia", row[10]);
+        map.put("kieuGiamGia", row[11]);
+        map.put("tenDotGiamGia", row[12]);
+        map.put("tongTien", row[13]);
+        return map;
+    }
+
+    private List<Map<String, Object>> mapSanPhamCTs(List<Object[]> results) {
+        return results.stream().map(this::mapSanPhamCT).collect(Collectors.toList());
+    }
     @GetMapping("/findTrangThaiHoaDon/{idHoaDon}")
     public ResponseEntity<List<Map<String, Object>>> getTrangThaiHoaDonByIdHoaDon(@PathVariable Integer idHoaDon) {
         // Lấy danh sách các hóa đơn từ dịch vụ
@@ -74,6 +108,27 @@ public class ADHoaDonController {
         List<Map<String, Object>> filteredProducts = mapTrangThais(hoaDons);
 
         // Trả về ResponseEntity với dữ liệu là List<Map<String, Object>>
+        return ResponseEntity.ok(filteredProducts);
+    }
+    @GetMapping("/findVoucherHoaDon/{idHoaDon}")
+    public ResponseEntity<List<Map<String, Object>>> getVoucherHoaDonByIdHoaDon(@PathVariable Integer idHoaDon) {
+        // Lấy danh sách các hóa đơn từ dịch vụ
+        List<Object[]> hoaDons = hoaDonService.getVoucherHoaDonByIdHoaDon(idHoaDon);
+
+        // Chuyển đổi danh sách kết quả thành danh sách các Map
+        List<Map<String, Object>> filteredProducts = mapVouchers(hoaDons);
+
+        // Trả về ResponseEntity với dữ liệu là List<Map<String, Object>>
+        return ResponseEntity.ok(filteredProducts);
+    }
+
+    @GetMapping("/findSanPhamCTHoaDon/{idHoaDon}")
+    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTHoaDonByIdHoaDon(@PathVariable Integer idHoaDon) {
+        // Lấy danh sách các hóa đơn từ dịch vụ
+        List<Object[]> hoaDons = hoaDonService.getSanPhamCTHoaDonByIdHoaDon(idHoaDon);
+
+        // Chuyển đổi danh sách kết quả thành danh sách các Map
+        List<Map<String, Object>> filteredProducts = mapSanPhamCTs(hoaDons);
         return ResponseEntity.ok(filteredProducts);
     }
     @GetMapping("/findHoaDonCT/{idHoaDon}")

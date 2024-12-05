@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/dia_chi")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
 public class DiaChiVanChuyenController {
     @Autowired
     private DiaChiVanChuyenService diaChiVanChuyenService;

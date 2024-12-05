@@ -1,0 +1,191 @@
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <h1 class="page-title">Thêm Phiếu Giảm Giá Mới</h1>
+            <div class="admin-control mb-3">
+                <a href="#!phieu_giam_gia">
+                    <button type="button" class="btn btn-secondary">Quay Lại</button>
+                </a>
+            </div>
+            <div class="d-flex">
+                <div class="col-md-5 border border-3 rounded p-4 shadow-sm bg-light me-4">
+                    <form>
+                        <!-- Mã Phiếu -->
+                        <div class="mb-3">
+                            <label for="maPhieu" class="form-label">Mã Phiếu</label>
+                            <input type="text" class="form-control" id="maPhieu" placeholder="Tự động tạo nếu bỏ trống"
+                                ng-model="selectedVoucher.maVoucher">
+                        </div>
+
+                        <!-- Tên Phiếu -->
+                        <div class="mb-3">
+                            <label for="tenPhieu" class="form-label">Tên Phiếu</label>
+                            <input type="text" class="form-control" id="tenPhieu" placeholder="Phiếu giảm tháng mới"
+                                ng-model="selectedVoucher.tenVoucher">
+                        </div>
+
+                        <!-- Kiểu Giảm Giá -->
+                        <div class="mb-3">
+                            <label for="kieuGiamGia" class="form-label">Kiểu Giảm Giá</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <!-- Thêm id cho input radio -->
+                                    <input class="form-check-input" type="radio" name="kieuGiamGia"
+                                        ng-model="selectedVoucher.kieuGiamGia" value="true"
+                                        ng-checked="selectedVoucher.kieuGiamGia === true"
+                                        ng-change="onKieuGiamGiaChange()" id="kieuGiamGiaTrue">
+                                    <!-- Thêm for vào label để liên kết với id của input radio -->
+                                    <label class="form-check-label" for="kieuGiamGiaTrue">$</label>
+                                </div>
+
+                                <div class="form-check form-check-inline">
+                                    <!-- Thêm id cho input radio -->
+                                    <input class="form-check-input" type="radio" name="kieuGiamGia"
+                                        ng-model="selectedVoucher.kieuGiamGia" value="false"
+                                        ng-checked="selectedVoucher.kieuGiamGia === false"
+                                        ng-change="onKieuGiamGiaChange()" id="kieuGiamGiaFalse">
+                                    <!-- Thêm for vào label để liên kết với id của input radio -->
+                                    <label class="form-check-label" for="kieuGiamGiaFalse">%</label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Số % Chiết Khấu và Giá Trị Tối Đa -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="chietKhau" class="form-label">Giá trị giảm giá</label>
+                                <input type="number" class="form-control" id="chietKhau" placeholder="Giá trị"
+                                    ng-model="selectedVoucher.giaTriGiamGia">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="soTienToiThieu" class="form-label">Số Tiền Chi Tối Thiểu</label>
+                                <input type="number" class="form-control" id="soTienToiThieu" placeholder="VND"
+                                    ng-model="selectedVoucher.soTienToiThieu">
+                            </div>
+                        </div>
+
+                        <!-- Lượt Sử Dụng và Số Tiền Chi Tối Thiểu -->
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-6">
+                                <label for="luotSuDung" class="form-label">Số lượng</label>
+                                <input type="number" class="form-control" id="luotSuDung" placeholder="0"
+                                    ng-model="selectedVoucher.soLuong">
+                            </div>
+                            <div class="col-md-6" ng-if="selectedVoucher.kieuGiamGia === false">
+                                <label for="giaTriToiDa" class="form-label">Giá Trị Tối Đa</label>
+                                <input type="number" class="form-control" id="giaTriToiDa" placeholder="VND"
+                                    ng-model="selectedVoucher.giaTriToiDa">
+                            </div>
+
+                        </div>
+
+                        <!-- Ngày Bắt Đầu và Ngày Kết Thúc -->
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-6">
+                                <label for="ngayBatDau" class="form-label">Ngày Bắt Đầu</label>
+                                <input type="date" class="form-control" id="ngayBatDau" required
+                                    ng-model="selectedVoucher.ngayBatDau">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ngayKetThuc" class="form-label">Ngày Kết Thúc</label>
+                                <input type="date" class="form-control" id="ngayKetThuc" required
+                                    ng-model="selectedVoucher.ngayKetThuc">
+                            </div>
+                        </div>
+
+                        <!-- Gửi Mail Cho Khách Hàng -->
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" id="guiMail">
+                            <label class="form-check-label" for="guiMail">Gửi Mail Cho Khách Hàng</label>
+                        </div>
+
+                        <!-- Nút Tạo Mới và Quay Lại -->
+                        <div class="mt-4 text-center">
+                            <button type="button" class="btn btn-primary form-control"
+                                ng-click="createOrUpdateVoucher()">Lưu</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Bảng Khách Hàng -->
+                <div class="col-md-7">
+                    <h5>Danh Sách Khách Hàng</h5>
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                                <input type="checkbox" ng-model="selectAll"
+                                                    ng-change="selectAllCustomers()">
+                                            </th>
+                                            <th scope="col">Ảnh Đại Diện</th>
+                                            <th scope="col">Tên</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">SĐT</th>
+                                            <th scope="col">Giới Tính</th>
+                                            <th scope="col">Ngày Sinh</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in dsKhachHang track by $index">
+                                            <th scope="row">
+                                                <input type="checkbox" ng-model="item.selected"
+                                                    ng-change="updateSelectAll()">
+                                            </th>
+                                            <td>{{item.anhDaiDien}}</td>
+                                            <td>{{item.tenNguoiDung}}</td>
+                                            <td>{{item.email}}</td>
+                                            <td>{{item.sdt}}</td>
+                                            <td>{{item.gioiTinh}}</td>
+                                            <td>{{item.ngaySinh}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<!--Modal Loại voucher -->
+<div class="modal fade" id="loaiVoucherModal" tabindex="-1" role="dialog" aria-labelledby="loaiVoucherModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loaiVoucherModal">{{'Thêm loại voucher mới'}}
+                </h5>
+                <button class="modal-close product-form" data-bs-dismiss="modal" ng-click="resetModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm" ng-submit="onCreateLoaiVoucher()">
+                    <div class="form-group">
+                        <label for="ten_chat_lieu">Tên loại voucher:</label>
+                        <input type="text" class="form-control" ng-model="voucher.tenLoaiVoucher" id="tenLoaiVoucher"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mo_ta">Mô Tả:</label>
+                        <textarea class="form-control" ng-model="voucher.moTa" id="mo_ta"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-click="resetModal()">
+                            Quay lại
+                        </button>
+                        <button type="submit" class="btn btn-primary">{{'Thêm Loại Voucher'}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

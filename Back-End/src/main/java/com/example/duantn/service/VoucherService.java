@@ -3,6 +3,7 @@ package com.example.duantn.service;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -33,10 +34,23 @@ public class VoucherService {
     private static final int VOUCHER_CODE_LENGTH = 8;
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    // Phương thức để lấy danh sách voucher sắp xếp theo ngày tạo
     public List<Voucher> getAllVouchers() {
-        return voucherRepository.findAll();
+        return voucherRepository.findAll(Sort.by(Sort.Order.desc("ngayTao")));
+    }
+    // Tìm kiếm voucher theo mã voucher
+    public Voucher findByMaVoucher(String maVoucher) {
+        return voucherRepository.findByMaVoucher(maVoucher);
     }
 
+    // Tìm kiếm voucher theo tên voucher (sử dụng LIKE)
+    public List<Voucher> findByTenVoucher(String tenVoucher) {
+        return voucherRepository.findByTenVoucherContaining(tenVoucher);
+    }
+    // Tìm kiếm voucher theo tên voucher (sử dụng LIKE)
+    public List<Voucher> findByKieuGiamGia(Boolean kieuGiamGia) {
+        return  voucherRepository.findByKieuGiamGia(kieuGiamGia);
+    }
     public Optional<Voucher> getVoucherById(Integer id) {
         return voucherRepository.findById(id);
     }

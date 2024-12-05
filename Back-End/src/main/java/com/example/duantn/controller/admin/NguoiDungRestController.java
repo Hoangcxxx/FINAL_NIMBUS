@@ -1,5 +1,6 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.dto.TimKiemNguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.entity.VaiTro;
 import com.example.duantn.service.NguoiDungService;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class NguoiDungRestController {
     @Autowired
     private NguoiDungService nguoiDungService;
@@ -33,5 +34,10 @@ public class NguoiDungRestController {
         nguoiDung.setVaiTro(vaiTro);
         NguoiDung savedNguoiDung = nguoiDungService.addNguoiDung1(nguoiDung);
         return new ResponseEntity<>(savedNguoiDung, HttpStatus.CREATED);
+    }
+    @GetMapping("/khach_hang/search")
+    public ResponseEntity<List<TimKiemNguoiDungDTO>> searchCustomer(@RequestParam String phonePrefix) {
+        List<TimKiemNguoiDungDTO> result = nguoiDungService.searchKhachHangByPhone(phonePrefix);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 @Controller
 @RequestMapping("/api/nguoi_dung/hoa_don")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
 public class HoaDonController {
 
     @Autowired
@@ -67,5 +67,23 @@ public class HoaDonController {
         }
     }
 
+    @GetMapping("/user/{idNguoiDung}")
+    public ResponseEntity<Map<String, Object>> hienthi(@PathVariable Integer idNguoiDung) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // Lấy danh sách hóa đơn của người dùng
+            List<HoaDonDTO> hoaDonList = hoaDonService.getHoaDonByUserId(idNguoiDung);
 
+            if (hoaDonList != null && !hoaDonList.isEmpty()) {
+                response.put("hoaDon", hoaDonList);
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("error", "Không tìm thấy hóa đơn nào cho người dùng có ID: " + idNguoiDung);
+                return ResponseEntity.status(404).body(response);
+            }
+        } catch (Exception e) {
+            response.put("error", "Lỗi khi lấy thông tin hóa đơn!");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }

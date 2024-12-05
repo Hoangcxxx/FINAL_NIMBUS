@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/test")
-@CrossOrigin(origins = "http://127.0.0.1:5500") // Đảm bảo frontend có thể gọi được API từ domain này
+@CrossOrigin(origins = "http://127.0.0.1:5502") // Đảm bảo frontend có thể gọi được API từ domain này
 public class LocationController {
     @Autowired
     private final TestDemoService testDemoSevice;
