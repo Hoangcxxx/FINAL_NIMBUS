@@ -1,0 +1,33 @@
+<section id="wrapper">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card shadow-lg" style="width: 100%; max-width: 400px;">
+            <div class="card-body">
+                <h2 class="text-center mb-4">Đăng nhập</h2>
+                <form ng-submit="dangNhap()">
+                    <!-- Email Input -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="email" class="form-control" id="email" ng-model="email" placeholder="Email" required>
+                        </div>
+                    </div>
+
+                    <!-- Mật khẩu Input -->
+                    <div class="mb-3">
+                        <label for="matKhau" class="form-label">Mật khẩu</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="matKhau" ng-model="matKhau" placeholder="Mật khẩu" required>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

@@ -26,6 +26,8 @@ public class GioHangService {
     @Autowired
     private GioHangRepository gioHangRepository;
     @Autowired
+    private GiamGiaSanPhamRepository giamGiaSanPhamRepository;
+    @Autowired
     private LoaiThongBaoRepository loaiThongBaoRepository;
     @Autowired
     private ThongBaoRepository thongBaoRepository;
@@ -304,8 +306,18 @@ public class GioHangService {
             // Cập nhật số lượng và tính lại thanh tiền
             int oldQuantity = gioHangChiTiet.getSoLuong();
             gioHangChiTiet.setSoLuong(soLuong);
-            BigDecimal newThanhTien = sanPhamChiTiet.getSanPham().getGiaBan().multiply(BigDecimal.valueOf(soLuong));
-            gioHangChiTiet.setThanhTien(newThanhTien);
+            BigDecimal giaBan = sanPhamChiTiet.getSanPham().getGiaBan();
+
+            // Kiểm tra giá khuyến mãi
+            Optional<BigDecimal> giaKhuyenMaiOpt = giamGiaSanPhamRepository.findGiaKhuyenMaiHienTaiBySanPhamId(
+                    sanPhamChiTiet.getSanPham().getIdSanPham()
+            );
+
+            BigDecimal giaApDung = giaKhuyenMaiOpt.orElse(giaBan); // Ưu tiên giá khuyến mãi nếu có
+
+            // Tính thành tiền
+            BigDecimal thanhTien = giaApDung.multiply(BigDecimal.valueOf(soLuong));
+            gioHangChiTiet.setThanhTien(thanhTien);
             gioHangChiTiet.setNgayCapNhat(new Date());
             gioHangChiTietRepository.save(gioHangChiTiet);
 
@@ -316,7 +328,6 @@ public class GioHangService {
             throw new RuntimeException("Chi tiết giỏ hàng không tồn tại.");
         }
     }
-
 
 
 

@@ -16,7 +16,7 @@
                     <image src="/view-admin/assets/image/admin/nb-fasion-title.png" style="height: 44px;" alt="">
                 </div>
             </div>
-            <div class="middle-sidebar">
+            <div class="middle-sidebar" ng-if="infoUser">
                 <ul class="sidebar-list">
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'trang_chu'}">
                         <a href="#!trang_chu" class="sidebar-link" ng-click="setActiveTab('trang_chu')">
@@ -62,27 +62,25 @@
                     </li>
                 </ul>
             </div>
-            <div class="bottom-sidebar" >
+            <div class="bottom-sidebar">
                 <ul class="sidebar-list">
-                    <li class="sidebar-list-item user-logout">
-                        <a href="/" class="sidebar-link">
-                            <div class="sidebar-icon"><i class="fa-thin fa-circle-chevron-left"></i></div>
-                            <div class="hidden-sidebar">Trang chủ</div>
-                        </a>
-                    </li>
+                    <!-- Chỉ hiển thị nếu người dùng đã đăng nhập -->
                     <li class="sidebar-list-item user-logout" ng-if="infoUser">
                         <a href="#" class="sidebar-link">
                             <div class="sidebar-icon"><i class="fa-light fa-circle-user"></i></div>
-                            <div class="hidden-sidebar" id="name-acc">
-                                {{ tenNguoiDung }}
-                            </div>
+                            <div class="hidden-sidebar">{{ tenNguoiDung }}</div>
                         </a>
                     </li>
-                    <li class="sidebar-list-item user-logout" ng-click="dangXuat()" ng-if="infoUser">
-                        <a href="#" class="sidebar-link" id="logout-acc">
+                    <li class="sidebar-list-item user-logout" ng-if="infoUser">
+                        <a href="#" ng-click="dangXuat()" class="sidebar-link">
                             <div class="sidebar-icon"><i class="fa-light fa-arrow-right-from-bracket"></i></div>
                             <div class="hidden-sidebar">Đăng xuất</div>
                         </a>
+                    </li>
+                    <!-- Ẩn nếu chưa đăng nhập -->
+                    <li ng-if="!infoUser" class="mt-3" style="font-size: 20px;">
+                        <i class="fa-light fa-circle-user"></i>
+                        <a class="text-decoration-none text-black" href="#!dang_nhap">Đăng nhập</a>
                     </li>
                 </ul>
             </div>

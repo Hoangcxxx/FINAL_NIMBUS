@@ -5,72 +5,56 @@ window.BanHangController = function ($scope, $http, $window, $location) {
     $scope.pageChanged = function (newPage) {
         $scope.currentPage = newPage;
     };
-
-    $scope.getUsers = function () {
-        console.log("Người dùng đã chọn:", $scope.selectedUser);
-        $http.get('http://localhost:8080/api/admin/khach_hang')
-            .then(function (response) {
-                console.log('Dữ liệu người dùng:', response.data);
-                $scope.users = response.data;
-                $scope.filteredUsers = $scope.users; // Khởi tạo danh sách đã lọc
-                $scope.searchTerm = "";
-                $scope.getCartItems();
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy dữ liệu người dùng:', error);
-            });
-    };
-    $scope.filterUsers = function () {
-        if (!$scope.searchTerm) {
-            $scope.filteredUsers = [];
-            $scope.showDropdown = false;
-        } else {
-            // Lọc danh sách người dùng theo từ khóa
-            $scope.filteredUsers = $scope.users.filter(function (user) {
-                const sdt = user.sdt || ''; // Nếu sdt là null hoặc undefined, gán giá trị mặc định là chuỗi rỗng
-                return user.tenNguoiDung.toLowerCase().includes($scope.searchTerm.toLowerCase()) ||
-                    sdt.includes($scope.searchTerm); // Kiểm tra trên sdt đã được đảm bảo là chuỗi
-            });
-            $scope.showDropdown = true;
-        }
-        $scope.getCartItems();
-    };
-
-
-    $scope.selectUser = function (user) {
-        $scope.searchTerm = user.tenNguoiDung; // Hiển thị tên người dùng vào ô tìm kiếm
-        $scope.selectedUser = user;
-        $scope.showDropdown = false; // Ẩn dropdown khi người dùng đã chọn
-        $scope.getCartItems();
-    };
-
-    $scope.nvs = [];
-    $scope.getNV = function () {
-        console.log("Người dùng đã chọn:", $scope.selectedUser);
-        $http.get('http://localhost:8080/api/admin/nhan_vien')
-            .then(function (response) {
-                $scope.selectedEmployeeName = $scope.nvs.tenNguoiDung;
-                console.log('Dữ liệu người dùng:', response.data);
-                $scope.nvs = response.data;
-            })
-
-            .catch(function (error) {
-                console.error('Lỗi khi lấy dữ liệu người dùng:', error);
-            });
-    };
-    $scope.newCustomer = {
-        tenNguoiDung: '',
-        sdt: ''
-    };
+    $scope.searchTerm = '';
+    $scope.filteredUsers = [];
+    $scope.showDropdown = false; // Hiển thị danh sách dropdown
     $scope.openAddCustomerModal = function () {
         $scope.isAddCustomerModalOpen = true;
     };
     $scope.closeAddCustomerModal = function () {
         $scope.isAddCustomerModalOpen = false;
         $scope.newCustomer.tenNguoiDung = '';
-        $scope.newCustomer.sdt = '';
+        $scope.newCustomer.sdtNguoiDung = '';
+    };
+    $scope.filterUsers = function () {
+        if ($scope.searchTerm.trim().length === 0) {
+            $scope.filteredUsers = [];
+            $scope.showDropdown = false;
+            return;
+        }
+
+        $http({
+            method: 'GET',
+            url: 'http://localhost:8080/api/admin/khach_hang/search',
+            params: { phonePrefix: $scope.searchTerm }
+        }).then(function (response) {
+            $scope.filteredUsers = response.data; // Gán kết quả trả về
+            $scope.showDropdown = $scope.filteredUsers.length > 0;
+        }).catch(function (error) {
+            console.error('Lỗi khi gọi API:', error);
+            $scope.filteredUsers = [];
+            $scope.showDropdown = false;
+        });
+    };
+    $scope.selectUser = function (user) {
+        $scope.selectedUser = user;  // Lưu thông tin người dùng đã chọn vào selectedUser
+        $scope.searchTerm = user.tenNguoiDung + ' - ' + user.sdt;  // Hiển thị thông tin khách hàng
+        $scope.showDropdown = false;  // Ẩn dropdown
+    
+        // Lưu thông tin người dùng vào localStorage
+        localStorage.setItem('selectedUser', JSON.stringify(user));
+    };
+    
+    $scope.newCustomer = {
+        tenNguoiDung: '',
+        sdt: ''
     };
     $scope.addCustomer = function () {
+        // Đảm bảo các biến đã được khởi tạo
+        $scope.users = $scope.users || [];
+        $scope.newCustomer = $scope.newCustomer || {};
+
+        // Kiểm tra tên khách hàng
         if (!$scope.newCustomer.tenNguoiDung || $scope.newCustomer.tenNguoiDung.trim() === '') {
             Swal.fire({
                 title: 'Lỗi!',
@@ -81,6 +65,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             return;
         }
 
+        // Kiểm tra số điện thoại
         if (!$scope.newCustomer.sdt || $scope.newCustomer.sdt.trim() === '') {
             Swal.fire({
                 title: 'Lỗi!',
@@ -91,7 +76,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             return;
         }
 
-        // Kiểm tra định dạng số điện thoại (ví dụ: chỉ cho phép số từ 10-11 chữ số)
+        // Kiểm tra định dạng số điện thoại
         const phoneRegex = /^[0-9]{10,11}$/;
         if (!phoneRegex.test($scope.newCustomer.sdt)) {
             Swal.fire({
@@ -102,7 +87,9 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
             return;
         }
-        let isPhoneDuplicate = $scope.users.some(user => user.sdt === $scope.newCustomer.sdt.trim());
+
+        // Kiểm tra trùng lặp số điện thoại
+        const isPhoneDuplicate = $scope.users.some(user => user.sdt === $scope.newCustomer.sdt.trim());
         if (isPhoneDuplicate) {
             Swal.fire({
                 title: 'Lỗi!',
@@ -112,17 +99,19 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
             return;
         }
-        // Dữ liệu hợp lệ, tiến hành gọi API
-        let customerData = {
+
+        // Dữ liệu hợp lệ, gọi API thêm khách hàng
+        const customerData = {
             tenNguoiDung: $scope.newCustomer.tenNguoiDung.trim(),
             sdt: $scope.newCustomer.sdt.trim(),
         };
 
         $http.post('http://localhost:8080/api/admin/khach_hang/add', customerData)
             .then(function (response) {
-                console.log('Khách hàng đã được thêm:', response.data);
-                $scope.getUsers();
-                $scope.closeAddCustomerModal();
+                // Thêm khách hàng mới vào danh sách hiện tại
+                $scope.users.push(response.data);
+
+                $('#addCustomerModal').modal('hide');  // Đóng modal
                 Swal.fire({
                     title: 'Thành công!',
                     text: 'Khách hàng đã được thêm thành công!',
@@ -147,18 +136,9 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             .then(function (response) {
                 console.log('Danh sách hóa đơn chưa thanh toán:', response.data);
                 $scope.unpaidInvoices = response.data;
-
-                // Nếu có hóa đơn chưa thanh toán, chọn hóa đơn đầu tiên
-                if ($scope.unpaidInvoices.length > 0) {
-                    // Lấy idNguoiDung từ hóa đơn đầu tiên và gán vào searchTerm
-                    let firstInvoice = $scope.unpaidInvoices[0];
-                    $scope.selectedUser = firstInvoice.nguoiDung; // gán đối tượng người dùng từ hóa đơn
-                    $scope.searchTerm = firstInvoice.nguoiDung.tenNguoiDung; // Hiển thị tên người dùng lên ô tìm kiếm
-
-                    // Tiếp tục xử lý các công việc khác nếu cần
-                    $scope.getCartItems();
-                }
-
+                // if ($scope.unpaidInvoices.length > 0) {
+                //     $scope.selectInvoice($scope.unpaidInvoices[0]);
+                // }
                 if ($scope.unpaidInvoices.length >= 5) {
                     Swal.fire({
                         title: 'Thông báo!',
@@ -173,12 +153,11 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
     };
 
-
     $scope.createInvoice = function () {
         console.log("Selected User:", $scope.selectedUser);
 
         // Kiểm tra xem đã chọn người dùng chưa
-        if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung) {
+        if (!$scope.selectedUser|| !$scope.selectedUser.idNguoiDung) {
             Swal.fire({
                 title: 'Lỗi!',
                 text: 'Vui lòng chọn người dùng trước khi tạo hóa đơn.',
@@ -211,9 +190,10 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
                 // Tải lại danh sách hóa đơn chưa thanh toán
                 $scope.getUnpaidInvoices();
-                $scope.searchTerm = ""; // Reset ô tìm kiếm
-                $scope.selectedUser = null; // Xóa thông tin người dùng đã chọn
-                $scope.filteredUsers = [];
+                $scope.selectedUser = null;
+                $scope.searchTerm = ""; // Xóa thông tin tìm kiếm
+                $scope.filteredUsers = []; // Xóa danh sách người dùng tìm kiếm
+                $scope.showDropdown = false; // Ẩn dropdown
             })
             .catch(function (error) {
                 console.error('Lỗi khi tạo hóa đơn:', error);
@@ -226,49 +206,65 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
     };
 
-    $scope.openDeleteModal = function (invoiceId) {
-        $scope.invoiceToDelete = invoiceId;
+    $scope.deleteInvoice = function (idHoaDon) {
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa hóa đơn này?',
+            text: 'Hành động này không thể hoàn tác!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $http.delete('http://localhost:8080/api/admin/hoa_don_ban_hang/delete/' + idHoaDon)
+                    .then(function (response) {
+                        Swal.fire({
+                            title: 'Đã xóa!',
+                            text: 'Hóa đơn đã được xóa thành công.',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        // Cập nhật danh sách hóa đơn nếu cần
+                        $scope.getUnpaidInvoices();
+                    })
+                    .catch(function (error) {
+                        console.error('Lỗi khi xóa hóa đơn:', error);
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Không thể xóa hóa đơn. Vui lòng thử lại!',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+            }
+        });
     };
 
-    $scope.confirmDelete = function () {
-        if ($scope.invoiceToDelete) {
-            $scope.deleteInvoice($scope.invoiceToDelete);
-            $scope.invoiceToDelete = null;
-        }
-    };
-    $scope.deleteInvoice = function (invoiceId) {
-        console.log('ID hóa đơn cần xóa:', invoiceId);
-        if (invoiceId) {
-            $http.delete(' http://localhost:8080/api/admin/hoa_don_ban_hang/delete/' + invoiceId)
-                .then(function (response) {
-                    console.log('Hóa đơn đã được xóa:', response.data);
-                    $scope.getUnpaidInvoices();
-                    Swal.fire({
-                        title: 'Thành công!',
-                        text: 'Xóa hóa đơn thành công!',
-                        icon: 'success',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                })
-            // .catch(function (error) {
-            //     console.error('Lỗi khi xóa hóa đơn:', error);
-            // });
-        }
-    };
     $scope.selectedProductDetails = [];
     $scope.showProductDetails = function (sp) {
-        const idSanPham = sp.idSanPham; // Lấy ID sản phẩm từ sản phẩm đã click
+        const idSanPham = sp.idSanPham;
         $http.get(`http://localhost:8080/api/admin/ban_hang/chi_tiet?id_san_pham=${idSanPham}`)
             .then(function (response) {
                 $scope.selectedProductDetails = response.data; // Gán dữ liệu chi tiết vào scope
                 console.log('Chi tiết sản phẩm:', $scope.selectedProductDetails);
-
                 // Hiển thị modal hoặc chi tiết sản phẩm
                 $('#productDetailsModal').modal('show'); // Hiển thị modal (nếu sử dụng Bootstrap)
             })
             .catch(function (error) {
                 console.error("Có lỗi xảy ra khi gọi API chi tiết sản phẩm:", error);
+            });
+    };
+    $scope.getProductDetails = function () {
+        $http.get('http://localhost:8080/api/admin/ban_hang/all_quay')
+            .then(function (response) {
+                $scope.sanPhamChiTietList = response.data;
+                console.log('Danh sách sản phẩm chi tiết:', $scope.sanPhamChiTietList);
+            })
+            .catch(function (error) {
+                console.error("Có lỗi xảy ra khi gọi API sản phẩm chi tiết:", error);
             });
     };
     $scope.colorOptions = ["Đỏ", "Xanh", "Vàng", "Trắng"]; // Các màu sắc có sẵn
@@ -288,16 +284,8 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         });
     };
 
-    $scope.getProductDetails = function () {
-        $http.get('http://localhost:8080/api/admin/ban_hang/all_quay')
-            .then(function (response) {
-                $scope.sanPhamChiTietList = response.data;
-                console.log('Danh sách sản phẩm chi tiết:', $scope.sanPhamChiTietList);
-            })
-            .catch(function (error) {
-                console.error("Có lỗi xảy ra khi gọi API sản phẩm chi tiết:", error);
-            });
-    };
+
+
     $scope.selectInvoice = function (invoice) {
         console.log("Hóa đơn đã chọn:", invoice);
 
@@ -312,12 +300,32 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             return;
         }
 
+        // Gửi yêu cầu lấy chi tiết hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don_ban_hang/' + invoice.idHoaDon)
             .then(function (response) {
                 console.log('Chi tiết hóa đơn:', response.data);
                 $scope.selectedInvoice = response.data;
 
-                // Gọi hàm khác nếu cần xử lý chi tiết hóa đơn
+                // Kiểm tra xem có thông tin người dùng không
+                const nguoiDung = response.data.nguoiDung;
+                if (nguoiDung && nguoiDung.idNguoiDung) {
+                    // Hiển thị thông tin khách hàng lên ô tìm kiếm
+                    $scope.searchTerm = nguoiDung.tenNguoiDung + ' - ' + nguoiDung.sdt;
+                    console.log("Người dùng đã chọn:", nguoiDung);
+
+                    // Lưu thông tin người dùng và hóa đơn vào localStorage/sessionStorage
+                    localStorage.setItem('selectedInvoice', JSON.stringify(invoice));  // Lưu hóa đơn
+                    localStorage.setItem('selectedUser', JSON.stringify(nguoiDung));  // Lưu người dùng
+                } else {
+                    console.error("Không có thông tin người dùng.");
+                    Swal.fire({
+                        title: 'Thông báo!',
+                        text: 'Không có thông tin người dùng!',
+                        icon: 'warning',
+                        confirmButtonText: 'OK'
+                    });
+                }
+
                 $scope.getCartItems();
             })
             .catch(function (error) {
@@ -330,6 +338,8 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 });
             });
     };
+
+
     $scope.calculateChange = function () {
         var tienKhachDua = $scope.tienKhachDua ? $scope.tienKhachDua.replace(/,/g, '') : '0';
         tienKhachDua = parseFloat(tienKhachDua);
@@ -353,8 +363,11 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         console.log("Tổng tiền thanh toán:", totalPrice);
         console.log("Tiền thừa:", $scope.tienThua);
     };
-    $scope.addToCart = function (idSanPhamChiTiet) {
-        if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung) {
+    $scope.addToCart = function (detail) {
+        // Lấy thông tin người dùng từ localStorage
+        let userFromStorage = JSON.parse(localStorage.getItem('selectedUser'));
+
+        if (!userFromStorage || !userFromStorage.idNguoiDung) {
             Swal.fire({
                 title: 'Lỗi!',
                 text: 'Vui lòng chọn người dùng trước khi thêm sản phẩm vào giỏ hàng.',
@@ -363,63 +376,74 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
             return;
         }
-        $scope.addToCart = function (detail) {
-            let donGia = detail.gia_khuyen_mai || detail.gia_ban;
 
-            // Tính thành tiền (giả sử số lượng là 1)
-            let soLuong = detail.soLuong || 1;
-            let thanhTien = donGia * soLuong;
-
-            let cartItem = {
-                idSanPhamChiTiet: detail.id_san_pham_chi_tiet, // ID sản phẩm chi tiết
-                soLuong: 1,
-                donGia: donGia,
-                thanhTien: thanhTien
-            };
-
-            // Gửi yêu cầu thêm sản phẩm vào giỏ hàng
-            $http.post('http://localhost:8080/api/admin/gio_hang/them/' + $scope.selectedUser.idNguoiDung, cartItem)
-                .then(function (response) {
-                    console.log('Sản phẩm đã được thêm vào giỏ hàng:', response.data);
-                    Swal.fire({
-                        title: 'Thành công!',
-                        text: 'Thêm giỏ hàng thành công!',
-                        icon: 'success',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                    $scope.showProductDetails({ idSanPham: detail.id_san_pham });
-                    return $scope.getCartItems();
-
-                })
-                .then(function () {
-                    $scope.calculateTotalPrice(); // Tính toán tổng giá
-                })
-                .catch(function (error) {
-                    console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
-                });
+        let donGia = detail.gia_khuyen_mai || detail.gia_ban; 
+        let soLuong = detail.soLuong || 1; 
+        let thanhTien = donGia * soLuong;
+        console.log("DonGia:", donGia, "SoLuong:", soLuong, "ThanhTien:", thanhTien);
+        let cartItem = {
+            idSanPhamChiTiet: detail.id_san_pham_chi_tiet, // ID sản phẩm chi tiết
+            soLuong: soLuong, // Số lượng
+            donGia: donGia, // Đơn giá
+            thanhTien: thanhTien // Thành tiền
         };
-    }
+
+        // Gửi yêu cầu thêm sản phẩm vào giỏ hàng
+        $http.post('http://localhost:8080/api/admin/gio_hang/them/' + userFromStorage.idNguoiDung, cartItem)
+            .then(function (response) {
+                console.log('Sản phẩm đã được thêm vào giỏ hàng:', response.data);
+                Swal.fire({
+                    title: 'Thành công!',
+                    text: 'Thêm giỏ hàng thành công!',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                $scope.showProductDetails({ idSanPham: detail.id_san_pham });
+                    return $scope.getCartItems();
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Không thể thêm sản phẩm vào giỏ hàng!',
+                    icon: 'error',
+                    confirmButtonText: 'Đóng'
+                });
+            });
+    };
+
+
 
     $scope.getCartItems = function () {
-        if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung) {
+        const selectedUser = JSON.parse(localStorage.getItem('selectedUser'));
+        const selectedInvoice = JSON.parse(localStorage.getItem('selectedInvoice'));
+
+        if (!selectedUser || !selectedUser.idNguoiDung) {
             console.log("Không có ID người dùng.");
             return;
         }
-        $http.get('http://localhost:8080/api/admin/gio_hang/lay/' + $scope.selectedUser.idNguoiDung)
+
+        if (!selectedInvoice || !selectedInvoice.idHoaDon) {
+            console.log("Không có ID hóa đơn.");
+            return;
+        }
+
+        $http.get('http://localhost:8080/api/admin/gio_hang/lay/' + selectedUser.idNguoiDung)
             .then(function (response) {
                 console.log('Danh sách sản phẩm trong giỏ hàng:', response.data);
                 $scope.cartItems = response.data;
                 $scope.isCartEmpty = $scope.cartItems.length === 0;
                 $scope.calculateTotalPrice();
-                $scope.getProductDetails() // sau khi lấy thêm giỏ hàng thì load lại spct nhé kkk
-
+                $scope.getProductDetails();
             })
             .catch(function (error) {
                 console.error('Lỗi khi lấy giỏ hàng:', error);
                 alert("Có lỗi xảy ra khi lấy giỏ hàng!");
             });
     };
+
 
 
     $scope.voucherCode = '';
@@ -487,6 +511,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         // Cập nhật lại giá trị giảm và tổng tiền sau giảm giá
         $scope.discount = discount;
     };
+
     $scope.getVoucher = function () {
         if ($scope.voucherCode) {
             // Tính tổng tiền chưa giảm giá (gốc)
@@ -511,7 +536,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             let requestData = { totalPrice: originalTotalPrice };
 
             // Gửi yêu cầu API kiểm tra voucher
-            $http.post('http://localhost:8080/api/admin/ban_hang/use/' + $scope.voucherCode, requestData)
+            $http.post('http://localhost:8080/api/admin/ban_hang/apma' + $scope.voucherCode, requestData)
                 .then(function (response) {
                     $scope.selectedVoucher = response.data; // Nhận voucher đã chọn từ phản hồi API
                     console.log("Voucher đã áp dụng:", $scope.selectedVoucher);
@@ -539,6 +564,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         text: error.data || 'Mã voucher không hợp lệ hoặc không thể sử dụng.',
                         confirmButtonText: 'Thử lại'
                     });
+
                     $scope.voucherError = error.data || 'Mã voucher không hợp lệ hoặc không thể sử dụng!';
                 });
         }
@@ -629,35 +655,83 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
 
     $scope.deleteCartItem = function (productId) {
-        const userId = $scope.selectedUser.idNguoiDung;
-        $http.delete('http://localhost:8080/api/admin/gio_hang/xoa-san-pham/' + userId + '/' + productId)
-            .then(function (response) {
-                console.log('Sản phẩm đã được xóa khỏi giỏ hàng:', response.data);
-                $scope.getCartItems(); // Load lại giỏ hàng
-                $scope.getProductDetails(); // Load lại sản phẩm
-                $scope.calculateTotalPrice(); // Tính toán lại tổng tiền sau khi xóa sản phẩm
+        // Lấy thông tin người dùng từ localStorage
+        let userFromStorage = JSON.parse(localStorage.getItem('selectedUser'));
 
-                Swal.fire({
-                    title: 'Thành công!',
-                    text: 'Xóa giỏ hàng thành công!',
-                    icon: 'success',
-                    timer: 1500,  // Đóng sau 2 giây
-                    showConfirmButton: false
-                });
+        if (!userFromStorage || !userFromStorage.idNguoiDung) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng chọn người dùng trước khi thực hiện thao tác.',
+                icon: 'error',
+                confirmButtonText: 'Đóng'
+            });
+            return;
+        }
 
+        const userId = userFromStorage.idNguoiDung;
+
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?',
+            text: 'Hành động này không thể hoàn tác!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $http.delete('http://localhost:8080/api/admin/gio_hang/xoa-san-pham/' + userId + '/' + productId)
+                    .then(function (response) {
+                        console.log('Sản phẩm đã được xóa khỏi giỏ hàng:', response.data);
+                        $scope.getCartItems(); // Load lại giỏ hàng
+                        $scope.getProductDetails(); // Load lại sản phẩm
+                        $scope.calculateTotalPrice(); // Tính toán lại tổng tiền sau khi xóa sản phẩm
+
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: 'Sản phẩm đã được xóa khỏi giỏ hàng.',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    })
+                    .catch(function (error) {
+                        console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Không thể xóa sản phẩm khỏi giỏ hàng. Vui lòng thử lại!',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+            }
+        });
+    };
+
+
+    $scope.deleteCart = function () {
+        // Lấy thông tin người dùng từ localStorage
+        let userFromStorage = JSON.parse(localStorage.getItem('selectedUser'));
+    
+        const userId = userFromStorage.idNguoiDung;
+    
+        // Gửi yêu cầu xóa giỏ hàng
+        $http.delete('http://localhost:8080/api/admin/gio_hang/xoa-tat-ca/' + userId)
+            .then(function(response) {
+                console.log('Giỏ hàng đã được xóa:', response.data);
+                // Có thể thêm các tác vụ sau khi xóa giỏ hàng nếu cần
             })
-            .catch(function (error) {
-                console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
-                alert("Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng!");
+            .catch(function(error) {
+                console.error('Lỗi khi xóa giỏ hàng:', error);
             });
     };
-
-    $scope.deleteCart = function (productId) {
-        const userId = $scope.selectedUser.idNguoiDung;
-        $http.delete('http://localhost:8080/api/admin/gio_hang/xoa-tat-ca/' + userId)
-    };
+    
     $scope.updateQuantity = function (item) {
-        if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung) {
+        // Lấy thông tin người dùng từ localStorage
+        let userFromStorage = JSON.parse(localStorage.getItem('selectedUser'));
+
+        if (!userFromStorage || !userFromStorage.idNguoiDung) {
             Swal.fire({
                 title: 'Lỗi!',
                 text: 'Vui lòng chọn người dùng trước khi thực hiện thao tác.',
@@ -668,7 +742,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         }
 
         // Lấy userId từ selectedUser
-        const userId = $scope.selectedUser.idNguoiDung;
+        const userId = userFromStorage.idNguoiDung;
 
         // Kiểm tra số lượng hợp lệ
         if (item.soLuong < 1) {
@@ -713,6 +787,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 });
             });
     };
+
     $scope.getPhuongThucThanhToan = function () {
         $http.get('http://localhost:8080/api/admin/phuong_thuc_thanh_toan/ten-phuong-thuc')
             .then(function (response) {
@@ -791,8 +866,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 })
         }
     };
-
-
     $scope.validateInvoiceCreation = function () {
         if ($scope.isCartEmpty) {
             Swal.fire({
@@ -806,7 +879,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         if (!$scope.selectedInvoice || !$scope.selectedInvoice.idHoaDon) {
             Swal.fire({
                 title: 'Lỗi!',
-                text: 'Vui lòng tạo hóa đơn trước khi thanh toán!',
+                text: 'Vui lòng tạo hoặc chọn hóa đơn trước khi thanh toán!',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -815,12 +888,28 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         return true;
     };
 
-
     $scope.createHoaDonChiTiet = async function () {
         try {
             // Kiểm tra các điều kiện trước khi tạo hóa đơn chi tiết
             if (!$scope.validateInvoiceCreation()) return;
+    
+            // Lấy thông tin người dùng từ localStorage
+            let userFromStorage = JSON.parse(localStorage.getItem('selectedUser'));
+    
+            if (!userFromStorage || !userFromStorage.idNguoiDung) {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Vui lòng chọn người dùng trước khi tạo hóa đơn.',
+                    icon: 'error',
+                    confirmButtonText: 'Đóng'
+                });
+                return;
+            }
+    
+            const userId = userFromStorage.idNguoiDung;
+    
             await $scope.updateInvoiceStatus();
+            
             // Chạy các tác vụ không phụ thuộc đồng thời
             await Promise.all([
                 // Cập nhật trạng thái hóa đơn
@@ -828,27 +917,36 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 $scope.createPaymentMethod(),         // Tạo phương thức thanh toán
                 $scope.deleteCart(),                  // Xóa toàn bộ giỏ hàng
             ]);
-
+    
             // Xử lý sản phẩm trong giỏ hàng và hóa đơn chi tiết
             await $scope.processCartItems();
             await $scope.TEST(); // Thực hiện kiểm tra hoặc thao tác khác
-
+    
             // Gửi API tạo hóa đơn chi tiết
             const response = await $http.post(
                 "http://localhost:8080/api/admin/hoa_don_chi_tiet/create",
                 $scope.hoaDonChiTietDTO,
-                { params: { userId: $scope.selectedUser.idNguoiDung } }
+                { params: { userId: userId } }
             );
             console.log("Hóa đơn chi tiết:", response.data);
-
+    
             // Nếu có voucher được chọn, trừ số lượng của voucher
             if ($scope.selectedVoucher) {
                 await $scope.deductVoucherQuantity();
             }
-
+    
             // Reset dữ liệu sau khi tạo hóa đơn
             $scope.resetAfterInvoiceCreation();
-
+    
+            // Thông báo thành công
+            Swal.fire({
+                title: 'Thành công!',
+                text: 'Thanh toán thành công!',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+    
         } catch (error) {
             console.error("Lỗi xảy ra:", error);
             Swal.fire({
@@ -859,8 +957,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
         }
     };
-
-
+    
     $scope.processCartItems = async function () {
         $scope.hoaDonChiTietDTO = [];
         const isChuyenKhoan = $scope.selectedPhuongThucThanhToan === 2;
@@ -916,15 +1013,21 @@ window.BanHangController = function ($scope, $http, $window, $location) {
     };
 
     $scope.deleteGioHangChiTietByUserId = function () {
-        const userId = $scope.selectedUser.idNguoiDung;
+        // Lấy thông tin người dùng từ localStorage
+        let userFromStorage = JSON.parse(localStorage.getItem('selectedUser'));
+        const userId = userFromStorage.idNguoiDung;
+
+        // Gửi yêu cầu xóa chi tiết giỏ hàng
         $http.delete("http://localhost:8080/api/admin/gio_hang/delete/user/" + userId)
             .then(function (response) {
-                $scope.getCartItems();
+                $scope.getCartItems(); // Tải lại các mục trong giỏ hàng
             })
             .catch(function (error) {
                 console.error("Lỗi khi xóa chi tiết giỏ hàng:", error);
+            
             });
     };
+    
 
 
     $scope.updateInvoiceStatus = function () {
@@ -934,13 +1037,26 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             })
     };
     $scope.createPaymentMethod = function () {
+        // Lấy thông tin người dùng từ localStorage
+        let userFromStorage = JSON.parse(localStorage.getItem('selectedUser'));
+    
+        if (!userFromStorage || !userFromStorage.sdt) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Không tìm thấy thông tin số điện thoại người dùng. Vui lòng chọn người dùng trước khi thực hiện thao tác.',
+                icon: 'error',
+                confirmButtonText: 'Đóng'
+            });
+            return;
+        }
+    
         var paymentMethod = {
             phuongThucThanhToan: { idPTThanhToan: $scope.selectedPhuongThucThanhToan },
             soTienThanhToan: Number($scope.customerPaid),
             ngayGiaoDich: new Date().toISOString(),
             ghiChu: "Thanh toán hóa đơn " + $scope.selectedInvoice.maHoaDon
         };
-
+    
         // Tạo phương thức thanh toán
         $http.post("http://localhost:8080/api/admin/phuong_thuc_thanh_toan_hoa_don/" + $scope.selectedInvoice.idHoaDon + "/thanh-toan", paymentMethod)
             .then(function (response) {
@@ -952,11 +1068,11 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         ngayThanhToan: new Date().toISOString(),
                         thanhTien: $scope.totalPrice,
                         idThanhToanHoaDon: response.data.idThanhToanHoaDon,
-                        setSdtNguoiNhan: $scope.selectedUser.sdt,
+                        setSdtNguoiNhan: userFromStorage.sdt, // Lấy số điện thoại từ localStorage
                         trangThaiHoaDon: $scope.selectedPhuongThucThanhToan === 2 ? 4 : 5,
-                        idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.id_voucher : null
+                        idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.idVoucher : null
                     };
-
+    
                     console.log("Cấu trúc của updatedInvoice trước khi gửi:", updatedInvoice);
                     return $http.put("http://localhost:8080/api/admin/hoa_don_ban_hang/cap-nhat/" + $scope.selectedInvoice.idHoaDon, updatedInvoice)
                         .then(function (putResponse) {
@@ -975,6 +1091,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 alert("Có lỗi xảy ra khi tạo phương thức thanh toán.");
             });
     };
+    
 
 
     $scope.printInvoice = function () {
@@ -1047,10 +1164,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
     };
     $scope.customerPaid = null;
     $scope.getProductDetails();
-    $scope.getUsers();
-    $scope.getNV();
     $scope.getUnpaidInvoices();
-    $scope.deleteInvoice();
     $scope.getPhuongThucThanhToan();
     $scope.getVoucher();
     $scope.dsvoucher();

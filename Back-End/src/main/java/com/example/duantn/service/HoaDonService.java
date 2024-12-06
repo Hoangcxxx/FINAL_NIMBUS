@@ -1,15 +1,13 @@
 package com.example.duantn.service;
 
-import com.example.duantn.dto.HoaDonDTO;
-import com.example.duantn.dto.HoaDonResponseDTO;
-import com.example.duantn.dto.HoaDonUpdateDTO;
-import com.example.duantn.dto.SanPhamChiTietDTO;
+import com.example.duantn.dto.*;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,7 +19,10 @@ import java.util.stream.Collectors;
 public class HoaDonService {
     @Autowired
     private HoaDonRepository hoaDonRepository;
-
+    @Autowired
+    private LichSuHoaDonRepository lichSuHoaDonRepository;
+    @Autowired
+    private GiamGiaSanPhamRepository giamGiaSanPhamRepository;
     public HoaDonService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -645,6 +646,67 @@ public class HoaDonService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+
+
+    public List<HoaDonChiTietDTO> createMultipleHoaDonChiTiet(List<HoaDonChiTietDTO> dtoList, Integer userId) {
+        List<HoaDonChiTietDTO> createdHoaDonChiTietList = new ArrayList<>();
+        for (HoaDonChiTietDTO dto : dtoList) {
+            HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
+            // Tìm kiếm người dùng
+            NguoiDung nguoiDung = nguoiDungRepository.findById(userId)
+                    .orElseThrow(() -> new ExpressionException("Người dùng không tìm thấy"));
+            SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(dto.getIdSanPhamChiTiet())
+                    .orElseThrow(() -> new ExpressionException("Sản phẩm chi tiết không tìm thấy"));
+            hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
+            HoaDon hoaDon = hoaDonRepository.findById(dto.getIdHoaDon())
+                    .orElseThrow(() -> new ExpressionException("Hóa đơn không tìm thấy"));
+            GiamGiaSanPham giamGiaSanPham = giamGiaSanPhamRepository.findBySanPham(sanPhamChiTiet.getSanPham())
+                    .orElse(null);
+
+            BigDecimal giaKhuyenMai = giamGiaSanPham != null ? giamGiaSanPham.getGiaKhuyenMai() : null;
+            BigDecimal giaBan = sanPhamChiTiet.getSanPham().getGiaBan();
+
+            // Tính giá thực tế
+            BigDecimal giaTinh = (giaKhuyenMai != null && giaKhuyenMai.compareTo(BigDecimal.ZERO) > 0)
+                    ? giaKhuyenMai
+                    : giaBan;
+
+            // Tính tổng tiền
+            BigDecimal tongTien = giaTinh.multiply(BigDecimal.valueOf(dto.getSoLuong()));
+            hoaDonChiTiet.setHoaDon(hoaDon);
+            hoaDonChiTiet.setSoLuong(dto.getSoLuong());
+            hoaDonChiTiet.setTongTien(tongTien);
+            hoaDonChiTiet.setSoTienThanhToan(dto.getSoTienThanhToan());
+            hoaDonChiTiet.setTienTraLai(dto.getTienTraLai());
+            hoaDonChiTiet.setMoTa(dto.getMoTa());
+            Date now = new Date();
+            hoaDonChiTiet.setNgayTao(now);
+            hoaDonChiTiet.setNgayCapNhat(now);
+            hoaDonChiTiet.setTrangThai(true);
+            hoaDonChiTietRepository.save(hoaDonChiTiet);
+            LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+            lichSuHoaDon.setNgayGiaoDich(now);
+            lichSuHoaDon.setSoTienThanhToan(dto.getSoTienThanhToan());
+            lichSuHoaDon.setNguoiDung(nguoiDung);
+            lichSuHoaDonRepository.save(lichSuHoaDon);
+            hoaDonChiTiet.setLichSuHoaDon(lichSuHoaDon);
+            hoaDonChiTietRepository.save(hoaDonChiTiet);
+            HoaDonChiTietDTO createdDto = new HoaDonChiTietDTO(
+                    sanPhamChiTiet.getIdSanPhamChiTiet(),
+                    hoaDon.getIdHoaDon(),
+                    hoaDon.getMaHoaDon(),
+                    hoaDonChiTiet.getSoLuong(),
+                    hoaDonChiTiet.getTongTien(),
+                    hoaDonChiTiet.getSoTienThanhToan(),
+                    hoaDonChiTiet.getTienTraLai(),
+                    hoaDonChiTiet.getMoTa()
+            );
+            createdHoaDonChiTietList.add(createdDto);
+        }
+        return createdHoaDonChiTietList;
+    }
+
 
 
 }

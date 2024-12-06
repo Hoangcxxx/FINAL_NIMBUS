@@ -59,6 +59,8 @@ public class VoucherService {
         if (voucher.getMaVoucher() == null || voucher.getMaVoucher().isEmpty()) {
             voucher.setMaVoucher(generateRandomVoucherCode());
         }
+        voucher.setSoTienToiThieu(voucher.getSoTienToiThieu());
+        voucher.setGiaTriToiDa(voucher.getGiaTriToiDa());
         validateVoucherDates(voucher);
         setVoucherStatus(voucher);
         try {
