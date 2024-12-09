@@ -1,7 +1,6 @@
 package com.example.duantn.controller.admin;
 
 import com.example.duantn.entity.*;
-import com.example.duantn.service.HoaDonChiTietService;
 import com.example.duantn.service.HoaDonService;
 import com.example.duantn.service.LoaiTrangThaiService;
 import com.example.duantn.service.TrangThaiHoaDonService;
@@ -175,6 +174,7 @@ public class ADHoaDonController {
         List<LoaiTrangThai> LoaiTrangThaiList = loaiTrangThaiService.getAllLoaiTrangThai();
         return new ResponseEntity<>(LoaiTrangThaiList, HttpStatus.OK);
     }
+
     @PostMapping("/updateLoaiTrangThai")
     public ResponseEntity<Map<String, Object>> saveTrangThaiHoaDon(@RequestParam Integer idHoaDon,
                                                                    @RequestParam Integer idLoaiTrangThai) {
@@ -195,6 +195,31 @@ public class ADHoaDonController {
             response.put("success", true);
             return ResponseEntity.ok(response);  // Trả về thông điệp thành công
         }
+    }
+    private Map<String, Object> mapTrangThaiHoaDon(Object[] row) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("idTrangThaiHoaDon", row[0]);
+        map.put("moTa", row[0]);
+        map.put("ngayTao", row[1]);
+        map.put("ngayCapNhat", row[2]);
+        map.put("tenLoaiTrangThai", row[3]);
+        map.put("idHoaDon", row[4]);
+        return map;
+    }
+
+    private List<Map<String, Object>> mapTrangThaiHoaDons(List<Object[]> results) {
+        return results.stream().map(this::mapTrangThaiHoaDon).collect(Collectors.toList());
+    }
+    @GetMapping("/trang_thai_hoa_don/{idHoaDon}")
+    public ResponseEntity<List<Map<String, Object>>> getAllTrangThaiHoaDon(@PathVariable Integer idHoaDon) {
+        // Lấy danh sách các hóa đơn từ dịch vụ
+        List<Object[]> trangThaiHoaDons = trangThaiHoaDonService.getAllTrangThaiHoaDonByidHoaDon(idHoaDon);
+
+        // Chuyển đổi danh sách kết quả thành danh sách các Map
+        List<Map<String, Object>> filteredProducts = mapTrangThaiHoaDons(trangThaiHoaDons);
+
+        // Trả về ResponseEntity với dữ liệu là List<Map<String, Object>>
+        return ResponseEntity.ok(filteredProducts);
     }
 
 

@@ -7,10 +7,8 @@ import com.example.duantn.repository.HoaDonRepository;
 import com.example.duantn.repository.LoaiTrangThaiRepository;
 import com.example.duantn.repository.TrangThaiHoaDonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +24,9 @@ public class TrangThaiHoaDonService {
         return trangThaiHoaDonRepository.findAll();
     }
 
+    public List<Object[]> getAllTrangThaiHoaDonByidHoaDon(Integer idHoaDon) {
+        return trangThaiHoaDonRepository.findAllByidHoaDon(idHoaDon);
+    }
     @Autowired
     private HoaDonRepository hoaDonRepository;
 
@@ -37,7 +38,6 @@ public class TrangThaiHoaDonService {
         List<TrangThaiHoaDon> existingStatuses = trangThaiHoaDonRepository.findByHoaDon_IdHoaDonAndLoaiTrangThai_IdLoaiTrangThai(idHoaDon, idLoaiTrangThai);
         return !existingStatuses.isEmpty();  // Trả về true nếu trạng thái đã tồn tại
     }
-
     public List<TrangThaiHoaDon> saveTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai) {
         Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
         Optional<LoaiTrangThai> loaiTrangThaiOpt = loaiTrangThaiRepository.findById(idLoaiTrangThai);
@@ -55,7 +55,7 @@ public class TrangThaiHoaDonService {
             // Kiểm tra nếu trạng thái là 'Hoàn thành' (idLoaiTrangThai == 8)
             if (idLoaiTrangThai == 8) {
                 // Kiểm tra xem hóa đơn có đang ở trạng thái 'Chờ thanh toán' (idLoaiTrangThai == 4) hay không
-                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 5); // Kiểm tra xem trạng thái 'đã xác nhận thanh toán' có tồn tại không
+                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 7); // Kiểm tra xem trạng thái 'đã xác nhận thanh toán' có tồn tại không
                 if (!isPaymentConfirmed) {
                     System.out.println("Không thể cập nhật trạng thái 'Hoàn thành' vì hóa đơn chưa xác nhận thanh toán.");
                     return null; // Nếu hóa đơn chưa thanh toán, không cho phép cập nhật trạng thái hoàn thành
@@ -110,7 +110,30 @@ public class TrangThaiHoaDonService {
         return null;
     }
 
+    public void TrangThaiHoaDonKhiChonPTTT(Integer hoaDonId) {
+        // Tiến hành tạo trạng thái hóa đơn mới nếu chưa tồn tại
+        HoaDon savedHoaDon = hoaDonRepository.findById(hoaDonId)
+                .orElseThrow(() -> new IllegalArgumentException("Hóa đơn không tồn tại!"));
 
+        // Mặc định loại trạng thái là 4
+        int loaiTrangThaiId = 4;
+
+        // Tạo trạng thái hóa đơn mới
+        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
+        trangThaiHoaDon2.setMoTa("Chờ Thanh Toán");
+        trangThaiHoaDon2.setNgayTao(new Date());
+        trangThaiHoaDon2.setNgayCapNhat(new Date());
+
+        // Tìm loại trạng thái theo ID
+        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(loaiTrangThaiId)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+
+        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+        trangThaiHoaDon2.setHoaDon(savedHoaDon);
+
+        // Lưu trạng thái hóa đơn vào cơ sở dữ liệu
+        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+    }
     public TrangThaiHoaDon createTrangThaiHoaDon(Integer idHoaDon) {
         // Lấy hóa đơn từ cơ sở dữ liệu
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)

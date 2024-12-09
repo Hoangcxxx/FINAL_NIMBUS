@@ -32,16 +32,23 @@
                             <div class="hidden-sidebar">Quản lý sản phẩm</div>
                         </a>
                     </li>
+                    <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'thong_ke'}">
+                        <a href="#!Qlnd" class="sidebar-link" ng-click="setActiveTab('thong_ke')">
+                            <img class="sidebar-icon" src="../../images/user.png" alt=""
+                                style="width: 42px;height: 38px;">
+                            <div class="hidden-sidebar">Quản lý tài khoản</div>
+                        </a>
+                    </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'dot_giam_gia'}">
                         <a href="#!phieu_giam_gia" class="sidebar-link" ng-click="setActiveTab('dot_giam_gia')">
-                            <img class="sidebar-icon" src="../../images/icon_dot_giam_gia.png" alt=""
+                            <img class="sidebar-icon" src="../../images/surprise.png" alt=""
                                 style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Khuyến mãi</div>
                         </a>
                     </li>
                     <li class="sidebar-list-item tab-content" ng-class="{active: activeTab === 'ban_hang'}">
                         <a href="#!ban_hang" class="sidebar-link" ng-click="setActiveTab('ban_hang')">
-                            <img class="sidebar-icon" src="../../images/icon_ban_hang.png" alt=""
+                            <img class="sidebar-icon" src="../../images/shopping-cart.png" alt=""
                                 style="width: 42px;height: 38px;">
                             <div class="hidden-sidebar">Bán hàng</div>
                         </a>
@@ -60,6 +67,7 @@
                             <div class="hidden-sidebar">Thống kê</div>
                         </a>
                     </li>
+
                 </ul>
             </div>
             <div class="bottom-sidebar">

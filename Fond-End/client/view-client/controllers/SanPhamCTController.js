@@ -196,23 +196,21 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
         // Lấy idGioHang từ localStorage
         var idGioHang = localStorage.getItem('idGioHang');
 
-        // Kiểm tra số lượng sản phẩm hiện có trong giỏ hàng
+        // Kiểm tra giỏ hàng hiện tại
         $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${idGioHang}`)
             .then(function (response) {
-                var cartItems = response.data;
-                var totalItems = cartItems.reduce(function (total, item) {
-                    return total + item.soLuong; // Cộng dồn số lượng của tất cả sản phẩm trong giỏ
-                }, 0);
-
-                // Kiểm tra nếu tổng số lượng trong giỏ hàng đã đạt hoặc vượt quá 20
-                if (totalItems >= 20) {
+                // Kiểm tra nếu giỏ hàng đã có sản phẩm với idSanPhamCT giống với sản phẩm chi tiết vừa chọn
+                let existingProduct = response.data.find(item => item.idSanPhamCT === $scope.sanPhamChiTiet[0].idSanPhamCT);
+                console.log("111", existingProduct)
+                // Nếu sản phẩm đã có trong giỏ và số lượng trong giỏ lớn hơn 20
+                if (existingProduct && existingProduct.soLuongGioHang > 20) {
                     Swal.fire({
-                        title: 'Giỏ hàng đầy',
-                        text: 'Giỏ hàng đã chứa tối đa 20 sản phẩm. Bạn không thể thêm sản phẩm này.',
+                        title: 'Lỗi',
+                        text: 'Sản phẩm này đã có trong giỏ hàng và số lượng trong giỏ lớn hơn 20. Vui lòng giảm số lượng trước khi thêm vào.',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
-                    return; // Dừng chức năng thêm vào giỏ hàng
+                    return; // Không thêm sản phẩm vào giỏ hàng
                 }
 
                 // Tiến hành thêm sản phẩm vào giỏ hàng nếu giỏ chưa đầy
@@ -233,13 +231,12 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
                             icon: 'success',
                             confirmButtonText: 'OK'
                         });
-                        window.location.reload();  // Làm mới route để giao diện được cập nhật
                     })
                     .catch(function (error) {
                         console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
                         Swal.fire({
                             title: 'Lỗi',
-                            text: error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.",
+                            text: error.data.message || "Sản phẩm không còn khả dụng (tình trạng sản phẩm: không kích hoạt).",
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
@@ -254,78 +251,8 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
                     confirmButtonText: 'OK'
                 });
             });
-
-        if (!idGioHang) {
-            var url = `http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/findSanPhamCT/${idSanPham}?idChatLieu=${$scope.selectedMaterial}&idMauSac=${$scope.selectedColor}&idKichThuoc=${$scope.selectedSize}`;
-            $http.get(url)
-                .then(function (response) {
-                    if (response.data && response.data.length > 0) {
-                        var sanPhamChiTiet = response.data[0]; // Lưu đối tượng sản phẩm chi tiết vào biến
-                        if (sanPhamChiTiet.soLuong !== undefined) {
-                            $scope.soLuongTon = sanPhamChiTiet.soLuong;
-                        } else {
-                            $scope.soLuongTon = 0; // Nếu không có số lượng tồn
-                        }
-                        console.log("Dữ liệu trả về từ id:", sanPhamChiTiet.idSanPhamChiTiet); // Kiểm tra toàn bộ dữ liệu trả về
-                        console.log("Dữ liệu trả về từ gia:", sanPhamChiTiet.giaTien); // Kiểm tra toàn bộ dữ liệu trả về
-                        var giaTien = response.data[0].giaTien; // Kiểm tra trường có chính xác không
-                        console.log("Giá tiền:", giaTien);
-                        // Kiểm tra xem sản phẩm có đầy đủ id và giá không
-                        if (sanPhamChiTiet.idSanPhamChiTiet === undefined || sanPhamChiTiet.giaTien === undefined) {
-                            Swal.fire({
-                                title: 'Lỗi',
-                                text: "Thông tin sản phẩm chưa đầy đủ.",
-                                icon: 'error',
-                                confirmButtonText: 'OK'
-                            });
-                            return;
-                        }
-
-                        // Tạo đối tượng giỏ hàng
-                        let cartItem = {
-                            idSanPhamChiTiet: sanPhamChiTiet.idSanPhamChiTiet, // ID chi tiết sản phẩm
-                            soLuong: $scope.soluong,  // Số lượng mà người dùng chọn
-                            giaTien: sanPhamChiTiet.giaTien // Giá tiền của sản phẩm
-                        };
-
-                        console.log("Thông tin giỏ hàng:", cartItem);
-
-                        // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
-                        $http.post(`http://localhost:8080/api/nguoi_dung/gio_hang_ao/add_to_cart?idNguoiDung=0`, cartItem)
-                            .then(function (response) {
-                                Swal.fire({
-                                    title: 'Thành công',
-                                    text: 'Sản phẩm đã được thêm vào giỏ hàng.',
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                });
-                                window.location.reload();  // Làm mới route để giao diện được cập nhật
-                            })
-                            .catch(function (error) {
-                                console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
-                                Swal.fire({
-                                    title: 'Lỗi',
-                                    text: error.data.message || "Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.",
-                                    icon: 'error',
-                                    confirmButtonText: 'OK'
-                                });
-                            });
-                    } else {
-                        console.log("Không có dữ liệu sản phẩm chi tiết");
-                        $scope.soLuongTon = 0; // Nếu không có dữ liệu
-                    }
-                }, function (error) {
-                    console.error('Error fetching stock quantity:', error);
-                    Swal.fire({
-                        title: 'Lỗi',
-                        text: "Có lỗi xảy ra khi kiểm tra số lượng tồn.",
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    $scope.soLuongTon = 0; // Nếu có lỗi, giả sử là hết hàng
-                });
-        }
     };
+
 
 
 

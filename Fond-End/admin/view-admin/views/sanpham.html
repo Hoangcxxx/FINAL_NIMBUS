@@ -23,13 +23,11 @@
                     <form action="" class="form-search">
                         <span class="search-btn"><i class="fa-light fa-magnifying-glass"></i></span>
                         <input id="form-search-product" type="text" class="form-search-input"
-                            placeholder="Tìm kiếm sản phẩm..." oninput="showProduct()">
+                            placeholder="Tìm kiếm sản phẩm..." oninput="showProduct()" ng-model="item.tenSanPham">
                     </form>
                 </div>
 
                 <div class="admin-control-right">
-                    <button class="btn-control-large" id="btn-cancel-product"><i class="fa-light fa-rotate-right"></i>
-                        Làm mới</button>
                     <a href="#!san_pham">
                         <button type="button" class="btn-control-large" data-bs-toggle="modal"
                             data-bs-target="#addProductModal">
@@ -53,7 +51,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in dsSanPham">
+                                    <tr ng-repeat="item in dsSanPham | filter:item">
                                         <th scope="row">{{$index + 1}}</th>
                                         <td>{{item.tenSanPham}}</td>
                                         <td>{{item.moTa}}</td>

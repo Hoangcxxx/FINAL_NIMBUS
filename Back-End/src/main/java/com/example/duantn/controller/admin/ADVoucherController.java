@@ -1,5 +1,6 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.entity.TrangThaiGiamGia;
 import com.example.duantn.entity.Voucher;
 import com.example.duantn.entity.VoucherNguoiDung;
 import com.example.duantn.service.VoucherService;
@@ -21,21 +22,20 @@ public class ADVoucherController {
     public List<Voucher> getAllVouchers() {
         return voucherService.getAllVouchers();
     }
-    // Tìm kiếm voucher theo mã voucher
-    @GetMapping("/search/maVoucher")
-    public Voucher searchByMaVoucher(@RequestParam String maVoucher) {
-        return voucherService.findByMaVoucher(maVoucher);
-    }
-
-    // Tìm kiếm voucher theo tên voucher (tìm theo tên chứa chuỗi con)
+    // Tìm kiếm theo tên voucher
     @GetMapping("/search/tenVoucher")
     public List<Voucher> searchByTenVoucher(@RequestParam String tenVoucher) {
-        return voucherService.findByTenVoucher(tenVoucher);
+        return voucherService.searchByTenVoucher(tenVoucher);
     }
-    @GetMapping("/search/kieuGiamGia")
-    public List<Voucher> searchByKieuGiamGia(@RequestParam Boolean kieuGiamGia) {
-        return voucherService.findByKieuGiamGia(kieuGiamGia);
+    // Search by voucher code
+    @GetMapping("/search")
+    public List<Voucher> searchVouchers(
+            @RequestParam(required = false) String maVoucher,
+            @RequestParam(required = false) Integer trangThaiId,
+            @RequestParam(required = false) Boolean kieuGiamGia) {
+        return voucherService.searchVouchers(maVoucher, trangThaiId, kieuGiamGia);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<Voucher> getVoucherById(@PathVariable Integer id) {
         return voucherService.getVoucherById(id)
@@ -76,23 +76,6 @@ public class ADVoucherController {
         }
         return ResponseEntity.notFound().build(); // Handle not found
     }
-    @PostMapping("/bulk/{idNguoiDungs}")
-    public ResponseEntity<List<VoucherNguoiDung>> addVoucherForMultipleUsers(
-            @PathVariable List<Integer> idNguoiDungs,
-            @RequestBody Voucher voucher) {
 
-        System.out.println("Nhận yêu cầu thêm voucher cho các người dùng: " + idNguoiDungs);
-        System.out.println("Thông tin voucher nhận được: " + voucher);
-
-        try {
-            // Thêm voucher cho người dùng
-            List<VoucherNguoiDung> voucherNguoiDungs = voucherService.addVoucherForUsers(idNguoiDungs, voucher);
-            System.out.println("Thêm voucher thành công. Số lượng voucher đã thêm: " + voucherNguoiDungs.size());
-            return ResponseEntity.ok(voucherNguoiDungs);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Lỗi xảy ra: " + e.getMessage());
-            return ResponseEntity.badRequest().body(null);  // Trả về lỗi nếu có người dùng không tồn tại
-        }
-    }
 
 }

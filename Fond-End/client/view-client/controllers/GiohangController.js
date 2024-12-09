@@ -196,9 +196,6 @@ window.GiohangController = function ($scope, $http) {
     };
 
 
-
-
-
     fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'products');
     fetchData('http://localhost:8080/api/admin/danh_muc', 'dsDanhMuc');
 }

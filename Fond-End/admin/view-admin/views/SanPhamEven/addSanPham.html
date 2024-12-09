@@ -100,6 +100,7 @@
                                                         <input type="checkbox" ng-model="selectAll"
                                                             ng-change="toggleSelectAll(selectAll, colorGroup.products[0].items)">
                                                     </th>
+                                                    <th scope="col">Mã sản phẩm</th>
                                                     <th scope="col">Tên sản phẩm</th>
                                                     <th scope="col">Số lượng</th>
                                                     <th scope="col">Chất liệu</th>
@@ -116,6 +117,7 @@
                                                         <input type="checkbox" ng-model="item.selected"
                                                             ng-change="updateSelectAll(colorGroup.products[0].items)">
                                                     </th>
+                                                    <td>{{item.maSanPhamCT}}</td>
                                                     <td>{{item.tenSanPham}}</td>
                                                     <td>
                                                         <!-- Input số lượng chung cho tất cả sản phẩm đã chọn -->

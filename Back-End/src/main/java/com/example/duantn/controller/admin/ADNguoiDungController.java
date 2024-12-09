@@ -1,5 +1,6 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.dto.NguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.service.NguoiDungService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -49,10 +51,50 @@ public class ADNguoiDungController {
     }
 
     // Xóa người dùng
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<HttpStatus> deleteNguoiDung(@PathVariable int id) {
-        return nguoiDungService.deleteNguoiDung(id);
+    @DeleteMapping("/delete/{idNguoiDung}")
+    public ResponseEntity<HttpStatus> deleteNguoiDung(@PathVariable Integer idNguoiDung) {
+        return nguoiDungService.deleteNguoiDung(idNguoiDung);
+    }
+    // Tìm kiếm theo nhiều điều kiện
+    @GetMapping("/search")
+    public List<NguoiDung> searchNguoiDung(
+            @RequestParam(required = false) String tenNguoiDung,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String sdt) {
+        return nguoiDungService.searchNguoiDung(tenNguoiDung, email, sdt);
     }
 
+    // API để lấy tất cả người dùng có vai trò là 2 hoặc 4
+    @GetMapping("/list/nguoidung")
+    public List<NguoiDungDTO> getAllNguoiDung() {
+        return nguoiDungService.getAllNguoiDung();  // Trả về danh sách người dùng đã lọc theo vai trò
+    }
+    @GetMapping("/list/nhanvien")
+    public List<NguoiDungDTO> getAllNhanvien() {
+        return nguoiDungService.getAllNhanvien();  // Trả về danh sách người dùng đã lọc theo vai trò
+    }
+    @PutMapping("/khoa/{id}")
+    public ResponseEntity<String> khoaNguoiDung(@PathVariable Integer id) {
+        nguoiDungService.khoaNguoiDung(id);
+        return ResponseEntity.ok("Người dùng đã bị khóa.");
+    }
+
+    // API để mở khóa người dùng
+    @PutMapping("/mo_khoa/{id}")
+    public ResponseEntity<String> moKhoaNguoiDung(@PathVariable Integer id) {
+        nguoiDungService.moKhoaNguoiDung(id);
+        return ResponseEntity.ok("Người dùng đã được mở khóa.");
+    }
+
+    @GetMapping("/check_trang_thai/{idNguoiDung}")
+    public ResponseEntity<?> checkTrangThaiNguoiDung(@PathVariable Integer idNguoiDung) {
+        Optional<NguoiDung> optionalNguoiDung = Optional.ofNullable(nguoiDungService.findById(idNguoiDung));
+        if (optionalNguoiDung.isPresent()) {
+            NguoiDung nguoiDung = optionalNguoiDung.get();
+            return ResponseEntity.ok(Map.of("trangThai", nguoiDung.getTrangThai()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng.");
+        }
+    }
 
 }

@@ -56,7 +56,8 @@ public class SanPhamChiTietQuery {
                     "       ms.ten_mau_sac,\n" +
                     "       kc.ten_kich_thuoc,\n" +
                     "       sp.mo_ta,\n" +
-                    "       spc.id_san_pham_chi_tiet\n" +
+                    "       spc.id_san_pham_chi_tiet,\n" +
+                    "       spc.ma_san_pham_chi_tiet\n" +
                     "FROM san_pham sp\n" +
                     "JOIN san_pham_chi_tiet spc ON sp.id_san_pham = spc.id_san_pham\n" +
                     "JOIN mau_sac_chi_tiet msc ON spc.id_mau_sac_chi_tiet = msc.id_mau_sac_chi_tiet\n" +
@@ -76,7 +77,8 @@ public class SanPhamChiTietQuery {
                     "       cl.ten_chat_lieu,\n" +
                     "       ms.ten_mau_sac,\n" +
                     "       kc.ten_kich_thuoc,\n" +
-                    "       sp.mo_ta\n" +
+                    "       sp.mo_ta,\n" +
+                    "       spc.ma_san_pham_chi_tiet\n" +
                     "FROM san_pham sp\n" +
                     "JOIN san_pham_chi_tiet spc ON sp.id_san_pham = spc.id_san_pham\n" +
                     "JOIN mau_sac_chi_tiet msc ON spc.id_mau_sac_chi_tiet = msc.id_mau_sac_chi_tiet\n" +

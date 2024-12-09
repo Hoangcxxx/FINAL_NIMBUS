@@ -32,10 +32,5 @@ public class TrangThaiGiamGia {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
 
-    // Add a constructor for status without date fields
-    public TrangThaiGiamGia(Integer id, String ten, String moTa) {
-        this.idTrangThaiGiamGia = id;
-        this.tenTrangThaiGiamGia = ten;
-        this.moTa = moTa;
-    }
+
 }

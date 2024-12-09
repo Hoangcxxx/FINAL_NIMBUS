@@ -158,7 +158,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
             $scope.calculateTotal(); // Tính lại tổng tiền sau khi áp dụng voucher
         }
     };
-
     $scope.dsvoucher = function () {
         // Calculate the total amount from the cart
         $scope.totalAmount = $scope.cart.reduce(function (total, item) {
@@ -173,7 +172,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
         // If the totalAmount is 0 or less, don't fetch vouchers
         if ($scope.totalAmount <= 0) {
-            $scope.availableVouchers = []; // No valid vouchers if there's no total amount
+            $scope.Voucher = []; // No valid vouchers if there's no total amount
             return;
         }
 
@@ -181,19 +180,14 @@ window.ThanhToanController = function ($scope, $http, $window) {
         $http.get('http://localhost:8080/api/nguoi_dung/vouchers/' + $scope.totalAmount)
             .then(function (response) {
                 // Store the available vouchers in $scope.availableVouchers
-                $scope.availableVouchers = response.data || [];
-                console.log("Danh sách voucher khả dụng:", $scope.availableVouchers);
+                $scope.Voucher = response.data;
+                console.log("Danh sách voucher khả dụng:", $scope.Voucher);
 
                 // Filter vouchers based on the total amount conditions
                 $scope.availableVouchers = $scope.availableVouchers.filter(function (voucher) {
                     // Only include vouchers where the total amount meets the minimum and maximum limits
-                    return $scope.totalAmount >= voucher.soTienToiThieu && $scope.totalAmount <= voucher.giaTriToiDa;
+                    return $scope.totalAmount >= voucher.soTienToiThieu;
                 });
-
-                // If no voucher is selected and valid vouchers exist, select the first one automatically
-                if (!$scope.selectedVoucher && $scope.availableVouchers.length > 0) {
-                    $scope.selectedVoucher = $scope.availableVouchers[0];
-                }
             })
             .catch(function (error) {
                 // Handle errors in fetching vouchers
@@ -203,7 +197,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
     };
 
 
-    
+
     $scope.calculateTotal = function () {
         let totalProductPrice = $scope.cart.reduce(function (total, item) {
             let donGia = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;
@@ -534,5 +528,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
     };
     // Gọi API lấy danh sách tỉnh thành khi trang được tải
     getCities();
+    $scope.dsvoucher();
+    $scope.getVoucher();
 
 };

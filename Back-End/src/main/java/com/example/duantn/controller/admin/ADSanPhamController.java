@@ -35,7 +35,16 @@ public class ADSanPhamController {
     private static final SecureRandom RANDOM = new SecureRandom();
     @Autowired
     private HinhAnhSanPhamService hinhAnhSanPhamService;
+    @GetMapping("/search")
+    public ResponseEntity<List<SanPham>> timSanPhamTheoTenController(@RequestParam("tenSanPham") String tenSanPham) {
+        // Thêm dấu % vào sau tham số để tìm kiếm các sản phẩm bắt đầu với tenSanPham
+        List<SanPham> sanPhamList = sanPhamService.timSanPhamTheoTen(tenSanPham + "%");
 
+        if (sanPhamList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Trả về 204 nếu không có sản phẩm nào
+        }
+        return new ResponseEntity<>(sanPhamList, HttpStatus.OK); // Trả về 200 nếu có sản phẩm
+    }
     @GetMapping("/hinh_anh/{idSanPham}")
     public ResponseEntity<List<HinhAnhSanPham>> getHinhAnhBySanPhamId(@PathVariable Integer idSanPham) {
         List<HinhAnhSanPham> hinhAnhs = hinhAnhSanPhamService.getHinhAnhBySanPhamId(idSanPham);

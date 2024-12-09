@@ -87,6 +87,7 @@
                                                     <th scope="col">#</th>
                                                     <th scope="col">Hình ảnh</th>
                                                     <th scope="col">Tên sản phẩm</th>
+                                                    <th scope="col">Chất liệu</th>
                                                     <th scope="col">Màu sắc</th>
                                                     <th scope="col">Kích thước</th>
                                                     <th scope="col">Số lượng</th>
@@ -104,27 +105,16 @@
                                                             style="max-width: 100px; height: auto;">
                                                     </td>
                                                     <td>{{ item.tenSanPham }}</td>
+                                                    <td>{{ item.chatLieu }}</td>
                                                     <td>{{ item.mauSac }}</td>
                                                     <td>{{ item.kichThuoc }}</td>
                                                     <td>
                                                         <div
                                                             style="display: flex; align-items: center; justify-content: center;">
-                                                            <!-- Nút giảm số lượng -->
-                                                            <button type="button" class="btn btn-secondary btn-sm"
-                                                                ng-click="item.soLuong = item.soLuong > 1 ? item.soLuong - 1 : 1; updateQuantity(item)">
-                                                                <i class="fa-solid fa-minus"></i>
-                                                            </button>
-
                                                             <!-- Ô nhập số lượng -->
                                                             <input type="number" ng-model="item.soLuong" min="1"
-                                                                ng-change="updateQuantity(item)"
+                                                                ng-blur="updateQuantity(item)"
                                                                 style="width: 60px; text-align: center; margin: 0 5px; border-radius: 5px; border: 1px solid #ccc;" />
-
-                                                            <!-- Nút tăng số lượng -->
-                                                            <button type="button" class="btn btn-secondary btn-sm"
-                                                                ng-click="item.soLuong = item.soLuong + 1; updateQuantity(item)">
-                                                                <i class="fa-solid fa-plus"></i>
-                                                            </button>
                                                         </div>
                                                     </td>
                                                     <td>{{ item.giaBan | currency: '' : 0 }} VND</td>
@@ -224,7 +214,8 @@
                                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
 
 
-                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal"  style="border-radius: 10px; padding: 12px 18px; font-size: 1rem; margin-left: 10px; 
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#addCustomerModal" style="border-radius: 10px; padding: 12px 18px; font-size: 1rem; margin-left: 10px; 
                                                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
                                             <i class="fa-solid fa-plus"></i>
                                         </button>
@@ -280,7 +271,9 @@
                                 <i class="fa-solid fa-credit-card"></i> Khách hàng thanh toán
                             </label>
                             <i class="fas fa-plus-circle ml-2" id="show-discount-modal" style="cursor:pointer;"
-                                data-bs-toggle="modal" data-bs-target="#paymentModal"></i>
+                                data-bs-toggle="modal" data-bs-target="#paymentModal"
+                                ng-click="createOrderStatus()"></i>
+
                             </button>
 
                             </button>
@@ -338,8 +331,8 @@
                         </div>
 
 
-                        <!-- Form mặc định khi chưa có voucher -->
-                        <div class="mb-3" ng-if="!selectedVoucher">
+                        <!-- Khi chưa chọn voucher -->
+                        <div class="mb-3" ng-show="!selectedVoucher">
                             <div class="voucher-default"
                                 style="border-radius: 10px; padding: 20px; background-color: #f2f2f2; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin: 20px 0;">
                                 <h2 style="font-size: 1.2em; color: #333; text-align: center;">
@@ -350,8 +343,7 @@
                                 </p>
                             </div>
                         </div>
-
-                        <!-- Thông tin voucher đã áp dụng -->
+                        <!-- Khi đã chọn voucher -->
                         <div class="mb-3" ng-if="selectedVoucher">
                             <div class="voucher-info"
                                 style="border-radius: 10px; padding: 20px; background-color: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); margin: 20px 0;">
@@ -366,14 +358,30 @@
                                 </div>
                                 <div class="voucher-details"
                                     style="background-color: #f9f9f9; border-radius: 5px; padding: 15px; border-left: 5px solid #ff0000;">
-                                    <p class="voucher-description" style="font-size: 1em; color: #666; margin: 0;">
-                                        {{ selectedVoucher.mo_ta }}
-                                    </p>
+                                    <div style="margin-top: 15px; font-size: 1rem; color: #555;">
+                                        <p>
+                                            <strong>Áp dụng cho đơn hàng từ:</strong>
+                                            <span>{{ selectedVoucher.soTienToiThieu | currency:"":0 }} VND</span>
+                                            đến
+                                            <span>{{ selectedVoucher.giaTriToiDa | currency:"":0 }} VND</span>
+                                        </p>
+                                        <p>
+                                            <strong>Giảm giá:</strong>
+                                            <span style="color: #e74c3c; font-weight: bold;">
+                                                <!-- Kiểm tra kiểu giảm giá (phần trăm hoặc tiền) -->
+                                                <span ng-if="selectedVoucher.kieuGiamGia === false">
+                                                    {{ selectedVoucher.giaTriGiamGia }}%
+                                                </span>
+                                                <span ng-if="selectedVoucher.kieuGiamGia === true">
+                                                    {{ selectedVoucher.giaTriGiamGia | currency:"":0 }} VND
+                                                </span>
+                                            </span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-
+                        
 
                         <div class="d-flex gap-3" style="margin-top: 20px;">
                             <!-- Nút Thanh toán -->
@@ -443,7 +451,7 @@
 <!-- Modal Hiển thị -->
 <div id="productDetailsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="productDetailsModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content"
             style="border-radius: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); overflow: hidden;">
             <!-- Modal Header -->
@@ -459,6 +467,13 @@
             <div class="modal-body" style="padding: 20px 30px; background-color: #f9f9f9;">
                 <!-- Bộ lọc tìm kiếm -->
                 <div class="mb-4 d-flex flex-wrap gap-3">
+                    <!-- Mã sản phẩm -->
+                    <div class="filter-item">
+                        <label for="productCodeFilter" style="font-weight: bold;">Mã sản phẩm:</label>
+                        <input type="text" id="productCodeFilter" ng-model="searchProductCode" class="form-control mb-3"
+                            placeholder="Nhập mã sản phẩm">
+                    </div>
+
                     <div class="filter-item">
                         <label for="colorFilter" style="font-weight: bold;">Màu sắc:</label>
                         <select id="colorFilter" ng-model="searchColor" ng-options="color for color in colorOptions"
@@ -474,15 +489,6 @@
                             <option value="">Chọn Kích Thước</option>
                         </select>
                     </div>
-
-                    <div class="filter-item">
-                        <label for="materialFilter" style="font-weight: bold;">Chất
-                            liệu:</label>
-                        <select id="materialFilter" ng-model="searchMaterial"
-                            ng-options="material for material in materialOptions" class="form-select">
-                            <option value="">Chọn Chất Liệu</option>
-                        </select>
-                    </div>
                 </div>
 
                 <!-- Bảng thông tin sản phẩm -->
@@ -492,6 +498,7 @@
                         <thead class="table-light" style="background-color: #f1f1f1;">
                             <tr>
                                 <th class="text-center" style="padding: 10px;">#</th>
+                                <th class="text-center" style="padding: 10px;">Mã sản phẩm</th>
                                 <th class="text-center" style="padding: 10px;">Sản phẩm</th>
                                 <th class="text-center" style="padding: 10px;">Màu sắc</th>
                                 <th class="text-center" style="padding: 10px;">Kích thước</th>
@@ -502,24 +509,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="detail in filteredProductDetails()" ng-mouseover="detail.isHovered = true"
-                                ng-mouseleave="detail.isHovered = false">
-                                <td class="text-center" style="padding: 10px;">{{ $index + 1 }}
-                                </td>
+                            <tr ng-repeat="detail in filteredProductDetails() | filter: {ma_san_pham_chi_tiet: searchProductCode}"
+                                ng-mouseover="detail.isHovered = true" ng-mouseleave="detail.isHovered = false">
+                                <td class="text-center" style="padding: 10px;">{{ $index + 1 }}</td>
+                                <td style="padding: 10px;">{{ detail.ma_san_pham_chi_tiet }}</td>
                                 <td style="padding: 10px;">{{ detail.ten_san_pham }}</td>
                                 <td style="padding: 10px;">{{ detail.ten_mau_sac }}</td>
                                 <td style="padding: 10px;">{{ detail.ten_kich_thuoc }}</td>
                                 <td style="padding: 10px;">{{ detail.ten_chat_lieu }}</td>
-                                <td class="text-center" style="padding: 10px;">{{
-                                    detail.so_luong }}</td>
+                                <td class="text-center" style="padding: 10px;">{{ detail.so_luong }}</td>
                                 <td style="padding: 10px;">
                                     <span ng-if="detail.giaKhuyenMai"
                                         style="color: #999; text-decoration: line-through; display: block;">
                                         {{ detail.gia_ban | currency: '' : 0 }} VND
                                     </span>
                                     <div style="color: #f00; font-weight: bold; margin-top: 5px; display: block;">
-                                        {{ detail.gia_khuyen_mai || detail.gia_ban | currency:
-                                        '' : 0 }} VND
+                                        {{ detail.gia_khuyen_mai || detail.gia_ban | currency: '' : 0 }} VND
                                     </div>
                                 </td>
                                 <td class="text-center">
@@ -539,6 +544,38 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                     style="border-radius: 8px; padding: 10px 20px; background-color: #6c757d; color: white;">
                     Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nhập số lượng -->
+<div id="quantityModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="quantityModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+            <div class="modal-header"
+                style="background: linear-gradient(135deg, #ff7e5f, #feb47b); color: white; padding: 25px 30px;">
+                <h5 class="modal-title" id="quantityModalLabel" style="margin: 0;">
+                    <i class="fa fa-shopping-cart"></i> Nhập số lượng
+                </h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"
+                    style="font-size: 1.25rem; background: transparent;"></button>
+            </div>
+            <div class="modal-body" style="padding: 20px 30px; background-color: #f9f9f9;">
+                <label for="quantityInput" style="font-weight: bold;">Số lượng:</label>
+                <input type="number" id="quantityInput" ng-model="quantity" class="form-control mb-3" min="1"
+                    placeholder="Nhập số lượng" required>
+            </div>
+            <div class="modal-footer" style="padding: 15px; background-color: #f8f9fa;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    style="border-radius: 8px; padding: 10px 20px; background-color: #6c757d; color: white;">
+                    Đóng
+                </button>
+                <button type="button" class="btn btn-primary" ng-click="confirmAddToCart()"
+                    style="border-radius: 8px; padding: 10px 20px;">
+                    Thêm vào giỏ hàng
                 </button>
             </div>
         </div>
@@ -576,6 +613,7 @@
                         placeholder="Nhập số tiền khách đưa"
                         style="font-size: 1.1rem; border-radius: 8px; padding: 12px; border: 1px solid #ddd; transition: all 0.3s ease-in-out; background-color: #fff;">
                 </div>
+
 
                 <!-- Phương thức thanh toán -->
                 <div class="mb-4">
@@ -706,17 +744,17 @@
                 <div>
                     <h5 class="fw-semibold" style="font-size: 1.1rem; color: #333;">Danh
                         sách voucher khả dụng:</h5>
-                    <div class="list-group">
+                    <div class="list-group" style="max-height: 500px; overflow-y: auto;">
                         <button type="button" class="list-group-item list-group-item-action p-4 mb-3 rounded-3"
                             ng-repeat="voucher in availableVouchers" ng-click="selectVoucher(voucher)" ng-style="{
-                                'opacity': voucher.isUsable ? '1' : '0.5', 
-                                'pointer-events': voucher.isUsable ? 'auto' : 'none', 
-                                'cursor': voucher.isUsable ? 'pointer' : 'not-allowed'
-                            }">
+                                        'opacity': voucher.isUsable ? '1' : '0.5', 
+                                        'pointer-events': voucher.isUsable ? 'auto' : 'none', 
+                                        'cursor': voucher.isUsable ? 'pointer' : 'not-allowed'
+                                    }">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <strong class="text-dark" style="font-size: 1.1rem;">{{
-                                        voucher.maVoucher }}</strong> - {{ voucher.moTa }}
+                                    <strong class="text-dark" style="font-size: 1.1rem;">{{voucher.maVoucher}}</strong>
+                                    - {{ voucher.moTa }}
                                 </div>
                                 <span class="badge" ng-style="{
                                         'background': voucher.isUsable ? 'linear-gradient(to right, #28a745, #218838)' : '#e74c3c',
@@ -729,20 +767,47 @@
                                     {{ voucher.trangThaiGiamGia.tenTrangThaiGiamGia }}
                                 </span>
                             </div>
-                            <small class="text-muted d-block mt-2" style="color: #6c757d;">
-                                Trạng thái: {{ voucher.isUsable ? 'Có thể sử dụng' : 'Không
-                                thể sử dụng' }}
-                            </small>
-                            <div ng-if="voucher.isUsable" style="color: #28a745; font-weight: bold; font-size: 14px;">
+                            <!-- Hiển thị thông tin chi tiết về giá tiền -->
+                            <div style="margin-top: 15px; font-size: 1rem; color: #555;">
+                                <p>
+                                    <strong>Áp dụng cho đơn hàng từ:</strong>
+                                    <span>{{ voucher.soTienToiThieu |
+                                        currency:"":0 }} VND</span>
+                                    đến
+                                    <span>{{ voucher.giaTriToiDa |
+                                        currency:"":0 }} VND</span>
+                                </p>
+                                <p>
+                                    <strong>Giảm giá:</strong>
+                                    <span style="color: #e74c3c; font-weight: bold;">
+                                        <!-- Nếu là phần trăm (true) -->
+                                        <span ng-if="voucher.kieuGiamGia">
+                                            {{ voucher.giaTriGiamGia |
+                                                currency:"":0 }} VND
+                                        </span>
+                                        <!-- Nếu là tiền tệ (false) -->
+                                        <span ng-if="!voucher.kieuGiamGia">
+                                            {{ voucher.giaTriGiamGia | currency:"":0 }} %
+                                        </span>
+                                    </span>
+                                </p>
+                                
+                            </div>
+
+                            <!-- Hiển thị trạng thái sử dụng -->
+                            <div ng-if="voucher.isUsable"
+                                style="color: #28a745; font-weight: bold; font-size: 14px; margin-top: 10px;">
                                 <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>Có thể sử
                                 dụng
                             </div>
-                            <div ng-if="!voucher.isUsable" style="color: #e74c3c; font-weight: bold; font-size: 14px;">
+                            <div ng-if="!voucher.isUsable"
+                                style="color: #e74c3c; font-weight: bold; font-size: 14px; margin-top: 10px;">
                                 <i class="fas fa-times-circle" style="color: #e74c3c; margin-right: 5px;"></i>Không thể
                                 sử dụng
                             </div>
                         </button>
                     </div>
+
                 </div>
 
 
@@ -830,7 +895,8 @@
 <!-- Modal Thêm Khách Hàng -->
 <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content rounded-5 shadow-lg" style="border: none; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);">
+        <div class="modal-content rounded-5 shadow-lg"
+            style="border: none; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);">
             <div class="modal-header" style="background: linear-gradient(to right, #00bcd4, #f32121); color: white;">
                 <h5 class="modal-title" id="addCustomerModalLabel" style="font-weight: 700; font-size: 1.25rem;">
                     Thêm Khách Hàng Mới
@@ -840,7 +906,8 @@
             <div class="modal-body">
                 <!-- Tên Khách Hàng -->
                 <div class="mb-3">
-                    <label for="newCustomerName" class="form-label" style="font-weight: 600; color: #333;">Tên Khách Hàng:</label>
+                    <label for="newCustomerName" class="form-label" style="font-weight: 600; color: #333;">Tên Khách
+                        Hàng:</label>
                     <input type="text" id="newCustomerName" class="form-control" ng-model="newCustomer.tenNguoiDung" />
                 </div>
 

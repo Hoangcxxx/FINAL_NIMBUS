@@ -46,7 +46,7 @@ public class ADSanPhamCTController {
     }
     @GetMapping("/findSanPhamCTLonHon0/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamCTByIdSanPhamLonHon0(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getSanPhamCTByIdSanPhamLonHon0(idSanPhamCT), "idSanPhamCT","idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
+        return getResponse(service.getSanPhamCTByIdSanPhamLonHon0(idSanPhamCT), "idSanPhamCT","idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa", "maSanPhamCT");
     }
 
     // DELETE method để xóa nhiều sản phẩm chi tiết
@@ -69,7 +69,7 @@ public class ADSanPhamCTController {
     }
     @GetMapping("/findAllSanPhamCT/{idSanPham}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPham) {
-        return getResponse(service.getAllSanPhamCTById(idSanPham), "idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa","idSanPhamCT");
+        return getResponse(service.getAllSanPhamCTById(idSanPham), "idSanPham","maSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa","idSanPhamCT","maSanPhamCT");
     }
 
 }

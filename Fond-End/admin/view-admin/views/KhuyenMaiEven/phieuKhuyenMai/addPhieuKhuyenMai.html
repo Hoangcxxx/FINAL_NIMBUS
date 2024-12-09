@@ -7,7 +7,7 @@
                     <button type="button" class="btn btn-secondary">Quay Lại</button>
                 </a>
             </div>
-            <div class="d-flex">
+            <div class="d-flex justify-content-center">
                 <div class="col-md-5 border border-3 rounded p-4 shadow-sm bg-light me-4">
                     <form>
                         <!-- Mã Phiếu -->
@@ -107,85 +107,7 @@
                         </div>
                     </form>
                 </div>
-
-                <!-- Bảng Khách Hàng -->
-                <div class="col-md-7">
-                    <h5>Danh Sách Khách Hàng</h5>
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">
-                                                <input type="checkbox" ng-model="selectAll"
-                                                    ng-change="selectAllCustomers()">
-                                            </th>
-                                            <th scope="col">Ảnh Đại Diện</th>
-                                            <th scope="col">Tên</th>
-                                            <th scope="col">Email</th>
-                                            <th scope="col">SĐT</th>
-                                            <th scope="col">Giới Tính</th>
-                                            <th scope="col">Ngày Sinh</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="item in dsKhachHang track by $index">
-                                            <th scope="row">
-                                                <input type="checkbox" ng-model="item.selected"
-                                                    ng-change="updateSelectAll()">
-                                            </th>
-                                            <td>{{item.anhDaiDien}}</td>
-                                            <td>{{item.tenNguoiDung}}</td>
-                                            <td>{{item.email}}</td>
-                                            <td>{{item.sdt}}</td>
-                                            <td>{{item.gioiTinh}}</td>
-                                            <td>{{item.ngaySinh}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 </main>
-
-
-<!--Modal Loại voucher -->
-<div class="modal fade" id="loaiVoucherModal" tabindex="-1" role="dialog" aria-labelledby="loaiVoucherModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loaiVoucherModal">{{'Thêm loại voucher mới'}}
-                </h5>
-                <button class="modal-close product-form" data-bs-dismiss="modal" ng-click="resetModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="productForm" ng-submit="onCreateLoaiVoucher()">
-                    <div class="form-group">
-                        <label for="ten_chat_lieu">Tên loại voucher:</label>
-                        <input type="text" class="form-control" ng-model="voucher.tenLoaiVoucher" id="tenLoaiVoucher"
-                            required>
-                    </div>
-                    <div class="form-group">
-                        <label for="mo_ta">Mô Tả:</label>
-                        <textarea class="form-control" ng-model="voucher.moTa" id="mo_ta"></textarea>
-                    </div>
-                    <div class="d-flex justify-content-between mt-3">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-click="resetModal()">
-                            Quay lại
-                        </button>
-                        <button type="submit" class="btn btn-primary">{{'Thêm Loại Voucher'}}</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>

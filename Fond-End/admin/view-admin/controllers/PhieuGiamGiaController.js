@@ -1,8 +1,10 @@
-window.PhieuGiamGiaController = function ($scope, $http) {
+window.PhieuGiamGiaController = function ($scope, $http, $timeout) {
     $scope.dsKhuyenMai = [];
     $scope.dsTrangThaiGiamGia = [];
     $scope.searchText = ''; // Giá trị tìm kiếm
-
+    $scope.searchMaVoucher = ''; // Giá trị tìm kiếm mã voucher
+    $scope.selectedTrangThaiGiamGia = ''; // Trạng thái tìm kiếm
+    $scope.selectedDiscountType = ''; // Kiểu giảm giá tìm kiếm
     // Function to fetch data
     $scope.fetchData = function (url, target, logMessage) {
         $http.get(url).then(function (response) {
@@ -120,118 +122,150 @@ window.PhieuGiamGiaController = function ($scope, $http) {
             $scope.fetchData('http://localhost:8080/api/admin/vouchers', 'dsKhuyenMai', 'Fetched KhuyenMai:');
         }
     };
-    // Hàm tìm kiếm voucher
-    $scope.searchVoucher = function () {
-        var searchQueryMaVoucher = $scope.searchMaVoucher.trim();  // Lấy giá trị mã voucher
-        var searchQueryTenVoucher = $scope.searchText.trim();  // Lấy giá trị tên voucher
+    // Function to search vouchers based on selected conditions
+    $scope.searchVoucherNangCao = function () {
+        let searchParams = {};
 
-        // Nếu không có gì trong phần mã voucher, gọi lại hàm fetchData để lấy tất cả các voucher
-        if (searchQueryMaVoucher === '' && searchQueryTenVoucher === '') {
-            $scope.fetchData('http://localhost:8080/api/admin/vouchers', 'dsKhuyenMai', 'Fetched KhuyenMai:');
-        } else {
-            // Kiểm tra nếu có giá trị mã voucher thì tìm kiếm theo mã trước
-            if (searchQueryMaVoucher) {
-                $scope.searchVoucherByCode(searchQueryMaVoucher);
-            }
-            if (searchQueryTenVoucher) {
-                // Nếu không có mã voucher, tìm kiếm theo tên voucher
-                $scope.searchVoucherByName(searchQueryTenVoucher);
-            }
+        // Add search params based on available fields
+        if ($scope.searchMaVoucher) {
+            searchParams.maVoucher = $scope.searchMaVoucher;
         }
+        if ($scope.selectedTrangThaiGiamGia) {
+            searchParams.trangThaiId = $scope.selectedTrangThaiGiamGia;
+        }
+        if ($scope.selectedDiscountType !== '') {
+            searchParams.kieuGiamGia = ($scope.selectedDiscountType === 'true');
+        }
+
+        // Send the search request to the backend
+        let searchUrl = 'http://localhost:8080/api/admin/vouchers/search?';
+
+        // Dynamically add search params to URL
+        Object.keys(searchParams).forEach(function (key, index) {
+            searchUrl += key + '=' + searchParams[key];
+            if (index < Object.keys(searchParams).length - 1) {
+                searchUrl += '&';
+            }
+        });
+
+        // Execute the search request
+        $http.get(searchUrl).then(function (response) {
+            if (response.data.length > 0) {
+                $scope.dsKhuyenMai = response.data;
+            } else {
+                $scope.dsKhuyenMai = [];
+                alert('Không tìm thấy kết quả phù hợp với điều kiện tìm kiếm.');
+            }
+        }, function (error) {
+            console.error('Error during search:', error);
+        });
+    };
+
+    // Function to check if the Enter key is pressed for search
+    $scope.checkEnterKey = function (event) {
+        if (event.keyCode === 13) { // Enter key
+            $scope.searchVoucher();
+        }
+    };
+    // Hàm tìm kiếm voucher
+    // Hàm tìm kiếm và lọc voucher theo kiểu giảm giá
+    $scope.searchVoucher = function () {
+        var searchQueryTenVoucher = $scope.searchText.trim();  // Tìm kiếm theo tên voucher
+        if (searchQueryTenVoucher === '') {
+            $scope.fetchData('http://localhost:8080/api/admin/vouchers', 'dsKhuyenMai', 'Fetched KhuyenMai:');
+            return;
+        }
+        // Bước 1: Tìm kiếm theo tên voucher
+        if (searchQueryTenVoucher) {
+            $scope.searchVoucherByName(searchQueryTenVoucher);
+        }
+    };
+
+    // Hàm xóa dữ liệu trong các trường tìm kiếm
+    $scope.clearSearch = function (field) {
+        if (field === 'maVoucher') {
+            $scope.searchMaVoucher = '';
+        } else if (field === 'trangThai') {
+            $scope.selectedTrangThaiGiamGia = '';
+        } else if (field === 'discountType') {
+            $scope.selectedDiscountType = '';
+        }
+        $scope.searchVoucher(); // Gọi lại hàm tìm kiếm sau khi xóa
     };
 
 
     $scope.searchVoucherByCode = function (maVoucher) {
-        maVoucher = maVoucher.trim(); // Loại bỏ khoảng trắng đầu và cuối
-
+        maVoucher = maVoucher.trim();
         if (maVoucher === '') {
+            // Nếu mã voucher trống, gọi lại tất cả voucher
+            $scope.fetchData('http://localhost:8080/api/admin/vouchers', 'dsKhuyenMai', 'Fetched KhuyenMai:');
             return;
         }
 
-        console.log('Searching voucher by code:', maVoucher);
-
+        // Gọi API để tìm kiếm theo mã voucher
         $http.get('http://localhost:8080/api/admin/vouchers/search/maVoucher', {
             params: { maVoucher: maVoucher }
         })
             .then(function (response) {
-                console.log('Voucher search result:', response.data);
-
-                if (!response.data || response.data.length === 0) {
-                    // Nếu không có voucher nào được tìm thấy
-                    Swal.fire({
-                        title: 'Không tìm thấy mã voucher!',
-                        text: 'Không có voucher nào khớp với mã bạn nhập.',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    });
-
-                    $scope.dsKhuyenMai = []; // Xóa danh sách voucher hiển thị
+                if (response.data && response.data.length > 0) {
+                    // Cập nhật danh sách voucher tìm được
+                    $scope.dsKhuyenMai = response.data;
                 } else {
-                    // Kiểm tra và xử lý voucher bị xóa
-                    if (response.data.trangThaiGiamGia.tenTrangThaiGiamGia === 'Bị xóa') {
-                        $scope.dsKhuyenMai = []; // Không hiển thị voucher đã bị xóa
-                        Swal.fire({
-                            title: 'Thông báo!',
-                            text: 'Voucher đã bị xóa và không còn hiệu lực.',
-                            icon: 'warning',
-                            confirmButtonText: 'OK'
-                        });
-                    } else {
-                        $scope.dsKhuyenMai = [response.data]; // Hiển thị voucher nếu không bị xóa
-                        Swal.fire({
-                            title: 'Tìm kiếm thành công!',
-                            text: 'Đã tìm thấy voucher với mã: ' + maVoucher,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                    }
+                    $scope.dsKhuyenMai = [];
                 }
             })
             .catch(function (error) {
                 console.error('Error during search by code:', error);
-                $scope.dsKhuyenMai = []; // Nếu có lỗi, xóa danh sách hiển thị
-                Swal.fire({
-                    title: 'Lỗi!',
-                    text: 'Có lỗi xảy ra trong quá trình tìm kiếm.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+                $scope.dsKhuyenMai = [];
             });
     };
 
-
-
-
-
-    // Hàm tìm kiếm theo tên voucher
-    $scope.searchVoucherByName = function (tenVoucher) {
-        if (tenVoucher.trim() === '') {
-            return;  // Nếu không có tên voucher, dừng hàm
+    $scope.searchVoucherByTrangThai = function (trangThaiId) {
+        if (!trangThaiId) {
+            return;
         }
 
-        console.log('Searching voucher by name:', tenVoucher); // Log tên voucher đang tìm kiếm
+        $http.get('http://localhost:8080/api/admin/vouchers/search/trangThaiVoucher', {
+            params: { trangThaiId: trangThaiId }
+        })
+            .then(function (response) {
+                if (response.data && response.data.length > 0) {
+                    $scope.dsKhuyenMai = response.data;
+                } else {
+                    $scope.dsKhuyenMai = [];
+                    alert("Không tìm thấy voucher với trạng thái này.");
+                }
+            })
+            .catch(function (error) {
+                console.error('Error during search by status:', error);
+                $scope.dsKhuyenMai = [];
+            });
+    };
+    $scope.searchVoucherByName = function (tenVoucher) {
+        tenVoucher = tenVoucher.trim().replace(/\s+/g, ' ');;
+        if (tenVoucher === '') {
+            // Nếu mã voucher trống, gọi lại tất cả voucher
+            $scope.fetchData('http://localhost:8080/api/admin/vouchers', 'dsKhuyenMai', 'Fetched KhuyenMai:');
+            return;
+        }
 
+        // Gọi API để tìm kiếm theo mã voucher
         $http.get('http://localhost:8080/api/admin/vouchers/search/tenVoucher', {
             params: { tenVoucher: tenVoucher }
         })
             .then(function (response) {
-                console.log('Voucher search result:', response.data); // Log kết quả tìm kiếm
-
-                // Kiểm tra dữ liệu trả về từ API và hiển thị
                 if (response.data && response.data.length > 0) {
+                    // Cập nhật danh sách voucher tìm được
                     $scope.dsKhuyenMai = response.data;
                 } else {
-                    // Nếu không có kết quả nào, thông báo cho người dùng
                     $scope.dsKhuyenMai = [];
-                    alert("Không tìm thấy voucher với tên: " + tenVoucher);
                 }
             })
             .catch(function (error) {
-                console.error('Lỗi khi tìm kiếm theo tên voucher:', error);
-                $scope.dsKhuyenMai = [];  // Nếu có lỗi, xóa danh sách hiển thị
+                console.error('Error during search by code:', error);
+                $scope.dsKhuyenMai = [];
             });
     };
-
 
 
 

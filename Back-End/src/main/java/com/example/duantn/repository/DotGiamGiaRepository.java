@@ -1,6 +1,7 @@
 package com.example.duantn.repository;
 
 import com.example.duantn.entity.DotGiamGia;
+import com.example.duantn.entity.Voucher;
 import com.example.duantn.query.DotGiamGiaQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,10 @@ public interface DotGiamGiaRepository extends JpaRepository<DotGiamGia, Integer>
     Optional<DotGiamGia> findDotGiamGiaByKieuGiamGia(Boolean kieuGiamGia);
     @Query(value = DotGiamGiaQuery.GET_SAN_PHAM_CHUA_GIAM_GIA_BY_DANH_MUC, nativeQuery = true)
     List<Object[]> getAllSanPhamChuaGiamGiaByDanhMuc(@Param("idDanhMuc") Integer idDanhMuc);
+    // Tìm kiếm theo tên voucher
+    @Query("SELECT d FROM DotGiamGia d WHERE d.tenDotGiamGia LIKE %?1%")
+    List<DotGiamGia> findByTenDotGiamGiaContaining(String tenVoucher);
+
+    // Tìm kiếm theo kiểu giảm giá
+    List<DotGiamGia> findByKieuGiamGia(Boolean kieuGiamGia);
 }

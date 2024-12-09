@@ -28,7 +28,15 @@ public class DotGiamGiaService {
 
     @Autowired
     private SanPhamRepository sanPhamRepository;
+    // Tìm kiếm theo tên voucher
+    public List<DotGiamGia> findByTenVoucher(String tenVoucher) {
+        return dotGiamGiaRepository.findByTenDotGiamGiaContaining(tenVoucher);
+    }
 
+    // Tìm kiếm theo kiểu giảm giá
+    public List<DotGiamGia> findByKieuGiamGia(Boolean kieuGiamGia) {
+        return dotGiamGiaRepository.findByKieuGiamGia(kieuGiamGia);
+    }
     public List<DotGiamGia> getAllDotGiamGia() {
         return dotGiamGiaRepository.findAll();
     }

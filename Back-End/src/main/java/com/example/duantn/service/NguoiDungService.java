@@ -1,5 +1,6 @@
 package com.example.duantn.service;
 
+import com.example.duantn.dto.NguoiDungDTO;
 import com.example.duantn.dto.TimKiemNguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.repository.NguoiDungRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NguoiDungService {
@@ -89,10 +91,10 @@ public class NguoiDungService {
     }
 
     // Xóa người dùng
-    public ResponseEntity<HttpStatus> deleteNguoiDung(int id) {
-        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(id);
+    public ResponseEntity<HttpStatus> deleteNguoiDung(Integer idNguoiDung) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
         if (nguoiDung.isPresent()) {
-            nguoiDungRepository.deleteById(id);
+            nguoiDungRepository.deleteById(idNguoiDung);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -161,5 +163,94 @@ public class NguoiDungService {
 
         return nguoiDungDTOList;
     }
+    public boolean isPhoneDuplicate(String sdt) {
+        if (sdt == null || sdt.trim().isEmpty()) {
+            return false; // Số điện thoại rỗng không được tính là trùng
+        }
+        return nguoiDungRepository.existsBySdt(sdt.trim());
+    }
+    public List<NguoiDung> searchNguoiDung(String tenNguoiDung, String email, String sdt) {
+        return nguoiDungRepository.searchNguoiDung(tenNguoiDung, email, sdt);
+    }
 
+
+    public List<NguoiDungDTO> getAllNguoiDung() {
+        List<NguoiDung> nguoiDungList = nguoiDungRepository.findAll();
+
+        return nguoiDungList.stream()
+                .filter(nguoiDung -> {
+                    // Kiểm tra null cho vaiTro trước khi sử dụng
+                    if (nguoiDung.getVaiTro() == null) {
+                        return false; // Loại bỏ người dùng nếu vaiTrò là null
+                    }
+                    Integer vaiTroId = nguoiDung.getVaiTro().getIdVaiTro();
+                    return vaiTroId != null && vaiTroId == 2; // Điều kiện kiểm tra vai trò
+                })
+                .map(nguoiDung -> {
+                    NguoiDungDTO dto = new NguoiDungDTO();
+                    dto.setIdNguoiDung(nguoiDung.getIdNguoiDung());
+                    dto.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+                    dto.setEmail(nguoiDung.getEmail());
+                    dto.setSdt(nguoiDung.getSdt());
+                    dto.setNgayTao(nguoiDung.getNgayTao());
+                    dto.setTrangThai(nguoiDung.getTrangThai());
+                    dto.setGioiTinh(nguoiDung.getGioiTinh());
+                    // Kiểm tra null trước khi lấy tên vai trò
+                    String tenVaiTro = (nguoiDung.getVaiTro() != null) ? nguoiDung.getVaiTro().getTen() : "Không xác định";
+                    dto.setTenVaiTro(tenVaiTro);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+    // Lấy danh sách tất cả nhân viên và chuyển thành DTO
+    public List<NguoiDungDTO> getAllNhanvien() {
+        List<NguoiDung> nguoiDungList = nguoiDungRepository.findAll();
+
+        return nguoiDungList.stream()
+                .filter(nguoiDung -> {
+                    // Kiểm tra null trước khi truy cập vaiTro và idVaiTro
+                    if (nguoiDung.getVaiTro() == null) {
+                        return false; // Loại bỏ nếu vaiTro là null
+                    }
+                    Integer vaiTroId = nguoiDung.getVaiTro().getIdVaiTro();
+                    return vaiTroId != null && vaiTroId == 4; // Lọc vai trò là 4 (nhân viên)
+                })
+                .map(nguoiDung -> {
+                    NguoiDungDTO dto = new NguoiDungDTO();
+                    dto.setIdNguoiDung(nguoiDung.getIdNguoiDung());
+                    dto.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+                    dto.setEmail(nguoiDung.getEmail());
+                    dto.setSdt(nguoiDung.getSdt());
+                    dto.setNgayTao(nguoiDung.getNgayTao());
+                    dto.setTrangThai(nguoiDung.getTrangThai());
+                    dto.setGioiTinh(nguoiDung.getGioiTinh());
+                    // Kiểm tra null trước khi lấy tên vai trò
+                    String tenVaiTro = (nguoiDung.getVaiTro() != null) ? nguoiDung.getVaiTro().getTen() : "Không xác định";
+                    dto.setTenVaiTro(tenVaiTro);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+    // Phương thức khóa người dùng
+    public void khoaNguoiDung(Integer idNguoiDung) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
+        if (nguoiDung.isPresent()) {
+            NguoiDung user = nguoiDung.get();
+            user.setTrangThai(false);  // Thiết lập trạng thái khóa (false)
+            nguoiDungRepository.save(user);  // Lưu lại thay đổi
+        }
+    }
+
+    // Phương thức mở khóa người dùng
+    public void moKhoaNguoiDung(Integer idNguoiDung) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
+        if (nguoiDung.isPresent()) {
+            NguoiDung user = nguoiDung.get();
+            user.setTrangThai(true);  // Thiết lập trạng thái mở khóa (true)
+            nguoiDungRepository.save(user);  // Lưu lại thay đổi
+        }
+    }
 }

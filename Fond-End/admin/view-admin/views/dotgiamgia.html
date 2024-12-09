@@ -15,17 +15,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="admin-control-center">
-                    <form action="" class="form-search">
-                        <span class="search-btn"><i class="fa-light fa-magnifying-glass"></i></span>
-                        <input id="form-search-product" type="text" class="form-search-input"
-                            placeholder="Tìm kiếm phiếu giảm giá..." oninput="showProduct()">
-                    </form>
-                </div>
-
                 <div class="admin-control-right">
-                    <button class="btn-control-large" id="btn-cancel-product"><i class="fa-light fa-rotate-right"></i>
-                        Làm mới</button>
                     <a href="#!add_dot_km">
                         <button type="button" class="btn-control-large">
                             <i class="fa-light fa-plus"></i> Thêm đợt giảm giá mới
@@ -37,8 +27,8 @@
                 <!-- Form lọc khuyến mãi -->
                 <form class="row g-3 mb-4">
                     <div class="col-md-4">
-                        <label for="ten-khuyen-mai" class="form-label">Tên khuyến mãi</label>
-                        <input type="text" class="form-control" id="ten-khuyen-mai" placeholder="Tìm kiếm">
+                        <label for="tenDotGiamGia" class="form-label">Tên đợt giảm giá</label>
+                        <input type="text" class="form-control" id="tenDotGiamGia" ng-model="tenDotGiamGia">
                     </div>
                     <div class="col-md-4">
                         <label for="trang-thai" class="form-label">Trạng thái</label>
@@ -53,14 +43,19 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label for="trang-thai" class="form-label">Kiểu giảm giá</label>
-                        <select class="form-select" id="trang-thai">
-                            <option value="1">$</option>
-                            <option value="0">%</option>
+                        <label for="kieuGiamGia" class="form-label">Kiểu giảm giá</label>
+                        <select class="form-select" ng-model="selectedDiscountType"
+                            ng-change="filterVoucherByDiscountType()">
+                            <option value="">Tất cả</option>
+                            <option value="true">$</option>
+                            <option value="false">%</option>
                         </select>
                     </div>
                     <div class="col-12">
-                        <button type="submit" class="btn btn-danger">Làm mới</button>
+                        <button type="button" class="btn btn-danger" ng-click="searchData()">Tìm kiếm</button>
+                        <button type="button" class="btn btn-secondary"
+                            ng-click="fetchData('http://localhost:8080/api/admin/dot_giam_gia', 'dsDotKhuyenMai', 'Fetched Voucher:')">Làm
+                            mới</button>
                     </div>
                 </form>
             </div>

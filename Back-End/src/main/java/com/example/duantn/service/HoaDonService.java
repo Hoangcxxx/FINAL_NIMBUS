@@ -167,6 +167,7 @@ public class HoaDonService {
                     SanPhamChiTietDTO spDTO = new SanPhamChiTietDTO();
                     spDTO.setIdspct(chiTiet.getSanPhamChiTiet().getIdSanPhamChiTiet());
                     spDTO.setSoLuong(chiTiet.getSoLuong());
+                    spDTO.setMaSPCT(chiTiet.getSanPhamChiTiet().getMaSanPhamCT());
                     spDTO.setGiaTien(chiTiet.getTongTien());
                     spDTO.setTenkichthuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
                     spDTO.setTenmausac(chiTiet.getSanPhamChiTiet().getMauSacChiTiet().getMauSac().getTenMauSac());
@@ -253,7 +254,16 @@ public class HoaDonService {
             // Cập nhật số lượng tồn kho
             sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - sanPham.getSoLuong());
             sanPhamChiTietRepository.save(sanPhamChiTiet);
-
+// Tạo hoặc lấy LichSuHoaDon
+            LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+            lichSuHoaDon.setNgayGiaoDich(new Date());
+            lichSuHoaDon.setSoTienThanhToan(
+                    hoaDonDTO.getListSanPhamChiTiet().stream()
+                            .map(sp -> sp.getGiaTien().multiply(BigDecimal.valueOf(sp.getSoLuong())))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            );
+            lichSuHoaDon.setNguoiDung(hoaDon.getNguoiDung());
+            lichSuHoaDonRepository.save(lichSuHoaDon);
             // Lưu chi tiết hóa đơn
             HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
             hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);

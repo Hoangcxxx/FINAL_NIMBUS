@@ -1,8 +1,11 @@
 package com.example.duantn.controller.admin;
 
 import com.example.duantn.entity.SanPham;
+import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.entity.Voucher;
+import com.example.duantn.service.SanPhamChiTietService;
 import com.example.duantn.service.SanPhamService;
+import com.example.duantn.service.TrangThaiHoaDonService;
 import com.example.duantn.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,10 @@ public class ADBanHangController {
     private SanPhamService sanPhamService;
     @Autowired
     private VoucherService voucherService;
+    @Autowired
+    private SanPhamChiTietService sanPhamChiTietService;
+    @Autowired
+    private TrangThaiHoaDonService trangThaiHoaDonService;
     @GetMapping("/all")
     public List<SanPham> getSanPhamForBanHang() {
         return sanPhamService.getSanPhamForBanHang();
@@ -31,7 +38,31 @@ public class ADBanHangController {
         List<Map<String, Object>> results = sanPhamService.getSPBanHangTaiQuay();
         return results;
     }
+    @GetMapping("/search/{idSanPhamChiTiet}")
+    public ResponseEntity<SanPhamChiTiet> getSanPhamChiTietSeach(@PathVariable Integer idSanPhamChiTiet) {
+        SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietService.getSanPhamChiTietById(idSanPhamChiTiet);
+        if (sanPhamChiTiet != null) {
+            return ResponseEntity.ok(sanPhamChiTiet);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+    @PostMapping("/create-trang-thai/{hoaDonId}")
+    public ResponseEntity<Map<String, String>> TrangThaiHoaDonKhiChonPTTT(@PathVariable Integer hoaDonId) {
+        try {
+            trangThaiHoaDonService.TrangThaiHoaDonKhiChonPTTT(hoaDonId);
 
+            // Trả về thông báo thành công
+            Map<String, String> successResponse = new HashMap<>();
+            successResponse.put("message", "Cập nhật trạng thái hóa đơn thành công!");
+            return ResponseEntity.ok(successResponse);
+        } catch (IllegalArgumentException e) {
+            // Trả về thông báo lỗi nếu có exception
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
     @GetMapping("/chi_tiet")
     public List<Map<String, Object>> getSanPhamChiTiet(@RequestParam("id_san_pham") Integer idSanPham) {
         // Gọi service để lấy dữ liệu từ database
@@ -43,21 +74,22 @@ public class ADBanHangController {
         for (Object[] result : rawResults) {
             Map<String, Object> data = new HashMap<>();
             data.put("id_san_pham_chi_tiet", result[0]);
-            data.put("id_san_pham", result[1]);
-            data.put("ma_san_pham", result[2]);
-            data.put("ten_san_pham", result[3]);
-            data.put("so_luong", result[4]);
-            data.put("ten_chat_lieu", result[5]);
-            data.put("ten_mau_sac", result[6]);
-            data.put("ten_kich_thuoc", result[7]);
-            data.put("mo_ta", result[8]);
-            data.put("ten_dot_giam_gia", result[9]);
-            data.put("gia_khuyen_mai", result[10]);
-            data.put("gia_tri_giam_gia", result[11]);
-            data.put("kieu_giam_gia", result[12]);
-            data.put("ngay_bat_dau", result[13]);
-            data.put("ngay_ket_thuc", result[14]);
-            data.put("gia_ban", result[15]);
+            data.put("ma_san_pham_chi_tiet", result[1]);
+            data.put("id_san_pham", result[2]);
+            data.put("ma_san_pham", result[3]);
+            data.put("ten_san_pham", result[4]);
+            data.put("so_luong", result[5]);
+            data.put("ten_chat_lieu", result[6]);
+            data.put("ten_mau_sac", result[7]);
+            data.put("ten_kich_thuoc", result[8]);
+            data.put("mo_ta", result[9]);
+            data.put("ten_dot_giam_gia", result[10]);
+            data.put("gia_khuyen_mai", result[11]);
+            data.put("gia_tri_giam_gia", result[12]);
+            data.put("kieu_giam_gia", result[13]);
+            data.put("ngay_bat_dau", result[14]);
+            data.put("ngay_ket_thuc", result[15]);
+            data.put("gia_ban", result[16]);
             response.add(data);
         }
 
@@ -108,7 +140,7 @@ public class ADBanHangController {
         }
     }
     @GetMapping("/allvoucher/{tongTien}")
-    public ResponseEntity<List<Voucher>> getAllVouchers(@PathVariable("tongTien") BigDecimal tongTien) {
+    public ResponseEntity<List<Voucher>> getAllVouchers(@PathVariable BigDecimal tongTien) {
         try {
             List<Voucher> allVouchers = voucherService.getAllVouchersWithStatus(tongTien);
             return ResponseEntity.ok(allVouchers);

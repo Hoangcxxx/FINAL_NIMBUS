@@ -58,7 +58,14 @@ public class GioHangService {
             gioHang.setNgayCapNhat(new Date());
             gioHang = gioHangRepository.save(gioHang);
         }
+        // Kiểm tra trạng thái sản phẩm trước khi thêm vào giỏ hàng
+        Optional<SanPham> sanPham = sanPhamRepository.findById(gioHangChiTietDTO.getIdSanPham());
+        if (sanPham.isEmpty() || !sanPham.get().getTrangThai()) {
+            System.out.println("Sản phẩm không còn khả dụng (tình trạng sản phẩm: không kích hoạt).");
 
+            // Trả về thông báo lỗi mà không hiển thị stack trace
+            return null; // Hoặc bạn có thể trả về giỏ hàng rỗng nếu cần
+        }
         // Phần còn lại của mã không thay đổi
         Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findByAttributes(
                 gioHangChiTietDTO.getIdMauSac(), gioHangChiTietDTO.getIdKichThuoc(), gioHangChiTietDTO.getIdChatLieu(),
@@ -133,6 +140,7 @@ public class GioHangService {
         gioHang.setNgayCapNhat(new Date());
         return gioHangRepository.save(gioHang); // Lưu và trả về giỏ hàng đã xóa sản phẩm
     }
+
     public List<Object[]> getGioHangChiTiets(Integer idNguoiDung) {
         return gioHangRepository.getAllGioHang(idNguoiDung);
     }
@@ -149,15 +157,6 @@ public class GioHangService {
 
         return gioHang; // Trả về giỏ hàng sau khi xóa sản phẩm
     }
-
-
-
-
-
-
-
-
-
 
 
     public void themSanPhamVaoGioHang(Integer idNguoiDung, GioHangRequest request) {
@@ -214,7 +213,6 @@ public class GioHangService {
     }
 
 
-
     public List<GioHangResponse> layDanhSachSanPhamTrongGioHang(Integer idNguoiDung) {
         GioHang gioHang = gioHangRepository.findByIdNguoiDung(idNguoiDung);
         if (gioHang == null) {
@@ -235,6 +233,7 @@ public class GioHangService {
         response.setTenSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getTenSanPham());
         response.setMauSac(chiTiet.getSanPhamChiTiet().getMauSacChiTiet().getMauSac().getTenMauSac());
         response.setKichThuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
+        response.setChatLieu(chiTiet.getSanPhamChiTiet().getChatLieuChiTiet().getChatLieu().getTenChatLieu());
         response.setSoLuong(chiTiet.getSoLuong());
         response.setGiaBan(chiTiet.getDonGia());  // BigDecimal giữ nguyên, không cần chuyển đổi
         response.setThanhTien(chiTiet.getThanhTien());  // BigDecimal giữ nguyên, không cần chuyển đổi
@@ -267,6 +266,7 @@ public class GioHangService {
             throw new RuntimeException("Sản phẩm không tồn tại trong giỏ hàng.");
         }
     }
+
     @Transactional
     public void xoaTatCaSanPhamKhoiGioHangKhongCapNhatSoLuong(Integer idNguoiDung) {
         // Tìm giỏ hàng của người dùng
@@ -328,7 +328,6 @@ public class GioHangService {
             throw new RuntimeException("Chi tiết giỏ hàng không tồn tại.");
         }
     }
-
 
 
 }

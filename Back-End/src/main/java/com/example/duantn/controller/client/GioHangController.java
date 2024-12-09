@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,12 +34,27 @@ public class GioHangController {
     @PostMapping("/add")
     public ResponseEntity<GioHang> addProductToGioHang(@RequestParam Integer idUser,
                                                        @RequestBody GioHangChiTietDTO gioHangChiTietDTO) {
-        GioHang gioHang = gioHangService.addGioHang(idUser, gioHangChiTietDTO);
-        // Tạo một map để trả về thông báo
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Sản phẩm đã được thêm vào giỏ hàng.");
-        return ResponseEntity.ok(gioHang);
+        try {
+            GioHang gioHang = gioHangService.addGioHang(idUser, gioHangChiTietDTO);
+
+            if (gioHang == null) {
+                // Trả về thông báo lỗi khi không thể thêm sản phẩm vào giỏ hàng
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(null); // Trả về giỏ hàng rỗng và status code 400
+            }
+
+            // Trả về giỏ hàng khi thêm thành công
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Sản phẩm đã được thêm vào giỏ hàng.");
+            return ResponseEntity.ok(gioHang);
+        } catch (Exception e) {
+            // Log lỗi và trả về thông báo lỗi cho client
+            System.out.println("Lỗi khi thêm sản phẩm vào giỏ hàng: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null); // Trả về lỗi server
+        }
     }
+
 
     @PutMapping("/update")
     public ResponseEntity<GioHang> updateProductInGioHang(@RequestParam Integer idGioHang,

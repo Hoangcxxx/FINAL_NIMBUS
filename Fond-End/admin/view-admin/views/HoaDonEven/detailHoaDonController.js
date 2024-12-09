@@ -90,11 +90,14 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             case 2: // Trạng thái "Chờ xác nhận"
                 $scope.modalButtonText = 'Xác nhận đơn hàng';
                 break;
-            case 4: // Trạng thái "Chờ thanh toán"
-                $scope.modalButtonText = 'Xác nhận thanh toán';
-                break;
-            case 6: // Trạng thái "Chờ giao hàng"
+            case 4: // Trạng thái "Chờ giao hàng"
                 $scope.modalButtonText = 'Giao hàng';
+                break;
+            case 5: // Trạng thái "Chờ giao hàng"
+                $scope.modalButtonText = 'Đang vận chuyển';
+                break;
+            case 6: // Trạng thái "Chờ thanh toán"
+                $scope.modalButtonText = 'Xác nhận thanh toán';
                 break;
             case 7: // Trạng thái "Đang vận chuyển"
                 $scope.modalButtonText = 'Hoàn thành';
@@ -160,7 +163,12 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     $scope.getStatus4 = function () {
         return getMaxStatus([4, 5]);
     };
-
+    $scope.getStatus6 = function () {
+        return getMaxStatus([6]);
+    };
+    $scope.getStatus7 = function () {
+        return getMaxStatus([7]);
+    };
     // Hàm cập nhật trạng thái hóa đơn
     $scope.updateTrangThaiHoaDon = function () {
         console.log("Trang thái ID:", $scope.ghiChu.trangThaiId);  // Kiểm tra giá trị

@@ -245,6 +245,7 @@ public class SanPhamQuery {
     public static final String GET_SAN_PHAM_CHI_TIET =
             "SELECT \n" +
                     "    spc.id_san_pham_chi_tiet, \n" +
+                    "    spc.ma_san_pham_chi_tiet, \n" +
                     "    sp.id_san_pham, \n" +
                     "    sp.ma_san_pham, \n" +
                     "    sp.ten_san_pham, \n" +

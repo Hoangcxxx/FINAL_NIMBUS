@@ -53,7 +53,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>vn.payos</groupId>
+            <artifactId>payos-java</artifactId>
+            <version>1.0.3</version>
+        </dependency>
         <!-- Spring Boot Starter Validation: Để sử dụng Validation trong Spring (ví dụ: @Valid, @NotNull) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

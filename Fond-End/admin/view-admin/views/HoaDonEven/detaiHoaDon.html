@@ -36,50 +36,65 @@
                     </div>
                 </div>
 
+
+
                 <!-- Dấu mũi tên -->
-                <i ng-if="isStatusAvailableById(3)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                <i ng-if="isStatusAvailableById(4)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 3: Chờ giao hàng -->
+                <div class="step text-center" ng-if="isStatusAvailableById(4)">
+                    <div class="step-icon bg-success text-white">
+                        <i class="fa-solid fa-truck-loading fa-2x"></i> <!-- Icon: Xe tải đang vận chuyển -->
+                    </div>
+                    <p class="mb-1 fw-bold">Chờ Giao Hàng</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(4) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(4) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(5)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 4: Đang vận chuyển -->
+                <div class="step text-center" ng-if="isStatusAvailableById(5)">
+                    <div class="step-icon bg-warning text-white">
+                        <i class="fa-solid fa-truck-fast fa-2x"></i> <!-- Icon: Xe tải giao hàng nhanh -->
+                    </div>
+                    <p class="mb-1 fw-bold">Đang Vận Chuyển</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(5) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(5) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(6)" class="fa-solid fa-arrow-right fa-2x text-muted"
                     style="margin-top: -86px;"></i>
 
                 <!-- Bước 2: Chờ thanh toán -->
-                <div class="step text-center" ng-if="isStatusAvailableById(3)">
+                <div class="step text-center" ng-if="isStatusAvailableById(6)">
                     <div class="step-icon bg-primary text-white">
                         <i class="fa-regular fa-credit-card fa-2x"></i> <!-- Icon: Thẻ tín dụng -->
                     </div>
                     <p class="mb-1 fw-bold">Chờ Thanh Toán</p>
                     <!-- Hiển thị trạng thái cho các bước khác -->
-                    <small class="text-muted">{{ getStatusDescriptionById(getStatus4()) }}</small> <br>
-                    <small class="text-muted">{{ getStatusDateById(getStatus4()) | date:'dd/MM/yyyy hh:mm:ss a'
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus6()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus6()) | date:'dd/MM/yyyy hh:mm:ss a'
                         }}</small>
                 </div>
-
-                <!-- Dấu mũi tên -->
-                <i ng-if="isStatusAvailableById(6)" class="fa-solid fa-arrow-right fa-2x text-muted"
-                    style="margin-top: -86px;"></i>
-
-                <!-- Bước 3: Chờ giao hàng -->
-                <div class="step text-center" ng-if="isStatusAvailableById(6)">
-                    <div class="step-icon bg-success text-white">
-                        <i class="fa-solid fa-truck-loading fa-2x"></i> <!-- Icon: Xe tải đang vận chuyển -->
-                    </div>
-                    <p class="mb-1 fw-bold">Chờ Giao Hàng</p>
-                    <small class="text-muted">{{ getStatusDescriptionById(6) }}</small> <br>
-                    <small class="text-muted">{{ getStatusDateById(6) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
-                </div>
-
                 <!-- Dấu mũi tên -->
                 <i ng-if="isStatusAvailableById(7)" class="fa-solid fa-arrow-right fa-2x text-muted"
                     style="margin-top: -86px;"></i>
 
-                <!-- Bước 4: Đang vận chuyển -->
+                <!-- Bước 2: Chờ thanh toán -->
                 <div class="step text-center" ng-if="isStatusAvailableById(7)">
-                    <div class="step-icon bg-warning text-white">
-                        <i class="fa-solid fa-truck-fast fa-2x"></i> <!-- Icon: Xe tải giao hàng nhanh -->
+                    <div class="step-icon bg-primary text-white">
+                        <i class="fa-solid fa-user-check fa-2x"></i>
                     </div>
-                    <p class="mb-1 fw-bold">Đang Vận Chuyển</p>
-                    <small class="text-muted">{{ getStatusDescriptionById(7) }}</small> <br>
-                    <small class="text-muted">{{ getStatusDateById(7) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                    <p class="mb-1 fw-bold">Thanh toán thành công</p>
+                    <!-- Hiển thị trạng thái cho các bước khác -->
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus7()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus7()) | date:'dd/MM/yyyy hh:mm:ss a'
+                        }}</small>
                 </div>
-
                 <!-- Dấu mũi tên -->
                 <i ng-if="isStatusAvailableById(8)" class="fa-solid fa-arrow-right fa-2x text-muted"
                     style="margin-top: -86px;"></i>
@@ -159,8 +174,10 @@
                             <li><strong>Tên voucher:</strong> {{voucher[0].tenVoucher}}</li>
                             <li>
                                 <strong>Giá trị giảm giá:</strong>
-                                <span ng-if="voucher[0].kieuGiamGia">{{voucher[0].giaTriGiamGia | currency: '': 0}} VNĐ</span>
-                                <span ng-if="!voucher[0].kieuGiamGia">{{voucher[0].giaTriGiamGia | currency: '': 0}}%</span>
+                                <span ng-if="voucher[0].kieuGiamGia">{{voucher[0].giaTriGiamGia | currency: '': 0}}
+                                    VNĐ</span>
+                                <span ng-if="!voucher[0].kieuGiamGia">{{voucher[0].giaTriGiamGia | currency: '':
+                                    0}}%</span>
                             </li>
                             <li>
                                 <strong>Tổng giảm giá:</strong> {{total_discount | currency: '': 0}} VNĐ

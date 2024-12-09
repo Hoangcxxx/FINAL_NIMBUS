@@ -8,7 +8,6 @@
         <!-- Left Column: Shipping and Payment Information -->
         <div class="col-lg-8">
             <h2 class="cart-title text-center mb-4">Thanh Toán</h2>
-
             <!-- Shipping Information -->
             <h5 class="mt-4">Thông tin Giao hàng</h5>
             <form ng-submit="placeOrder()" class="compact-form">
@@ -31,7 +30,7 @@
                             placeholder="Nhập số điện thoại">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="address" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                        <label for="address" class="form-label">Địa chỉ cụ thể<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="address" ng-model="userInfo.diaChi"
                             placeholder="Nhập địa chỉ" required>
                     </div>
@@ -146,7 +145,6 @@
                 </div>
                 <button data-bs-toggle="modal" data-bs-target="#voucherModal" ng-click="dsvoucher()"
                     class="btn btn-warning w-100">Áp dụng mã khuyến mãi</button>
-
                 <hr>
 
                 <div class="mb-3" ng-if="selectedVoucher">
@@ -182,8 +180,8 @@
                         <span ng-if="selectedVoucher">
                             <!-- Kiểm tra kiểu giảm giá -->
                             <span ng-if="!selectedVoucher.kieuGiamGia">
-                                Giảm giá: {{ selectedVoucher.giaTriGiamGia }}% ({{
-                                calculateDiscountAmount(selectedVoucher) | currency: '' : 0 }} VND)
+                                Giảm giá: {{ selectedVoucher.giaTriGiamGia }}% {{
+                                calculateDiscountAmount(selectedVoucher) | currency: '' : 0 }}
                             </span>
                             <span ng-if="selectedVoucher.kieuGiamGia">
                                 Giảm giá: {{ selectedVoucher.giaTriGiamGia | currency: '' : 0 }} VND
@@ -261,46 +259,49 @@
 
                 <hr class="my-4" style="border-top: 1px solid #ddd;" />
 
+
                 <div>
                     <h5 class="fw-semibold" style="font-size: 1.1rem; color: #333;">Danh
                         sách voucher khả dụng:</h5>
-                    <div class="list-group">
+                    <div class="list-group" style="max-height: 500px; overflow-y: auto;">
                         <button type="button" class="list-group-item list-group-item-action p-4 mb-3 rounded-3"
-                            ng-repeat="voucher in availableVouchers" ng-click="selectVoucher(voucher)" ng-style="{
-                            'opacity': voucher.isUsable ? '1' : '0.5', 
-                            'pointer-events': voucher.isUsable ? 'auto' : 'none', 
-                            'cursor': voucher.isUsable ? 'pointer' : 'not-allowed'
-                        }">
+                            ng-repeat="voucher in Voucher" ng-click="selectVoucher(voucher)" ng-style="{
+                                                'opacity': voucher.isUsable ? '1' : '0.5', 
+                                                'pointer-events': voucher.isUsable ? 'auto' : 'none', 
+                                                'cursor': voucher.isUsable ? 'pointer' : 'not-allowed'
+                                            }">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <strong class="text-dark" style="font-size: 1.1rem;">{{
-                                        voucher.maVoucher }}</strong> - {{ voucher.mo_ta }}
+                                    <strong class="text-dark" style="font-size: 1.1rem;">{{voucher.maVoucher}}</strong>
+                                    - {{ voucher.moTa }}
                                 </div>
                                 <span class="badge" ng-style="{
-                                    'background': voucher.isUsable ? 'linear-gradient(to right, #28a745, #218838)' : '#e74c3c',
-                                    'color': 'white',
-                                    'font-size': '14px',
-                                    'font-weight': '600',
-                                    'border-radius': '15px',
-                                    'padding': '5px 10px'
-                                }">
-                                    {{ voucher.loaiVoucher.tenLoaiVoucher }}
+                                                'background': voucher.isUsable ? 'linear-gradient(to right, #28a745, #218838)' : '#e74c3c',
+                                                'color': 'white',
+                                                'font-size': '14px',
+                                                'font-weight': '600',
+                                                'border-radius': '15px',
+                                                'padding': '5px 10px'
+                                            }">
+                                    {{ voucher.trangThaiGiamGia.tenTrangThaiGiamGia }}
                                 </span>
                             </div>
                             <small class="text-muted d-block mt-2" style="color: #6c757d;">
-                                Trạng thái: {{ voucher.isUsable ? 'Có thể sử dụng' : 'Không
-                                thể sử dụng' }}
+                                Trạng thái: {{ voucher.isUsable ? 'Có thể sử dụng' : 'Không thể sử dụng' }}
                             </small>
                             <div ng-if="voucher.isUsable" style="color: #28a745; font-weight: bold; font-size: 14px;">
-                                <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>Có thể sử
+                                <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>Có thể
+                                sử
                                 dụng
                             </div>
                             <div ng-if="!voucher.isUsable" style="color: #e74c3c; font-weight: bold; font-size: 14px;">
-                                <i class="fas fa-times-circle" style="color: #e74c3c; margin-right: 5px;"></i>Không thể
+                                <i class="fas fa-times-circle" style="color: #e74c3c; margin-right: 5px;"></i>Không
+                                thể
                                 sử dụng
                             </div>
                         </button>
                     </div>
+
                 </div>
             </div>
         </div>

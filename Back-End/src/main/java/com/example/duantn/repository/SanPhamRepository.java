@@ -95,5 +95,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
 
 
+    @Query("select s FROM SanPham s WHERE s.tenSanPham LIKE :tenSanPham%")
+    List<SanPham> findByTenSanPham(@Param("tenSanPham") String tenSanPham);
 
 }

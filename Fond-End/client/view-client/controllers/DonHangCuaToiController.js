@@ -93,7 +93,12 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                         $scope.orderlist = {
                             listSanPhamChiTiet: hoaDon.listSanPhamChiTiet,
                             thanhTien: hoaDon.thanhTien,
-                            phiShip: hoaDon.phiShip
+                            phiShip: hoaDon.phiShip,
+                            maSPCT: hoaDon.maSPCT,
+                            tenSanPham: hoaDon.tenSanPham,
+                            tenmausac: hoaDon.tenmausac, // Đảm bảo trường này tồn tại
+                            tenchatlieu: hoaDon.tenchatlieu, // Đảm bảo trường này tồn tại
+                            tenkichthuoc: hoaDon.tenkichthuoc, // Đảm bảo trường này tồn tại
                         };
 
                         // Lấy hình ảnh cho từng sản phẩm

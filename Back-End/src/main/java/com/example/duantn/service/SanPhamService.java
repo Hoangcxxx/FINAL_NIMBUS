@@ -121,5 +121,7 @@ public class SanPhamService {
     public List<SanPham> getSanPhamForBanHang() {
         return sanPhamRepository.findSanPhamForBanHang();
     }
-
+    public List<SanPham> timSanPhamTheoTen(String tenSanPham) {
+        return sanPhamRepository.findByTenSanPham(tenSanPham);
+    }
 }

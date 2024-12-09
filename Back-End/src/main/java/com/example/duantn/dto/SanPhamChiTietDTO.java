@@ -14,14 +14,24 @@ import java.math.BigDecimal;
 @Setter
 public class SanPhamChiTietDTO {
 	private Integer idspct;
-
+	private String MaSPCT;
 	private Integer soLuong;
 
 	@Override
 	public String toString() {
-		return "SanphamchiTietDTO{" + "idspct=" + idspct + ", soLuong=" + soLuong + ", tenkichthuoc='" + tenkichthuoc
-				+ '\'' + ", tenmausac='" + tenmausac + '\'' + ", tenchatlieu='" + tenchatlieu + '\'' + ", TenSanPham='"
-				+ TenSanPham + '\'' + ", MoTa='" + MoTa + '\'' + ", idSanPham=" + idSanPham + '}';
+		return "SanPhamChiTietDTO{" +
+				"idspct=" + idspct +
+				", MaSPCT='" + MaSPCT + '\'' +
+				", soLuong=" + soLuong +
+				", tenkichthuoc='" + tenkichthuoc + '\'' +
+				", giaTien=" + giaTien +
+				", tenmausac='" + tenmausac + '\'' +
+				", tenchatlieu='" + tenchatlieu + '\'' +
+				", TenSanPham='" + TenSanPham + '\'' +
+				", MoTa='" + MoTa + '\'' +
+				", idSanPham=" + idSanPham +
+				", DotGiamGia=" + DotGiamGia +
+				'}';
 	}
 
 	private String tenkichthuoc;

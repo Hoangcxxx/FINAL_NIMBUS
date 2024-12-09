@@ -40,4 +40,10 @@ public class NguoiDungRestController {
         List<TimKiemNguoiDungDTO> result = nguoiDungService.searchKhachHangByPhone(phonePrefix);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+    @GetMapping("/khach_hang/check-sdt")
+    public ResponseEntity<Boolean> checkDuplicatePhone(@RequestParam String sdt) {
+        boolean isDuplicate = nguoiDungService.isPhoneDuplicate(sdt);
+        return ResponseEntity.ok(isDuplicate);
+    }
+
 }

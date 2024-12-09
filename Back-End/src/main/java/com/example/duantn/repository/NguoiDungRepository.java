@@ -20,5 +20,11 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
     boolean existsByEmail(String email);
     @Query(value = NguoiDungQuery.GET_TIM_KIEM_SDT_KH, nativeQuery = true)
     List<Object[]> getSearchKhachHang(String phonePrefix);
-
+    boolean existsBySdt(String sdt);
+    // Tìm kiếm nhiều điều kiện với query
+    @Query("SELECT n FROM NguoiDung n WHERE " +
+            "(:tenNguoiDung IS NULL OR n.tenNguoiDung LIKE %:tenNguoiDung%) AND " +
+            "(:email IS NULL OR n.email LIKE %:email%) AND " +
+            "(:sdt IS NULL OR n.sdt LIKE %:sdt%)")
+    List<NguoiDung> searchNguoiDung(String tenNguoiDung, String email, String sdt);
 }

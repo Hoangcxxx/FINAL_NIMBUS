@@ -106,7 +106,7 @@
                     redirectTo: "/"
                 });
         });
-        app.controller("ngController", function ($scope, $http, $filter) {
+        app.controller("ngController", function ($scope, $http, $filter,$window) {
             // Tải lại thông tin giỏ hàng mỗi khi giao diện được tải lại
             loadCartInfo();
 
@@ -137,16 +137,32 @@
                         $scope.infoUser = undefined;
                         $scope.tenNguoiDung = undefined;
 
-                        // Thông báo đăng xuất thành công
-                        alert("Đăng xuất thành công!");
-
-                        // Chuyển hướng đến trang chủ hoặc giữ nguyên trang sau khi đăng xuất
-                        window.location.reload();  // Làm mới route để giao diện được cập nhật
+                        // Thông báo đăng xuất thành công bằng SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đăng xuất thành công!',
+                            text: 'Bạn đã đăng xuất khỏi hệ thống.',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Chuyển hướng đến trang 'user' sau khi đăng xuất thành công
+                                $window.location.href = "#/user";  // Điều hướng đến trang user
+                                // Nếu bạn muốn dùng `$location` (AngularJS way) thay vì `$window.location.href`:
+                                // $location.path("/user"); 
+                            }
+                        });
                     }, function (error) {
                         // Nếu có lỗi
-                        alert("Đăng xuất thất bại: " + (error.data ? error.data.message : "Lỗi không xác định"));
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Đăng xuất thất bại',
+                            text: error.data ? error.data.message : "Lỗi không xác định",
+                            confirmButtonText: 'Thử lại'
+                        });
                     });
             };
+
+
             $scope.formatTimeAgo = function (dateString) {
                 var sentDate = new Date(dateString);  // Chuyển chuỗi ngày thành đối tượng Date
                 var now = new Date();  // Lấy thời gian hiện tại

@@ -28,6 +28,7 @@
                                         <div class="col-md-6">
                                             <ul class="list-unstyled mb-0"
                                                 ng-repeat="item in sanPhamChiTiet track by $index">
+                                                <li class="mb-2"><strong>Mã sản phẩm:</strong> {{item.maSanPham}}</li>
                                                 <li class="mb-2"><strong>Tên sản phẩm:</strong> {{item.tenSanPham}}</li>
                                                 <li class="mb-2"><strong>Danh mục:</strong> {{item.tenDanhMuc}}</li>
                                                 <li class="mb-2"><strong>Giá bán:</strong> {{ item.giaBan/1 | currency: '': 0 }}</span> VND</li>
@@ -93,6 +94,7 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>#</th>
+                                    <th>Mã chi tiết sản phẩm</th>
                                     <th>Tên chi tiết sản phẩm</th>
                                     <th>Chất liệu</th>
                                     <th>Màu sắc</th>
@@ -103,6 +105,7 @@
                             <tbody>
                                 <tr ng-repeat="item in dsSanPhamChiTiet track by $index">
                                     <td>{{$index + 1}}</td>
+                                    <td>{{item.maSanPhamCT}}</td>
                                     <td>{{item.tenSanPham}}</td>
                                     <td>{{item.tenChatLieu}}</td>
                                     <td>{{item.tenMauSac}}</td>

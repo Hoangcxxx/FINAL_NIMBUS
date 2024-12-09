@@ -19,7 +19,7 @@ public class VoucherController {
     private VoucherService voucherService;
 
     @GetMapping("/{tongTien}")
-    public ResponseEntity<List<Voucher>> getAllVouchers(@PathVariable("tongTien") BigDecimal tongTien) {
+    public ResponseEntity<List<Voucher>> getAllVouchers(@PathVariable BigDecimal tongTien) {
         try {
             List<Voucher> allVouchers = voucherService.getAllVouchersWithStatus(tongTien);
             return ResponseEntity.ok(allVouchers);
@@ -27,6 +27,8 @@ public class VoucherController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
     @PostMapping("/apma/{maVoucher}/{tongTien}")
     public ResponseEntity<?> useVoucher2(@PathVariable("maVoucher") String maVoucher,
                                          @PathVariable("tongTien") BigDecimal tongTien) {

@@ -24,6 +24,7 @@
     <script src="view-admin/controllers/BanHangController.js"></script>
     <script src="view-admin/controllers/ChatLieuController.js"></script>
     <script src="view-admin/controllers/KichThuocController.js"></script>
+    <script src="view-admin/controllers/QuanLynguoidungController.js"></script>
     <script src="view-admin/controllers/MauSacController.js"></script>
     <script src="view-admin/controllers/DanhMucController.js"></script>
     <script src="view-admin/controllers/DanhNhapController.js"></script>
@@ -125,6 +126,10 @@
                 .when('/dang_nhap', {
                     templateUrl: 'view-admin/views/dangnhap.html',
                     controller: DanhNhapController
+                })
+                .when('/Qlnd', {
+                    templateUrl: 'view-admin/views/QLND.html',
+                    controller: QuanLynguoidungController
                 })
                 .otherwise({
                     redirectTo: '/'

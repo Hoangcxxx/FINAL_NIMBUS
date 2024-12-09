@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 public class GioHangResponse {
     private int idSanPhamChiTiet;
     private String tenSanPham;
+    private String chatLieu;
     private String mauSac;
     private String kichThuoc;
     private Integer soLuong;
