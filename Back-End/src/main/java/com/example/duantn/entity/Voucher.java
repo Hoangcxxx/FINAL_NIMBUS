@@ -81,4 +81,6 @@ public class Voucher {
     public void setIsUsable(boolean isUsable) {
         this.isUsable = isUsable;
     }
+    @Transient
+    private boolean kiemtravoucher;
 }

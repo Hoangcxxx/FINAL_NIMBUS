@@ -236,7 +236,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
                         console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
                         Swal.fire({
                             title: 'Lỗi',
-                            text: error.data.message || "Sản phẩm không còn khả dụng (tình trạng sản phẩm: không kích hoạt).",
+                            text: error.data.message || "Sản phẩm đã ngừng bán.",
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });

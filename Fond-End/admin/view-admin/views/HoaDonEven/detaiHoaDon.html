@@ -134,11 +134,41 @@
                 </button>
             </div>
             <div>
-                <button class="btn btn-primary">Chi tiết</button>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#chiTietModal">Chi tiết</button>
             </div>
 
         </div>
-
+        <div class="my-2 p-4 border rounded shadow-lg">
+            <!-- Chi tiết sản phẩm -->
+            <section class="product-details mb-4">
+                <div class="d-flex justify-content-between">
+                    <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Lịch sử thanh toán</h3>
+                    <button class="btn btn-primary mb-2">Xác nhận thanh toán</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Số tiền</th>
+                                <th>Thời gian</th>
+                                <th>Trạng thái thanh toán</th>
+                                <th>Nhân viên xác nhận</th>
+                                <th>Mô tả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in sanPhamCT track by $index">
+                                <td>{{item.tenSanPham}}</td>
+                                <td>{{item.giaBan | currency: '': 0}} VND</td>
+                                <td>{{item.soLuong}}</td>
+                                <td>{{item.tongTien | currency: '': 0}} VND</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
         <div class="my-2 p-4 border rounded shadow-lg">
             <div class="d-flex">
                 <div class="p-2 flex-fill">
@@ -261,6 +291,34 @@
                     <button type="submit" class="btn btn-primary">{{modalButtonText}}</button>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi tiết -->
+<div class="modal fade" id="chiTietModal" tabindex="-1" role="dialog" aria-labelledby="chiTietModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content container ">
+            <h4 class="mt-4">Lịch sử chi tiết</h4>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Trạng thái</th>
+                        <th>Thời gian</th>
+                        <th>Nhân viên xác nhận</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in filteredStatuses track by $index">
+                        <td>{{item.tenLoaiTrangThaiHoaDon}}</td>
+                        <td>{{item.ngayTao | date:'dd/MM/yyyy hh:mm:ss a'}}</td>
+                        <td>{{item.nhanVien}}</td>
+                        <td>{{item.moTa}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

@@ -18,22 +18,26 @@ public class VoucherController {
     @Autowired
     private VoucherService voucherService;
 
-    @GetMapping("/{tongTien}")
-    public ResponseEntity<List<Voucher>> getAllVouchers(@PathVariable BigDecimal tongTien) {
+    @GetMapping("/{tongTien}/{idNguoiDung}")
+    public ResponseEntity<List<Voucher>> getAllVouchers(
+            @PathVariable("tongTien") BigDecimal tongTien,
+            @PathVariable("idNguoiDung") Integer idNguoiDung) {
         try {
-            List<Voucher> allVouchers = voucherService.getAllVouchersWithStatus(tongTien);
+            // Truyền thêm idNguoiDung vào service
+            List<Voucher> allVouchers = voucherService.getAllVouchersWithStatus(tongTien, idNguoiDung);
             return ResponseEntity.ok(allVouchers);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+        }}
 
 
-    @PostMapping("/apma/{maVoucher}/{tongTien}")
+    @PostMapping("/apma/{maVoucher}/{tongTien}/{idNguoiDung}")
     public ResponseEntity<?> useVoucher2(@PathVariable("maVoucher") String maVoucher,
-                                         @PathVariable("tongTien") BigDecimal tongTien) {
+                                         @PathVariable("tongTien") BigDecimal tongTien,
+                                         @PathVariable("idNguoiDung") Integer idNguoiDung) {
         try {
-            Voucher voucher = voucherService.apdungvoucher(maVoucher, tongTien);
+            Voucher voucher = voucherService.apdungvoucher(maVoucher, tongTien, idNguoiDung);
             return ResponseEntity.ok(voucher);
         } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

@@ -30,7 +30,8 @@ public class HoaDonService {
     private final RestTemplate restTemplate;
     @Autowired
     private HoaDonChiTietRepository hoaDonChiTietRepository;
-
+    @Autowired
+    private LichSuThanhToanRepository lichSuThanhToanRepository;
     @Autowired
     private TinhRepository tinhRepository;
 
@@ -125,6 +126,14 @@ public class HoaDonService {
         dto.setDiaChi(hoaDon.getDiaChi());
         dto.setThanhTien(hoaDon.getThanhTien());
         dto.setGhiChu(hoaDon.getMoTa());
+// Kiểm tra xem voucher có tồn tại không
+        if (hoaDon.getVoucher() != null) {
+            dto.setGiaTriMavoucher(hoaDon.getVoucher().getGiaTriGiamGia());
+            dto.setMavoucher(hoaDon.getVoucher().getMaVoucher()); // Nếu cần thêm mã voucher
+        } else {
+            dto.setGiaTriMavoucher(BigDecimal.ZERO); // Hoặc giá trị mặc định phù hợp
+            dto.setMavoucher(null);
+        }
 
         // Thông tin người dùng
         if (hoaDon.getNguoiDung() != null) {
@@ -168,13 +177,17 @@ public class HoaDonService {
                     spDTO.setIdspct(chiTiet.getSanPhamChiTiet().getIdSanPhamChiTiet());
                     spDTO.setSoLuong(chiTiet.getSoLuong());
                     spDTO.setMaSPCT(chiTiet.getSanPhamChiTiet().getMaSanPhamCT());
-                    spDTO.setGiaTien(chiTiet.getTongTien());
+                    spDTO.setTongtien(chiTiet.getTongTien());
+                    spDTO.setGiaTien(chiTiet.getSanPhamChiTiet().getSanPham().getGiaBan());
                     spDTO.setTenkichthuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
                     spDTO.setTenmausac(chiTiet.getSanPhamChiTiet().getMauSacChiTiet().getMauSac().getTenMauSac());
                     spDTO.setTenchatlieu(chiTiet.getSanPhamChiTiet().getChatLieuChiTiet().getChatLieu().getTenChatLieu());
                     spDTO.setTenSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getTenSanPham());
                     spDTO.setMoTa(chiTiet.getSanPhamChiTiet().getSanPham().getMoTa());
                     spDTO.setIdSanPham(chiTiet.getSanPhamChiTiet().getSanPham().getIdSanPham());
+                    // Lấy giá khuyến mãi (nếu có)
+                    BigDecimal giaKhuyenMai = giamGiaSanPhamRepository.findGiaKhuyenMaiBySanPhamId(spDTO.getIdSanPham());
+                    spDTO.setGiaKhuyenMai(giaKhuyenMai != null ? giaKhuyenMai : spDTO.getGiaTien()); // Nếu không có khuyến mãi, dùng giá bán
                     return spDTO;
                 })
                 .collect(Collectors.toList()));
@@ -293,6 +306,10 @@ public class HoaDonService {
     }
 
     public String createOrder(HoaDonDTO hoaDonDTO, HttpServletRequest res) {
+        if (hoaDonDTO.getIdNguoiDung() == null) {
+            throw new RuntimeException("ID Người dùng không được null");
+        }
+
         long currentCount = hoaDonRepository.count();
         String generatedMaHoaDon = "HD00" + (currentCount + 1);
 
@@ -301,10 +318,14 @@ public class HoaDonService {
 
         // Kiểm tra và lấy thông tin người dùng
         NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
         hoaDon.setNguoiDung(nguoiDung);
 
         // Lấy hoặc lưu thông tin Tỉnh, Huyện, Xã
+        if (hoaDonDTO.getTinh() == null || hoaDonDTO.getHuyen() == null || hoaDonDTO.getXa() == null) {
+            throw new RuntimeException("Thông tin Tỉnh, Huyện, hoặc Xã không hợp lệ");
+        }
+
         Tinh tinh = tinhRepository.findById(hoaDonDTO.getTinh())
                 .orElseGet(() -> tinhRepository.save(fetchCityInfo(hoaDonDTO.getTinh().toString())));
 
@@ -331,6 +352,31 @@ public class HoaDonService {
         // Gán địa chỉ vận chuyển đã lưu cho hóa đơn
         hoaDon.setDiaChiVanChuyen(diaChiVanChuyen);
 
+// Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
+        if (hoaDonDTO.getIdvoucher() != null) {
+            // Tìm Voucher theo ID
+            Voucher voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy Voucher với ID: " + hoaDonDTO.getIdvoucher()));
+
+            // Kiểm tra số lượng của voucher còn đủ để sử dụng
+            if (voucher.getSoLuong() <= 0) {
+                throw new RuntimeException("Voucher này đã hết số lượng sử dụng.");
+            }
+
+            // Trừ đi số lượng voucher
+            voucher.setSoLuong(voucher.getSoLuong() - 1);
+
+            // Lưu lại thông tin voucher đã được trừ số lượng
+            voucherRepository.save(voucher);
+
+            // Gán voucher vào hóa đơn nếu có
+            hoaDon.setVoucher(voucher);
+        } else {
+            // Nếu không có idvoucher thì không làm gì, hoặc có thể thực hiện hành động khác nếu cần
+            hoaDon.setVoucher(null);  // Đảm bảo rằng không có voucher nào được gán vào hóa đơn
+        }
+
+
         // Gán thông tin khác cho hóa đơn
         hoaDon.setNgayTao(new Date());
         hoaDon.setTenNguoiNhan(hoaDonDTO.getTenNguoiNhan());
@@ -340,7 +386,6 @@ public class HoaDonService {
         hoaDon.setMoTa(hoaDonDTO.getGhiChu());
         hoaDon.setTrangThai(true);
         hoaDon.setLoai(1);
-
 
         // Xử lý phương thức thanh toán
         LoaiTrangThai loaiTrangThai;
@@ -372,6 +417,18 @@ public class HoaDonService {
         trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
         trangThaiHoaDon.setHoaDon(hoaDon);
         trangThaiHoaDonRepository.save(trangThaiHoaDon);
+        // Tạo và lưu lịch sử thanh toán
+        LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
+        lichSuThanhToan.setSoTienThanhToan(hoaDonDTO.getThanhTien());
+        lichSuThanhToan.setNgayTao(new Date());
+        lichSuThanhToan.setNgayGiaoDich(new Date());  // Hoặc bạn có thể dùng ngày giao dịch từ hệ thống thanh toán
+        lichSuThanhToan.setNgayCapNhat(new Date());
+        lichSuThanhToan.setTrangThaiThanhToan(true); // Thực tế có thể thay đổi tùy vào trạng thái thanh toán thực tế
+        lichSuThanhToan.setHoaDon(hoaDon);
+        lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
+
+        lichSuThanhToanRepository.save(lichSuThanhToan);
+
 
         return generatedMaHoaDon;
     }

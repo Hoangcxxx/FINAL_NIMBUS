@@ -38,7 +38,7 @@ public class TrangThaiHoaDonService {
         List<TrangThaiHoaDon> existingStatuses = trangThaiHoaDonRepository.findByHoaDon_IdHoaDonAndLoaiTrangThai_IdLoaiTrangThai(idHoaDon, idLoaiTrangThai);
         return !existingStatuses.isEmpty();  // Trả về true nếu trạng thái đã tồn tại
     }
-    public List<TrangThaiHoaDon> saveTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai) {
+    public List<TrangThaiHoaDon> saveTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai, Integer idNhanVien) {
         Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
         Optional<LoaiTrangThai> loaiTrangThaiOpt = loaiTrangThaiRepository.findById(idLoaiTrangThai);
 
@@ -68,6 +68,7 @@ public class TrangThaiHoaDonService {
             trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
             trangThaiHoaDon.setNgayTao(new Date());
             trangThaiHoaDon.setNgayCapNhat(new Date());
+            trangThaiHoaDon.setIdNhanVien(idNhanVien);
             trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
 
             // Lưu trạng thái hóa đơn vào database
@@ -84,6 +85,8 @@ public class TrangThaiHoaDonService {
                     trangThaiThanhToan.setLoaiTrangThai(loaiTrangThaiThanhToan);
                     trangThaiThanhToan.setNgayTao(new Date());
                     trangThaiThanhToan.setNgayCapNhat(new Date());
+                    trangThaiHoaDon.setIdNhanVien(idNhanVien);
+
                     trangThaiThanhToan.setMoTa(loaiTrangThaiThanhToan.getMoTa());  // Mô tả từ loại trạng thái
                     trangThaiHoaDonRepository.save(trangThaiThanhToan);
                     System.out.println("Trạng thái 'Chờ thanh toán' đã được tạo thêm.");
@@ -97,6 +100,7 @@ public class TrangThaiHoaDonService {
                     trangThaiHoanTat.setLoaiTrangThai(loaiTrangThaiHoanTat);
                     trangThaiHoanTat.setNgayTao(new Date());
                     trangThaiHoanTat.setNgayCapNhat(new Date());
+                    trangThaiHoaDon.setIdNhanVien(idNhanVien);
                     trangThaiHoanTat.setMoTa(loaiTrangThaiHoanTat.getMoTa());  // Mô tả từ loại trạng thái
                     trangThaiHoaDonRepository.save(trangThaiHoanTat);
                     System.out.println("Trạng thái 'Hoàn tất' đã được tạo thêm.");

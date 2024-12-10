@@ -43,4 +43,6 @@ public class HoaDonDTO {
 	private Integer idLoaiTrangThai;
 	private String tenLoaiTrangThai;
 	private Integer Loai;
+	private String Mavoucher;
+	private BigDecimal GiaTriMavoucher;
 }

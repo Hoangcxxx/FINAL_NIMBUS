@@ -177,25 +177,26 @@ public class ADHoaDonController {
 
     @PostMapping("/updateLoaiTrangThai")
     public ResponseEntity<Map<String, Object>> saveTrangThaiHoaDon(@RequestParam Integer idHoaDon,
-                                                                   @RequestParam Integer idLoaiTrangThai) {
+                                                                   @RequestParam Integer idLoaiTrangThai,
+                                                                   @RequestParam Integer idNhanVien) {
         System.out.println("Nhận yêu cầu cập nhật trạng thái hóa đơn với ID Hóa đơn: " + idHoaDon + " và ID Loại trạng thái: " + idLoaiTrangThai);
 
-        List<TrangThaiHoaDon> results = trangThaiHoaDonService.saveTrangThaiHoaDon(idHoaDon, idLoaiTrangThai);
+        List<TrangThaiHoaDon> results = trangThaiHoaDonService.saveTrangThaiHoaDon(idHoaDon, idLoaiTrangThai, idNhanVien);
 
-        // Tạo đối tượng response để trả về thông báo thành công hoặc lỗi
         Map<String, Object> response = new HashMap<>();
         if (results == null || results.isEmpty()) {
             System.out.println("Không thể tạo trạng thái vì nó đã tồn tại hoặc có lỗi xảy ra.");
             response.put("message", "Không thể tạo trạng thái hóa đơn.");
             response.put("success", false);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);  // Trả về lỗi với thông điệp
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } else {
             System.out.println("Trạng thái hóa đơn đã được lưu thành công.");
             response.put("message", "Trạng thái hóa đơn đã được lưu thành công.");
             response.put("success", true);
-            return ResponseEntity.ok(response);  // Trả về thông điệp thành công
+            return ResponseEntity.ok(response);
         }
     }
+
     private Map<String, Object> mapTrangThaiHoaDon(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idTrangThaiHoaDon", row[0]);

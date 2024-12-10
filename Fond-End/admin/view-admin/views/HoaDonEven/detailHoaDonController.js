@@ -169,13 +169,25 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     $scope.getStatus7 = function () {
         return getMaxStatus([7]);
     };
+    var userInfo = localStorage.getItem('user');
+
+    if (userInfo) {
+        // Nếu có thông tin người dùng, chuyển thành đối tượng và lấy ID người dùng
+        userInfo = JSON.parse(userInfo);  // Parse thông tin người dùng từ JSON
+        $scope.userId = $scope.infoUser.idNguoiDung;  // Lấy ID người dùng từ thông tin đã lưu
+    } else {
+        // Nếu không có thông tin người dùng (người dùng chưa đăng nhập), gán userId là null
+        $scope.userId = null;
+        // Xóa idGioHang trong localStorage nếu người dùng chưa đăng nhập
+        localStorage.removeItem("userInfo");
+    }
     // Hàm cập nhật trạng thái hóa đơn
     $scope.updateTrangThaiHoaDon = function () {
         console.log("Trang thái ID:", $scope.ghiChu.trangThaiId);  // Kiểm tra giá trị
 
         if ($scope.ghiChu.trangThaiId && idHoaDon) {
             // Thực hiện API update
-            $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai?idHoaDon=' + idHoaDon + '&idLoaiTrangThai=' + $scope.ghiChu.trangThaiId)
+            $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai?idHoaDon=' + idHoaDon + '&idLoaiTrangThai=' + $scope.ghiChu.trangThaiId+ '&idNhanVien=' + $scope.userId)
                 .then(function (response) {
                     // Kiểm tra nếu backend trả về thành công
                     if (response.data.success) {
@@ -212,5 +224,20 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     $scope.openModal = function () {
         console.log('Trạng thái hiện tại: ', $scope.ghiChu.trangThaiId);
     };
+
+    // Lấy dữ liệu từ API
+    $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
+        .then(function (response) {
+            // Dữ liệu trả về từ API
+            $scope.statuses = response.data;
+
+            // Lọc ra các trạng thái cần thiết: 1, 3, 5, 6, 7, 8
+            $scope.filteredStatuses = $scope.statuses.filter(function (status) {
+                return [1, 3, 5, 6, 7, 8].includes(status.idLoaiTrangThaiHoaDon);
+            });
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy dữ liệu:", error);
+        });
 
 };

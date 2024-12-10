@@ -13,16 +13,28 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
     });
 
     function searchOrder() {
-        const orderCode = document.getElementById("orderCode").value.trim();
+        const orderCodeInput = document.getElementById("orderCode");
+        const orderCode = orderCodeInput.value.trim();
+        const orderInfoDiv = document.getElementById("orderInfo");
+
+        // Ẩn thông tin đơn hàng và trạng thái lỗi trước
+        orderInfoDiv.style.display = "none";
+        orderCodeInput.classList.remove("is-invalid");
 
         // Kiểm tra nếu mã đơn hàng không được nhập
         if (!orderCode) {
-            alert("Vui lòng nhập mã đơn hàng!");
+            showError("Vui lòng nhập mã đơn hàng!");
             return;
         }
 
-        // Ẩn thông tin đơn hàng trước khi thực hiện tra cứu
-        document.getElementById("orderInfo").style.display = "none";
+        // Kiểm tra mã đơn hàng hợp lệ (chỉ cho phép chữ cái, số, và độ dài từ 5-20 ký tự)
+        if (!/^[A-Za-z0-9]{5,20}$/.test(orderCode)) {
+            showError("Mã đơn hàng không hợp lệ! Vui lòng nhập đúng định dạng.");
+            return;
+        }
+
+        // Hiển thị trạng thái tải
+        showLoadingState(true);
 
         // Gửi yêu cầu API để tra cứu đơn hàng
         fetch(`http://127.0.0.1:8080/api/nguoi_dung/hoa_don/${orderCode}`)
@@ -46,21 +58,49 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                 // Hiển thị thông tin đơn hàng
                 document.getElementById("infoOrderCode").textContent = hoaDon.maHoaDon || "N/A";
                 document.getElementById("infoCustomerName").textContent = hoaDon.tenNguoiNhan || "N/A";
-
                 const orderDate = hoaDon.ngayTao ? new Date(hoaDon.ngayTao).toLocaleDateString("vi-VN") : "N/A";
                 document.getElementById("infoOrderDate").textContent = orderDate;
-
                 const orderStatus = hoaDon.tenTrangThai || "Chưa có trạng thái";
                 document.getElementById("infoOrderStatus").textContent = orderStatus;
 
                 // Hiển thị thông tin đơn hàng nếu có
-                document.getElementById("orderInfo").style.display = "block";
+                orderInfoDiv.style.display = "block";
             })
             .catch(error => {
-                alert(error.message);
+                showError(error.message);
                 console.error("Lỗi:", error);
+            })
+            .finally(() => {
+                // Ẩn trạng thái tải
+                showLoadingState(false);
             });
     }
+
+    // Hàm hiển thị trạng thái lỗi
+    function showError(message) {
+        Swal.fire({
+            title: 'Lỗi',
+            text: message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+
+    // Hàm hiển thị trạng thái tải
+    function showLoadingState(isLoading) {
+        const searchButton = document.getElementById("searchOrder");
+        if (isLoading) {
+            searchButton.disabled = true;
+            searchButton.textContent = "Đang tra cứu...";
+        } else {
+            searchButton.disabled = false;
+            searchButton.textContent = "Tra Cứu";
+        }
+    }
+
+    // Thêm sự kiện click cho nút tra cứu
+    document.getElementById("searchOrder").addEventListener("click", searchOrder);
+
 
     function getOrderDetailsByMaHoaDon(maHoaDon) {
         const apiUrl = `http://localhost:8080/api/nguoi_dung/hoa_don/${maHoaDon}`;
@@ -85,7 +125,8 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                         thanhTien: hoaDon.thanhTien,
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
-                        xa: hoaDon.tenXa
+                        xa: hoaDon.tenXa,
+                        giaTriMavoucher: hoaDon.giaTriMavoucher // Đảm bảo mã voucher được lấy chính xác
                     };
 
                     // Cập nhật chi tiết sản phẩm
@@ -94,11 +135,14 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                             listSanPhamChiTiet: hoaDon.listSanPhamChiTiet,
                             thanhTien: hoaDon.thanhTien,
                             phiShip: hoaDon.phiShip,
+                            giaTien: hoaDon.giaTien,
                             maSPCT: hoaDon.maSPCT,
                             tenSanPham: hoaDon.tenSanPham,
                             tenmausac: hoaDon.tenmausac, // Đảm bảo trường này tồn tại
                             tenchatlieu: hoaDon.tenchatlieu, // Đảm bảo trường này tồn tại
                             tenkichthuoc: hoaDon.tenkichthuoc, // Đảm bảo trường này tồn tại
+                            tongtien: hoaDon.tongtien,
+                            giaKhuyenMai: hoaDon.giaKhuyenMai
                         };
 
                         // Lấy hình ảnh cho từng sản phẩm

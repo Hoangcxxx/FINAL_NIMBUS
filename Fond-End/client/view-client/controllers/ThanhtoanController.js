@@ -292,7 +292,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
             tenPhuongThucThanhToan: $scope.selectedPaymentMethod,
             listSanPhamChiTiet: listSanPhamChiTiet, // Đưa vào danh sách sản phẩm chi tiết
             thanhTien: $scope.totalAmount,
-            idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.id : null, // Nếu có voucher thì thêm vào
+            idvoucher: $scope.selectedVoucher && $scope.selectedVoucher.idVoucher ? $scope.selectedVoucher.idVoucher : null
         };
         console.log("orderData:", orderData);
 
