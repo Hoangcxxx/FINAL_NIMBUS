@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,7 +20,8 @@ public class HoaDonChiTietService {
 
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
-
+    @Autowired
+    private GiamGiaSanPhamRepository giamGiaSanPhamRepository;
     @Autowired
     private HoaDonRepository hoaDonRepository;
     @Autowired
@@ -111,9 +113,22 @@ public class HoaDonChiTietService {
             hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
             HoaDon hoaDon = hoaDonRepository.findById(dto.getIdHoaDon())
                     .orElseThrow(() -> new ExpressionException("Hóa đơn không tìm thấy"));
+            GiamGiaSanPham giamGiaSanPham = giamGiaSanPhamRepository.findBySanPham(sanPhamChiTiet.getSanPham())
+                    .orElse(null);
+
+            BigDecimal giaKhuyenMai = giamGiaSanPham != null ? giamGiaSanPham.getGiaKhuyenMai() : null;
+            BigDecimal giaBan = sanPhamChiTiet.getSanPham().getGiaBan();
+
+            // Tính giá thực tế
+            BigDecimal giaTinh = (giaKhuyenMai != null && giaKhuyenMai.compareTo(BigDecimal.ZERO) > 0)
+                    ? giaKhuyenMai
+                    : giaBan;
+
+            // Tính tổng tiền
+            BigDecimal tongTien = giaTinh.multiply(BigDecimal.valueOf(dto.getSoLuong()));
             hoaDonChiTiet.setHoaDon(hoaDon);
             hoaDonChiTiet.setSoLuong(dto.getSoLuong());
-            hoaDonChiTiet.setTongTien(dto.getTongTien());
+            hoaDonChiTiet.setTongTien(tongTien);
             hoaDonChiTiet.setSoTienThanhToan(dto.getSoTienThanhToan());
             hoaDonChiTiet.setTienTraLai(dto.getTienTraLai());
             hoaDonChiTiet.setMoTa(dto.getMoTa());

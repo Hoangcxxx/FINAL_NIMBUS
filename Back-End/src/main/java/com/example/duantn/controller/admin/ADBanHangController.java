@@ -110,7 +110,7 @@ public class ADBanHangController {
         }
     }
 
-    @PostMapping("/apma/{maVoucher}/{tongTien}/{idNguoiDung}")
+    @PostMapping("/apma/{maVoucher}/{tongTien}")
     public ResponseEntity<?> useVoucher2(@PathVariable("maVoucher") String maVoucher,
                                          @PathVariable("tongTien") BigDecimal tongTien,
                                          @PathVariable("idNguoiDung") Integer idNguoiDung) {
@@ -140,16 +140,12 @@ public class ADBanHangController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    @GetMapping("/allvoucher/{tongTien}/{idNguoiDung}")
-    public ResponseEntity<List<Voucher>> getAllVouchers(
-            @PathVariable("tongTien") BigDecimal tongTien,
-            @PathVariable("idNguoiDung") Integer idNguoiDung) {
+    @GetMapping("/allvoucher/{tongTien}")
+    public ResponseEntity<List<Voucher>> getAllVouchers(@PathVariable("tongTien") BigDecimal tongTien) {
         try {
-            // Truyền thêm idNguoiDung vào service
-            List<Voucher> allVouchers = voucherService.getAllVouchersWithStatus(tongTien, idNguoiDung);
+            List<Voucher> allVouchers = voucherService.getAllVouchersWithStatus(tongTien);
             return ResponseEntity.ok(allVouchers);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

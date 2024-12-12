@@ -123,7 +123,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 .then(function (response) {
                     // Thêm khách hàng mới vào danh sách hiện tại
                     $scope.users.push(response.data);
-
+                    $scope.newCustomer = {};
                     $('#addCustomerModal').modal('hide'); // Đóng modal
                     Swal.fire({
                         title: 'Thành công!',
@@ -243,8 +243,10 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         });
                         // Cập nhật danh sách hóa đơn nếu cần
                         $scope.getUnpaidInvoices();
-                        // $scope.deleteCartItem();
-                        // $scope.getCartItems();
+                        $scope.searchTerm = "";
+                        $scope.selectedInvoice = { maHoaDon: 0 };
+                        $scope.deleteCartsl()
+
                     })
                     .catch(function (error) {
                         console.error('Lỗi khi xóa hóa đơn:', error);
@@ -258,6 +260,25 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             }
         });
     };
+
+    $scope.deleteCartsl = function () {
+        // Lấy thông tin người dùng từ localStorage
+        let userFromStorage = JSON.parse(localStorage.getItem('selectedUser'));
+
+        const userId = userFromStorage.idNguoiDung;
+
+        // Gửi yêu cầu xóa giỏ hàng
+        $http.delete('http://localhost:8080/api/admin/gio_hang/xoa/' + userId)
+            .then(function (response) {
+                console.log('Giỏ hàng đã được xóa:', response.data);
+                $scope.getCartItems();
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi xóa giỏ hàng:', error);
+            });
+    };
+
+
 
     $scope.selectedProductDetails = [];
     $scope.showProductDetails = function (sp) {
@@ -666,7 +687,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             console.log("Tổng tiền khi áp mã voucher: ", originalTotalPrice)
 
             // Gửi yêu cầu API kiểm tra voucher
-            $http.post(`http://localhost:8080/api/admin/ban_hang/apma/${$scope.voucherCode}/${originalTotalPrice}/${nguoiDung.idNguoiDung}`)
+            $http.post(`http://localhost:8080/api/admin/ban_hang/apma/${$scope.voucherCode}/${originalTotalPrice}`)
                 .then(function (response) {
                     $scope.selectedVoucher = response.data; // Nhận voucher đã chọn từ phản hồi API
                     console.log("Voucher đã áp dụng:", $scope.selectedVoucher);
@@ -702,7 +723,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
     $scope.dsvoucher = function () {
         const storedUser = localStorage.getItem('selectedUser');
-            const nguoiDung = storedUser ? JSON.parse(storedUser) : null;
+        const nguoiDung = storedUser ? JSON.parse(storedUser) : null;
         // Tính tổng tiền chưa giảm giá (gốc)
         let originalTotalPrice = 0;
         if ($scope.cartItems && Array.isArray($scope.cartItems)) {
@@ -721,14 +742,14 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         }
 
         // Gửi yêu cầu API với tổng tiền chưa giảm giá
-        $http.get(`http://localhost:8080/api/admin/ban_hang/allvoucher/${originalTotalPrice}/${nguoiDung.idNguoiDung}`)
+        $http.get(`http://localhost:8080/api/admin/ban_hang/allvoucher/${originalTotalPrice}`)
             .then(function (response) {
                 $scope.availableVouchers = response.data || [];
                 console.log("Danh sách voucher khả dụng:", $scope.availableVouchers);
                 console.log('Tổng tiền chưa giảm giá:', originalTotalPrice);
                 // Lọc các voucher hợp lệ (dựa trên tổng tiền chưa giảm giá)
                 $scope.availableVouchers = $scope.availableVouchers.filter(function (voucher) {
-                    return originalTotalPrice >= voucher.soTienToiThieu && originalTotalPrice <= voucher.giaTriToiDa;
+                    return originalTotalPrice >= voucher.soTienToiThieu;
                 });
 
             })
@@ -1383,4 +1404,37 @@ window.BanHangController = function ($scope, $http, $window, $location) {
     $scope.getPhuongThucThanhToan();
     $scope.getVoucher();
     $scope.dsvoucher();
+    $scope.createPaymentHistory = function (amount) {
+        // Lấy thông tin từ localStorage
+        const selectedInvoice = JSON.parse(localStorage.getItem('selectedInvoice'));
+        const selectedUser = JSON.parse(localStorage.getItem('selectedUser'));
+
+        // Kiểm tra tính hợp lệ
+        if (!selectedInvoice || !selectedInvoice.idHoaDon || !selectedUser || !selectedUser.idNguoiDung) {
+            console.error('Thông tin hóa đơn hoặc người dùng không hợp lệ.');
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Thông tin hóa đơn hoặc người dùng không hợp lệ.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Dữ liệu gửi lên server
+        const paymentData = {
+            idHoaDon: selectedInvoice.idHoaDon,
+            idNguoiDung: selectedUser.idNguoiDung,
+            soTienThanhToan: $scope.totalPrice,
+        };
+        console.log("111111111111111111111111111111",paymentData)
+        // Gửi yêu cầu POST tạo lịch sử thanh toán
+        $http.post('http://localhost:8080/api/admin/lich_su_thanh_toan/create', paymentData)
+            .then(function (response) {
+                console.log('Tạo lịch sử thanh toán thành công:', response.data);
+            })
+            .catch(function (error) {
+                console.error('Lỗi khi tạo lịch sử thanh toán:', error);
+            });
+    };
 }

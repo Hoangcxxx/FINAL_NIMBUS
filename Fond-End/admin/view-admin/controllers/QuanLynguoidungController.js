@@ -79,38 +79,50 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
                 console.error("Lỗi khi lấy danh sách nhân viên:", error);
             });
     };
+
     $scope.changeUserStatus = function (userId, action) {
+console.log('Thay đổi trạng thái:', { userId, action });
+
         const endpoint = action === 'lock' ? 'khoa' : 'mo_khoa';
         $http.put(`${baseURL}/${endpoint}/${userId}`)
             .then(response => {
-                if (response.status === 200 || response.status === 201) {
-                    // Tìm người dùng trong danh sách và cập nhật trạng thái
-                    let user = $scope.users.find(u => u.idNguoiDung === userId);
-                    if (user) {
-                        user.trangThai = action === 'lock' ? false : true; // false nếu khóa, true nếu mở khóa
+                if (response.status === 200) {
+                    // Xử lý dữ liệu trả về dạng chuỗi
+                    let message = typeof response.data === 'string' ? response.data : response.data.message;
+
+                    // Cập nhật trạng thái trong danh sách nhân viên
+                    let employee = $scope.employees.find(emp => emp.idNguoiDung === userId);
+                    if (employee) {
+                        employee.trangThai = action === 'unlock'; // true nếu mở khóa, false nếu khóa
                     }
 
-                    // Hiển thị thông báo thành công
+                    let user = $scope.users.find(u => u.idNguoiDung === userId);
+                    if (user) {
+                        user.trangThai = action === 'unlock';
+                    }
                     Swal.fire({
                         title: 'Thành công!',
-                        text: action === 'lock' ? 'Người dùng đã bị khóa.' : 'Người dùng đã được mở khóa.',
+                        text: message,
                         icon: 'success',
                         confirmButtonText: 'OK'
                     });
                 }
-
             })
             .catch(error => {
-                console.error(`Lỗi khi ${action === 'lock' ? 'khóa' : 'mở khóa'} người dùng:`, error);
-                // Nếu lỗi xảy ra, hãy hiển thị thông báo lỗi
+                console.error('API error:', error);
                 Swal.fire({
-                    title: 'Thành công!',
-                    text: action === 'lock' ? 'Người dùng đã bị khóa.' : 'Người dùng đã được mở khóa.',
-                    icon: 'success',
+                    title: 'Thất bại!',
+                    text: `Không thể ${action === 'lock' ? 'khóa' : 'mở khóa'} người dùng.`,
+                    icon: 'error',
                     confirmButtonText: 'OK'
                 });
             });
     };
+
+
+
+
+
 
 
 
@@ -144,19 +156,18 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
                 })
                 .catch((error) => {
                     console.error("Lỗi khi xóa người dùng:", error);
-                    alert("Đã xảy ra lỗi khi xóa người dùng!");
+alert("Đã xảy ra lỗi khi xóa người dùng!");
                 });
         }
     };
-    // Đăng ký người dùng mới
     $scope.registerUser = function () {
         const registerData = {
             tenNguoiDung: $scope.tenNguoiDung,
             email: $scope.email,
-            matKhau: $scope.password, // Mật khẩu
-            vaiTro: { idVaiTro: $scope.role }, // Vai trò từ form
-            sdt: $scope.phone, // Số điện thoại
-            gioiTinh: $scope.gender // Giới tính
+            matKhau: $scope.password,
+            vaiTro: { idVaiTro: $scope.role },
+            sdt: $scope.phone,
+            gioiTinh: $scope.gender
         };
 
         callApi('POST', `${baseURL}/dang_ky`, registerData)
@@ -167,7 +178,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
                     html: '<p>Bạn đã tạo tài khoản thành công. Hãy đăng nhập để bắt đầu trải nghiệm!</p>',
                     confirmButtonText: 'Đăng nhập ngay'
                 }).then(() => {
-                    // Xử lý sau khi đăng ký thành công, có thể điều hướng trang
+                    window.location.reload(); // Reload lại toàn bộ trang
                 });
             })
             .catch(function (error) {
@@ -179,6 +190,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
                 });
             });
     };
+
 
     // Lắng nghe sự kiện submit form
     document.getElementById('addUserForm').addEventListener('submit', function (event) {

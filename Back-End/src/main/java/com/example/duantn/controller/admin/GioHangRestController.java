@@ -87,5 +87,19 @@ public class GioHangRestController {
         response.put("message", "Xóa tất cả chi tiết giỏ hàng của người dùng thành công");
         return ResponseEntity.ok(response);
     }
-
+    @DeleteMapping("/xoa/{idNguoiDung}")
+    public ResponseEntity<Map<String, String>> xoaTatCaSanPhamKhoiGioHangCapNhatSoLuongLai(@PathVariable Integer idNguoiDung) {
+        try {
+            gioHangService.xoaTatCaSanPhamKhoiGioHang(idNguoiDung);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Tất cả sản phẩm đã được xóa khỏi giỏ hàng.");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Lỗi khi xóa giỏ hàng: " + e.getMessage()));
+        }
+    }
 }

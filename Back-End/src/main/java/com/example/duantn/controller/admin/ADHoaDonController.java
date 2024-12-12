@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -58,6 +55,7 @@ public class ADHoaDonController {
         map.put("tenLoaiTrangThaiHoaDon", row[3]);
         map.put("ngayTao", row[4]);
         map.put("ngayCapNhat", row[5]);
+        map.put("tenNhanVien", row[6]);
         return map;
     }
 
@@ -92,6 +90,7 @@ public class ADHoaDonController {
         map.put("kieuGiamGia", row[11]);
         map.put("tenDotGiamGia", row[12]);
         map.put("tongTien", row[13]);
+        map.put("maSanPhamCT", row[14]);
         return map;
     }
 
@@ -145,6 +144,7 @@ public class ADHoaDonController {
             result.put("emailNguoiNhan", hoaDon.getNguoiDung() != null ? hoaDon.getNguoiDung().getEmail() : null);
             result.put("diaChi", hoaDon.getDiaChi());
             result.put("sdtNguoiNhan", hoaDon.getSdtNguoiNhan());
+            result.put("vaiTro", hoaDon.getNguoiDung().getVaiTro());
             result.put("phiShip", hoaDon.getPhiShip());
             result.put("thanhTien", hoaDon.getThanhTien());
             result.put("trangThai", hoaDon.getTrangThai() != null ? hoaDon.getTrangThai() : null);
@@ -155,8 +155,12 @@ public class ADHoaDonController {
             result.put("idPhuongThucThanhToan", hoaDon.getPhuongThucThanhToanHoaDon() != null ? hoaDon.getPhuongThucThanhToanHoaDon().getIdThanhToanHoaDon() : null);
             result.put("tenPhuongThucThanhToan", hoaDon.getPhuongThucThanhToanHoaDon() != null ? hoaDon.getPhuongThucThanhToanHoaDon().getPhuongThucThanhToan().getTenPhuongThuc() : null);
 
-            // Thêm thông tin trạng thái hóa đơn
-            TrangThaiHoaDon trangThaiHoaDon = trangThaiHoaDonService.getAllTrangThaiHoaDon().get(idHoaDon);
+            // Lấy trạng thái hóa đơn mới nhất (trạng thái có ngày cập nhật mới nhất)
+            TrangThaiHoaDon trangThaiHoaDon = hoaDon.getTrangThaiHoaDons().stream()
+                    .max(Comparator.comparing(TrangThaiHoaDon::getNgayCapNhat))  // Sắp xếp theo ngày cập nhật
+                    .orElse(null); // Nếu không có trạng thái nào thì trả về null
+
+            // Thêm thông tin trạng thái hóa đơn mới nhất
             if (trangThaiHoaDon != null) {
                 result.put("trangThaiHoaDon", trangThaiHoaDon.getLoaiTrangThai().getTenLoaiTrangThai());
             } else {

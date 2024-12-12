@@ -44,14 +44,18 @@ public class HoaDonQuery {
             "    ltth.id_loai_trang_thai,\n" +
             "    ltth.ten_loai_trang_thai,\n" +
             "    tthd.ngay_tao,\n" +
-            "    tthd.ngay_cap_nhat\n" +
+            "    tthd.ngay_cap_nhat,\n" +
+            "    nv.ten_nguoi_dung\n" +
             "FROM \n" +
             "    hoa_don h\n" +
             "JOIN \n" +
             "    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don\n" +
             "JOIN \n" +
             "    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai\n" +
-            "where h.Id_hoa_don = :idHoaDon";
+            "JOIN \n" +
+            "    nguoi_dung nv ON tthd.id_nhan_vien = nv.Id_nguoi_dung\n" +
+            "WHERE \n" +
+            "    h.Id_hoa_don = :idHoaDon;";
     public static final String GET_VOUCHER_HOA_DON_BY_ID_HOA_DON = "SELECT \n" +
             "    v.ma_voucher,\n" +
             "    v.ten_voucher,\n" +
@@ -77,7 +81,8 @@ public class HoaDonQuery {
             "    dgg.gia_tri_giam_gia,\n" +
             "    dgg.kieu_giam_gia,\n" +
             "    dgg.ten_dot_giam_gia,\n" +
-            "    ghct.tong_tien\n" +
+            "    ghct.tong_tien,\n" +
+            "    spct.ma_san_pham_chi_tiet\n" +
             "FROM \n" +
             "    hoa_don h\n" +
             "INNER JOIN \n" +

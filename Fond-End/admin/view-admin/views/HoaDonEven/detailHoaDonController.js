@@ -3,10 +3,11 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     $scope.trangThaiHoaDon = [];
     $scope.hoaDon = [];
     $scope.sanPhamCT = [];
+    $scope.lichSuThanhToan = [];
     $scope.voucher = [];
     $scope.ghiChu = { trangThaiId: null, moTa: "" };
     $scope.modalButtonText = '';  // Khởi tạo modalButtonText
-
+    $scope.showEmailAndAddress = true; // Mặc định là true (hiển thị)
     if (!idHoaDon) {
         console.error('idHoaDon không hợp lệ');
         return;
@@ -28,11 +29,42 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             .catch(function (error) {
                 console.error('Error fetching status data:', error);
             });
-
         $http.get('http://localhost:8080/api/admin/hoa_don/findHoaDonCT/' + idHoaDon)
             .then(function (response) {
                 console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
                 $scope.hoaDon = response.data;
+
+                // Kiểm tra vai trò khách hàng để quyết định ẩn/hiển thị email và địa chỉ
+                if ($scope.hoaDon.vaiTro.idVaiTro === 3) {
+                    // Nếu vai trò là 3 (không phải khách hàng), ẩn email và địa chỉ
+                    $scope.showEmailAndAddress = false;
+                } else {
+                    // Nếu vai trò là 2 (Khách hàng), hiển thị đầy đủ thông tin
+                    $scope.showEmailAndAddress = true;
+                }
+
+                // Kiểm tra voucher
+                if ($scope.hoaDon.idVoucher === null) {
+                    $scope.voucherInfo = 'Không sử dụng voucher';
+                } else {
+                    // Lấy thông tin voucher từ API nếu có
+                    $http.get('http://localhost:8080/api/admin/hoa_don/findVoucherHoaDon/' + idHoaDon)
+                        .then(function (voucherResponse) {
+                            $scope.voucher = voucherResponse.data;
+                            if ($scope.voucher.length > 0) {
+                                // Cấu trúc lại thông tin voucher để hiển thị như giao diện yêu cầu
+                                $scope.voucherInfo = {
+                                    maVoucher: $scope.voucher[0].maVoucher,
+                                    tenVoucher: $scope.voucher[0].tenVoucher,
+                                    giaTriGiamGia: $scope.voucher[0].giaTriGiamGia,
+                                    kieuGiamGia: $scope.voucher[0].kieuGiamGia
+                                };
+                            }
+                        })
+                        .catch(function (error) {
+                            console.error('Lỗi khi lấy thông tin voucher:', error);
+                        });
+                }
             })
             .catch(function (error) {
                 console.error('Lỗi khi lấy dữ liệu hóa đơn:', error);
@@ -94,7 +126,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 $scope.modalButtonText = 'Giao hàng';
                 break;
             case 5: // Trạng thái "Chờ giao hàng"
-                $scope.modalButtonText = 'Đang vận chuyển';
+                $scope.modalButtonText = 'Chờ thanh toán';
                 break;
             case 6: // Trạng thái "Chờ thanh toán"
                 $scope.modalButtonText = 'Xác nhận thanh toán';
@@ -118,7 +150,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         .then(function (response) {
             $scope.trangThaiList = response.data;
             $scope.filteredTrangThaiList = $scope.trangThaiList.filter(function (item) {
-                return [3, 5, 7, 8, 9].includes(item.idLoaiTrangThai);
+                return [3, 5, 6, 7, 8, 9].includes(item.idLoaiTrangThai);
             });
         })
         .catch(function (error) {
@@ -187,7 +219,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
         if ($scope.ghiChu.trangThaiId && idHoaDon) {
             // Thực hiện API update
-            $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai?idHoaDon=' + idHoaDon + '&idLoaiTrangThai=' + $scope.ghiChu.trangThaiId+ '&idNhanVien=' + $scope.userId)
+            $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai?idHoaDon=' + idHoaDon + '&idLoaiTrangThai=' + $scope.ghiChu.trangThaiId + '&idNhanVien=' + $scope.userId)
                 .then(function (response) {
                     // Kiểm tra nếu backend trả về thành công
                     if (response.data.success) {
@@ -211,7 +243,6 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             alert('Vui lòng chọn trạng thái trước khi cập nhật!');
         }
     };
-
 
 
 
@@ -239,5 +270,12 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         });
-
+    $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
+        .then(function (response) {
+            // Gán dữ liệu từ API vào biến lichSuThanhToan
+            $scope.lichSuThanhToan = response.data;
+        })
+        .catch(function (error) {
+            console.error('Lỗi khi lấy dữ liệu:', error);
+        });
 };

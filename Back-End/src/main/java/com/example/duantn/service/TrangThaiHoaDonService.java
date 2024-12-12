@@ -68,14 +68,13 @@ public class TrangThaiHoaDonService {
             trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
             trangThaiHoaDon.setNgayTao(new Date());
             trangThaiHoaDon.setNgayCapNhat(new Date());
-            trangThaiHoaDon.setIdNhanVien(idNhanVien);
+            trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
             trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
 
             // Lưu trạng thái hóa đơn vào database
             TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
             System.out.println("Trạng thái hóa đơn đã được lưu: " + savedTrangThai);
 
-            // Kiểm tra idLoaiTrangThai và thêm trạng thái liên quan (4 & 6)
             if (idLoaiTrangThai == 3) {
                 // Nếu trạng thái là 3, thêm trạng thái 4
                 LoaiTrangThai loaiTrangThaiThanhToan = loaiTrangThaiRepository.findById(4).orElse(null); // idLoaiTrangThai == 4: Chờ thanh toán
@@ -85,25 +84,10 @@ public class TrangThaiHoaDonService {
                     trangThaiThanhToan.setLoaiTrangThai(loaiTrangThaiThanhToan);
                     trangThaiThanhToan.setNgayTao(new Date());
                     trangThaiThanhToan.setNgayCapNhat(new Date());
-                    trangThaiHoaDon.setIdNhanVien(idNhanVien);
-
+                    trangThaiThanhToan.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái 'Chờ thanh toán'
                     trangThaiThanhToan.setMoTa(loaiTrangThaiThanhToan.getMoTa());  // Mô tả từ loại trạng thái
                     trangThaiHoaDonRepository.save(trangThaiThanhToan);
                     System.out.println("Trạng thái 'Chờ thanh toán' đã được tạo thêm.");
-                }
-            } else if (idLoaiTrangThai == 5) {
-                // Nếu trạng thái là 5, thêm trạng thái 6
-                LoaiTrangThai loaiTrangThaiHoanTat = loaiTrangThaiRepository.findById(6).orElse(null); // idLoaiTrangThai == 6: Hoàn tất
-                if (loaiTrangThaiHoanTat != null) {
-                    TrangThaiHoaDon trangThaiHoanTat = new TrangThaiHoaDon();
-                    trangThaiHoanTat.setHoaDon(hoaDon);
-                    trangThaiHoanTat.setLoaiTrangThai(loaiTrangThaiHoanTat);
-                    trangThaiHoanTat.setNgayTao(new Date());
-                    trangThaiHoanTat.setNgayCapNhat(new Date());
-                    trangThaiHoaDon.setIdNhanVien(idNhanVien);
-                    trangThaiHoanTat.setMoTa(loaiTrangThaiHoanTat.getMoTa());  // Mô tả từ loại trạng thái
-                    trangThaiHoaDonRepository.save(trangThaiHoanTat);
-                    System.out.println("Trạng thái 'Hoàn tất' đã được tạo thêm.");
                 }
             }
 
@@ -113,6 +97,7 @@ public class TrangThaiHoaDonService {
         System.out.println("Không tìm thấy hóa đơn hoặc loại trạng thái.");
         return null;
     }
+
 
     public void TrangThaiHoaDonKhiChonPTTT(Integer hoaDonId) {
         // Tiến hành tạo trạng thái hóa đơn mới nếu chưa tồn tại

@@ -106,9 +106,36 @@
                     redirectTo: "/"
                 });
         });
-        app.controller("ngController", function ($scope, $http, $filter,$window) {
+        app.controller("ngController", function ($scope, $http, $filter, $window) {
             // Tải lại thông tin giỏ hàng mỗi khi giao diện được tải lại
             loadCartInfo();
+
+            $scope.checkTrangThaiNguoiDung = function () {
+                $http.get('http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/' + $scope.idNguoiDung).then(
+                    function (response) {
+                        if (response.data.trangThai === true) {
+                            // Trạng thái hợp lệ, điều hướng tới trang cá nhân
+                            $window.location.href = '#!thong_tin_nguoi_dung';
+                        } else {
+                            // Trạng thái bị khóa, hiển thị thông báo
+                            Swal.fire({
+                                title: 'Tài khoản của bạn đã bị khóa!',
+                                text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: support@example.com.',
+                                icon: 'error',
+                                confirmButtonText: 'Liên hệ hỗ trợ',
+                                footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
+                            });
+
+
+                            return;
+                        }
+                    },
+                    function (error) {
+                        console.error('Không thể kiểm tra trạng thái người dùng:', error);
+                        alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
+                    }
+                );
+            };
 
             // Hàm load thông tin giỏ hàng
             function loadCartInfo() {
@@ -192,7 +219,6 @@
                 $scope.idNguoiDung = $scope.infoUser.idNguoiDung;  // Lấy tên người dùng
                 $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
                 $scope.vaiTro = $scope.infoUser.vaiTro;  // Lấy thông tin vai trò của người dùng
-
                 // Kiểm tra vai trò của người dùng, nếu là Quản trị viên (idVaiTro = 1)
                 if ($scope.vaiTro.idVaiTro === 1) {
                     $scope.isAdmin = true;  // Cho phép hiển thị mục "Trang quản lý"
@@ -229,8 +255,11 @@
     <!-- Thêm SweetAlert CDN vào trong phần head của file HTML -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="lib/bootstrap.js"></script>
-    <!-- Nội dung HTML khác -->
+    Nội dung HTML khác
     <script src="view-client/assets/javascript/script.js"></script>
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+
+    <!-- Tùy chỉnh CSS cho Chatbot -->
 </body>
 
 </html>

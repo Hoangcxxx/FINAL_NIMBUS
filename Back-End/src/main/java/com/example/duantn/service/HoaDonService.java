@@ -352,7 +352,7 @@ public class HoaDonService {
         // Gán địa chỉ vận chuyển đã lưu cho hóa đơn
         hoaDon.setDiaChiVanChuyen(diaChiVanChuyen);
 
-// Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
+        // Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
         if (hoaDonDTO.getIdvoucher() != null) {
             // Tìm Voucher theo ID
             Voucher voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher())
@@ -409,14 +409,30 @@ public class HoaDonService {
         // Lưu hóa đơn sau khi đã gán đầy đủ dữ liệu
         hoaDonRepository.save(hoaDon);
 
-        // Thêm trạng thái hóa đơn
-        TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
-        trangThaiHoaDon.setMoTa("Tạo đơn hàng");
-        trangThaiHoaDon.setNgayTao(new Date());
-        trangThaiHoaDon.setNgayCapNhat(new Date());
-        trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
-        trangThaiHoaDon.setHoaDon(hoaDon);
-        trangThaiHoaDonRepository.save(trangThaiHoaDon);
+        // Trạng thái "Tạo đơn hàng"
+        TrangThaiHoaDon trangThaiHoaDonTaoDon = new TrangThaiHoaDon();
+        LoaiTrangThai trangThaiTaoDon = loaiTrangThaiRepository.findById(1)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+        trangThaiHoaDonTaoDon.setMoTa("Tạo đơn hàng");
+        trangThaiHoaDonTaoDon.setNgayTao(new Date());
+        trangThaiHoaDonTaoDon.setNgayCapNhat(new Date());
+        trangThaiHoaDonTaoDon.setLoaiTrangThai(trangThaiTaoDon);
+        trangThaiHoaDonTaoDon.setIdNhanVien(1);
+        trangThaiHoaDonTaoDon.setHoaDon(hoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDonTaoDon);
+
+        // Trạng thái "Chờ xử lý"
+        TrangThaiHoaDon trangThaiHoaDonChoXuLy = new TrangThaiHoaDon();
+        LoaiTrangThai trangThaiChoXuLy = loaiTrangThaiRepository.findById(2)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+        trangThaiHoaDonChoXuLy.setMoTa("Chờ xác nhận");
+        trangThaiHoaDonChoXuLy.setNgayTao(new Date());
+        trangThaiHoaDonChoXuLy.setNgayCapNhat(new Date());
+        trangThaiHoaDonChoXuLy.setLoaiTrangThai(trangThaiChoXuLy);
+        trangThaiHoaDonTaoDon.setIdNhanVien(1);
+        trangThaiHoaDonChoXuLy.setHoaDon(hoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDonChoXuLy);
+
         // Tạo và lưu lịch sử thanh toán
         LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
         lichSuThanhToan.setSoTienThanhToan(hoaDonDTO.getThanhTien());
@@ -428,7 +444,6 @@ public class HoaDonService {
         lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
 
         lichSuThanhToanRepository.save(lichSuThanhToan);
-
 
         return generatedMaHoaDon;
     }
@@ -715,64 +730,6 @@ public class HoaDonService {
     }
 
 
-
-    public List<HoaDonChiTietDTO> createMultipleHoaDonChiTiet(List<HoaDonChiTietDTO> dtoList, Integer userId) {
-        List<HoaDonChiTietDTO> createdHoaDonChiTietList = new ArrayList<>();
-        for (HoaDonChiTietDTO dto : dtoList) {
-            HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
-            // Tìm kiếm người dùng
-            NguoiDung nguoiDung = nguoiDungRepository.findById(userId)
-                    .orElseThrow(() -> new ExpressionException("Người dùng không tìm thấy"));
-            SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(dto.getIdSanPhamChiTiet())
-                    .orElseThrow(() -> new ExpressionException("Sản phẩm chi tiết không tìm thấy"));
-            hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
-            HoaDon hoaDon = hoaDonRepository.findById(dto.getIdHoaDon())
-                    .orElseThrow(() -> new ExpressionException("Hóa đơn không tìm thấy"));
-            GiamGiaSanPham giamGiaSanPham = giamGiaSanPhamRepository.findBySanPham(sanPhamChiTiet.getSanPham())
-                    .orElse(null);
-
-            BigDecimal giaKhuyenMai = giamGiaSanPham != null ? giamGiaSanPham.getGiaKhuyenMai() : null;
-            BigDecimal giaBan = sanPhamChiTiet.getSanPham().getGiaBan();
-
-            // Tính giá thực tế
-            BigDecimal giaTinh = (giaKhuyenMai != null && giaKhuyenMai.compareTo(BigDecimal.ZERO) > 0)
-                    ? giaKhuyenMai
-                    : giaBan;
-
-            // Tính tổng tiền
-            BigDecimal tongTien = giaTinh.multiply(BigDecimal.valueOf(dto.getSoLuong()));
-            hoaDonChiTiet.setHoaDon(hoaDon);
-            hoaDonChiTiet.setSoLuong(dto.getSoLuong());
-            hoaDonChiTiet.setTongTien(tongTien);
-            hoaDonChiTiet.setSoTienThanhToan(dto.getSoTienThanhToan());
-            hoaDonChiTiet.setTienTraLai(dto.getTienTraLai());
-            hoaDonChiTiet.setMoTa(dto.getMoTa());
-            Date now = new Date();
-            hoaDonChiTiet.setNgayTao(now);
-            hoaDonChiTiet.setNgayCapNhat(now);
-            hoaDonChiTiet.setTrangThai(true);
-            hoaDonChiTietRepository.save(hoaDonChiTiet);
-            LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
-            lichSuHoaDon.setNgayGiaoDich(now);
-            lichSuHoaDon.setSoTienThanhToan(dto.getSoTienThanhToan());
-            lichSuHoaDon.setNguoiDung(nguoiDung);
-            lichSuHoaDonRepository.save(lichSuHoaDon);
-            hoaDonChiTiet.setLichSuHoaDon(lichSuHoaDon);
-            hoaDonChiTietRepository.save(hoaDonChiTiet);
-            HoaDonChiTietDTO createdDto = new HoaDonChiTietDTO(
-                    sanPhamChiTiet.getIdSanPhamChiTiet(),
-                    hoaDon.getIdHoaDon(),
-                    hoaDon.getMaHoaDon(),
-                    hoaDonChiTiet.getSoLuong(),
-                    hoaDonChiTiet.getTongTien(),
-                    hoaDonChiTiet.getSoTienThanhToan(),
-                    hoaDonChiTiet.getTienTraLai(),
-                    hoaDonChiTiet.getMoTa()
-            );
-            createdHoaDonChiTietList.add(createdDto);
-        }
-        return createdHoaDonChiTietList;
-    }
 
 
 

@@ -27,15 +27,15 @@
                                 ng-model="searchUser" />
                         </div>
                     </div>
-                    <table class="table table-striped mt-3">
+                    <table class="table table-striped mt-3 text-center">
                         <thead>
-                            <tr>
-                                <th>STT</th>
+                            <tr >
+                                <th>#</th>
                                 <th>Tên Người Dùng</th>
                                 <th>Email</th>
                                 <th>Số Điện Thoại</th>
                                 <th>Ngày Tạo</th>
-                                <th>Trạng Thái</th>
+                                <th>Khóa</th>
                                 <th>Giới Tính</th>
                                 <th>Thao Tác</th>
                             </tr>
@@ -48,12 +48,11 @@
                                 <td>{{user.sdt}}</td>
                                 <td>{{user.ngayTao | date: 'dd/MM/yyyy'}}</td>
                                 <td>
-                                    <span ng-if="user.trangThai === true" class="text-success">
-                                        <i class="fas fa-check-circle"></i> Hoạt động
-                                    </span>
-                                    <span ng-if="user.trangThai === false" class="text-danger">
-                                        <i class="fas fa-times-circle"></i> Không hoạt động
-                                    </span>
+                                    <input type="checkbox" ng-model="user.trangThai"
+                                        ng-change="changeUserStatus(user.idNguoiDung, user.trangThai ? 'unlock' : 'lock')"
+                                        id="user-status-{{$index}}" class="switch-input">
+                                    <label for="user-status-{{$index}}" class="switch"></label>
+
                                 </td>
                                 <td>{{user.gioiTinh}}</td>
                                 <td>
@@ -62,14 +61,6 @@
                                         data-bs-target="#updateUserModal" ng-click="editUser(user)">
                                         Sửa
                                     </button>
-                                    <button class="btn btn-danger btn-sm"
-                                        ng-click="deleteUser(user.idNguoiDung)">Xóa</button>
-
-                                    <!-- Nút Khóa và Mở khóa -->
-                                    <button class="btn btn-secondary btn-sm" ng-if="user.trangThai === true"
-                                        ng-click="changeUserStatus(user.idNguoiDung, 'lock')">Khóa</button>
-                                    <button class="btn btn-success btn-sm" ng-if="user.trangThai === false"
-                                        ng-click="changeUserStatus(user.idNguoiDung, 'unlock')">Mở khóa</button>
                                 </td>
 
                             </tr>
@@ -91,7 +82,7 @@
 
                     <table class="table table-striped mt-3">
                         <thead>
-                            <tr>
+                            <tr >
                                 <th>STT</th>
                                 <th>Tên Nhân Viên</th>
                                 <th>Email</th>
@@ -113,12 +104,12 @@
                                 <td>{{employee.tenVaiTro}}</td>
                                 <td>{{employee.ngayTao | date: 'dd/MM/yyyy'}}</td>
                                 <td>
-                                    <span ng-if="employee.trangThai === true" class="text-success">
-                                        <i class="fas fa-check-circle"></i> Hoạt động
-                                    </span>
-                                    <span ng-if="employee.trangThai === false" class="text-danger">
-                                        <i class="fas fa-times-circle"></i> Không hoạt động
-                                    </span>
+                                    <input type="checkbox" ng-model="employee.trangThai"
+                                        ng-change="changeUserStatus(employee.idNguoiDung, employee.trangThai ? 'unlock' : 'lock')"
+                                        id="user-status-{{$index}}" class="switch-input">
+                                    <label for="user-status-{{$index}}" class="switch"></label>
+
+
                                 </td>
                                 <td>{{employee.gioiTinh}}</td>
                                 <td>
@@ -127,8 +118,9 @@
                                         data-bs-target="#updateUserModal" ng-click="editUser(employee)">
                                         Sửa
                                     </button>
-                                    <button class="btn btn-danger btn-sm"
-                                        ng-click="deleteNhanvien(employee.idNguoiDung)">Xóa</button>
+                                    <!-- <button class="btn btn-danger btn-sm"
+                                        ng-click="deleteNhanvien(employee.idNguoiDung)">Xóa</button> -->
+
                                 </td>
                             </tr>
                         </tbody>
@@ -237,7 +229,4 @@
                 </div>
             </div>
         </div>
-
-
-
 </main>

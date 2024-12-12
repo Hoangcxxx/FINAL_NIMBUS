@@ -51,7 +51,9 @@ public class GioHangService {
 
             NguoiDung nguoiDung = nguoiDungRepository.findById(idUser)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + idUser));
-
+            if (!nguoiDung.getTrangThai()) {
+                throw new RuntimeException("Tài khoản của bạn đã bị khóa, không thể thêm sản phẩm vào giỏ hàng.");
+            }
             gioHang.setNguoiDung(nguoiDung); // Gán đối tượng NguoiDung vào giỏ hàng
             gioHang.setTrangThai(true);
             gioHang.setNgayTao(new Date());
@@ -328,6 +330,32 @@ public class GioHangService {
             throw new RuntimeException("Chi tiết giỏ hàng không tồn tại.");
         }
     }
+    @Transactional
+    public void xoaTatCaSanPhamKhoiGioHang(Integer idNguoiDung) {
+        GioHang gioHang = gioHangRepository.findByIdNguoiDung(idNguoiDung);
+        if (gioHang == null) {
+            throw new RuntimeException("Giỏ hàng không tồn tại.");
+        }
 
+        // Lấy danh sách chi tiết sản phẩm trong giỏ hàng
+        List<GioHangChiTiet> gioHangChiTietList = gioHangChiTietRepository.findByGioHang(gioHang);
+        if (gioHangChiTietList.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng không có sản phẩm nào.");
+        }
+
+        // Cộng lại số lượng sản phẩm trong kho
+        for (GioHangChiTiet chiTiet : gioHangChiTietList) {
+            Integer idSanPhamChiTiet = chiTiet.getSanPhamChiTiet().getIdSanPhamChiTiet();
+            Optional<SanPhamChiTiet> optionalSanPhamChiTiet = sanPhamChiTietRepository.findById(idSanPhamChiTiet);
+            if (optionalSanPhamChiTiet.isPresent()) {
+                SanPhamChiTiet sanPhamChiTiet = optionalSanPhamChiTiet.get();
+                sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() + chiTiet.getSoLuong());
+                sanPhamChiTietRepository.save(sanPhamChiTiet);
+            }
+        }
+
+        // Xóa tất cả sản phẩm trong giỏ hàng
+        gioHangChiTietRepository.deleteAll(gioHangChiTietList);
+    }
 
 }

@@ -30,7 +30,7 @@ public class NguoiDungRestController {
     @PostMapping("/khach_hang/add")
     public ResponseEntity<NguoiDung> themNguoiDung(@RequestBody NguoiDung nguoiDung) {
         VaiTro vaiTro = new VaiTro();
-        vaiTro.setIdVaiTro(2);
+        vaiTro.setIdVaiTro(3);
         nguoiDung.setVaiTro(vaiTro);
         NguoiDung savedNguoiDung = nguoiDungService.addNguoiDung1(nguoiDung);
         return new ResponseEntity<>(savedNguoiDung, HttpStatus.CREATED);

@@ -191,13 +191,12 @@ public class VoucherService {
         return voucherCode.toString();
     }
 
-    public List<Voucher> getAllVouchersWithStatus(BigDecimal tongTien, Integer idNguoiDung) {
+    public List<Voucher> getAllVouchersWithStatus(BigDecimal tongTien) {
         List<Voucher> allVouchers = voucherRepository.findAll();
         Date currentDate = new Date();
 
         return allVouchers.stream()
                 .peek(voucher -> {
-                    // Kiểm tra trạng thái giảm giá
                     boolean isUsable = false;
                     if (voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() == 1) {
                         isUsable = true;
@@ -209,7 +208,6 @@ public class VoucherService {
                                     !voucher.getNgayKetThuc().before(currentDate);
                             boolean conSoLuong = voucher.getSoLuong() > 0;
                             boolean tongTienDatMin = voucher.getSoTienToiThieu().compareTo(tongTien) <= 0;
-
                             if (Boolean.TRUE.equals(voucher.getKieuGiamGia())) {
                                 isUsable = trongThoiGianSuDung && conSoLuong && tongTienDatMin;
                             } else {
@@ -220,47 +218,24 @@ public class VoucherService {
                         }
                     }
                     voucher.setIsUsable(isUsable);
-
-                    // Kiểm tra xem voucher đã được sử dụng bởi người dùng hay chưa
-                    boolean isVoucherUsed = voucherNguoiDungRepository.existsByIdVoucherAndIdNguoiDung(
-                            voucher.getIdVoucher(), idNguoiDung);
-
-                    // Gắn trạng thái kiểm tra sử dụng
-                    voucher.setKiemtravoucher(isVoucherUsed);
                 })
+
                 .filter(voucher -> voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() >= 1 &&
                         voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() <= 4 &&
                         voucher.getSoLuong() > 0) // Lọc các voucher có số lượng > 0
                 .sorted((voucher1, voucher2) -> {
-                    // Sắp xếp theo trạng thái giảm giá (voucher1 là ưu tiên trước)
-                    int compareTrangThai = Integer.compare(
-                            voucher1.getTrangThaiGiamGia().getIdTrangThaiGiamGia(),
+                    int compareTrangThai = Integer.compare(voucher1.getTrangThaiGiamGia().getIdTrangThaiGiamGia(),
                             voucher2.getTrangThaiGiamGia().getIdTrangThaiGiamGia());
-
                     if (compareTrangThai == 0) {
-                        // Nếu cùng trạng thái giảm giá, sắp xếp theo giá trị giảm giá
-                        BigDecimal giamGia1 = Boolean.TRUE.equals(voucher1.getKieuGiamGia()) ?
-                                BigDecimal.ZERO : voucher1.getGiaTriGiamGia();
-                        BigDecimal giamGia2 = Boolean.TRUE.equals(voucher2.getKieuGiamGia()) ?
-                                BigDecimal.ZERO : voucher2.getGiaTriGiamGia();
+                        BigDecimal giamGia1 = Boolean.TRUE.equals(voucher1.getKieuGiamGia()) ? BigDecimal.ZERO : voucher1.getGiaTriGiamGia();
+                        BigDecimal giamGia2 = Boolean.TRUE.equals(voucher2.getKieuGiamGia()) ? BigDecimal.ZERO : voucher2.getGiaTriGiamGia();
                         return giamGia2.compareTo(giamGia1); // Sắp xếp từ cao đến thấp
                     }
-
-                    // Nếu voucher có trạng thái giảm giá là 1 thì sẽ ưu tiên trước
-                    if (voucher1.getTrangThaiGiamGia().getIdTrangThaiGiamGia() == 1 &&
-                            voucher2.getTrangThaiGiamGia().getIdTrangThaiGiamGia() != 1) {
-                        return 1; // voucher1 ưu tiên
-                    }
-                    if (voucher1.getTrangThaiGiamGia().getIdTrangThaiGiamGia() != 1 &&
-                            voucher2.getTrangThaiGiamGia().getIdTrangThaiGiamGia() == 1) {
-                        return 1; // voucher2 ưu tiên
-                    }
-
                     return compareTrangThai;
                 })
                 .collect(Collectors.toList());
     }
-    public Voucher apdungvoucher(String maVoucher, BigDecimal tongTien,Integer idNguoiDung) {
+    public Voucher apdungvoucher(String maVoucher, BigDecimal tongTien, Integer idNguoiDung) {
         // Lấy voucher từ repository
         Voucher voucher = voucherRepository.findByMaVoucher(maVoucher);
 
@@ -303,14 +278,12 @@ public class VoucherService {
         voucherNguoiDung.setNguoiDung(nguoiDung);
 
         voucherNguoiDungRepository.save(voucherNguoiDung);
-
         // Cập nhật số lượng voucher
         voucher.setSoLuong(voucher.getSoLuong() - 1);
         voucherRepository.save(voucher);
 
         return voucher;
     }
-
 
     public Voucher useVoucher(String maVoucher, BigDecimal tongTien) {
         // Lấy voucher từ repository

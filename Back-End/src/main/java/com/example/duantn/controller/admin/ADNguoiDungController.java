@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,17 +75,23 @@ public class ADNguoiDungController {
         return nguoiDungService.getAllNhanvien();  // Trả về danh sách người dùng đã lọc theo vai trò
     }
     @PutMapping("/khoa/{id}")
-    public ResponseEntity<String> khoaNguoiDung(@PathVariable Integer id) {
+    public ResponseEntity<?> lockUser(@PathVariable Integer id) {
         nguoiDungService.khoaNguoiDung(id);
-        return ResponseEntity.ok("Người dùng đã bị khóa.");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Người dùng đã bị khóa.");
+        return ResponseEntity.ok(response);
     }
 
     // API để mở khóa người dùng
     @PutMapping("/mo_khoa/{id}")
-    public ResponseEntity<String> moKhoaNguoiDung(@PathVariable Integer id) {
+    public ResponseEntity<?> unlockUser(@PathVariable Integer id) {
         nguoiDungService.moKhoaNguoiDung(id);
-        return ResponseEntity.ok("Người dùng đã được mở khóa.");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Người dùng đã được mở khóa.");
+        return ResponseEntity.ok(response);
     }
+
+
 
     @GetMapping("/check_trang_thai/{idNguoiDung}")
     public ResponseEntity<?> checkTrangThaiNguoiDung(@PathVariable Integer idNguoiDung) {

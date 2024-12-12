@@ -135,10 +135,6 @@ public class NguoiDungService {
     }
     public NguoiDung addNguoiDung1(NguoiDung nguoiDung) {
         nguoiDung.setMaNguoiDung("user" + System.currentTimeMillis());
-        String email = nguoiDung.getTenNguoiDung().replaceAll(" ", "").toLowerCase() + "@gmail.com";
-        nguoiDung.setEmail(email);
-        nguoiDung.setMatKhau(UUID.randomUUID().toString().replace("-", "").substring(0, 8));
-
         return nguoiDungRepository.save(nguoiDung);
     }
     public NguoiDung findById(Integer idNguoiDung) {
@@ -241,6 +237,8 @@ public class NguoiDungService {
             NguoiDung user = nguoiDung.get();
             user.setTrangThai(false);  // Thiết lập trạng thái khóa (false)
             nguoiDungRepository.save(user);  // Lưu lại thay đổi
+        } else {
+            throw new RuntimeException("Người dùng không tồn tại.");
         }
     }
 
@@ -251,6 +249,10 @@ public class NguoiDungService {
             NguoiDung user = nguoiDung.get();
             user.setTrangThai(true);  // Thiết lập trạng thái mở khóa (true)
             nguoiDungRepository.save(user);  // Lưu lại thay đổi
+        } else {
+            throw new RuntimeException("Người dùng không tồn tại.");
         }
     }
+
+
 }
