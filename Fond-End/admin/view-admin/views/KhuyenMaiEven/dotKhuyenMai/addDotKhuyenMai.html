@@ -80,6 +80,7 @@
                         <div ng-if="message" class="alert alert-warning">
                             {{ message }}
                         </div>
+                        <!-- Bảng sản phẩm chưa giảm giá -->
                         <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                             <table class="table table-hover align-middle">
                                 <thead>
@@ -98,17 +99,18 @@
                                     <tr ng-repeat="item in dsSanPham track by $index">
                                         <th scope="row">
                                             <input type="checkbox" ng-model="item.selected"
-                                                ng-change="updateSelectAll()">
+                                                ng-change="updateProductSelection(item)">
                                         </th>
                                         <td><img src="{{item.urlAnh}}" class="img-fluid" alt="{{item.tenSanPham}}"
                                                 width="50"></td>
                                         <td>{{item.tenSanPham}}</td>
                                         <td>{{item.tenDanhMuc}}</td>
-                                        <td>{{item.giaBan}}</td>
+                                        <td>{{item.giaBan | currency: '' : 0}} VND</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -124,26 +126,29 @@
                                 <th scope="col">Ảnh Sản Phẩm</th>
                                 <th scope="col">Tên Sản Phẩm</th>
                                 <th scope="col">Tên Danh Mục</th>
-                                <th scope="col">Giá Bán</th>
+                                <th scope="col">Giá Khuyến Mãi</th>
+                                <th scope="col">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in selectedProducts track by $index">
+                            <tr ng-repeat="item in dsDaSanPham track by $index">
                                 <td>{{ $index + 1 }}</td>
                                 <td><img src="{{item.urlAnh}}" class="img-fluid" alt="{{item.tenSanPham}}" width="50">
                                 </td>
                                 <td>{{item.tenSanPham}}</td>
                                 <td>{{item.tenDanhMuc}}</td>
-                                <td>{{item.giaBan}}</td>
-                                <td><button type="button" class="btn btn-danger"
-                                        ng-click="removeProductFromDiscount(item)">
+                                <td>{{item.giaBan | currency: '' : 0}} VND</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" ng-click="removeFromDotGiamGia(item)">
                                         Xóa
-                                    </button></td>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+
         </div>
     </div>
 </main>

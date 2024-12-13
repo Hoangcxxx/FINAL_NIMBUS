@@ -1,5 +1,6 @@
 window.addDotKhuyenMaiController = function ($scope, $http, $location, $routeParams) {
     $scope.dsSanPham = [];
+    $scope.dsDaSanPham = [];
     $scope.dsDanhMuc = []; // Khởi tạo danh sách danh mục
 
     // Khởi tạo thông tin đợt giảm giá
@@ -31,6 +32,8 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
             });
     };
 
+
+
     // Hàm lấy danh sách sản phẩm
     $scope.fetchSanPham = function () {
         $http.get('http://localhost:8080/api/admin/dot_giam_gia/san_pham_chua_giam_gia')
@@ -40,7 +43,6 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
                 console.error('Error fetching products:', error);
             });
     };
-
     // Hàm lấy danh sách danh mục
     $scope.fetchData = function (url, scopeProperty, successMessage) {
         $http.get(url)
@@ -77,10 +79,22 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
                 console.error('Error fetching discount batch:', error);
             });
     };
+    // Hàm lấy thông tin đợt giảm giá theo ID
+    $scope.fetchSanPhamDaGiamGia = function (id) {
+        $http.get(`http://localhost:8080/api/admin/dot_giam_gia/san_pham_da_giam_gia/${id}`)
+            .then(function (response) {
+                $scope.dsDaSanPham = response.data;
+                console.log('Fetched discounted products:', response.data);
+            }, function (error) {
+                console.error('Error fetching discounted products:', error);
+                $scope.message = 'Có lỗi xảy ra khi lấy sản phẩm đã giảm giá.';
+            });
+    };
 
     // Kiểm tra nếu có ID để cập nhật
     if ($routeParams.id) {
         $scope.fetchDotGiamGia($routeParams.id);
+        $scope.fetchSanPhamDaGiamGia($routeParams.id);
     }
 
     // Gọi hàm để lấy danh sách sản phẩm ngay khi controller khởi tạo
@@ -88,14 +102,14 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
     // Gọi hàm để lấy danh sách danh mục
     $scope.fetchData('http://localhost:8080/api/admin/danh_muc', 'dsDanhMuc', 'Fetched categories:');
 
-    // Hàm thêm hoặc cập nhật đợt giảm giá
+
+
     // Hàm lưu đợt giảm giá
     $scope.saveDotGiamGia = function () {
         // Kiểm tra kiểu giảm giá và giá trị giảm
         console.log("Kiểu giảm giá: ", $scope.dotGiamGia.kieuGiamGia);
         console.log("Giá trị giảm: ", $scope.dotGiamGia.giaTriGiamGia);
     
-        // Kiểm tra kiểu giảm giá và giá trị giảm
         if ($scope.dotGiamGia.kieuGiamGia === true) { // Kiểu giảm giá là tiền mặt
             console.log("Kiểu giảm giá là tiền mặt.");
             // Kiểm tra giá trị giảm tiền không lớn hơn giá sản phẩm
@@ -138,6 +152,26 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
             $scope.dotGiamGia.sanPhamList = selectedSanPham.map(item => ({
                 sanPham: { idSanPham: item.idSanPham }
             }));
+        } else {
+            // Nếu là thao tác cập nhật (có id), kiểm tra nếu có sự thay đổi trong danh sách sản phẩm
+            const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
+            const selectedSanPhamIds = selectedSanPham.map(item => item.idSanPham);
+            const currentSanPhamIds = $scope.dsDaSanPham.map(item => item.idSanPham);
+    
+            // Nếu không có sự thay đổi (sản phẩm chọn hiện tại vẫn giống cũ), giữ nguyên sản phẩm cũ
+            if (angular.equals(selectedSanPhamIds.sort(), currentSanPhamIds.sort())) {
+                // Giữ nguyên danh sách sản phẩm đã có (dsDaSanPham)
+                $scope.dotGiamGia.sanPhamList = $scope.dsDaSanPham.map(item => ({
+                    sanPham: { idSanPham: item.idSanPham }
+                }));
+            } else {
+                // Nếu có thay đổi, kết hợp lại danh sách sản phẩm
+                // Kết hợp các sản phẩm đã có và sản phẩm mới chọn
+                const allSelectedSanPhamIds = [...selectedSanPhamIds, ...currentSanPhamIds];
+                $scope.dotGiamGia.sanPhamList = allSelectedSanPhamIds.map(id => ({
+                    sanPham: { idSanPham: id }
+                }));
+            }
         }
     
         // Xử lý thêm mới hoặc cập nhật đợt giảm giá
@@ -154,6 +188,10 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
         });
     };
     
+
+
+
+
 
 
 
@@ -196,4 +234,23 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
 
     // Gọi hàm updateUnit ngay khi controller được khởi tạo
     $scope.updateUnit();
+    $scope.updateProductSelection = function (product) {
+        // Đảm bảo rằng sanPhamList đã được khởi tạo trước khi thao tác
+        if (!$scope.dotGiamGia.sanPhamList) {
+            $scope.dotGiamGia.sanPhamList = [];
+        }
+
+        if (product.selected) {
+            // Thêm sản phẩm vào danh sách sản phẩm đợt giảm giá
+            $scope.dotGiamGia.sanPhamList.push({ sanPham: { idSanPham: product.idSanPham } });
+        } else {
+            // Loại bỏ sản phẩm khỏi danh sách sản phẩm đợt giảm giá
+            const index = $scope.dotGiamGia.sanPhamList.findIndex(item => item.sanPham.idSanPham === product.idSanPham);
+            if (index > -1) {
+                $scope.dotGiamGia.sanPhamList.splice(index, 1);
+            }
+        }
+    };
+
+
 };

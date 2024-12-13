@@ -104,7 +104,7 @@ public class ADDotGiamGiaController {
         dotGiamGia.setMoTa(dotGiamGiaRequest.getMoTa());
         dotGiamGia.setNgayBatDau(dotGiamGiaRequest.getNgayBatDau());
         dotGiamGia.setNgayKetThuc(dotGiamGiaRequest.getNgayKetThuc());
-        dotGiamGia.setKieuGiamGia(dotGiamGiaRequest.isKieuGiamGia());
+        dotGiamGia.setKieuGiamGia(dotGiamGiaRequest.getKieuGiamGia());
 
         // Tạo đợt giảm giá
         DotGiamGia createdDotGiamGia = dotGiamGiaService.addDotGiamGia(dotGiamGia);
@@ -123,9 +123,18 @@ public class ADDotGiamGiaController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     @PutMapping("/{id}")
-    public DotGiamGia updateDotGiamGia(@PathVariable Integer id, @RequestBody DotGiamGia dotGiamGiaDetails) {
-        return dotGiamGiaService.updateDotGiamGia(id, dotGiamGiaDetails);
+    public ResponseEntity<?> updateDotGiamGia(@PathVariable Integer id, @RequestBody DotGiamGiaRequest dotGiamGiaRequest) {
+        // Cập nhật đợt giảm giá
+        DotGiamGia dotGiamGia = dotGiamGiaService.updateDotGiamGia(id, dotGiamGiaRequest);
+
+        // Trả về kết quả
+        if (dotGiamGia != null) {
+            return ResponseEntity.ok(dotGiamGia);
+        } else {
+            return ResponseEntity.badRequest().body("Đợt giảm giá không tồn tại hoặc có lỗi khi cập nhật.");
+        }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteDotGiamGia(@PathVariable Integer id) {

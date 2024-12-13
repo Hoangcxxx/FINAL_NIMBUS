@@ -22,4 +22,8 @@ public interface GiamGiaSanPhamRepository extends JpaRepository<GiamGiaSanPham, 
             "WHERE g.sanPham.idSanPham = :idSanPham " +
             "ORDER BY g.ngayCapNhat DESC")
     BigDecimal findGiaKhuyenMaiBySanPhamId(@Param("idSanPham") Integer idSanPham);
+
+
+    public Optional<GiamGiaSanPham> findByDotGiamGiaAndSanPham(DotGiamGia dotGiamGia, SanPham sanPham);
+
 }

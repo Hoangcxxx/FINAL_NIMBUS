@@ -18,7 +18,7 @@ public class DotGiamGiaQuery {
     public static final String GET_SAN_PHAM_DA_GIAM_GIA_BY_ID_DOT_GIAM_GIA = "SELECT \n" +
             "    sp.Id_san_pham,\n" +
             "    sp.ten_san_pham,\n" +
-            "    sp.gia_ban,\n" +
+            "    ggs.gia_khuyen_mai,\n" +
             "    sp.mo_ta,\n" +
             "    dc.ten_danh_muc,\n" +
             "    ha.url_anh\n" +

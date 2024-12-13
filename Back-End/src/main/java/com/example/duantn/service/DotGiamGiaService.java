@@ -1,6 +1,7 @@
 package com.example.duantn.service;
 
 import com.example.duantn.dto.DotGiamGiaDetail;
+import com.example.duantn.dto.DotGiamGiaRequest;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.DotGiamGiaRepository;
 import com.example.duantn.repository.GiamGiaSanPhamRepository;
@@ -84,10 +85,13 @@ public class DotGiamGiaService {
         }
     }
 
-    public DotGiamGia updateDotGiamGia(Integer id, DotGiamGia dotGiamGiaDetails) {
+
+    public DotGiamGia updateDotGiamGia(Integer id, DotGiamGiaRequest dotGiamGiaDetails) {
         Optional<DotGiamGia> optionalDotGiamGia = dotGiamGiaRepository.findById(id);
         if (optionalDotGiamGia.isPresent()) {
             DotGiamGia dotGiamGia = optionalDotGiamGia.get();
+
+            // Cập nhật các thuộc tính của đợt giảm giá
             dotGiamGia.setTenDotGiamGia(dotGiamGiaDetails.getTenDotGiamGia());
             dotGiamGia.setKieuGiamGia(dotGiamGiaDetails.getKieuGiamGia());
             dotGiamGia.setGiaTriGiamGia(dotGiamGiaDetails.getGiaTriGiamGia());
@@ -98,11 +102,36 @@ public class DotGiamGiaService {
             // Kiểm tra ngày bắt đầu và ngày kết thúc
             validateDotGiamGiaDates(dotGiamGia);
 
+            // Cập nhật trạng thái của đợt giảm giá (chưa bắt đầu, đang diễn ra, đã kết thúc)
             setTrangThaiDotGiamGia(dotGiamGia);
-            return dotGiamGiaRepository.save(dotGiamGia);
+
+            // Lưu lại đợt giảm giá đã cập nhật
+            dotGiamGia = dotGiamGiaRepository.save(dotGiamGia);
+
+            // Nếu có danh sách sản phẩm, xử lý
+            if (dotGiamGiaDetails.getSanPhamList() != null && !dotGiamGiaDetails.getSanPhamList().isEmpty()) {
+                // Xóa các sản phẩm cũ trước khi thêm mới
+                List<GiamGiaSanPham> existingGiamGiaSanPhamList = giamGiaSanPhamRepository.findByDotGiamGia(dotGiamGia);
+                giamGiaSanPhamRepository.deleteAll(existingGiamGiaSanPhamList);
+
+                // Thêm các sản phẩm mới vào đợt giảm giá
+                for (GiamGiaSanPham giamGiaSanPham : dotGiamGiaDetails.getSanPhamList()) {
+                    addSanPhamToDotGiamGia(dotGiamGia.getIdDotGiamGia(), giamGiaSanPham); // Cập nhật sản phẩm cho đợt giảm giá
+                }
+            } else {
+                // Nếu không có sản phẩm trong danh sách, chỉ cập nhật giảm giá mà không thay đổi sản phẩm
+                updateGiaKhuyenMaiForSanPham(dotGiamGia);
+            }
+
+            return dotGiamGia;
         }
-        return null;
+        return null;  // Nếu không tìm thấy đợt giảm giá theo ID
     }
+
+
+
+
+
     public Optional<DotGiamGiaDetail> getDotGiamGiaDetailById(Integer id) {
         Optional<DotGiamGia> dotGiamGiaOptional = dotGiamGiaRepository.findById(id);
         if (dotGiamGiaOptional.isPresent()) {
@@ -198,7 +227,8 @@ public class DotGiamGiaService {
         if (discountValue.compareTo(BigDecimal.ZERO) > 0) {
             return originalPrice.subtract(discountValue);
         }
-        return originalPrice; // Không có giảm giá, trả về giá gốc
+        return originalPrice; // Nếu không có giảm giá, trả về giá gốc
     }
+
 
 }
