@@ -9,7 +9,6 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "xa")
 public class Xa {
@@ -17,6 +16,9 @@ public class Xa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_xa")
     private Integer idXa;
+
+    @Column(name = "ma_xa")
+    private String maXa;
 
     @Column(name = "ten_xa")
     private String tenXa;

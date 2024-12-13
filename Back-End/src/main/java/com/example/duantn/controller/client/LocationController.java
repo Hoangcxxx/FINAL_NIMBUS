@@ -1,127 +1,130 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.entity.*;
+import com.example.duantn.repository.DiaChiVanChuyenRepository;
 import com.example.duantn.service.TestDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/nguoi_dung/test/")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequestMapping("/api/nguoi_dung/test")
+@CrossOrigin(origins = "http://127.0.0.1:5502") // Đảm bảo frontend có thể gọi được API từ domain này
 public class LocationController {
 
-    private final TestDemoService testDemoService;
+    @Autowired
+    private TestDemoService testDemoService;
 
     @Autowired
-    public LocationController(TestDemoService testDemoService) {
-        this.testDemoService = testDemoService;
-    }
+    private DiaChiVanChuyenRepository diaChiVanChuyenRepository;
 
-    // Lấy danh sách tỉnh thành
+    // API để lấy danh sách tỉnh thành
     @GetMapping("/cities")
     public ResponseEntity<?> getCities() {
         try {
-            List<Map<String, Object>> cities = testDemoService.getCities();
-            if (cities.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy tỉnh thành");
-            }
+            List<?> cities = testDemoService.getCities();
             return ResponseEntity.ok(cities);
         } catch (Exception e) {
-            return handleError("Có lỗi khi lấy danh sách tỉnh thành", e);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi khi lấy danh sách tỉnh thành");
         }
     }
 
-    // Lấy danh sách huyện theo mã tỉnh
+    // API để lấy danh sách huyện theo mã tỉnh
     @GetMapping("/districts/{cityCode}")
     public ResponseEntity<?> getDistricts(@PathVariable String cityCode) {
         try {
-            List<Map<String, Object>> districts = testDemoService.getDistricts(cityCode);
-            if (districts.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy huyện");
-            }
+            List<?> districts = testDemoService.getDistricts(cityCode);
             return ResponseEntity.ok(districts);
         } catch (Exception e) {
-            return handleError("Có lỗi khi lấy danh sách huyện", e);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi khi lấy danh sách huyện");
         }
     }
 
-    // Lấy danh sách xã theo mã huyện
+    // API để lấy danh sách xã theo mã huyện
     @GetMapping("/wards/{districtCode}")
     public ResponseEntity<?> getWards(@PathVariable String districtCode) {
         try {
-            List<Map<String, Object>> wards = testDemoService.getWards(districtCode);
-            if (wards.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy xã");
-            }
+            List<?> wards = testDemoService.getWards(districtCode);
             return ResponseEntity.ok(wards);
         } catch (Exception e) {
-            return handleError("Có lỗi khi lấy danh sách xã", e);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi khi lấy danh sách xã");
         }
     }
 
-    // Lưu địa chỉ vào DB
+    // API để lưu địa chỉ vào DB và đặt làm địa chỉ mặc định
+    @PostMapping("/saveAndSetDefault")
+    public ResponseEntity<String> saveAndSetDefaultAddress(
+            @RequestParam Integer userId,
+            @RequestParam String cityCode,
+            @RequestParam String districtCode,
+            @RequestParam String wardCode,
+            @RequestParam String specificAddress,
+            @RequestParam Boolean setAsDefault) {
+
+        try {
+            testDemoService.saveAndSetDefaultAddress(userId, cityCode, districtCode, wardCode, specificAddress, setAsDefault);
+            return ResponseEntity.ok("Địa chỉ đã được lưu thành công!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Lỗi: " + e.getMessage());
+        }
+    }
+
+    // API để lưu địa chỉ vào DB
     @PostMapping("/save-location")
-    public ResponseEntity<?> saveLocationToDB(
+    public ResponseEntity<String> saveLocationToDB(
             @RequestParam Integer userId,
             @RequestParam String cityCode,
             @RequestParam String districtCode,
             @RequestParam String wardCode) {
+
         try {
-            if (userId == null || userId <= 0 || cityCode == null || districtCode == null || wardCode == null) {
-                return ResponseEntity.badRequest().body("Các tham số không hợp lệ");
-            }
             testDemoService.saveCityDistrictWardToDB(userId, cityCode, districtCode, wardCode);
             return ResponseEntity.ok("Lưu địa chỉ thành công");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Lỗi hợp lệ: " + e.getMessage());
         } catch (Exception e) {
-            return handleError("Có lỗi khi lưu địa chỉ", e);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi khi lưu địa chỉ");
         }
     }
 
-    // Tính phí ship
-    @GetMapping("/calculate-fee")
-    public ResponseEntity<?> calculateShippingFee(
-            @RequestParam int toDistrictId,
-            @RequestParam String toWardCode) {
-        try {
-            Map<String, Object> fee = testDemoService.calculateShippingFee(toDistrictId, toWardCode);
-            if (fee == null || fee.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không thể tính phí vận chuyển");
-            }
-            return ResponseEntity.ok(fee);
-        } catch (Exception e) {
-            return handleError("Có lỗi khi tính phí vận chuyển", e);
-        }
-    }
 
-    // Lấy danh sách dịch vụ vận chuyển khả dụng
+    // API lấy danh sách các phương thức vận chuyển khả dụng
     @GetMapping("/available-services")
-    public ResponseEntity<?> getAvailableServices(
-            @RequestParam int fromDistrictId,
-            @RequestParam int toDistrictId) {
+    public ResponseEntity<List<Map<String, Object>>> getShippingServices() {
         try {
-            Map<String, Object> services = testDemoService.getAvailableServices(fromDistrictId, toDistrictId);
-            if (services == null || services.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không có dịch vụ vận chuyển khả dụng");
-            }
+            List<Map<String, Object>> services = testDemoService.getShippingServices();
             return ResponseEntity.ok(services);
         } catch (Exception e) {
-            return handleError("Có lỗi khi lấy dịch vụ vận chuyển", e);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
         }
     }
 
-    // Xử lý lỗi và trả về phản hồi lỗi
-    private ResponseEntity<?> handleError(String message, Exception e) {
-        e.printStackTrace();
-        Map<String, Object> response = new HashMap<>();
-        response.put("error", message);
-        response.put("details", e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    // API tính phí vận chuyển
+    @PostMapping("/fee")
+    public ResponseEntity<Map<String, Object>> calculateShippingFee(
+            @RequestParam Integer service_id,
+            @RequestParam Integer districtId,  // Truyền mã quận huyện
+            @RequestParam Integer wardId,
+            @RequestParam Integer weight) {
+
+        try {
+            Map<String, Object> feeDetails = testDemoService.calculateShippingFee(service_id, districtId, wardId, weight);
+            return ResponseEntity.ok(feeDetails);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
     }
+
+
+
 }

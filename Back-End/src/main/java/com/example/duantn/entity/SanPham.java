@@ -1,10 +1,12 @@
 package com.example.duantn.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,6 +42,21 @@ public class SanPham {
     @ManyToOne
     @JoinColumn(name = "id_danh_muc")
     private DanhMuc danhMuc;
+    @OneToMany(mappedBy = "sanPham")
+    @JsonIgnore  // Ẩn các hình ảnh sản phẩm khi serialize thành JSON
+    private List<HinhAnhSanPham> hinhAnhSanPham;
 
+    @OneToMany(mappedBy = "sanPham")
+    @JsonIgnore  // Ẩn các giảm giá sản phẩm khi serialize thành JSON
+    private List<GiamGiaSanPham> giamGiaSanPham;
+
+    public String getUrlAnh() {
+        if (hinhAnhSanPham != null && !hinhAnhSanPham.isEmpty()) {
+            return hinhAnhSanPham.get(0).getUrlAnh();
+        }
+        return null;  // Trả về null nếu không có hình ảnh
+    }
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL)
+    private List<GiamGiaSanPham> giamGiaSanPhamList;
 
 }

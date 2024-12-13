@@ -1,5 +1,7 @@
 package com.example.duantn.service;
 
+import com.example.duantn.dto.NguoiDungDTO;
+import com.example.duantn.dto.TimKiemNguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.repository.NguoiDungRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NguoiDungService {
@@ -23,16 +24,13 @@ public class NguoiDungService {
         return nguoiDungRepository.getSanPhamById();
     }
 
-    // Lấy tất cả người dùng
-    public List<NguoiDung> getAllNguoiDungs() {
-        return nguoiDungRepository.findAll(); // Lấy tất cả người dùng từ repository
-    }
-
     // Lấy người dùng theo ID
     public Optional<NguoiDung> getNguoiDungById(int id) {
         return nguoiDungRepository.findById(id);
     }
-
+    public List<NguoiDung> getAllNhanVienBanHang() {
+        return nguoiDungRepository.findByVaiTro_IdVaiTro(3);
+    }
     // Thêm mới người dùng
     public ResponseEntity<?> addNguoiDung(NguoiDung nguoiDung) {
         // Kiểm tra nếu email hoặc số điện thoại đã tồn tại trong cơ sở dữ liệu
@@ -93,10 +91,10 @@ public class NguoiDungService {
     }
 
     // Xóa người dùng
-    public ResponseEntity<HttpStatus> deleteNguoiDung(int id) {
-        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(id);
+    public ResponseEntity<HttpStatus> deleteNguoiDung(Integer idNguoiDung) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
         if (nguoiDung.isPresent()) {
-            nguoiDungRepository.deleteById(id);
+            nguoiDungRepository.deleteById(idNguoiDung);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -118,9 +116,16 @@ public class NguoiDungService {
 
     // Cập nhật thông tin người dùng
     public NguoiDung updateNguoiDung(Integer id, NguoiDung nguoiDungDetails) {
+        // Tìm người dùng trong cơ sở dữ liệu
         NguoiDung existingNguoiDung = nguoiDungRepository.findById(id).orElse(null);
 
         if (existingNguoiDung != null) {
+            // Kiểm tra trạng thái người dùng (khóa hay không)
+            if (!existingNguoiDung.getTrangThai()) {
+                throw new RuntimeException("Tài khoản của bạn đã bị khóa, không thể cập nhật thông tin.");
+            }
+
+            // Cập nhật thông tin người dùng
             existingNguoiDung.setTenNguoiDung(nguoiDungDetails.getTenNguoiDung());
             existingNguoiDung.setEmail(nguoiDungDetails.getEmail());
             existingNguoiDung.setSdt(nguoiDungDetails.getSdt());
@@ -130,9 +135,163 @@ public class NguoiDungService {
             existingNguoiDung.setAnhDaiDien(nguoiDungDetails.getAnhDaiDien());
             existingNguoiDung.setNgayCapNhat(new Date());
 
+            // Lưu lại thông tin đã cập nhật
             return nguoiDungRepository.save(existingNguoiDung);
         } else {
+            // Trả về null nếu không tìm thấy người dùng
             return null;
         }
     }
+
+    public NguoiDung addNguoiDung1(NguoiDung nguoiDung) {
+        nguoiDung.setMaNguoiDung("user" + System.currentTimeMillis());
+        String email = nguoiDung.getTenNguoiDung().replaceAll(" ", "").toLowerCase() + "@gmail.com";
+        nguoiDung.setEmail(email);
+        nguoiDung.setMatKhau(UUID.randomUUID().toString().replace("-", "").substring(0, 8));
+
+        return nguoiDungRepository.save(nguoiDung);
+    }
+    public NguoiDung findById(Integer idNguoiDung) {
+        return nguoiDungRepository.findById(idNguoiDung).orElse(null);
+    }
+
+
+    public List<TimKiemNguoiDungDTO> searchKhachHangByPhone(String phonePrefix) {
+        String searchPattern = phonePrefix + "%"; // Tạo pattern tìm kiếm
+        List<Object[]> results = nguoiDungRepository.getSearchKhachHang(searchPattern);
+
+        // Ánh xạ Object[] thành TimKiemNguoiDungDTO
+        List<TimKiemNguoiDungDTO> nguoiDungDTOList = new ArrayList<>();
+        for (Object[] result : results) {
+            Integer idNguoiDung = (Integer) result[0];  // Lấy giá trị id_nguoi_dung
+            String tenNguoiDung = (String) result[1];   // Lấy giá trị ten_nguoi_dung
+            String sdt = (String) result[2];           // Lấy giá trị sdt
+
+            TimKiemNguoiDungDTO dto = new TimKiemNguoiDungDTO(idNguoiDung, tenNguoiDung, sdt);
+            nguoiDungDTOList.add(dto);
+        }
+
+        return nguoiDungDTOList;
+    }
+    public boolean isPhoneDuplicate(String sdt) {
+        if (sdt == null || sdt.trim().isEmpty()) {
+            return false; // Số điện thoại rỗng không được tính là trùng
+        }
+        return nguoiDungRepository.existsBySdt(sdt.trim());
+    }
+    public List<NguoiDung> searchNguoiDung(String tenNguoiDung, String email, String sdt) {
+        return nguoiDungRepository.searchNguoiDung(tenNguoiDung, email, sdt);
+    }
+
+
+    public List<NguoiDungDTO> getAllNguoiDung() {
+        List<NguoiDung> nguoiDungList = nguoiDungRepository.findAll();
+
+        return nguoiDungList.stream()
+                .filter(nguoiDung -> {
+                    // Kiểm tra null cho vaiTro trước khi sử dụng
+                    if (nguoiDung.getVaiTro() == null) {
+                        return false; // Loại bỏ người dùng nếu vaiTrò là null
+                    }
+                    Integer vaiTroId = nguoiDung.getVaiTro().getIdVaiTro();
+                    return vaiTroId != null && vaiTroId == 2; // Điều kiện kiểm tra vai trò
+                })
+                .map(nguoiDung -> {
+                    NguoiDungDTO dto = new NguoiDungDTO();
+                    dto.setIdNguoiDung(nguoiDung.getIdNguoiDung());
+                    dto.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+                    dto.setEmail(nguoiDung.getEmail());
+                    dto.setSdt(nguoiDung.getSdt());
+                    dto.setNgayTao(nguoiDung.getNgayTao());
+                    dto.setTrangThai(nguoiDung.getTrangThai());
+                    dto.setGioiTinh(nguoiDung.getGioiTinh());
+                    // Kiểm tra null trước khi lấy tên vai trò
+                    String tenVaiTro = (nguoiDung.getVaiTro() != null) ? nguoiDung.getVaiTro().getTen() : "Không xác định";
+                    dto.setTenVaiTro(tenVaiTro);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+    // Lấy danh sách tất cả nhân viên và chuyển thành DTO
+    public List<NguoiDungDTO> getAllNhanvien() {
+        List<NguoiDung> nguoiDungList = nguoiDungRepository.findAll();
+
+        return nguoiDungList.stream()
+                .filter(nguoiDung -> {
+                    // Kiểm tra null trước khi truy cập vaiTro và idVaiTro
+                    if (nguoiDung.getVaiTro() == null) {
+                        return false; // Loại bỏ nếu vaiTro là null
+                    }
+                    Integer vaiTroId = nguoiDung.getVaiTro().getIdVaiTro();
+                    return vaiTroId != null && vaiTroId == 4; // Lọc vai trò là 4 (nhân viên)
+                })
+                .map(nguoiDung -> {
+                    NguoiDungDTO dto = new NguoiDungDTO();
+                    dto.setIdNguoiDung(nguoiDung.getIdNguoiDung());
+                    dto.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+                    dto.setEmail(nguoiDung.getEmail());
+                    dto.setSdt(nguoiDung.getSdt());
+                    dto.setNgayTao(nguoiDung.getNgayTao());
+                    dto.setTrangThai(nguoiDung.getTrangThai());
+                    dto.setGioiTinh(nguoiDung.getGioiTinh());
+                    // Kiểm tra null trước khi lấy tên vai trò
+                    String tenVaiTro = (nguoiDung.getVaiTro() != null) ? nguoiDung.getVaiTro().getTen() : "Không xác định";
+                    dto.setTenVaiTro(tenVaiTro);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<NguoiDungDTO> getAllkhachhangle() {
+        List<NguoiDung> nguoiDungList = nguoiDungRepository.findAll();
+
+        return nguoiDungList.stream()
+                .filter(nguoiDung -> {
+                    // Kiểm tra null trước khi truy cập vaiTro và idVaiTro
+                    if (nguoiDung.getVaiTro() == null) {
+                        return false; // Loại bỏ nếu vaiTro là null
+                    }
+                    Integer vaiTroId = nguoiDung.getVaiTro().getIdVaiTro();
+                    return vaiTroId != null && vaiTroId == 3; // Lọc vai trò là 4 (nhân viên)
+                })
+                .map(nguoiDung -> {
+                    NguoiDungDTO dto = new NguoiDungDTO();
+                    dto.setIdNguoiDung(nguoiDung.getIdNguoiDung());
+                    dto.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+                    dto.setSdt(nguoiDung.getSdt());
+                    dto.setNgayTao(nguoiDung.getNgayTao());
+                    // Kiểm tra null trước khi lấy tên vai trò
+                    String tenVaiTro = (nguoiDung.getVaiTro() != null) ? nguoiDung.getVaiTro().getTen() : "Không xác định";
+                    dto.setTenVaiTro(tenVaiTro);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+    // Phương thức khóa người dùng
+    public void khoaNguoiDung(Integer idNguoiDung) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
+        if (nguoiDung.isPresent()) {
+            NguoiDung user = nguoiDung.get();
+            user.setTrangThai(false);  // Thiết lập trạng thái khóa (false)
+            nguoiDungRepository.save(user);  // Lưu lại thay đổi
+        } else {
+            throw new RuntimeException("Người dùng không tồn tại.");
+        }
+    }
+
+    // Phương thức mở khóa người dùng
+    public void moKhoaNguoiDung(Integer idNguoiDung) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
+        if (nguoiDung.isPresent()) {
+            NguoiDung user = nguoiDung.get();
+            user.setTrangThai(true);  // Thiết lập trạng thái mở khóa (true)
+            nguoiDungRepository.save(user);  // Lưu lại thay đổi
+        } else {
+            throw new RuntimeException("Người dùng không tồn tại.");
+        }
+    }
+
 }

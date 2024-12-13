@@ -1,0 +1,277 @@
+<section id="page-header" class="text-center py-4 bg-light">
+    <h2 class="text-uppercase font-weight-bold">#stayhome</h2>
+    <p class="lead text-muted">Save more with coupons & up to 70% off!</p>
+</section>
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3">
+            <div class="dashboard_tab_button">
+                <ul role="tablist" class="nav flex-column dashboard-list shadow-sm p-3 mb-5 bg-white rounded">
+                    <li class="nav-item mb-2">
+                        <a href="#dashboard" data-bs-toggle="tab" class="nav-link active bg-light text-dark rounded">
+                            Thông Tin Cá Nhân
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="#orders" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
+                            Đơn hàng
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="#address" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
+                            Địa chỉ giao hàng
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <div class="tab-content shadow-sm p-4 mb-5 bg-white rounded">
+                <!-- Thông tin cá nhân -->
+                <div class="tab-pane fade show active" id="dashboard">
+                    <h3 class="mb-4 text-black">Thông Tin Cá Nhân</h3>
+                    <div class="card border-0 shadow-sm p-4">
+                        <div class="personal-info">
+
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Họ tên: </strong> {{ tenNguoiDung }}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Email: </strong> {{ emailNguoiDung }}</p>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Địa chỉ: </strong> {{ diaChiNguoiDung }}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Số điện thoại: </strong> {{ sdtNguoiDung }}</p>
+                                    </div>
+                                </div>
+                                <!-- Thêm ngày sinh và giới tính -->
+                                <div class="row mb-3">
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Ngày sinh: </strong> {{ ngaySinhNguoiDung }}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <p><strong>Giới tính: </strong> {{ gioiTinhNguoiDung }}</p>
+                                    </div>
+                                </div>
+                                <!-- Nút thay đổi thông tin -->
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#editCustomerModal" ng-click="openEditModal()" >
+                                    Thay đổi thông tin
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Đơn hàng -->
+                <div class="tab-pane fade" id="orders">
+                    <h4 class="mt-4 text-primary">Đơn hàng Mới Nhất</h4>
+                    <div class="card shadow-sm p-3">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Mã đơn hàng</th>
+                                    <th scope="col">Ngày đặt</th>
+                                    <th scope="col">Thành tiền</th>
+                                    <th scope="col">Trạng thái thanh toán</th>
+                                    <th scope="col">Vận chuyển</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Lặp qua danh sách đơn hàng -->
+                                <tr ng-repeat="hoaDon in orderData">
+                                    <td>#{{ hoaDon.maHoaDon }}</td>
+                                    <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
+                                    <td>{{ hoaDon.thanhTien | currency:"":0 }}đ</td>
+                                    <td>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 1">Chờ Xử Lý</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 2">Đang Giao Hàng</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 3">Hoàn Thành</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 4">Hủy Bỏ</span>
+                                        <span ng-if="hoaDon.idtrangthaihoadon === 5">Thất Bại</span>
+                                    </td>
+                                    <td>{{ hoaDon.diaChi }}, {{ hoaDon.tenTinh }}, {{ hoaDon.tenHuyen }}, {{
+                                        hoaDon.tenXa }}</td>
+                                </tr>
+                                <!-- Trường hợp không có đơn hàng -->
+                                <tr ng-if="!orderData || orderData.length === 0">
+                                    <td colspan="5" class="text-center">Không có đơn hàng nào</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+               
+
+                <!-- Địa chỉ -->
+                <div class="tab-pane fade" id="address">
+                    <h3 class="mb-4 text-primary">Địa Chỉ Giao Hàng</h3>
+                    <div class="container my-5">
+                        <!-- Nút mở modal -->
+                        <button type="button" class="btn btn-danger mb-2" data-bs-toggle="modal"
+                            data-bs-target="#addAddressModal">
+                            Thêm địa chỉ giao hàng
+                        </button>
+                        <!-- Bảng Hiển Thị Dữ Liệu Địa Chỉ Vận Chuyển -->
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tỉnh</th>
+                                    <th>Huyện</th>
+                                    <th>Xã</th>
+                                    <th>Địa Chỉ Cụ Thể</th>
+                                    <th>Mô Tả</th>
+                                    <th>Trạng Thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="address in addresses">
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ address.tinh }}</td>
+                                    <td>{{ address.huyen }}</td>
+                                    <td>{{ address.xa }}</td>
+                                    <td>{{ address.diaChiCuThe }}</td>
+                                    <td>{{ address.moTa }}</td>
+                                    <td>{{ address.trangThai ? 'Đang sử dụng' : 'Không sử dụng' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Thêm địa chỉ giao hàng-->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Thêm địa chỉ giao hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="province" class="form-label">Tỉnh</label>
+                        <select class="form-select" id="province" ng-model="selectedTinh" ng-change="onTinhChange()">
+                            <option value="">Chọn Tỉnh</option>
+                            <option value="{{item.idTinh}}" ng-repeat="item in tinhList">{{item.tenTinh}}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="district" class="form-label">Huyện</label>
+                        <select class="form-select" id="district" ng-model="selectedHuyen" ng-change="onHuyenChange()">
+                            <option value="">Chọn Huyện</option>
+                            <option value="{{item.idHuyen}}" ng-repeat="item in huyenList">{{item.tenHuyen}}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ward" class="form-label">Xã</label>
+                        <select class="form-select" id="ward" ng-model="selectedXa">
+                            <option value="">Chọn Xã</option>
+                            <option value="{{item.idXa}}" ng-repeat="item in xaList">{{item.tenXa}}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="specificAddress" class="form-label">Địa Chỉ Cụ Thể</label>
+                        <input type="text" class="form-control" id="specificAddress" placeholder="Nhập địa chỉ cụ thể"
+                            ng-model="specificAddress">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô Tả</label>
+                        <textarea class="form-control" id="description" rows="3" placeholder="Nhập mô tả"
+                            ng-model="description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" ng-click="saveAddress()">Lưu Địa Chỉ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal chỉnh sửa thông tin cá nhân -->
+<div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header text-black" style="background-color: #e3e6f3;">
+                <h5 class="modal-title" style="font-weight: bold;" id="editCustomerModalLabel">Chỉnh Sửa Thông Tin Cá
+                    Nhân</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="saveCustomerDetails()">
+                    <!-- Tên khách hàng -->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editCustomerName" ng-model="tenNguoiDung"
+                            placeholder="Nhập tên khách hàng" required>
+                        <label for="editCustomerName">Tên Khách Hàng</label>
+                    </div>
+
+                    <!-- Email khách hàng -->
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="editCustomerEmail" ng-model="emailNguoiDung"
+                            placeholder="Nhập email" required>
+                        <label for="editCustomerEmail">Email</label>
+                    </div>
+
+                    <!-- Số điện thoại khách hàng -->
+                    <div class="form-floating mb-3">
+                        <input type="tel" class="form-control" id="editCustomerPhone" ng-model="sdtNguoiDung"
+                            placeholder="Nhập số điện thoại" required>
+                        <label for="editCustomerPhone">Số điện thoại</label>
+                    </div>
+
+                    <!-- Input ngày sinh -->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editCustomerDob" ng-model="ngaySinhNguoiDung"
+                            placeholder="Chọn ngày sinh" required ng-keyup="formatDate()" ng-blur="formatDate()">
+                        <label for="editCustomerDob">Ngày sinh</label>
+                    </div>
+
+                    <!-- Giới tính khách hàng -->
+                    <div class="form-floating mb-3">
+                        <select class="form-control" id="editCustomerGender" ng-model="gioiTinh" required>
+                            <option value="" disabled selected>Chọn giới tính</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                        <label for="editCustomerGender">Giới tính</label>
+                    </div>
+
+                    <!-- Địa chỉ khách hàng -->
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editCustomerAddress" ng-model="diaChiNguoiDung"
+                            placeholder="Nhập địa chỉ" required>
+                        <label for="editCustomerAddress">Địa chỉ</label>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

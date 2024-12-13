@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='/view-admin/assets/image/favicon1.png' rel='icon' type='image/x-icon' />
+    <link rel="stylesheet" href="/view-admin/assets/css/admin.css">
+    <link rel="stylesheet" href="/view-admin/assets/css/toast-message.css">
+    <link href="/view-admin/assets/font/font-awesome-pro-v6-6.2.0/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/view-admin/assets/css/admin-responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="lib/angular.js"></script>
+    <script src="lib/angular-route.js"></script>
+    <link rel="stylesheet" href="lib/bootstrap.css">
+    <link rel="stylesheet" href="view-admin/assets/css/admin.css">
+    <script src="lib/font-fontawesome-ae333ffef2.js"></script>
+    <script src="view-admin/controllers/DonHangController.js"></script>
+    <script src="view-admin/controllers/KhachHangController.js"></script>
+    <script src="view-admin/controllers/SanPhamController.js"></script>
+    <script src="view-admin/controllers/ThongKeController.js"></script>
+    <script src="view-admin/controllers/TrangChuController.js"></script>
+    <script src="view-admin/controllers/BanHangController.js"></script>
+    <script src="view-admin/controllers/ChatLieuController.js"></script>
+    <script src="view-admin/controllers/KichThuocController.js"></script>
+    <script src="view-admin/controllers/QuanLynguoidungController.js"></script>
+    <script src="view-admin/controllers/MauSacController.js"></script>
+    <script src="view-admin/controllers/DanhMucController.js"></script>
+    <script src="view-admin/controllers/DanhNhapController.js"></script>
+    <script src="view-admin/controllers/PhieuGiamGiaController.js"></script>
+    <script src="view-admin/controllers/DotGiamGiaController.js"></script>
+    <script src="view-admin/views/SanPhamEven/addSanPhamController.js"></script>
+    <script src="view-admin/views/SanPhamEven/detailSanPhamController.js"></script>
+    <script src="view-admin/views/HoaDonEven/detailHoaDonController.js"></script>
+    <script src="view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMaiController.js"></script>
+    <script src="view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMaiController.js"></script>
+    <title>Quản lý cửa hàng</title>
+</head>
+
+<body id="page-top" ng-app="myApp">
+    <div class="container-fluid" ng-controller="ngController">
+        <div ng-include="'view-admin/layouts/_header.html'"></div>
+    </div>
+    <script>
+        var app = angular.module("myApp", ["ngRoute"]);
+
+        app.config(function ($routeProvider) {
+            $routeProvider
+                .when('/', {
+                    templateUrl: 'view-admin/views/trangchu.html',
+                    controller: TrangChuController
+                })
+                .when('/ban_hang', {
+                    templateUrl: 'view-admin/views/banhang.html',
+                    controller: BanHangController
+                })
+                .when('/phieu_giam_gia', {
+                    templateUrl: 'view-admin/views/phieugiamgia.html',
+                    controller: PhieuGiamGiaController
+                })
+                .when('/dot_giam_gia', {
+                    templateUrl: 'view-admin/views/dotgiamgia.html',
+                    controller: DotGiamGiaController
+                })
+                .when('/don_hang', {
+                    templateUrl: 'view-admin/views/donhang.html',
+                    controller: DonHangController
+                })
+                .when('/detail_hd/:idHoaDon', {
+                    templateUrl: 'view-admin/views/HoaDonEven/detaiHoaDon.html',
+                    controller: detailHoaDonController
+                })
+                .when('/san_pham', {
+                    templateUrl: 'view-admin/views/sanpham.html',
+                    controller: SanPhamController
+                })
+                .when('/add_sp/:id', {
+                    templateUrl: 'view-admin/views/SanPhamEven/addSanPham.html',
+                    controller: addSanPhamController
+                })
+                .when('/detail_sp/:id', {
+                    templateUrl: 'view-admin/views/SanPhamEven/detailSanPham.html',
+                    controller: detailSanPhamController
+                })
+                .when('/add_dot_km', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMai.html',
+                    controller: addDotKhuyenMaiController
+                })
+                .when('/add_dot_km/:id', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/dotKhuyenMai/addDotKhuyenMai.html',
+                    controller: addDotKhuyenMaiController
+                })
+                .when('/add_phieu_km/:id', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMai.html',
+                    controller: addPhieuKhuyenMaiController
+                })
+                .when('/add_phieu_km', {
+                    templateUrl: 'view-admin/views/KhuyenMaiEven/phieuKhuyenMai/addPhieuKhuyenMai.html',
+                    controller: addPhieuKhuyenMaiController
+                })
+                .when('/kich_thuoc', {
+                    templateUrl: 'view-admin/views/kichthuoc.html',
+                    controller: KichThuocController
+                })
+                .when('/mau_sac', {
+                    templateUrl: 'view-admin/views/mausac.html',
+                    controller: MauSacController
+                })
+                .when('/chat_lieu', {
+                    templateUrl: 'view-admin/views/chatlieu.html',
+                    controller: ChatLieuController
+                })
+                .when('/danh_muc', {
+                    templateUrl: 'view-admin/views/danhmuc.html',
+                    controller: DanhMucController
+                })
+                .when('/khach_hang', {
+                    templateUrl: 'view-admin/views/khachhang.html',
+                    controller: KhachHangController
+                })
+                .when('/thong_ke', {
+                    templateUrl: 'view-admin/views/thongke.html',
+                    controller: ThongKeController
+                })
+                .when('/dang_nhap', {
+                    templateUrl: 'view-admin/views/dangnhap.html',
+                    controller: DanhNhapController
+                })
+                .when('/Qlnd', {
+                    templateUrl: 'view-admin/views/QLND.html',
+                    controller: QuanLynguoidungController
+                })
+                .otherwise({
+                    redirectTo: '/'
+                })
+        });
+        app.controller("ngController", function ($scope, $http) {
+
+            var userInfo = localStorage.getItem("user");
+            if (userInfo) {
+                $scope.infoUser = JSON.parse(userInfo);  // Lấy thông tin người dùng từ localStorage
+                $scope.idNguoiDung = $scope.infoUser.idNguoiDung;  // Lấy ID người dùng
+                $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
+                $scope.vaiTro = $scope.infoUser.vaiTro;  // Lấy thông tin vai trò của người dùng
+                $scope.isAdmin = $scope.infoUser.vaiTro.ten === 1; // Kiểm tra vai trò
+            } else {
+                $scope.infoUser = undefined;
+                $scope.tenNguoiDung = undefined;
+                $scope.isAdmin = false;  // Nếu chưa đăng nhập, ẩn mục "Trang quản lý"
+            }
+
+            $scope.dangXuat = function () {
+                console.log("Bắt đầu đăng xuất...");
+
+                // Gửi yêu cầu đăng xuất đến API
+                $http.post("http://localhost:8080/api/admin/dang_xuat")
+                    .then(function (response) {
+                        console.log("Đăng xuất thành công:", response);
+
+                        // Kiểm tra nếu phản hồi có chứa message
+                        if (response.data && response.data.message === 'Đăng xuất thành công') {
+                            // Xử lý đăng xuất thành công
+                            localStorage.removeItem("user");
+                            $scope.infoUser = undefined;
+                            $scope.tenNguoiDung = undefined;
+                            alert("Đăng xuất thành công!");
+                            window.location.reload();
+                        } else {
+                            alert("Đăng xuất thất bại: " + (response.data.message || 'Lỗi không xác định'));
+                        }
+                    }, function (error) {
+                        console.error("Đăng xuất thất bại:", error);
+
+                        // Kiểm tra lỗi chi tiết nếu có dữ liệu trong lỗi
+                        if (error && error.data) {
+                            console.error("Dữ liệu lỗi từ API:", error.data);
+                            alert("Đăng xuất thất bại: " + error.data.message);
+                        } else {
+                            console.error("Lỗi không xác định:", error);
+                            alert("Đăng xuất thất bại: Lỗi không xác định");
+                        }
+                    });
+            };
+
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.onload = function () {
+            // Lấy tham số từ hash
+            const hash = window.location.hash;
+            const params = new URLSearchParams(hash.split('?')[1]);
+            const message = params.get('message');
+
+            if (message) {
+                // Hiển thị thông báo dựa trên message
+                Swal.fire({
+                    title: message === 'Thanh toan thanh cong' ? 'Thanh toán thành công' : 'Thanh toán thất bại',
+                    text: message === 'Thanh toan thanh cong' ? 'Cảm ơn bạn đã thanh toán!' : 'Vui lòng thử lại!',
+                    icon: message === 'Thanh toan thanh cong' ? 'success' : 'error',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    // Nếu thanh toán thành công, thực hiện tạo trạng thái hóa đơn
+                    if (message === 'Thanh toan thanh cong') {
+                        // Lấy ID hóa đơn từ localStorage
+                        const storedInvoice = localStorage.getItem('selectedInvoice');
+                        if (storedInvoice) {
+                            const invoice = JSON.parse(storedInvoice);
+                            const idHoaDon = invoice.idHoaDon;
+
+                            // Gửi yêu cầu tạo trạng thái hóa đơn
+                            if (idHoaDon) {
+                                fetch(`http://localhost:8080/api/admin/trang_thai_hoa_don/create/${idHoaDon}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Trạng thái hóa đơn được tạo:', data);
+                                    })
+                            } else {
+                                console.error('ID hóa đơn không tồn tại trong localStorage.');
+                            }
+                        } else {
+                            console.error('Hóa đơn không tồn tại trong localStorage.');
+                        }
+                    }
+                    setTimeout(() => {
+                        window.location.href = "http://127.0.0.1:5500/admin.html#!/ban_hang";
+                    }, 1500);
+                });
+            }
+        };
+    </script>
+</body>

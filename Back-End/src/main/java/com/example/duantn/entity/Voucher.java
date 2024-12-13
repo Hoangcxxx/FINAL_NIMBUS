@@ -58,9 +58,6 @@ public class Voucher {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat = new Date();
 
-    @ManyToOne
-    @JoinColumn(name = "id_loai_voucher")
-    private LoaiVoucher loaiVoucher;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_trang_thai_giam_gia")
     private TrangThaiGiamGia trangThaiGiamGia;
@@ -74,5 +71,14 @@ public class Voucher {
     @PreUpdate
     protected void onUpdate() {
         ngayCapNhat = new Date();
+    }
+    @Transient
+    private boolean isUsable;
+    public boolean getIsUsable() {
+        return isUsable;
+    }
+
+    public void setIsUsable(boolean isUsable) {
+        this.isUsable = isUsable;
     }
 }

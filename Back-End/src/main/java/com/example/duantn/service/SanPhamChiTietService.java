@@ -94,14 +94,23 @@ public class SanPhamChiTietService {
 
 
     public List<SanPhamChiTiet> createMultiple(List<SanPhamChiTiet> sanPhamChiTietList, Integer idSanPham) throws IOException {
-        for (SanPhamChiTiet spct : sanPhamChiTietList) {
+        // Lấy tổng số lượng sản phẩm chi tiết hiện có trong DB để tăng mã đúng
+        long currentCount = sanPhamChiTietRepository.count();
+
+        for (int i = 0; i < sanPhamChiTietList.size(); i++) {
+            SanPhamChiTiet spct = sanPhamChiTietList.get(i);
+
+            // Tạo mã sản phẩm chi tiết cho từng sản phẩm trong danh sách
+            String generatedMaHoaDon = "SPCT" + String.format("%03d", currentCount + 1 + i);
+
             // Kiểm tra và thiết lập sản phẩm
             SanPham sanPham = new SanPham();
             sanPham.setIdSanPham(idSanPham); // Gán ID sản phẩm từ tham số
+            spct.setMaSanPhamCT(generatedMaHoaDon); // Gán mã sản phẩm chi tiết đã tạo
             spct.setSanPham(sanPham);
             spct.setSoLuong(0);
             spct.setTrangThai(true); // Trạng thái là true
-            spct.setNgayTao(new Date()); // Ngày cập nhật là ngày hiện tại
+            spct.setNgayTao(new Date()); // Ngày tạo là ngày hiện tại
             spct.setNgayCapNhat(new Date()); // Ngày cập nhật là ngày hiện tại
 
             // Lưu chatLieuChiTiet nếu cần
@@ -128,7 +137,11 @@ public class SanPhamChiTietService {
             }
             spct.setKichThuocChiTiet(kichThuocChiTiet);
         }
+
         return sanPhamChiTietRepository.saveAll(sanPhamChiTietList);
     }
 
+    public SanPhamChiTiet getSanPhamChiTietById(Integer idSanPhamChiTiet) {
+        return sanPhamChiTietRepository.findById(idSanPhamChiTiet).orElse(null);
+    }
 }

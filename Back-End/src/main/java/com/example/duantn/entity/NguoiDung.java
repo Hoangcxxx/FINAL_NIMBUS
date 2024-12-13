@@ -63,7 +63,4 @@ public class NguoiDung {
     @ManyToOne
     @JoinColumn(name = "id_vai_tro")
     private VaiTro vaiTro;
-
-
-
 }

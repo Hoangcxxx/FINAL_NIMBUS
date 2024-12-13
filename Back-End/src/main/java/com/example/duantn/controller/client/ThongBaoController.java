@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/thong_bao")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
 public class ThongBaoController {
     @Autowired
     private ThongBaoService thongBaoService;

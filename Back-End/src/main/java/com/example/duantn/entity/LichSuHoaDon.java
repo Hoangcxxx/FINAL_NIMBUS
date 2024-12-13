@@ -23,10 +23,8 @@ public class LichSuHoaDon {
     @Column(name = "ngay_giao_dich")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayGiaoDich;
-
-    @ManyToOne
-    @JoinColumn(name = "id_hoa_don_chi_tiet")
-    private HoaDonChiTiet hoaDonChiTiet;
+    @Column(name = "so_tien_thanh_toan")
+    private BigDecimal soTienThanhToan;
 
     @ManyToOne
     @JoinColumn(name = "id_nguoi_dung")

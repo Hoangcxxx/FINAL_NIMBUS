@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHN Shipping Fee Calculator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body>
+    <div ng-app="ghnApp" ng-controller="GhnController">
+        <form>
+            <!-- Dropdown for Province (Chọn Tỉnh/Thành) -->
+            <label for="province">Chọn Tỉnh/Thành:</label>
+            <select id="province" ng-model="selectedProvince" ng-change="loadDistricts(selectedProvince)">
+                <option value="" disabled selected>Chọn tỉnh/thành</option>
+                <option ng-repeat="province in provinces" value="{{province.ProvinceID}}">
+                    {{province.ProvinceName}}
+                </option>
+            </select>
+
+            <!-- Dropdown for District (Chọn Quận/Huyện) -->
+            <label for="district">Chọn Quận/Huyện:</label>
+            <select id="district" ng-model="selectedDistrict" ng-change="loadWards(selectedDistrict)">
+                <option value="" disabled selected>Chọn quận/huyện</option>
+                <option ng-repeat="district in districts" value="{{district.DistrictID}}">
+                    {{district.DistrictName}}
+                </option>
+            </select>
+
+            <!-- Dropdown for Ward (Chọn Phường/Xã) -->
+            <label for="ward">Chọn Phường/Xã:</label>
+            <select id="ward" ng-model="selectedWard">
+                <option value="" disabled selected>Chọn phường/xã</option>
+                <option ng-repeat="ward in wards" value="{{ward.WardCode}}">
+                    {{ward.WardName}}
+                </option>
+            </select>
+
+            <!-- Shipping Fee Calculation Button -->
+            <button type="button" ng-click="calculateShipping()">Tính phí vận chuyển</button>
+        </form>
+
+        <!-- Display Result (Hiển thị kết quả phí vận chuyển) -->
+        <div>
+            <h3>Kết quả:</h3>
+            <p>Phí vận chuyển: {{shippingFee | number}} VNĐ</p>
+        </div>
+    </div>
+
+    <!-- AngularJS Script -->
+    <script>
+        var app = angular.module('ghnApp', []);
+
+        app.controller('GhnController', function ($scope, $http) {
+            const token = "347f8e0e-981c-11ef-a905-420459bb4727"; // Token GHN API
+
+            // Khởi tạo dữ liệu ban đầu
+            $scope.provinces = [];
+            $scope.districts = [];
+            $scope.wards = [];
+            $scope.shippingFee = 0;
+
+            // Tải dữ liệu Tỉnh/Thành từ API Spring Boot
+            $http({
+                method: 'GET',
+                url: 'http://localhost:8080/api/nguoi_dung/ghn/provinces',
+            }).then(function (response) {
+                if (response.data) {
+                    $scope.provinces = response.data; // Cập nhật danh sách tỉnh/thành
+                } else {
+                    alert("Không có dữ liệu tỉnh/thành.");
+                }
+            }).catch(function (error) {
+                alert("Lỗi khi tải danh sách tỉnh/thành!");
+                console.error(error);
+            });
+
+            // Tải dữ liệu Quận/Huyện khi chọn Tỉnh/Thành
+            $scope.loadDistricts = function (provinceID) {
+                if (!provinceID) return;
+                $http({
+                    method: 'GET',
+                    url: 'http://localhost:8080/api/nguoi_dung/ghn/districts',
+                    params: { provinceId: provinceID }
+                }).then(function (response) {
+                    if (response.data) {
+                        $scope.districts = response.data; // Cập nhật danh sách quận/huyện
+                    } else {
+                        alert("Không có dữ liệu quận/huyện.");
+                    }
+                }).catch(function (error) {
+                    alert("Lỗi khi tải danh sách quận/huyện!");
+                    console.error(error);
+                });
+            };
+
+            // Tải dữ liệu Phường/Xã khi chọn Quận/Huyện
+            $scope.loadWards = function (districtID) {
+                if (!districtID) return;
+                $http({
+                    method: 'GET',
+                    url: 'http://localhost:8080/api/nguoi_dung/ghn/wards',
+                    params: { districtId: districtID }
+                }).then(function (response) {
+                    if (response.data) {
+                        $scope.wards = response.data; // Cập nhật danh sách phường/xã
+                    } else {
+                        alert("Không có dữ liệu phường/xã.");
+                    }
+                }).catch(function (error) {
+                    alert("Lỗi khi tải danh sách phường/xã!");
+                    console.error(error);
+                });
+            };
+
+            // Tính phí vận chuyển khi đã chọn đầy đủ thông tin
+            $scope.calculateShipping = function () {
+                if (!$scope.selectedDistrict || !$scope.selectedWard) {
+                    alert("Vui lòng chọn đầy đủ thông tin quận/huyện và phường/xã!");
+                    return;
+                }
+
+                const requestData = {
+                    toDistrictId: parseInt($scope.selectedDistrict),
+                    toWardCode: $scope.selectedWard
+                };
+
+                $http({
+                    method: 'POST',
+                    url: 'http://localhost:8080/api/nguoi_dung/ghn/calculate-shipping',
+                    params: requestData
+                }).then(function (response) {
+                    if (response.data) {
+                        $scope.shippingFee = response.data; // Cập nhật phí vận chuyển
+                    } else {
+                        alert("Không thể tính phí vận chuyển.");
+                        $scope.shippingFee = 30000; // Mặc định khi không tính được phí
+                    }
+                }).catch(function (error) {
+                    alert("Lỗi khi tính phí vận chuyển!");
+                    console.error(error);
+                    $scope.shippingFee = 30000; // Mặc định khi có lỗi
+                });
+            };
+        });
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 package com.example.duantn.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,6 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "pt_thanh_toan_hoa_don")
 public class PhuongThucThanhToanHoaDon {
@@ -22,6 +22,7 @@ public class PhuongThucThanhToanHoaDon {
     private PhuongThucThanhToan phuongThucThanhToan;
     @ManyToOne
     @JoinColumn(name = "id_hoa_don")
+    @JsonIgnore
     private HoaDon hoaDon; // Giả sử bạn có một entity HoaDon
     @Column(name = "ngay_giao_dich")
     @Temporal(TemporalType.TIMESTAMP)

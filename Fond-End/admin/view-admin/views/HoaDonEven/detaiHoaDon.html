@@ -1,0 +1,266 @@
+<!-- Begin Page Content -->
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <h1 class="page-title">Chi Tiết Hóa Đơn</h1>
+        </div>
+        <div class="rounded ">
+            <div class="d-flex justify-content-between">
+                <a href="#!don_hang">
+                    <button class="btn btn-secondary">
+                        <i class="fa-light fa-rotate-right"></i> Trở lại
+                    </button>
+                </a>
+            </div>
+        </div>
+        <!-- Thanh trạng thái -->
+        <div class="card p-4">
+            <!-- Header -->
+            <div class="mb-4">
+                <h5 class="fw-bold text-primary">Danh sách hóa đơn / Mã hóa đơn: {{hoaDon.maHoaDon}}</h5>
+            </div>
+
+            <!-- Timeline -->
+            <div class="d-flex justify-content-around align-items-center mb-4 timeline">
+                <!-- Bước 1: Chờ xác nhận -->
+                <div class="step text-center"
+                    ng-if="isStatusAvailableById(1) || isStatusAvailableById(2) || isStatusAvailableById(3)">
+                    <div>
+                        <div class="step-icon bg-info text-white">
+                            <i class="fa-regular fa-pen-to-square fa-2x"></i> <!-- Icon: Bút viết -->
+                        </div>
+                        <p class="mb-1 fw-bold">Chờ Xác Nhận</p>
+                        <small class="text-muted">{{ getStatusDescriptionById(getStatus2()) }}</small> <br>
+                        <small class="text-muted">{{ getStatusDateById(2) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                    </div>
+                </div>
+
+
+
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(4)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 3: Chờ giao hàng -->
+                <div class="step text-center" ng-if="isStatusAvailableById(4)">
+                    <div class="step-icon bg-success text-white">
+                        <i class="fa-solid fa-truck-loading fa-2x"></i> <!-- Icon: Xe tải đang vận chuyển -->
+                    </div>
+                    <p class="mb-1 fw-bold">Chờ Giao Hàng</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(4) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(4) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(5)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 4: Đang vận chuyển -->
+                <div class="step text-center" ng-if="isStatusAvailableById(5)">
+                    <div class="step-icon bg-warning text-white">
+                        <i class="fa-solid fa-truck-fast fa-2x"></i> <!-- Icon: Xe tải giao hàng nhanh -->
+                    </div>
+                    <p class="mb-1 fw-bold">Đang Vận Chuyển</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(5) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(5) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(6)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 2: Chờ thanh toán -->
+                <div class="step text-center" ng-if="isStatusAvailableById(6)">
+                    <div class="step-icon bg-primary text-white">
+                        <i class="fa-regular fa-credit-card fa-2x"></i> <!-- Icon: Thẻ tín dụng -->
+                    </div>
+                    <p class="mb-1 fw-bold">Chờ Thanh Toán</p>
+                    <!-- Hiển thị trạng thái cho các bước khác -->
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus6()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus6()) | date:'dd/MM/yyyy hh:mm:ss a'
+                        }}</small>
+                </div>
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(7)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 2: Chờ thanh toán -->
+                <div class="step text-center" ng-if="isStatusAvailableById(7)">
+                    <div class="step-icon bg-primary text-white">
+                        <i class="fa-solid fa-user-check fa-2x"></i>
+                    </div>
+                    <p class="mb-1 fw-bold">Thanh toán thành công</p>
+                    <!-- Hiển thị trạng thái cho các bước khác -->
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus7()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus7()) | date:'dd/MM/yyyy hh:mm:ss a'
+                        }}</small>
+                </div>
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(8)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 5: Hoàn thành -->
+                <div class="step text-center" ng-if="isStatusAvailableById(8)">
+                    <div class="step-icon bg-success text-white">
+                        <i class="fa-regular fa-circle-check fa-2x"></i> <!-- Icon: Biểu tượng check hoàn thành -->
+                    </div>
+                    <p class="mb-1 fw-bold">Hoàn Thành</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(8) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(8) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(9)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 6: Đã hủy -->
+                <div class="step text-center" ng-if="isStatusAvailableById(9)">
+                    <div class="step-icon bg-danger text-white">
+                        <i class="fa-solid fa-xmark fa-2x"></i> <!-- Icon: Biểu tượng hủy -->
+                    </div>
+                    <p class="mb-1 fw-bold">Đã Hủy</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(9) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(9) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <div>
+                <button class="btn btn-secondary" data-toggle="modal" data-target="#ghiChuModal" ng-click="openModal()">
+                    {{modalButtonText}}
+                </button>
+            </div>
+            <div>
+                <button class="btn btn-primary">Chi tiết</button>
+            </div>
+
+        </div>
+
+        <div class="my-2 p-4 border rounded shadow-lg">
+            <div class="d-flex">
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin hóa đơn -->
+                    <section class="invoice-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Thông tin hóa đơn</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Mã hóa đơn:</strong> {{hoaDon.maHoaDon}}</li>
+                            <li><strong>Ngày tạo:</strong> {{hoaDon.ngayTao | date:'dd/MM/yyyy'}}</li>
+                            <li><strong>Trạng thái:</strong> {{hoaDon.trangThaiHoaDon}}</li>
+                            <li><strong>Phương thức thanh toán:</strong> {{hoaDon.tenPhuongThucThanhToan}}</li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin khách hàng -->
+                    <section class="customer-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Thông tin khách hàng</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Tên khách hàng:</strong> {{hoaDon.tenNguoiNhan}}</li>
+                            <li><strong>Email:</strong> {{hoaDon.emailNguoiNhan}}</li>
+                            <li><strong>Số điện thoại:</strong> {{hoaDon.sdtNguoiNhan}}</li>
+                            <li><strong>Địa chỉ:</strong> {{hoaDon.diaChi}}</li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin khuyến mãi -->
+                    <section class="discount-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Khuyến mãi</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Mã voucher:</strong> {{voucher[0].maVoucher}}</li>
+                            <li><strong>Tên voucher:</strong> {{voucher[0].tenVoucher}}</li>
+                            <li>
+                                <strong>Giá trị giảm giá:</strong>
+                                <span ng-if="voucher[0].kieuGiamGia">{{voucher[0].giaTriGiamGia | currency: '': 0}}
+                                    VNĐ</span>
+                                <span ng-if="!voucher[0].kieuGiamGia">{{voucher[0].giaTriGiamGia | currency: '':
+                                    0}}%</span>
+                            </li>
+                            <li>
+                                <strong>Tổng giảm giá:</strong> {{total_discount | currency: '': 0}} VNĐ
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+            </div>
+            <!-- Chi tiết sản phẩm -->
+            <section class="product-details mb-4">
+                <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Chi tiết sản phẩm</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên sản phẩm</th>
+                                <th>Giá bán</th>
+                                <th>Số lượng</th>
+                                <th>Tổng tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in sanPhamCT track by $index">
+                                <td>{{item.tenSanPham}}</td>
+                                <td>{{item.giaBan | currency: '': 0}} VND</td>
+                                <td>{{item.soLuong}}</td>
+                                <td>{{item.tongTien | currency: '': 0}} VND</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <div class="d-flex">
+                <div class="p-2 flex-fill"></div>
+                <div class="p-2 flex-fill"></div>
+                <div class="p-2 flex-fill">
+                    <!-- Tổng cộng -->
+                    <section class="total mb-4">
+                        <h3 class="h5  text-black" style="font-weight: bold;">Tổng cộng</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Tổng tiền trước giảm giá:</strong> {{subtotal}}</li>
+                            <li><strong>Giảm giá:</strong> {{total_discount}}</li>
+                            <li><strong>Phí vận chuyển:</strong> {{shipping_fee}}</li>
+                            <li class="h4 mt-5">
+                                <strong>Tổng thanh toán:</strong>
+                                {{hoaDon.thanhTien/1 | currency: '': 0}} VND
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<!-- Modal Ghi Chú -->
+<div class="modal fade" id="ghiChuModal" tabindex="-1" role="dialog" aria-labelledby="ghiChuModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ghiChuModalLabel">Nhập ghi chú</h5>
+                <button class="modal-close" data-dismiss="modal" ng-click="resetModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="noteForm" ng-submit="updateTrangThaiHoaDon()">
+                    <div class="form-group">
+                        <label>Chọn trạng thái hóa đơn:</label>
+                        <div ng-repeat="item in filteredTrangThaiList" class="form-check">
+                            <input class="form-check-input" type="radio" ng-model="ghiChu.trangThaiId"
+                                value="{{item.idLoaiTrangThai}}" id="status-{{item.idLoaiTrangThai}}" name="trangThai">
+                            <label class="form-check-label" for="status-{{item.idLoaiTrangThai}}">
+                                {{item.tenLoaiTrangThai}}: {{item.moTa}}
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">{{modalButtonText}}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHN Shipping Fee Calculator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body>
+    <!-- Ứng dụng AngularJS và Controller -->
+    <div ng-app="ghnApp" ng-controller="GhnController">
+        <form>
+            <!-- Dropdown for Province (Chọn Tỉnh/Thành) -->
+            <label for="province">Chọn Tỉnh/Thành:</label>
+            <select id="province" ng-model="selectedProvince" ng-change="loadDistricts(selectedProvince)">
+                <option value="" disabled selected>Chọn tỉnh/thành</option>
+                <option ng-repeat="province in provinces" value="{{province.ProvinceID}}">
+                    {{province.ProvinceName}}
+                </option>
+            </select>
+
+            <!-- Dropdown for District (Chọn Quận/Huyện) -->
+            <label for="district">Chọn Quận/Huyện:</label>
+            <select id="district" ng-model="selectedDistrict" ng-change="loadWards(selectedDistrict)">
+                <option value="" disabled selected>Chọn quận/huyện</option>
+                <option ng-repeat="district in districts" value="{{district.DistrictID}}">
+                    {{district.DistrictName}}
+                </option>
+            </select>
+
+            <!-- Dropdown for Ward (Chọn Phường/Xã) -->
+            <label for="ward">Chọn Phường/Xã:</label>
+            <select id="ward" ng-model="selectedWard">
+                <option value="" disabled selected>Chọn phường/xã</option>
+                <option ng-repeat="ward in wards" value="{{ward.WardCode}}">
+                    {{ward.WardName}}
+                </option>
+            </select>
+
+            <!-- Shipping Fee Calculation Button -->
+            <button type="button" ng-click="calculateShipping()">Tính phí vận chuyển</button>
+        </form>
+
+        <!-- Display Result (Hiển thị kết quả phí vận chuyển) -->
+        <div>
+            <h3>Kết quả:</h3>
+            <p>Phí vận chuyển: {{shippingFee | number}} VNĐ</p>
+        </div>
+    </div>
+
+    <!-- AngularJS Script -->
+    <script>
+        var app = angular.module('ghnApp', []);
+
+        app.controller('GhnController', function ($scope, $http) {
+            const token = "347f8e0e-981c-11ef-a905-420459bb4727"; // Token GHN API
+
+            // Khởi tạo dữ liệu ban đầu
+            $scope.provinces = [];
+            $scope.districts = [];
+            $scope.wards = [];
+            $scope.shippingFee = 0;
+
+            // Tải dữ liệu Tỉnh/Thành
+            $http({
+                method: 'GET',
+                url: 'https://online-gateway.ghn.vn/shiip/public-api/master-data/province',
+                headers: {
+                    'Token': token,
+                },
+            }).then(function (response) {
+                // Kiểm tra và gán giá trị tỉnh/thành cho dropdown
+                if (response.data && response.data.data) {
+                    $scope.provinces = response.data.data;
+                } else {
+                    alert("Không có dữ liệu tỉnh/thành.");
+                }
+            }).catch(function (error) {
+                alert("Lỗi khi tải danh sách tỉnh/thành!");
+                console.error(error);
+            });
+
+            // Tải dữ liệu Quận/Huyện khi chọn Tỉnh/Thành
+            $scope.loadDistricts = function (provinceID) {
+                if (!provinceID) return;
+                $http({
+                    method: 'GET',
+                    url: 'https://online-gateway.ghn.vn/shiip/public-api/master-data/district',
+                    headers: {
+                        'Token': token,
+                    },
+                    params: { province_id: provinceID },
+                }).then(function (response) {
+                    // Kiểm tra và gán giá trị quận/huyện cho dropdown
+                    if (response.data && response.data.data) {
+                        $scope.districts = response.data.data;
+                    } else {
+                        alert("Không có dữ liệu quận/huyện.");
+                    }
+                }).catch(function (error) {
+                    alert("Lỗi khi tải danh sách quận/huyện!");
+                    console.error(error);
+                });
+            };
+
+            // Tải dữ liệu Phường/Xã khi chọn Quận/Huyện
+            $scope.loadWards = function (districtID) {
+                if (!districtID) return;
+                $http({
+                    method: 'GET',
+                    url: 'https://online-gateway.ghn.vn/shiip/public-api/master-data/ward',
+                    headers: {
+                        'Token': token, // Token must be passed for this request as well
+                    },
+                    params: { district_id: districtID },
+                }).then(function (response) {
+                    // Kiểm tra và gán giá trị phường/xã cho dropdown
+                    if (response.data && response.data.data) {
+                        $scope.wards = response.data.data;
+                    } else {
+                        alert("Không có dữ liệu phường/xã.");
+                    }
+                }).catch(function (error) {
+                    alert("Lỗi khi tải danh sách phường/xã!");
+                    console.error(error);
+                });
+            };
+
+            // Tính phí vận chuyển
+            $scope.calculateShipping = function () {
+                if (!$scope.selectedDistrict || !$scope.selectedWard) {
+                    alert("Vui lòng chọn đầy đủ thông tin quận/huyện và phường/xã!");
+                    return;
+                }
+
+                const requestData = {
+                    service_id: 53321, // Thử mã dịch vụ khác nếu cần
+                    insurance_value: 1000000, // Giá trị bảo hiểm
+                    from_district_id: 1482, // Mã quận gửi hàng
+                    to_district_id: parseInt($scope.selectedDistrict), // Mã quận nhận hàng
+                    to_ward_code: $scope.selectedWard, // Mã phường/xã nhận hàng
+                    weight: 2000, // Trọng lượng (gram)
+                    length: 10, // Chiều dài (cm)
+                    width: 10, // Chiều rộng (cm)
+                    height: 10, // Chiều cao (cm)
+                };
+
+                $http({
+                    method: 'POST',
+                    url: 'https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee',
+                    headers: {
+                        'Token': token,
+                        'Content-Type': 'application/json',
+                    },
+                    data: requestData,
+                }).then(function (response) {
+                    if (response.data && response.data.data) {
+                        $scope.shippingFee = response.data.data.total || 30000; // Nếu không tính được phí, mặc định là 30,000 VNĐ
+                    } else {
+                        alert("Không thể tính phí vận chuyển.");
+                        $scope.shippingFee = 30000; // Nếu không có dữ liệu phí, mặc định là 30,000 VNĐ
+                    }
+                }).catch(function (error) {
+                    console.error("Error Response:", error);
+                    if (error.data && error.data.code_message_value) {
+                        alert("Lỗi: " + error.data.code_message_value); // Hiển thị lỗi từ GHN
+                    } else {
+                       
+                    }
+                    $scope.shippingFee = 30000; // Mặc định là 30,000 VNĐ khi có lỗi
+                });
+            };
+        });
+    </script>
+</body>
+
+</html>

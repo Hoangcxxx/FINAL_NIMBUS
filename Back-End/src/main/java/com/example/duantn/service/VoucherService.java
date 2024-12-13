@@ -3,26 +3,21 @@ package com.example.duantn.service;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.security.SecureRandom;
+import java.util.stream.Collectors;
 
 @Service
 public class VoucherService {
 
     @Autowired
     private VoucherRepository voucherRepository;
-    @Autowired
-    private LoaiThongBaoRepository loaiThongBaoRepository;
-    @Autowired
-    private ThongBaoRepository thongBaoRepository;
-    @Autowired
-    private VoucherNguoiDungRepository voucherNguoiDungRepository;
-    @Autowired
-    private NguoiDungRepository nguoiDungRepository;
 
     @Autowired
     private TrangThaiGiamGiaRepository trangThaiGiamGiaRepository;
@@ -31,8 +26,60 @@ public class VoucherService {
     private static final int VOUCHER_CODE_LENGTH = 8;
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    // Phương thức để lấy danh sách voucher sắp xếp theo ngày tạo
     public List<Voucher> getAllVouchers() {
-        return voucherRepository.findAll();
+        return voucherRepository.findAll(Sort.by(Sort.Order.desc("ngayTao")));
+    }
+    // Tìm kiếm voucher theo mã voucher
+    // Tìm kiếm voucher theo mã voucher
+    public List<Voucher> searchByMaVoucher(String maVoucher) {
+        return voucherRepository.findByMaVoucherContaining(maVoucher);
+    }
+
+    // Tìm kiếm voucher theo trạng thái giảm giá
+    public List<Voucher> searchByTrangThaiGiamGia(TrangThaiGiamGia trangThaiGiamGia) {
+        return voucherRepository.findByTrangThaiGiamGia(trangThaiGiamGia);
+    }
+
+    // Tìm kiếm voucher theo kiểu giảm giá
+    public List<Voucher> findByKieuGiamGia(Boolean kieuGiamGia) {
+        return voucherRepository.findByKieuGiamGia(kieuGiamGia);
+    }
+
+    // Tìm kiếm theo các điều kiện mã voucher, trạng thái và kiểu giảm giá
+    public List<Voucher> searchVouchers(String maVoucher, Integer trangThaiId, Boolean kieuGiamGia) {
+        // Nếu không có điều kiện nào, trả về tất cả voucher
+        if (maVoucher == null && trangThaiId == null && kieuGiamGia == null) {
+            return voucherRepository.findAll();
+        }
+
+        // Lấy đối tượng TrangThaiGiamGia nếu có
+        TrangThaiGiamGia trangThaiGiamGia = null;
+        if (trangThaiId != null) {
+            trangThaiGiamGia = new TrangThaiGiamGia();
+            trangThaiGiamGia.setIdTrangThaiGiamGia(trangThaiId);
+        }
+
+        // Thực hiện tìm kiếm kết hợp điều kiện
+        if (maVoucher != null && trangThaiGiamGia != null && kieuGiamGia != null) {
+            return voucherRepository.findByMaVoucherContainingAndTrangThaiGiamGiaAndKieuGiamGia(
+                    maVoucher, trangThaiGiamGia, kieuGiamGia);
+        } else if (maVoucher != null && trangThaiGiamGia != null) {
+            return voucherRepository.findByMaVoucherContainingAndTrangThaiGiamGia(maVoucher, trangThaiGiamGia);
+        } else if (maVoucher != null && kieuGiamGia != null) {
+            return voucherRepository.findByMaVoucherContainingAndKieuGiamGia(maVoucher, kieuGiamGia);
+        } else if (trangThaiGiamGia != null && kieuGiamGia != null) {
+            return voucherRepository.findByTrangThaiGiamGiaAndKieuGiamGia(trangThaiGiamGia, kieuGiamGia);
+        } else if (maVoucher != null) {
+            return voucherRepository.findByMaVoucherContaining(maVoucher);
+        } else if (trangThaiGiamGia != null) {
+            return voucherRepository.findByTrangThaiGiamGia(trangThaiGiamGia);
+        } else {
+            return voucherRepository.findByKieuGiamGia(kieuGiamGia);
+        }
+    }
+    public List<Voucher> searchByTenVoucher(String tenVoucher) {
+        return voucherRepository.findByTenVoucherContaining(tenVoucher);
     }
 
     public Optional<Voucher> getVoucherById(Integer id) {
@@ -43,6 +90,8 @@ public class VoucherService {
         if (voucher.getMaVoucher() == null || voucher.getMaVoucher().isEmpty()) {
             voucher.setMaVoucher(generateRandomVoucherCode());
         }
+        voucher.setSoTienToiThieu(voucher.getSoTienToiThieu());
+        voucher.setGiaTriToiDa(voucher.getGiaTriToiDa());
         validateVoucherDates(voucher);
         setVoucherStatus(voucher);
         try {
@@ -137,72 +186,155 @@ public class VoucherService {
         }
         return voucherCode.toString();
     }
-    public List<VoucherNguoiDung> addVoucherForUsers(List<Integer> idNguoiDungs, Voucher voucher) {
-        // Kiểm tra thông tin voucher trước khi tạo
-        System.out.println("Bắt đầu thêm voucher cho người dùng. Voucher: " + voucher);
 
-        // Tạo voucher mới (có thể check, validate trước khi tạo)
-        if (voucher.getMaVoucher() == null || voucher.getMaVoucher().isEmpty()) {
-            voucher.setMaVoucher(generateRandomVoucherCode());
-            System.out.println("Mã voucher được tạo ngẫu nhiên: " + voucher.getMaVoucher());
+    public List<Voucher> getAllVouchersWithStatus(BigDecimal tongTien) {
+        List<Voucher> allVouchers = voucherRepository.findAll();
+        Date currentDate = new Date();
+
+        return allVouchers.stream()
+                .peek(voucher -> {
+                    boolean isUsable = false;
+                    if (voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() == 1) {
+                        isUsable = true;
+                    } else {
+                        if (voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() == 3) {
+                            isUsable = false;
+                        } else {
+                            boolean trongThoiGianSuDung = !voucher.getNgayBatDau().after(currentDate) &&
+                                    !voucher.getNgayKetThuc().before(currentDate);
+                            boolean conSoLuong = voucher.getSoLuong() > 0;
+                            boolean tongTienDatMin = voucher.getSoTienToiThieu().compareTo(tongTien) <= 0;
+                            if (Boolean.TRUE.equals(voucher.getKieuGiamGia())) {
+                                isUsable = trongThoiGianSuDung && conSoLuong && tongTienDatMin;
+                            } else {
+                                boolean tongTienTrongToiDa = voucher.getGiaTriToiDa() == null ||
+                                        voucher.getGiaTriToiDa().compareTo(tongTien) >= 0;
+                                isUsable = trongThoiGianSuDung && conSoLuong && tongTienDatMin && tongTienTrongToiDa;
+                            }
+                        }
+                    }
+                    voucher.setIsUsable(isUsable);
+                })
+
+                .filter(voucher -> voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() >= 1 &&
+                        voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() <= 4 &&
+                        voucher.getSoLuong() > 0) // Lọc các voucher có số lượng > 0
+                .sorted((voucher1, voucher2) -> {
+                    int compareTrangThai = Integer.compare(voucher1.getTrangThaiGiamGia().getIdTrangThaiGiamGia(),
+                            voucher2.getTrangThaiGiamGia().getIdTrangThaiGiamGia());
+                    if (compareTrangThai == 0) {
+                        BigDecimal giamGia1 = Boolean.TRUE.equals(voucher1.getKieuGiamGia()) ? BigDecimal.ZERO : voucher1.getGiaTriGiamGia();
+                        BigDecimal giamGia2 = Boolean.TRUE.equals(voucher2.getKieuGiamGia()) ? BigDecimal.ZERO : voucher2.getGiaTriGiamGia();
+                        return giamGia2.compareTo(giamGia1); // Sắp xếp từ cao đến thấp
+                    }
+                    return compareTrangThai;
+                })
+                .collect(Collectors.toList());
+    }
+    public Voucher apdungvoucher(String maVoucher, BigDecimal tongTien) {
+        // Lấy voucher từ repository
+        Voucher voucher = voucherRepository.findByMaVoucher(maVoucher);
+
+        // Kiểm tra nếu voucher không tồn tại
+        if (voucher == null) {
+            throw new IllegalArgumentException("Voucher không tồn tại.");
+        }
+        if (voucher.getTrangThaiGiamGia() == null || voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() != 1) {
+            throw new IllegalArgumentException("Voucher không thể sử dụng vì không đang phát hành.");
+        }
+        // Kiểm tra số lượng
+        if (voucher.getSoLuong() <= 0) {
+            throw new IllegalStateException("Voucher đã hết số lượng.");
         }
 
-        // Kiểm tra ngày bắt đầu và kết thúc voucher
-        validateVoucherDates(voucher);
-        setVoucherStatus(voucher);
-
-        // Lưu voucher vào cơ sở dữ liệu
-        Voucher savedVoucher = voucherRepository.save(voucher);
-        System.out.println("Voucher đã lưu thành công. ID: " + savedVoucher.getIdVoucher() + ", Mã voucher: " + savedVoucher.getMaVoucher());
-
-        // Tạo danh sách VoucherNguoiDung và lưu thông tin voucher cho nhiều người dùng
-        for (Integer idNguoiDung : idNguoiDungs) {
-            System.out.println("Đang xử lý người dùng ID: " + idNguoiDung);
-
-            Optional<NguoiDung> optionalNguoiDung = nguoiDungRepository.findById(idNguoiDung);
-            if (optionalNguoiDung.isPresent()) {
-                NguoiDung nguoiDung = optionalNguoiDung.get();
-
-                System.out.println("Người dùng tồn tại. Tên người dùng: " + nguoiDung.getTenNguoiDung());
-
-                // Tạo đối tượng VoucherNguoiDung và lưu
-                VoucherNguoiDung voucherNguoiDung = new VoucherNguoiDung();
-                voucherNguoiDung.setVoucher(savedVoucher);
-                voucherNguoiDung.setNguoiDung(nguoiDung);
-                voucherNguoiDung.setNgayTao(new Date());
-
-                // Lưu VoucherNguoiDung vào cơ sở dữ liệu
-                voucherNguoiDungRepository.save(voucherNguoiDung);
-                System.out.println("Voucher đã được thêm cho người dùng ID: " + idNguoiDung);
-
-                // Gửi thông báo cho người dùng sau khi thêm voucher
-                sendNotificationToUser(nguoiDung, savedVoucher);
-            } else {
-                // Nếu người dùng không tồn tại
-                System.out.println("Người dùng với ID " + idNguoiDung + " không tồn tại!");
-                throw new IllegalArgumentException("Người dùng với ID " + idNguoiDung + " không tồn tại!");
-            }
+        // Kiểm tra điều kiện ngày (voucher chưa hết hạn và chưa bắt đầu)
+        if (voucher.getNgayKetThuc() != null && voucher.getNgayKetThuc().before(new java.util.Date())) {
+            throw new IllegalArgumentException("Voucher đã hết hạn.");
         }
 
-        // Trả về danh sách VoucherNguoiDung đã được tạo
-        List<VoucherNguoiDung> voucherNguoiDungs = voucherNguoiDungRepository.findAllByVoucher(savedVoucher);
-        System.out.println("Danh sách VoucherNguoiDung đã được thêm: " + voucherNguoiDungs);
-        return voucherNguoiDungs;
+        if (voucher.getNgayBatDau() != null && voucher.getNgayBatDau().after(new java.util.Date())) {
+            throw new IllegalArgumentException("Voucher chưa bắt đầu.");
+        }
+
+        System.out.println("Tổng tiền: " + tongTien);
+        System.out.println("Số tiền tối thiểu của voucher: " + voucher.getSoTienToiThieu());
+        System.out.println("Số tiền tối đa của voucher: " + voucher.getGiaTriToiDa());
+
+        if (tongTien.compareTo(voucher.getSoTienToiThieu()) < 0) {
+            throw new IllegalArgumentException("Tổng tiền không đạt mức tối thiểu để áp dụng voucher.");
+        }
+
+        if (voucher.getGiaTriToiDa() != null && tongTien.compareTo(voucher.getGiaTriToiDa()) > 0) {
+            throw new IllegalArgumentException("Tổng tiền vượt quá mức tối đa để áp dụng voucher.");
+        }
+
+        return voucher;
     }
 
-    // Phương thức gửi thông báo
-    private void sendNotificationToUser(NguoiDung nguoiDung, Voucher voucher) {
-        LoaiThongBao loaiThongBao = loaiThongBaoRepository.findById(6).orElseThrow(() -> new RuntimeException("LoaiThongBao không tồn tại"));
-        ThongBao thongBao = new ThongBao();
-        thongBao.setLoaiThongBao(loaiThongBao);
-        thongBao.setNguoiDung(nguoiDung);
-        thongBao.setNoiDung("Bạn đã nhận được voucher mới: " + voucher.getTenVoucher() + " với mã voucher: " + voucher.getMaVoucher());
-        thongBao.setTrangThai(true); // Trạng thái thông báo là hiện thị
-        thongBao.setNgayGui(new Date()); // Thời gian gửi thông báo
+    public Voucher useVoucher(String maVoucher, BigDecimal tongTien) {
+        // Lấy voucher từ repository
+        Voucher voucher = voucherRepository.findByMaVoucher(maVoucher);
 
-        // Lưu thông báo vào cơ sở dữ liệu
-        thongBaoRepository.save(thongBao);
-        System.out.println("Thông báo đã được gửi cho người dùng: " + nguoiDung.getTenNguoiDung());
+        // Kiểm tra nếu voucher không tồn tại
+        if (voucher == null) {
+            throw new IllegalArgumentException("Voucher không tồn tại.");
+        }
+        if (voucher.getTrangThaiGiamGia() == null || voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() != 1) {
+            throw new IllegalArgumentException("Voucher không thể sử dụng vì không đang phát hành.");
+        }
+        // Kiểm tra số lượng
+        if (voucher.getSoLuong() <= 0) {
+            throw new IllegalStateException("Voucher đã hết số lượng.");
+        }
+
+        // Kiểm tra loại voucher, chỉ áp dụng loại 1 hoặc loại 2
+        if (voucher.getKieuGiamGia() == null ||
+                (voucher.getKieuGiamGia() != true && voucher.getKieuGiamGia() != false)) {
+            throw new IllegalArgumentException("Voucher không hợp lệ. Chỉ áp dụng voucher kiểu giảm giá 0 hoặc 1");
+        }
+
+        // Kiểm tra điều kiện ngày (voucher chưa hết hạn và chưa bắt đầu)
+        if (voucher.getNgayKetThuc() != null && voucher.getNgayKetThuc().before(new java.util.Date())) {
+            throw new IllegalArgumentException("Voucher đã hết hạn.");
+        }
+
+        if (voucher.getNgayBatDau() != null && voucher.getNgayBatDau().after(new java.util.Date())) {
+            throw new IllegalArgumentException("Voucher chưa bắt đầu.");
+        }
+
+        System.out.println("Tổng tiền: " + tongTien);
+        System.out.println("Số tiền tối thiểu của voucher: " + voucher.getSoTienToiThieu());
+        System.out.println("Số tiền tối đa của voucher: " + voucher.getGiaTriToiDa());
+
+        if (tongTien.compareTo(voucher.getSoTienToiThieu()) < 0) {
+            throw new IllegalArgumentException("Tổng tiền không đạt mức tối thiểu để áp dụng voucher.");
+        }
+
+        if (voucher.getGiaTriToiDa() != null && tongTien.compareTo(voucher.getGiaTriToiDa()) > 0) {
+            throw new IllegalArgumentException("Tổng tiền vượt quá mức tối đa để áp dụng voucher.");
+        }
+
+        // Nếu tất cả điều kiện đều thỏa mãn, giảm số lượng voucher
+        voucher.setSoLuong(voucher.getSoLuong() - 1);
+        voucherRepository.save(voucher);
+
+        return voucher;
     }
+    public List<Voucher> getValidVouchers(BigDecimal tongTien) {
+        return voucherRepository.findAll()
+                .stream()
+                .filter(voucher ->
+                        voucher.getSoLuong() > 0 &&
+                                (voucher.getKieuGiamGia() == true ||
+                                        voucher.getKieuGiamGia() == false) &&
+                                voucher.getSoTienToiThieu().compareTo(tongTien) <= 0 &&
 
+                                (voucher.getGiaTriToiDa() == null || voucher.getGiaTriToiDa().compareTo(tongTien) >= 0) &&
+                                // Kiểm tra voucher vẫn còn hiệu lực (chưa hết hạn)
+                                !voucher.getNgayKetThuc().before(new java.util.Date()) &&
+                                !voucher.getNgayBatDau().after(new java.util.Date()) &&
+                                voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() == 1 // Đang phát hành
+                )
+                .collect(Collectors.toList());
+    }
 }

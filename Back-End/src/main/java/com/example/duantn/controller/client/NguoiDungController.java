@@ -1,9 +1,11 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.dto.HoaDonDTO;
 import com.example.duantn.dto.LoginRequest;
+import com.example.duantn.dto.NguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
-import com.example.duantn.repository.NguoiDungRepository;
 import com.example.duantn.service.DangNhapService;
+import com.example.duantn.service.HoaDonService;
 import com.example.duantn.service.NguoiDungService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -13,23 +15,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/nguoi_dung")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
 public class NguoiDungController {
     @Autowired
     private DangNhapService dangNhapService;
     @Autowired
     private NguoiDungService nguoiDungService;
     @Autowired
-    private NguoiDungRepository nguoiDungRepository;
-
-
+    private HoaDonService hoaDonService;
     // Phương thức đăng ký
     @PostMapping("/dang_ky")
     public ResponseEntity<NguoiDung> dangKy(@RequestBody NguoiDung nguoiDung) {
@@ -42,14 +42,18 @@ public class NguoiDungController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-    // Lấy tất cả người dùng
-    @GetMapping("/all")
-    public ResponseEntity<List<NguoiDung>> getAllNguoiDungs() {
-        List<NguoiDung> nguoiDungs = nguoiDungService.getAllNguoiDungs();
-        if (nguoiDungs.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Trả về No Content nếu không có người dùng
-        }
-        return new ResponseEntity<>(nguoiDungs, HttpStatus.OK); // Trả về danh sách người dùng nếu có
+
+    @PutMapping("/khoa/{id}")
+    public ResponseEntity<String> khoaNguoiDung(@PathVariable Integer id) {
+        nguoiDungService.khoaNguoiDung(id);
+        return ResponseEntity.ok("Người dùng đã bị khóa.");
+    }
+
+    // API để mở khóa người dùng
+    @PutMapping("/mo_khoa/{id}")
+    public ResponseEntity<String> moKhoaNguoiDung(@PathVariable Integer id) {
+        nguoiDungService.moKhoaNguoiDung(id);
+        return ResponseEntity.ok("Người dùng đã được mở khóa.");
     }
 
     // Phương thức đăng nhập
@@ -62,11 +66,8 @@ public class NguoiDungController {
             System.out.println("Người dùng '" + nguoiDung.getEmail() + "' đăng nhập thành công với vai trò: " + nguoiDung.getVaiTro().getTen());
 
             // Kiểm tra vai trò của người dùng để phân quyền truy cập
-            if (nguoiDung.getVaiTro().getIdVaiTro() == 1) {
+            if (nguoiDung.getVaiTro().getIdVaiTro() == 2) {
                 // Quản trị viên, trả về quyền truy cập đầy đủ
-                return ResponseEntity.ok(nguoiDung);
-            } else if (nguoiDung.getVaiTro().getIdVaiTro() == 2) {
-                // Khách hàng, chỉ trả về thông tin người dùng cơ bản
                 return ResponseEntity.ok(nguoiDung);
             } else {
                 // Vai trò không hợp lệ
@@ -90,7 +91,6 @@ public class NguoiDungController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đăng xuất thất bại");
         }
     }
-
     // Lấy thông tin người dùng theo id
     @GetMapping("/{id}")
     public ResponseEntity<NguoiDung> getNguoiDungById(@PathVariable Integer id) {
@@ -112,6 +112,8 @@ public class NguoiDungController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+
     // Phương thức quên mật khẩu
     @PostMapping("/quen_mat_khau")
     public ResponseEntity<?> quenMatKhau(@RequestParam String email) {
@@ -145,7 +147,5 @@ public class NguoiDungController {
         }
     }
 
+
 }
-
-
-

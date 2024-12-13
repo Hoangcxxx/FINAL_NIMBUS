@@ -1,0 +1,268 @@
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <h1 class="page-title">Quản Lý Người Dùng</h1>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">Thêm Người Dùng Mới
+                +</button>
+
+            <!-- Tab navigation for different sections -->
+            <ul class="nav nav-tabs mt-3" id="userManagementTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="userTab" data-bs-toggle="tab" href="#userManagement" role="tab"
+                        aria-controls="userManagement" aria-selected="true">Quản Lý Người Dùng</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="employeeTab" data-bs-toggle="tab" href="#employeeManagement" role="tab"
+                        aria-controls="employeeManagement" aria-selected="false">Quản Lý Nhân Viên</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="customerTab" data-bs-toggle="tab" href="#customerManagement" role="tab"
+                        aria-controls="customerManagement" aria-selected="false">Khách Hàng Lẻ</a>
+                </li>
+            </ul>
+
+
+            <!-- Tab content -->
+            <div class="tab-content mt-3">
+                <!-- Quản Lý Người Dùng -->
+                <div class="tab-pane fade show active" id="userManagement" role="tabpanel" aria-labelledby="userTab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" placeholder="Tìm kiếm người dùng..."
+                                ng-model="searchUser" />
+                        </div>
+                    </div>
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên Người Dùng</th>
+                                <th>Email</th>
+                                <th>Số Điện Thoại</th>
+                                <th>Ngày Tạo</th>
+                                <th>Khóa</th>
+                                <th>Giới Tính</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in users  | filter: searchUser">
+                                <td>{{$index + 1}}</td>
+                                <td>{{user.tenNguoiDung}}</td>
+                                <td>{{user.email}}</td>
+                                <td>{{user.sdt}}</td>
+                                <td>{{user.ngayTao | date: 'dd/MM/yyyy'}}</td>
+                                <td>
+                                    <input type="checkbox" ng-model="user.trangThai"
+                                        ng-change="changeUserStatus(user.idNguoiDung, user.trangThai ? 'unlock' : 'lock')"
+                                        id="user-status-{{$index}}" class="switch-input">
+                                    <label for="user-status-{{$index}}" class="switch"></label>
+
+                                </td>
+                                <td>{{user.gioiTinh}}</td>
+                                <td>
+                                    <!-- Nút Sửa trong danh sách người dùng -->
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#updateUserModal" ng-click="editUser(user)">
+                                        Sửa
+                                    </button>
+                                </td>
+
+                            </tr>
+                        </tbody>
+
+
+                    </table>
+                </div>
+
+                <!-- Quản Lý Nhân Viên -->
+                <div class="tab-pane fade" id="employeeManagement" role="tabpanel" aria-labelledby="employeeTab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Ô tìm kiếm nhân viên -->
+                            <input type="text" class="form-control" placeholder="Tìm kiếm nhân viên.."
+                                ng-model="searchnhanvien" />
+                        </div>
+                    </div>
+
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên Nhân Viên</th>
+                                <th>Email</th>
+                                <th>Số Điện Thoại</th>
+                                <th>Vị Trí</th>
+                                <th>Ngày Tạo</th>
+                                <th>Trạng Thái</th>
+                                <th>Giới Tính</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Lọc danh sách nhân viên theo từ khóa tìm kiếm -->
+                            <tr ng-repeat="employee in employees | filter:searchnhanvien">
+                                <td>{{$index + 1}}</td>
+                                <td>{{employee.tenNguoiDung}}</td>
+                                <td>{{employee.email}}</td>
+                                <td>{{employee.sdt}}</td>
+                                <td>{{employee.tenVaiTro}}</td>
+                                <td>{{employee.ngayTao | date: 'dd/MM/yyyy'}}</td>
+                                <td>
+                                    <input type="checkbox" ng-model="employee.trangThai"
+                                        ng-change="changeUserStatus(employee.idNguoiDung, employee.trangThai ? 'unlock' : 'lock')"
+                                        id="user-status-{{$index}}" class="switch-input">
+                                    <label for="user-status-{{$index}}" class="switch"></label>
+
+
+                                </td>
+                                <td>{{employee.gioiTinh}}</td>
+                                <td>
+                                    <!-- Nút sửa và xóa -->
+                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#updateUserModal" ng-click="editUser(employee)">
+                                        Sửa
+                                    </button>
+                                    <!-- <button class="btn btn-danger btn-sm"
+                                        ng-click="deleteNhanvien(employee.idNguoiDung)">Xóa</button> -->
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="tab-pane fade " id="customerManagement" role="tabpanel"
+                aria-labelledby="customerTab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm khách hàng lẻ..."
+                            ng-model="searchCustomer" />
+                    </div>
+                </div>
+                <table class="table table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên Khách Hàng</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Ngày Tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="customer in customers | filter: searchCustomer">
+                            <td>{{$index + 1}}</td>
+                            <td>{{customer.tenNguoiDung}}</td>
+                            <td>{{customer.sdt}}</td>
+                            <td>{{customer.ngayTao | date: 'dd/MM/yyyy'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Thêm Người Dùng Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <!-- Tên người dùng -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Tên Người Dùng</label>
+                            <input type="text" class="form-control" id="username" placeholder="Nhập tên người dùng"
+                                required>
+                        </div>
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Nhập email" required>
+                        </div>
+                        <!-- Số điện thoại -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Số Điện Thoại</label>
+                            <input type="text" class="form-control" id="phone" placeholder="Nhập số điện thoại"
+                                required>
+                        </div>
+
+                        <!-- Giới tính -->
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Giới Tính</label>
+                            <select class="form-select" id="gender" required>
+                                <option value="" disabled selected>Chọn Giới Tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+
+                        <!-- Vai trò -->
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Vai Trò</label>
+                            <select class="form-select" id="role" required>
+                                <option value="" disabled selected>Chọn Vai Trò</option>
+                                <option value="2">Khách hàng</option>
+                                <option value="4">Nhân viên bán hàng</option>
+                            </select>
+                        </div>
+
+                        <!-- Mật khẩu -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="password" placeholder="Mật khẩu" required>
+                        </div>
+                        <!-- Nút submit -->
+                        <button type="submit" class="btn btn-primary">Thêm Người Dùng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Cập Nhật Thông Tin Người Dùng -->
+    <div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateUserModalLabel">Cập Nhật Thông Tin Người Dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form name="updateUserForm" ng-submit="updateUser()" novalidate>
+                        <div class="mb-3">
+                            <label for="updateUsername" class="form-label">Tên Người Dùng</label>
+                            <input type="text" class="form-control" id="updateUsername"
+                                ng-model="selectedUser.tenNguoiDung" placeholder="Nhập tên người dùng" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="updateEmail" ng-model="selectedUser.email"
+                                placeholder="Nhập email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="updatePhone" class="form-label">Số Điện Thoại</label>
+                            <input type="text" class="form-control" id="updatePhone" ng-model="selectedUser.sdt"
+                                placeholder="Nhập số điện thoại" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateGender" class="form-label">Giới Tính</label>
+                            <select class="form-select" id="updateGender" ng-model="selectedUser.gioiTinh" required>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cập Nhật Người Dùng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+</main>

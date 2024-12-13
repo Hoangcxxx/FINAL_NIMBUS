@@ -28,14 +28,11 @@ public class TrangThaiHoaDon {
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
-
-    // Quan hệ với loại trạng thái, giả sử bạn có entity "LoaiTrangThai"
+    @ManyToOne  // Nhiều thông báo có thể thuộc về một người dùng
+    @JoinColumn(name = "id_hoa_don")  // Tên cột khóa ngoại
+    private HoaDon hoaDon;  // Liên kết đến bảng người dùng
     @ManyToOne
     @JoinColumn(name = "id_loai_trang_thai")
     private LoaiTrangThai loaiTrangThai;
 
-    // Quan hệ với hóa đơn
-    @ManyToOne
-    @JoinColumn(name = "id_hoa_don")
-    private HoaDon hoaDon;
 }

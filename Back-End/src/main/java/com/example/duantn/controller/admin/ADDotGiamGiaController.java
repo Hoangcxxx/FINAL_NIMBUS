@@ -4,6 +4,7 @@ import com.example.duantn.dto.DotGiamGiaDetail;
 import com.example.duantn.dto.DotGiamGiaRequest;
 import com.example.duantn.entity.DotGiamGia;
 import com.example.duantn.entity.GiamGiaSanPham;
+import com.example.duantn.entity.Voucher;
 import com.example.duantn.service.DotGiamGiaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,19 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/dot_giam_gia")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class ADDotGiamGiaController {
 
     @Autowired
     private DotGiamGiaService dotGiamGiaService;
-
+    @GetMapping("/search/tenDotGiamGia")
+    public List<DotGiamGia> searchByTenVoucher(@RequestParam String tenVoucher) {
+        return dotGiamGiaService.findByTenVoucher(tenVoucher);
+    }
+    @GetMapping("/search/kieuGiamGia")
+    public List<DotGiamGia> searchByKieuGiamGia(@RequestParam Boolean kieuGiamGia) {
+        return dotGiamGiaService.findByKieuGiamGia(kieuGiamGia);
+    }
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);

@@ -9,7 +9,6 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "huyen")
 public class Huyen {
@@ -17,6 +16,9 @@ public class Huyen {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_huyen")
     private Integer idHuyen;
+
+    @Column(name = "ma_huyen")
+    private String maHuyen;
 
     @Column(name = "ten_huyen")
     private String tenHuyen;

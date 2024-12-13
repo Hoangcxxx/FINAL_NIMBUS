@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/san_pham")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
 public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
@@ -25,12 +25,17 @@ public class SanPhamController {
         map.put("idSanPham", row[0]);
         map.put("maSanPham", row[1]);
         map.put("tenSanPham", row[2]);
-        map.put("trangThai", row[3]);
-        map.put("giaBan", row[4]);  // Cập nhật chỉ số cho giá bán
-        map.put("moTa", row[5]);    // Cập nhật chỉ số cho mô tả
-        map.put("tenDanhMuc", row[6]); // Cập nhật chỉ số cho trạng thái
-        map.put("urlAnh", row[7]);    // Cập nhật chỉ số cho thứ tự
-        map.put("thuTu", row[8]);       // Danh sách kích thước
+        map.put("giaBan", row[3]);
+        map.put("moTa", row[4]);    // Cập nhật chỉ số cho mô tả
+        map.put("tenDanhMuc", row[5]); // Cập nhật chỉ số cho trạng thái
+        map.put("tenDotGiamGia", row[6]); // Cập nhật chỉ số cho trạng thái
+        map.put("giaKhuyenMai", row[7]);  // Cập nhật chỉ số cho giá bán
+        map.put("giaTriKhuyenMai", row[8]);  // Cập nhật chỉ số cho giá bán
+        map.put("kieuGiamGia", row[9]);  // Cập nhật chỉ số cho giá bán
+        map.put("ngayBatDau", row[10]);  // Cập nhật chỉ số cho giá bán
+        map.put("ngayKetThuc", row[11]);  // Cập nhật chỉ số cho giá bán
+        map.put("urlAnh", row[12]);    // Cập nhật chỉ số cho thứ tự
+        map.put("thuTu", row[13]);       // Danh sách kích thước
         return map;
     }
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {
@@ -61,12 +66,17 @@ public class SanPhamController {
         map.put("idSanPham", row[0]);
         map.put("maSanPham", row[1]);
         map.put("tenSanPham", row[2]);
-        map.put("trangThai", row[3]);
-        map.put("giaBan", row[4]);  // Cập nhật chỉ số cho giá bán
-        map.put("moTa", row[5]);    // Cập nhật chỉ số cho mô tả
-        map.put("tenDanhMuc", row[6]); // Cập nhật chỉ số cho trạng thái
-        map.put("urlAnh", row[7]);    // Cập nhật chỉ số cho thứ tự
-        map.put("thuTu", row[8]);       // Danh sách kích thước
+        map.put("giaBan", row[3]);
+        map.put("moTa", row[4]);    // Cập nhật chỉ số cho mô tả
+        map.put("tenDanhMuc", row[5]); // Cập nhật chỉ số cho trạng thái
+        map.put("tenDotGiamGia", row[6]); // Cập nhật chỉ số cho trạng thái
+        map.put("giaKhuyenMai", row[7]);  // Cập nhật chỉ số cho giá bán
+        map.put("giaTriKhuyenMai", row[8]);  // Cập nhật chỉ số cho giá bán
+        map.put("kieuGiamGia", row[9]);  // Cập nhật chỉ số cho giá bán
+        map.put("ngayBatDau", row[10]);  // Cập nhật chỉ số cho giá bán
+        map.put("ngayKetThuc", row[11]);  // Cập nhật chỉ số cho giá bán
+        map.put("urlAnh", row[12]);    // Cập nhật chỉ số cho thứ tự
+        map.put("thuTu", row[13]);       // Danh sách kích thước
         return map;
     }
     private List<Map<String, Object>> mapDanhMucs(List<Object[]> results) {

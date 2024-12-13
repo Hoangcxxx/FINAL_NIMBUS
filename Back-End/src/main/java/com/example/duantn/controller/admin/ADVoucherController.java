@@ -1,5 +1,6 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.entity.TrangThaiGiamGia;
 import com.example.duantn.entity.Voucher;
 import com.example.duantn.entity.VoucherNguoiDung;
 import com.example.duantn.service.VoucherService;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/vouchers")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class ADVoucherController {
 
     @Autowired
@@ -20,6 +21,19 @@ public class ADVoucherController {
     @GetMapping
     public List<Voucher> getAllVouchers() {
         return voucherService.getAllVouchers();
+    }
+    // Tìm kiếm theo tên voucher
+    @GetMapping("/search/tenVoucher")
+    public List<Voucher> searchByTenVoucher(@RequestParam String tenVoucher) {
+        return voucherService.searchByTenVoucher(tenVoucher);
+    }
+    // Search by voucher code
+    @GetMapping("/search")
+    public List<Voucher> searchVouchers(
+            @RequestParam(required = false) String maVoucher,
+            @RequestParam(required = false) Integer trangThaiId,
+            @RequestParam(required = false) Boolean kieuGiamGia) {
+        return voucherService.searchVouchers(maVoucher, trangThaiId, kieuGiamGia);
     }
 
     @GetMapping("/{id}")
@@ -62,23 +76,6 @@ public class ADVoucherController {
         }
         return ResponseEntity.notFound().build(); // Handle not found
     }
-    @PostMapping("/bulk/{idNguoiDungs}")
-    public ResponseEntity<List<VoucherNguoiDung>> addVoucherForMultipleUsers(
-            @PathVariable List<Integer> idNguoiDungs,
-            @RequestBody Voucher voucher) {
 
-        System.out.println("Nhận yêu cầu thêm voucher cho các người dùng: " + idNguoiDungs);
-        System.out.println("Thông tin voucher nhận được: " + voucher);
-
-        try {
-            // Thêm voucher cho người dùng
-            List<VoucherNguoiDung> voucherNguoiDungs = voucherService.addVoucherForUsers(idNguoiDungs, voucher);
-            System.out.println("Thêm voucher thành công. Số lượng voucher đã thêm: " + voucherNguoiDungs.size());
-            return ResponseEntity.ok(voucherNguoiDungs);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Lỗi xảy ra: " + e.getMessage());
-            return ResponseEntity.badRequest().body(null);  // Trả về lỗi nếu có người dùng không tồn tại
-        }
-    }
 
 }

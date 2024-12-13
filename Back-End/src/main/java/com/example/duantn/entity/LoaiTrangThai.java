@@ -3,25 +3,32 @@ package com.example.duantn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.util.Date;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Entity
 @Table(name = "loai_trang_thai")
 public class LoaiTrangThai {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_loai_trang_thai")
+    @Column(name = "Id_loai_trang_thai")
     private Integer idLoaiTrangThai;
 
+    @Column(name = "ten_loai_trang_thai", nullable = false)
+    private String tenLoaiTrangThai;
 
-    @Column(name = "ten_loai_trang_thai")  // Đảm bảo cột này tồn tại trong cơ sở dữ liệu
-    private String tenloaitrangthai;
+    @Column(name = "mo_ta")
+    private String moTa;
 
-    // Quan hệ với TrangThaiHoaDon
-    @OneToMany(mappedBy = "loaiTrangThai", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TrangThaiHoaDon> trangThaiHoaDons;
+    @Column(name = "ngay_tao", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao;
+
+    @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayCapNhat;
 }

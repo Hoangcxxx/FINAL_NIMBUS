@@ -1,6 +1,8 @@
 package com.example.duantn.repository;
 
+import com.example.duantn.entity.GioHang;
 import com.example.duantn.entity.GioHangChiTiet;
+import com.example.duantn.entity.SanPhamChiTiet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +23,8 @@ public interface GioHangChiTietRepository extends JpaRepository<GioHangChiTiet, 
     Boolean existsByIdGioHangAndIdSanPhamChiTiet(@Param("idGioHang") Integer idGioHang,
                                                  @Param("idSanPhamChiTiet") Integer idSanPhamChiTiet);
 
-
+    List<GioHangChiTiet> findByGioHang(GioHang gioHang);
+    Optional<GioHangChiTiet> findByGioHangAndSanPhamChiTiet(GioHang gioHang, SanPhamChiTiet sanPhamChiTiet);
 
 
 }

@@ -1,0 +1,69 @@
+<section id="thank-you-section" class="thank-you-section">
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card p-4 shadow-sm">
+                    <h2 class="text-center mb-4">Cảm ơn bạn đã đặt hàng!</h2>
+                    <p class="text-center mb-4">
+                        Chúng tôi đã nhận được đơn hàng của bạn và đang xử lý. Vui lòng kiểm tra email của bạn để nhận
+                        thông tin chi tiết về đơn hàng.
+                    </p>
+
+                    <div class="order-info">
+                        <h4 class="mt-4">Thông tin đơn hàng:</h4>
+                        <ul class="list-unstyled">
+                            <li><strong>Mã đơn hàng:</strong> #{{orderData.maHoaDon}}</li>
+                            <li><strong>Phương thức thanh toán:</strong> {{orderData.tenPhuongThucThanhToan}}</li>
+                        </ul>
+                    </div>
+
+                    <div class="product-details mt-4">
+                        <h4>Chi tiết sản phẩm:</h4>
+                        <div ng-repeat="item in orderDetails.listSanPhamChiTiet" class="d-flex align-items-start mb-3">
+                            <img ng-src="{{item.urlAnh}}" alt="Hình ảnh sản phẩm" class="img-thumbnail me-3" 
+                                 style="width: 80px; height: 80px;" ng-if="item.urlAnh">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{item.tenSanPham}}</h6>
+                                <div class="text-muted small">
+                                    <span><strong>Giá:</strong> {{ item.giaKhuyenMai | currency:"":0 }} VND</span>  
+                                    <br>
+                                    <span><strong>Số lượng:</strong> {{item.soLuong}}</span>  
+                                    <br>
+                                    <span><strong>Màu sắc:</strong> {{item.tenmausac}}</span> 
+                                    <br>
+                                    <span><strong>Kích thước:</strong> {{item.tenkichthuoc}}</span>  
+                                    <br>
+                                    <span><strong>Chất liệu:</strong> {{item.tenchatlieu}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="total-payment mt-4">
+                        <h4>Tổng tiền:</h4>
+                        <p><strong>Tổng sản phẩm:</strong> {{orderData.thanhTien | currency : '':0}} VND</p>
+                        <p><strong>Phí giao hàng:</strong> Miễn Phí</p>
+                        <h4 class="mt-2"><strong>Tổng thanh toán:</strong> {{(orderData.thanhTien + orderData.phiShip) | currency : '': 0}} VND</h4>
+                    </div>
+<div class="shipping-info mt-4">
+                        <h4>Thông tin nhận hàng:</h4>
+                        <ul class="list-unstyled">
+                            <li><strong>Tên người nhận:</strong> {{orderData.tenNguoiNhan}}</li>
+                            <li><strong>Số điện thoại:</strong> {{orderData.sdtNguoiNhan}}</li>
+                            <li><strong>Địa chỉ nhận hàng:</strong> {{orderData.diaChi}}, {{orderData.tinh}}, {{orderData.huyen}}, {{orderData.xa}}</li>
+                            <li><strong>Ghi chú:</strong> {{orderData.ghiChu}}</li>
+                        </ul>
+                    </div>
+
+                    <p class="mt-4 text-center text-muted">
+                        Sau khi "Đặt hàng" thành công, Nimbus sẽ liên hệ xác nhận đơn hàng theo số Hotline 02836220632.
+                    </p>
+
+                    <div class="text-center mt-4">
+                        <a href="/" class="btn btn-success">Quay lại trang chủ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

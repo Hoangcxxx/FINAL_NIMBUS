@@ -18,7 +18,8 @@ public class SanPhamChiTiet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_san_pham_chi_tiet")
     private Integer idSanPhamChiTiet;
-
+    @Column(name = "ma_san_pham_chi_tiet")
+    private String maSanPhamCT;
     @Column(name = "so_luong", nullable = false)
     private Integer soLuong;
     @Column(name = "ngay_tao")
