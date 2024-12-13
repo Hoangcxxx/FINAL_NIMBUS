@@ -20,7 +20,7 @@ window.TrangChuController = function ($scope, $http) {
         };
 
         // Gửi yêu cầu POST tạo lịch sử thanh toán
-        $http.post('http://localhost:8080/api/nguoi_dung/lich-su-thanh-toan/create', paymentData)
+        $http.post('http://localhost:8080/api/admin/lich_su_thanh_toan/create', paymentData)
             .then(function (response) {
                 console.log('Tạo lịch sử thanh toán thành công:', response.data);
             })
@@ -71,8 +71,9 @@ window.TrangChuController = function ($scope, $http) {
                         idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.idVoucher : null
                     };
 
+                    var user = JSON.parse(localStorage.getItem("user"));
                     console.log("Cấu trúc của updatedInvoice trước khi gửi:", updatedInvoice);
-                    return $http.put("http://localhost:8080/api/admin/hoa_don_ban_hang/cap-nhat/" + selectedInvoice.idHoaDon, updatedInvoice)
+                    return $http.put("http://localhost:8080/api/admin/hoa_don_ban_hang/cap-nhat/" + selectedInvoice.idHoaDon + "?idNhanVien=" + user.idNguoiDung, updatedInvoice)
                         .then(function (putResponse) {
                             console.log("Hóa đơn đã được cập nhật thành công:", putResponse.data);
                         })

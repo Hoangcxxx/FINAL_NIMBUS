@@ -99,13 +99,12 @@ public class TrangThaiHoaDonService {
     }
 
 
-    public void TrangThaiHoaDonKhiChonPTTT(Integer hoaDonId) {
+    public void TrangThaiHoaDonKhiChonPTTT(Integer hoaDonId, Integer idNhanVien) {
         // Tiến hành tạo trạng thái hóa đơn mới nếu chưa tồn tại
         HoaDon savedHoaDon = hoaDonRepository.findById(hoaDonId)
                 .orElseThrow(() -> new IllegalArgumentException("Hóa đơn không tồn tại!"));
 
-        // Mặc định loại trạng thái là 4
-        int loaiTrangThaiId = 4;
+        int loaiTrangThaiId = 6;
 
         // Tạo trạng thái hóa đơn mới
         TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
@@ -119,6 +118,9 @@ public class TrangThaiHoaDonService {
 
         trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
         trangThaiHoaDon2.setHoaDon(savedHoaDon);
+
+        // Lưu idNhanVien vào trạng thái hóa đơn (Giả sử TrangThaiHoaDon có một trường để lưu idNhanVien)
+        trangThaiHoaDon2.setIdNhanVien(idNhanVien);
 
         // Lưu trạng thái hóa đơn vào cơ sở dữ liệu
         trangThaiHoaDonRepository.save(trangThaiHoaDon2);

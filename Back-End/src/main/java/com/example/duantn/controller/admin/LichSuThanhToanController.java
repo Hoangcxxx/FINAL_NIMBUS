@@ -48,6 +48,7 @@ public class LichSuThanhToanController {
         BigDecimal soTienThanhToan = new BigDecimal(payload.get("soTienThanhToan").toString());
         return lichSuThanhToanService.createLichSuThanhToan(idHoaDon, idNguoiDung, soTienThanhToan);
     }
+
     @PutMapping("/update/{idHoaDon}")
     public ResponseEntity<Map<String, Object>> updateLichSuThanhToan(
             @PathVariable("idHoaDon") Integer idHoaDon, // ID của hóa đơn

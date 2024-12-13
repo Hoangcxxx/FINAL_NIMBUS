@@ -41,17 +41,25 @@ public class HoaDonRestController {
         return ResponseEntity.ok(hoaDonList);
     }
     @PostMapping("/create")
-    public ResponseEntity<?> createHoaDon(@RequestBody HoaDon hoaDon) {
+    public ResponseEntity<?> createHoaDon(@RequestBody HoaDon hoaDon, @RequestParam Integer idNhanVien) {
         System.out.println("Nhận được dữ liệu hóa đơn: " + hoaDon);
 
+        // Kiểm tra nếu người dùng chưa được chọn
         if (hoaDon.getNguoiDung() == null || hoaDon.getNguoiDung().getIdNguoiDung() == null) {
             return ResponseEntity.badRequest().body("Vui lòng chọn người dùng để tạo hóa đơn!!.");
         }
 
+        // Lấy thông tin người dùng từ service
         NguoiDung nguoiDung = nguoiDungService.findById(hoaDon.getNguoiDung().getIdNguoiDung());
         if (nguoiDung != null) {
+            // Gán người dùng và nhân viên vào hóa đơn
             hoaDon.setNguoiDung(nguoiDung);
-            HoaDon createdHoaDon = hoaDonService.createHoaDon(hoaDon);
+            hoaDon.setIdNhanVien(idNhanVien);
+
+            // Gọi service để tạo hóa đơn và trạng thái hóa đơn với idNhanVien
+            HoaDon createdHoaDon = hoaDonService.createHoaDon(hoaDon, idNhanVien);
+
+            // Trả về response với hóa đơn vừa tạo
             return ResponseEntity.ok(createdHoaDon);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại.");
@@ -99,8 +107,9 @@ public class HoaDonRestController {
     @PutMapping("/cap-nhat/{id}")
     public ResponseEntity<HoaDonResponseDTO> updateHoaDon(
             @PathVariable int id,
-            @RequestBody HoaDonUpdateDTO updateHoaDonDTO) {
-        HoaDonResponseDTO updatedResponse = hoaDonService.updateHoaDon(id, updateHoaDonDTO);
+            @RequestBody HoaDonUpdateDTO updateHoaDonDTO,
+            @RequestParam Integer idNhanVien) { // Nhận idNhanVien từ request parameter
+        HoaDonResponseDTO updatedResponse = hoaDonService.updateHoaDon(id, updateHoaDonDTO, idNhanVien);
         return ResponseEntity.ok(updatedResponse);
     }
 

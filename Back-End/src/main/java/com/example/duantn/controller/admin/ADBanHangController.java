@@ -47,10 +47,14 @@ public class ADBanHangController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-    @PostMapping("/create-trang-thai/{hoaDonId}")
-    public ResponseEntity<Map<String, String>> TrangThaiHoaDonKhiChonPTTT(@PathVariable Integer hoaDonId) {
+    @PostMapping("/create-trang-thai/{hoaDonId}/{idNhanVien}")
+    public ResponseEntity<Map<String, String>> TrangThaiHoaDonKhiChonPTTT(
+            @PathVariable Integer hoaDonId,
+            @PathVariable Integer idNhanVien) {
+
         try {
-            trangThaiHoaDonService.TrangThaiHoaDonKhiChonPTTT(hoaDonId);
+            // Gọi service để cập nhật trạng thái hóa đơn và lưu idNhanVien
+            trangThaiHoaDonService.TrangThaiHoaDonKhiChonPTTT(hoaDonId, idNhanVien);
 
             // Trả về thông báo thành công
             Map<String, String> successResponse = new HashMap<>();

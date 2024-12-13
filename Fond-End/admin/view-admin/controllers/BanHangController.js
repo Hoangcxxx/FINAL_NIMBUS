@@ -169,7 +169,9 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
     $scope.createInvoice = function () {
         console.log("Selected User:", $scope.selectedUser);
-
+        var user = JSON.parse(localStorage.getItem("user"));
+        console.log(user.idNguoiDung);  // 123
+        console.log(user.tenNguoiDung); // "Nguyễn Văn A"
         // Kiểm tra xem đã chọn người dùng chưa
         if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung) {
             Swal.fire({
@@ -182,15 +184,14 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         }
 
 
-        // Nếu không có hóa đơn chưa thanh toán, tiếp tục tạo hóa đơn
+        // Nếu không c  ó hóa đơn chưa thanh toán, tiếp tục tạo hóa đơn
         let newInvoice = {
             tenNguoiNhan: $scope.selectedUser.tenNguoiDung,
             nguoiDung: { idNguoiDung: $scope.selectedUser.idNguoiDung },
-            // nhanVien: { idNguoiDung: },
             ngayTao: new Date()
         };
 
-        $http.post('http://localhost:8080/api/admin/hoa_don_ban_hang/create', newInvoice)
+        $http.post('http://localhost:8080/api/admin/hoa_don_ban_hang/create?idNhanVien=' + user.idNguoiDung, newInvoice)
             .then(function (response) {
                 console.log('Hóa đơn được tạo:', response.data);
 
@@ -1029,14 +1030,13 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
     $scope.createOrderStatus = function () {
         var hoaDonId = JSON.parse(localStorage.getItem('selectedInvoice')).idHoaDon;
-
-        $http.post('http://localhost:8080/api/admin/ban_hang/create-trang-thai/' + hoaDonId)
+        var user = JSON.parse(localStorage.getItem('user'));
+        $http.post('http://localhost:8080/api/admin/ban_hang/create-trang-thai/' + hoaDonId + '/' + user.idNguoiDung)
             .then(function (response) {
                 console.log("Trạng thái hóa đơn đã được tạo!");
                 // Sau khi tạo trạng thái thành công, mở modal thanh toán
                 $('#paymentModal').modal('show');
             })
-
     };
 
     $scope.TEST = async function () {
@@ -1139,7 +1139,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         };
 
         // Gửi yêu cầu POST tạo lịch sử thanh toán
-        $http.post('http://localhost:8080/api/nguoi_dung/lich-su-thanh-toan/create', paymentData)
+        $http.post('http://localhost:8080/api/admin/lich_su_thanh_toan/create', paymentData)
             .then(function (response) {
                 console.log('Tạo lịch sử thanh toán thành công:', response.data);
             })
@@ -1351,8 +1351,9 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.idVoucher : null
                     };
 
+                    var user = JSON.parse(localStorage.getItem("user"));
                     console.log("Cấu trúc của updatedInvoice trước khi gửi:", updatedInvoice);
-                    return $http.put("http://localhost:8080/api/admin/hoa_don_ban_hang/cap-nhat/" + $scope.selectedInvoice.idHoaDon, updatedInvoice)
+                    return $http.put("http://localhost:8080/api/admin/hoa_don_ban_hang/cap-nhat/" + $scope.selectedInvoice.idHoaDon + "?idNhanVien=" + user.idNguoiDung, updatedInvoice)
                         .then(function (putResponse) {
                             console.log("Hóa đơn đã được cập nhật thành công:", putResponse.data);
                         })
