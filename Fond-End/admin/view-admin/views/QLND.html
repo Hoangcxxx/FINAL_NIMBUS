@@ -15,7 +15,12 @@
                     <a class="nav-link" id="employeeTab" data-bs-toggle="tab" href="#employeeManagement" role="tab"
                         aria-controls="employeeManagement" aria-selected="false">Quản Lý Nhân Viên</a>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="customerTab" data-bs-toggle="tab" href="#customerManagement" role="tab"
+                        aria-controls="customerManagement" aria-selected="false">Khách Hàng Lẻ</a>
+                </li>
             </ul>
+
 
             <!-- Tab content -->
             <div class="tab-content mt-3">
@@ -27,10 +32,10 @@
                                 ng-model="searchUser" />
                         </div>
                     </div>
-                    <table class="table table-striped mt-3 text-center">
+                    <table class="table table-striped mt-3">
                         <thead>
-                            <tr >
-                                <th>#</th>
+                            <tr>
+                                <th>STT</th>
                                 <th>Tên Người Dùng</th>
                                 <th>Email</th>
                                 <th>Số Điện Thoại</th>
@@ -47,7 +52,7 @@
                                 <td>{{user.email}}</td>
                                 <td>{{user.sdt}}</td>
                                 <td>{{user.ngayTao | date: 'dd/MM/yyyy'}}</td>
-                                <td>
+<td>
                                     <input type="checkbox" ng-model="user.trangThai"
                                         ng-change="changeUserStatus(user.idNguoiDung, user.trangThai ? 'unlock' : 'lock')"
                                         id="user-status-{{$index}}" class="switch-input">
@@ -82,7 +87,7 @@
 
                     <table class="table table-striped mt-3">
                         <thead>
-                            <tr >
+                            <tr>
                                 <th>STT</th>
                                 <th>Tên Nhân Viên</th>
                                 <th>Email</th>
@@ -104,7 +109,7 @@
                                 <td>{{employee.tenVaiTro}}</td>
                                 <td>{{employee.ngayTao | date: 'dd/MM/yyyy'}}</td>
                                 <td>
-                                    <input type="checkbox" ng-model="employee.trangThai"
+<input type="checkbox" ng-model="employee.trangThai"
                                         ng-change="changeUserStatus(employee.idNguoiDung, employee.trangThai ? 'unlock' : 'lock')"
                                         id="user-status-{{$index}}" class="switch-input">
                                     <label for="user-status-{{$index}}" class="switch"></label>
@@ -128,6 +133,34 @@
                 </div>
 
             </div>
+            <div class="tab-pane fade " id="customerManagement" role="tabpanel"
+                aria-labelledby="customerTab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm khách hàng lẻ..."
+                            ng-model="searchCustomer" />
+                    </div>
+                </div>
+                <table class="table table-striped mt-3">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên Khách Hàng</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Ngày Tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="customer in customers | filter: searchCustomer">
+                            <td>{{$index + 1}}</td>
+                            <td>{{customer.tenNguoiDung}}</td>
+                            <td>{{customer.sdt}}</td>
+                            <td>{{customer.ngayTao | date: 'dd/MM/yyyy'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
     <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
@@ -135,7 +168,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addUserModalLabel">Thêm Người Dùng Mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addUserForm">
@@ -187,7 +220,7 @@
                         <button type="submit" class="btn btn-primary">Thêm Người Dùng</button>
                     </form>
                 </div>
-            </div>
+</div>
         </div>
     </div>
     <!-- Modal Cập Nhật Thông Tin Người Dùng -->
@@ -229,4 +262,7 @@
                 </div>
             </div>
         </div>
+
+
+
 </main>

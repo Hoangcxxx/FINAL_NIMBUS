@@ -15,6 +15,22 @@ public class DotGiamGiaQuery {
             "WHERE \n" +
             "    ha.thu_tu = 1 AND -- Chọn hình ảnh đầu tiên\n" +
             "    ggs.Id_giam_gia_san_pham IS NULL;";
+    public static final String GET_SAN_PHAM_DA_GIAM_GIA_BY_ID_DOT_GIAM_GIA = "SELECT \n" +
+            "    sp.Id_san_pham,\n" +
+            "    sp.ten_san_pham,\n" +
+            "    sp.gia_ban,\n" +
+            "    sp.mo_ta,\n" +
+            "    dc.ten_danh_muc,\n" +
+            "    ha.url_anh\n" +
+            "FROM san_pham sp\n" +
+            "LEFT JOIN giam_gia_san_pham ggs \n" +
+            "    ON sp.Id_san_pham = ggs.id_san_pham\n" +
+            "LEFT JOIN danh_muc dc \n" +
+            "    ON sp.id_danh_muc = dc.id_danh_muc\n" +
+            "LEFT JOIN hinh_anh_san_pham ha \n" +
+            "    ON sp.Id_san_pham = ha.id_san_pham\n" +
+            "WHERE \n" +
+            "    ha.thu_tu = 1 and ggs.id_dot_giam_gia = :idDotGiamGia;";
     public static final String GET_SAN_PHAM_CHUA_GIAM_GIA_BY_DANH_MUC = "SELECT \n" +
             "    sp.Id_san_pham,\n" +
             "    sp.ten_san_pham,\n" +

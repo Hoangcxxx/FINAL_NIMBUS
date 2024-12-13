@@ -23,6 +23,7 @@ public class HoaDonService {
     private LichSuHoaDonRepository lichSuHoaDonRepository;
     @Autowired
     private GiamGiaSanPhamRepository giamGiaSanPhamRepository;
+
     public HoaDonService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -219,7 +220,21 @@ public class HoaDonService {
         phuongThucThanhToanHoaDonRepository.save(phuongThucThanhToanHoaDon);
         hoaDon.setPhuongThucThanhToanHoaDon(phuongThucThanhToanHoaDon);
         hoaDonRepository.save(hoaDon);
+        // Kiểm tra và lấy thông tin người dùng
+        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
+        hoaDon.setNguoiDung(nguoiDung);
 
+        // Tạo và lưu lịch sử thanh toán
+        LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
+        lichSuThanhToan.setSoTienThanhToan(null);
+        lichSuThanhToan.setNgayTao(new Date());
+        lichSuThanhToan.setNgayGiaoDich(null);  // Hoặc bạn có thể dùng ngày giao dịch từ hệ thống thanh toán
+        lichSuThanhToan.setNgayCapNhat(new Date());
+        lichSuThanhToan.setTrangThaiThanhToan(false); // Thực tế có thể thay đổi tùy vào trạng thái thanh toán thực tế
+        lichSuThanhToan.setHoaDon(hoaDon);
+        lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
+
+        lichSuThanhToanRepository.save(lichSuThanhToan);
         processCartItems(hoaDonDTO, hoaDon);
     }
 
@@ -238,6 +253,21 @@ public class HoaDonService {
             phuongThucThanhToanHoaDon.setHoaDon(hoaDon);
             phuongThucThanhToanHoaDonRepository.save(phuongThucThanhToanHoaDon);
             hoaDon.setPhuongThucThanhToanHoaDon(phuongThucThanhToanHoaDon);
+            // Kiểm tra và lấy thông tin người dùng
+            NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
+            hoaDon.setNguoiDung(nguoiDung);
+
+            // Tạo và lưu lịch sử thanh toán
+            LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
+            lichSuThanhToan.setSoTienThanhToan(hoaDonDTO.getThanhTien());
+            lichSuThanhToan.setNgayTao(new Date());
+            lichSuThanhToan.setNgayGiaoDich(new Date());  // Hoặc bạn có thể dùng ngày giao dịch từ hệ thống thanh toán
+            lichSuThanhToan.setNgayCapNhat(new Date());
+            lichSuThanhToan.setTrangThaiThanhToan(true); // Thực tế có thể thay đổi tùy vào trạng thái thanh toán thực tế
+            lichSuThanhToan.setHoaDon(hoaDon);
+            lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
+
+            lichSuThanhToanRepository.save(lichSuThanhToan);
             hoaDonRepository.save(hoaDon);
 
             processCartItems(hoaDonDTO, hoaDon);
@@ -429,21 +459,10 @@ public class HoaDonService {
         trangThaiHoaDonChoXuLy.setNgayTao(new Date());
         trangThaiHoaDonChoXuLy.setNgayCapNhat(new Date());
         trangThaiHoaDonChoXuLy.setLoaiTrangThai(trangThaiChoXuLy);
-        trangThaiHoaDonTaoDon.setIdNhanVien(1);
+        trangThaiHoaDonChoXuLy.setIdNhanVien(1);
         trangThaiHoaDonChoXuLy.setHoaDon(hoaDon);
         trangThaiHoaDonRepository.save(trangThaiHoaDonChoXuLy);
 
-        // Tạo và lưu lịch sử thanh toán
-        LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
-        lichSuThanhToan.setSoTienThanhToan(hoaDonDTO.getThanhTien());
-        lichSuThanhToan.setNgayTao(new Date());
-        lichSuThanhToan.setNgayGiaoDich(new Date());  // Hoặc bạn có thể dùng ngày giao dịch từ hệ thống thanh toán
-        lichSuThanhToan.setNgayCapNhat(new Date());
-        lichSuThanhToan.setTrangThaiThanhToan(true); // Thực tế có thể thay đổi tùy vào trạng thái thanh toán thực tế
-        lichSuThanhToan.setHoaDon(hoaDon);
-        lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
-
-        lichSuThanhToanRepository.save(lichSuThanhToan);
 
         return generatedMaHoaDon;
     }
@@ -728,9 +747,6 @@ public class HoaDonService {
             return dto;
         }).collect(Collectors.toList());
     }
-
-
-
 
 
 }

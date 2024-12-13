@@ -67,7 +67,12 @@ public class ADDotGiamGiaController {
         List<Map<String, Object>> filteredProducts = mapSanPhams(sanPhams);
         return ResponseEntity.ok(filteredProducts);
     }
-
+    @GetMapping("/san_pham_da_giam_gia/{idDotGiamGia}")
+    public ResponseEntity<List<Map<String, Object>>> getAllSanPhamDaGiamGias(@PathVariable Integer idDotGiamGia) {
+        List<Object[]> sanPhams = dotGiamGiaService.getAllSanPhamDaGiamGia(idDotGiamGia);
+        List<Map<String, Object>> filteredProducts = mapSanPhams(sanPhams);
+        return ResponseEntity.ok(filteredProducts);
+    }
     @GetMapping
     public List<DotGiamGia> getAllDotGiamGia() {
         return dotGiamGiaService.getAllDotGiamGia();

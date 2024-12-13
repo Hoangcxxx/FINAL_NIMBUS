@@ -25,10 +25,18 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
     };
 
     // Lấy voucher theo ID nếu có
+    // Lấy voucher theo ID nếu có
     if ($routeParams.id) {
         $http.get('http://localhost:8080/api/admin/vouchers/' + $routeParams.id).then(function (response) {
             $scope.selectedVoucher = response.data;
-            $scope.selectedLoaiVoucher = response.data.loaiVoucher.idLoaiVoucher;
+
+            // Kiểm tra nếu loaiVoucher tồn tại
+            if (response.data.loaiVoucher) {
+                $scope.selectedLoaiVoucher = response.data.loaiVoucher.idLoaiVoucher;
+            } else {
+                // Xử lý nếu không có loaiVoucher
+                console.warn('Loại voucher không tồn tại.');
+            }
 
             // Chuyển đổi ngày
             $scope.selectedVoucher.ngayBatDau = new Date(response.data.ngayBatDau);

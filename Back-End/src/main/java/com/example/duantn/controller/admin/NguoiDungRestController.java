@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -32,6 +33,8 @@ public class NguoiDungRestController {
         VaiTro vaiTro = new VaiTro();
         vaiTro.setIdVaiTro(3);
         nguoiDung.setVaiTro(vaiTro);
+        nguoiDung.setNgayTao(new Date());
+        nguoiDung.setNgayCapNhat(new Date());
         NguoiDung savedNguoiDung = nguoiDungService.addNguoiDung1(nguoiDung);
         return new ResponseEntity<>(savedNguoiDung, HttpStatus.CREATED);
     }

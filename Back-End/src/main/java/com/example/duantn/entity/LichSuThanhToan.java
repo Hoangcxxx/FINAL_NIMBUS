@@ -20,6 +20,8 @@ public class LichSuThanhToan {
     private Integer idLichSuHoaDon;
     @Column(name = "so_tien_thanh_toan")
     private BigDecimal soTienThanhToan;
+    @Column(name = "mo_ta")
+    private String  moTa;
     @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
@@ -35,7 +37,7 @@ public class LichSuThanhToan {
     @JoinColumn(name = "id_hoa_don")
     private HoaDon hoaDon;
     @Column(name = "id_nhan_vien")
-    private Integer idNhanVien;
+    private Integer idNhanVien;  // Kiểm tra kiểu dữ liệu là Integer
     @ManyToOne
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;

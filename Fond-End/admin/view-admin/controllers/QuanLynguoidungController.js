@@ -41,7 +41,12 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
             const url = `${baseURL}/${$scope.selectedUser.idNguoiDung}`; // Sử dụng idNguoiDung từ đối tượng đã chọn
             $http.put(url, $scope.selectedUser)
                 .then(function (response) {
-                    alert("Cập nhật thành công!");
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cập Nhật Thành CCông !',
+                        html: '<p>Bạn đã tạo tài khoản thành công. Hãy đăng nhập để bắt đầu trải nghiệm!</p>',
+                        confirmButtonText: 'Đăng nhập ngay'
+                    })
                     $("#updateUserModal").modal("hide"); // Đóng modal
                     window.location.reload(); // Reload lại toàn bộ trang
                 })
@@ -69,6 +74,19 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
             });
     };
 
+
+    // Lấy danh sách người dùng
+    const getLeLe = function () {
+        callApi('GET', `${baseURL}/list/khachle`)
+.then(response => {
+                $scope.customers = response.data; // Đổi từ $scope.users thành $scope.customers
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy danh sách người dùng:", error);
+            });
+    };
+
+
     // Lấy danh sách nhân viên
     const getEmployees = function () {
         callApi('GET', `${baseURL}/list/nhanvien`)
@@ -81,7 +99,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
     };
 
     $scope.changeUserStatus = function (userId, action) {
-console.log('Thay đổi trạng thái:', { userId, action });
+        console.log('Thay đổi trạng thái:', { userId, action });
 
         const endpoint = action === 'lock' ? 'khoa' : 'mo_khoa';
         $http.put(`${baseURL}/${endpoint}/${userId}`)
@@ -117,15 +135,7 @@ console.log('Thay đổi trạng thái:', { userId, action });
                     confirmButtonText: 'OK'
                 });
             });
-    };
-
-
-
-
-
-
-
-
+    }
 
     // Xóa người dùng (khách hàng)
 
@@ -139,7 +149,7 @@ console.log('Thay đổi trạng thái:', { userId, action });
                 })
                 .catch((error) => {
                     console.error("Lỗi khi xóa người dùng:", error);
-                    alert("Đã xảy ra lỗi khi xóa người dùng!");
+alert("Đã xảy ra lỗi khi xóa người dùng!");
                 });
         }
     };
@@ -156,7 +166,7 @@ console.log('Thay đổi trạng thái:', { userId, action });
                 })
                 .catch((error) => {
                     console.error("Lỗi khi xóa người dùng:", error);
-alert("Đã xảy ra lỗi khi xóa người dùng!");
+                    alert("Đã xảy ra lỗi khi xóa người dùng!");
                 });
         }
     };
@@ -174,7 +184,7 @@ alert("Đã xảy ra lỗi khi xóa người dùng!");
             .then(function () {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Đăng ký thành công!',
+                    title: 'tạo tài khoản thành công !',
                     html: '<p>Bạn đã tạo tài khoản thành công. Hãy đăng nhập để bắt đầu trải nghiệm!</p>',
                     confirmButtonText: 'Đăng nhập ngay'
                 }).then(() => {
@@ -207,4 +217,5 @@ alert("Đã xảy ra lỗi khi xóa người dùng!");
     // Khởi tạo dữ liệu khi trang load
     getUsers();
     getEmployees();
+    getLeLe();
 };

@@ -253,6 +253,31 @@ public class NguoiDungService {
             throw new RuntimeException("Người dùng không tồn tại.");
         }
     }
+    public List<NguoiDungDTO> getAllkhachhangle() {
+        List<NguoiDung> nguoiDungList = nguoiDungRepository.findAll();
+
+        return nguoiDungList.stream()
+                .filter(nguoiDung -> {
+                    // Kiểm tra null trước khi truy cập vaiTro và idVaiTro
+                    if (nguoiDung.getVaiTro() == null) {
+                        return false; // Loại bỏ nếu vaiTro là null
+                    }
+                    Integer vaiTroId = nguoiDung.getVaiTro().getIdVaiTro();
+                    return vaiTroId != null && vaiTroId == 3; // Lọc vai trò là 4 (nhân viên)
+                })
+                .map(nguoiDung -> {
+                    NguoiDungDTO dto = new NguoiDungDTO();
+                    dto.setIdNguoiDung(nguoiDung.getIdNguoiDung());
+                    dto.setTenNguoiDung(nguoiDung.getTenNguoiDung());
+                    dto.setSdt(nguoiDung.getSdt());
+                    dto.setNgayTao(nguoiDung.getNgayTao());
+                    // Kiểm tra null trước khi lấy tên vai trò
+                    String tenVaiTro = (nguoiDung.getVaiTro() != null) ? nguoiDung.getVaiTro().getTen() : "Không xác định";
+                    dto.setTenVaiTro(tenVaiTro);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
 
 }

@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface DotGiamGiaRepository extends JpaRepository<DotGiamGia, Integer> {
     @Query(value = DotGiamGiaQuery.GET_SAN_PHAM_CHUA_GIAM_GIA, nativeQuery = true)
     List<Object[]> getAllSanPhamChuaGiamGia();
+    @Query(value = DotGiamGiaQuery.GET_SAN_PHAM_DA_GIAM_GIA_BY_ID_DOT_GIAM_GIA, nativeQuery = true)
+    List<Object[]> getAllSanPhamDaGiamGia(Integer idDotGiamGia);
     Optional<DotGiamGia> findByTenDotGiamGia(String tenDotGiamGia);
     Optional<DotGiamGia> findDotGiamGiaByKieuGiamGia(Boolean kieuGiamGia);
     @Query(value = DotGiamGiaQuery.GET_SAN_PHAM_CHUA_GIAM_GIA_BY_DANH_MUC, nativeQuery = true)

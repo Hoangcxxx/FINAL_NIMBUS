@@ -418,6 +418,18 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         console.log("Tiền khách đưa:", tienKhachDua);
         console.log("Tổng tiền thanh toán:", totalPrice);
         console.log("Tiền thừa:", $scope.tienThua);
+
+        // Lưu thông tin vào localStorage
+        const paymentInfo = {
+            tienKhachDua: $scope.tienKhachDua,
+            tienThua: $scope.tienThua,
+            totalPrice: $scope.totalPrice
+        };
+
+        // Lưu thông tin vào localStorage dưới dạng chuỗi JSON
+        localStorage.setItem('paymentInfo', JSON.stringify(paymentInfo));
+
+        console.log('Thông tin thanh toán đã lưu vào localStorage:', paymentInfo);
     };
     $scope.xacNhanThanhToan = function () {
         if ($scope.selectedPhuongThucThanhToan === 3) {
@@ -590,6 +602,10 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 $scope.isCartEmpty = $scope.cartItems.length === 0;
                 $scope.calculateTotalPrice();
                 $scope.getProductDetails();
+
+                // Lưu cartItems vào localStorage
+                localStorage.setItem('cartItems', JSON.stringify($scope.cartItems));
+
             })
             .catch(function (error) {
                 console.error('Lỗi khi lấy giỏ hàng:', error);
@@ -661,7 +677,23 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             }
         }
         $scope.discount = discount;
+
+        // Lưu thông tin vào localStorage
+        const totalPriceInfo = {
+            originalTotalPrice: $scope.originalTotalPrice,
+            discount: $scope.discount,
+            totalPrice: $scope.totalPrice
+        };
+
+        // Lưu thông tin vào localStorage dưới dạng chuỗi JSON
+        localStorage.setItem('totalPriceInfo', JSON.stringify(totalPriceInfo));
+
+        console.log('Thông tin tổng tiền đã lưu vào localStorage:', totalPriceInfo);
     };
+
+
+
+
 
     $scope.getVoucher = function () {
         if ($scope.voucherCode) {
@@ -789,6 +821,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
         }
     };
+
     $scope.selectVoucher = function (voucher) {
         if (voucher.isUsable) {
             $scope.selectedVoucher = voucher;
@@ -977,14 +1010,23 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
     $scope.selectPhuongThucThanhToan = function (id) {
         $scope.selectedPhuongThucThanhToan = id;
-        // Tìm tên phương thức thanh toán từ dữ liệu đã lấy và gán vào biến phuongThuc
         var selectedMethod = $scope.phuongThucThanhToan.find(function (pt) {
             return pt.id === id;
         });
 
         $scope.phuongThuc = selectedMethod ? selectedMethod.tenPhuongThuc : '';
         console.log('Phương thức thanh toán đã chọn:', $scope.phuongThuc);
+
+        // Lưu phương thức thanh toán vào localStorage
+        const paymentMethodData = {
+            id: $scope.selectedPhuongThucThanhToan,
+            tenPhuongThuc: $scope.phuongThuc
+        };
+
+        // Lưu vào localStorage
+        localStorage.setItem('selectedPaymentMethod', JSON.stringify(paymentMethodData));
     };
+
     $scope.createOrderStatus = function () {
         var hoaDonId = JSON.parse(localStorage.getItem('selectedInvoice')).idHoaDon;
 
@@ -1427,7 +1469,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             idNguoiDung: selectedUser.idNguoiDung,
             soTienThanhToan: $scope.totalPrice,
         };
-        console.log("111111111111111111111111111111",paymentData)
+        console.log("111111111111111111111111111111", paymentData)
         // Gửi yêu cầu POST tạo lịch sử thanh toán
         $http.post('http://localhost:8080/api/admin/lich_su_thanh_toan/create', paymentData)
             .then(function (response) {

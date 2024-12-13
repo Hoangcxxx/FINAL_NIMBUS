@@ -33,7 +33,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             .then(function (response) {
                 console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
                 $scope.hoaDon = response.data;
-
+                $scope.totalAmount = $scope.hoaDon.thanhTien;  // Gán giá trị thanhTien vào totalAmount
                 // Kiểm tra vai trò khách hàng để quyết định ẩn/hiển thị email và địa chỉ
                 if ($scope.hoaDon.vaiTro.idVaiTro === 3) {
                     // Nếu vai trò là 3 (không phải khách hàng), ẩn email và địa chỉ
@@ -270,12 +270,89 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         });
+
+
+
+    // Lấy lịch sử thanh toán
     $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
         .then(function (response) {
             // Gán dữ liệu từ API vào biến lichSuThanhToan
             $scope.lichSuThanhToan = response.data;
+
+            // Kiểm tra xem hóa đơn đã được xác nhận thanh toán hay chưa
+            $scope.isInvoiceConfirmed = $scope.lichSuThanhToan.some(function (paymentHistory) {
+                return paymentHistory.idNhanVien !== null;  // Kiểm tra nếu có nhân viên xác nhận
+            });
         })
         .catch(function (error) {
             console.error('Lỗi khi lấy dữ liệu:', error);
         });
+
+
+    $scope.showPaymentButton = function () {
+        return $scope.lichSuThanhToan.some(function (item) {
+            return item.tenNhanVien === 'N/A';
+        });
+    };
+
+
+
+    // Mở modal xác nhận thanh toán và điền thông tin vào modal
+    $scope.openPaymentModal = function () {
+        // Gán giá trị vào biến scope khi mở modal
+        $scope.amountGiven = $scope.totalAmount;
+        $scope.notes = '';  // Reset ghi chú
+    };
+
+    $scope.updatePaymentHistory = function () {
+        var amountGiven = document.getElementById("amountGiven").value;
+        var notes = document.getElementById("notes").value;
+
+        if (amountGiven && notes) {
+            // Tạo đối tượng dữ liệu thanh toán
+            var paymentData = {
+                soTienThanhToan: parseInt(amountGiven),  // Chuyển số tiền thành số nguyên
+                ngayGiaoDich: new Date().toISOString(), // Định dạng ngày giao dịch
+                idNhanVien: $scope.userId,  // Lấy ID nhân viên từ $scope
+                moTa: notes,  // Lấy ghi chú
+                trangThaiThanhToan: true  // Trạng thái thanh toán
+            };
+
+            // Gửi yêu cầu API để cập nhật lịch sử thanh toán
+            $http.put('http://localhost:8080/api/admin/lich_su_thanh_toan/update/' + idHoaDon, paymentData)
+                .then(function (response) {
+                    if (response.data.success) {
+                        console.log("Cập nhật lịch sử thanh toán thành công");
+                        alert("Lịch sử thanh toán đã được cập nhật!");
+                    } else {
+                        console.error('Lỗi khi cập nhật thanh toán:', response.data.message);
+                        alert(response.data.message);  // Hiển thị lỗi nếu có
+                        // Gọi lại API để tải lại dữ liệu lịch sử thanh toán sau khi cập nhật
+                        $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
+                            .then(function (response) {
+                                $scope.lichSuThanhToan = response.data; // Cập nhật dữ liệu
+                            })
+                            .catch(function (error) {
+                                console.error('Lỗi khi tải lại dữ liệu lịch sử thanh toán:', error);
+                            });
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Lỗi khi gọi API cập nhật lịch sử thanh toán:', error);
+                    alert("Không thể cập nhật lịch sử thanh toán.");
+                });
+        } else {
+            alert('Vui lòng nhập đủ thông tin thanh toán!');
+        }
+    };
+
+
+
+    // Khi người dùng mở modal, tự động điền thông tin vào modal
+    $('#xacNhanModal').on('show.bs.modal', function () {
+        $scope.openPaymentModal();
+    });
+
+
+
 };

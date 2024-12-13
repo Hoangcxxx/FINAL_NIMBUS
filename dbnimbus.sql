@@ -467,7 +467,7 @@ CREATE TABLE [lich_su_thanh_toan] (
   [ngay_tao] DATETIME DEFAULT GETDATE(),
   [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
   [trang_thai_thanh_toan] BIT DEFAULT 1,
-  [mo_ta] INT,
+  [mo_ta] NVARCHAR(MAX),
   [id_nhan_vien] INT,
   [id_nguoi_dung] INT,
   [id_hoa_don] INT,
@@ -507,7 +507,7 @@ go
 INSERT INTO vai_tro (ten, mo_ta) VALUES 
 (N'Quản trị viên', N'Người quản lý toàn bộ hệ thống'),
 (N'Khách hàng', N'Người mua hàng trên website'),
-(N'Khách hàng lẽ', N'Khách hàng lẽ mua hàng trên website'),
+(N'Khách hàng lẽ', N'Khách hàng lẽ mua hàng tại quầy'),
 (N'Nhân viên bán hàng', N'Nhân viên hỗ trợ bán hàng'),
 (N'Nhân viên giao hàng', N'Người giao hàng đến tay khách hàng'),
 (N'Quản lý kho', N'Người quản lý tồn kho');
@@ -557,9 +557,8 @@ INSERT INTO [trang_thai_giam_gia] (ten_trang_thai_giam_gia, mo_ta) VALUES
 (N'Đã sử dụng', N'Giảm giá đã được sử dụng và không còn giá trị.'),
 (N'Hết hạn', N'Giảm giá không còn giá trị do đã hết hạn sử dụng.'),
 (N'Chưa phát hành', N'Giảm giá đã được tạo nhưng chưa được phát hành cho người dùng.'),
-(N'Bị xóa', N'Giảm giá đã bị xóa và không còn hiệu lực.');
-
-
+(N'Bị xóa', N'Giảm giá đã bị xóa và không còn hiệu lực.'),
+(N'Số lượng voucher đã hết', N'Số lượng giảm giá đã hết vui lòng thử lại vào dịp sau .');
 go
 -- Insert data for voucher
 INSERT INTO voucher (ma_voucher,ten_voucher,kieu_giam_gia, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc,id_trang_thai_giam_gia) VALUES
@@ -685,8 +684,8 @@ VALUES
 (N'Chờ xác nhận', N'Đơn hàng đang chờ xác nhận từ người bán hoặc hệ thống.'),
 (N'Xác nhận đơn hàng', N'Người bán đã xác nhận đơn hàng.'),
 (N'Chờ giao hàng', N'Đơn hàng đã được thanh toán thành công và đang chờ giao đến khách hàng.'),
-(N'Đang vận chuyển', N'Đơn hàng đang được vận chuyển và trên đường giao đến khách hàng.'),
-(N'Chờ thanh toán', N'Đơn hàng đã được xác nhận nhưng chưa thanh toán.'),
+(N'Đang giao hàng', N'Đơn hàng đang được vận chuyển và trên đường giao đến khách hàng.'),
+(N'Chờ thanh toán', N'Đơn hàng đã được vận chuyển nhưng chưa thanh toán.'),
 (N'Đã thanh toán thành công', N'Khách hàng đã thanh toán thành công.'),
 (N'Hoàn thành', N'Đơn hàng đã được giao đến khách hàng thành công.'),
 (N'Đã hủy', N'Đơn hàng bị hủy bỏ.'),

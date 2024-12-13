@@ -43,6 +43,9 @@ public class DotGiamGiaService {
     public List<Object[]> getAllSanPhamChuaGiamGia() {
         return dotGiamGiaRepository.getAllSanPhamChuaGiamGia();
     }
+    public List<Object[]> getAllSanPhamDaGiamGia(Integer idDotGiamGia) {
+        return dotGiamGiaRepository.getAllSanPhamDaGiamGia(idDotGiamGia);
+    }
     public List<Object[]> getSanPhamChuaGiamGiaByDanhMuc(Integer idDanhMuc) {
         return dotGiamGiaRepository.getAllSanPhamChuaGiamGiaByDanhMuc(idDanhMuc); // Trả về danh sách từ repository
     }

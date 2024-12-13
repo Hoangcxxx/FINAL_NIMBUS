@@ -144,8 +144,9 @@
             <section class="product-details mb-4">
                 <div class="d-flex justify-content-between">
                     <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Lịch sử thanh toán</h3>
-                    <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#xacNhanModal">Xác nhận thanh
-                        toán</button>
+                    <!-- Nút Xác nhận thanh toán, chỉ hiển thị nếu chưa có nhân viên xác nhận -->
+                    <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#xacNhanModal"
+                        ng-if="showPaymentButton()">Xác nhận thanh toán</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
@@ -349,15 +350,15 @@
         </div>
     </div>
 </div>
-
 <!-- The Modal -->
 <div class="modal" id="xacNhanModal">
     <div class="modal-dialog">
         <div class="modal-content">
-
             <div class="modal-header">
                 <h5 class="modal-title" id="paymentModalLabel">Xác nhận thanh toán</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <form>
@@ -365,28 +366,31 @@
                         <label for="amountGiven" class="form-label">Tiền khách đưa <span
                                 class="text-danger">*</span></label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="amountGiven" placeholder="0">
+                            <!-- Hiển thị số tiền thanh toán đã được định dạng -->
+                            <input type="text" class="form-control" id="amountGiven" placeholder="0"
+                                ng-model="amountGiven" readonly>
                             <span class="input-group-text">VNĐ</span>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="notes" class="form-label">Ghi chú <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="notes" rows="3" placeholder="Nhập ghi chú..."></textarea>
+                        <textarea class="form-control" id="notes" rows="3" placeholder="Nhập ghi chú..."
+                            ng-model="notes"></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <p class="mb-0">Số tiền cần thanh toán: <span class="text-danger fw-bold">238,501 đ</span></p>
-                        <p class="mb-0">Tiền thừa trả khách: <span class="text-success fw-bold">0 đ</span></p>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary me-2">Hủy</button>
-                        <button type="submit" class="btn btn-primary">Thanh Toán</button>
+                        <p class="mb-0">Số tiền cần thanh toán: <span class="text-danger fw-bold">{{totalAmount |
+                                currency:''}}</span></p>
                     </div>
 
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" ng-click="updatePaymentHistory()">Thanh
+                            Toán</button>
+                    </div>
                 </form>
             </div>
-
         </div>
     </div>
 </div>

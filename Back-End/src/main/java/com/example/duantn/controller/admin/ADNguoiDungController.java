@@ -91,8 +91,10 @@ public class ADNguoiDungController {
         return ResponseEntity.ok(response);
     }
 
-
-
+    @GetMapping("/list/khachle")
+    public List<NguoiDungDTO> getAllKhachhangle() {
+        return nguoiDungService.getAllkhachhangle();  // Trả về danh sách người dùng đã lọc theo vai trò
+    }
     @GetMapping("/check_trang_thai/{idNguoiDung}")
     public ResponseEntity<?> checkTrangThaiNguoiDung(@PathVariable Integer idNguoiDung) {
         Optional<NguoiDung> optionalNguoiDung = Optional.ofNullable(nguoiDungService.findById(idNguoiDung));
