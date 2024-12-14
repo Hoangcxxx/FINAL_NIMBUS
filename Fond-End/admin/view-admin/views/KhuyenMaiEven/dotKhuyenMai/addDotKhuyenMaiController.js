@@ -109,93 +109,102 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
         // Kiểm tra kiểu giảm giá và giá trị giảm
         console.log("Kiểu giảm giá: ", $scope.dotGiamGia.kieuGiamGia);
         console.log("Giá trị giảm: ", $scope.dotGiamGia.giaTriGiamGia);
-    
+
         if ($scope.dotGiamGia.kieuGiamGia === true) { // Kiểu giảm giá là tiền mặt
             console.log("Kiểu giảm giá là tiền mặt.");
-            // Kiểm tra giá trị giảm tiền không lớn hơn giá sản phẩm
             const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
             const invalidPrice = selectedSanPham.some(item => $scope.dotGiamGia.giaTriGiamGia > item.giaBan);
             if (invalidPrice) {
-                alert('Giá trị giảm không thể lớn hơn giá bán của sản phẩm.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Giá trị giảm không hợp lệ',
+                    text: 'Giá trị giảm không thể lớn hơn giá bán của sản phẩm.'
+                });
                 return;
             }
         } else if ($scope.dotGiamGia.kieuGiamGia === false || $scope.dotGiamGia.kieuGiamGia === 'false') {
-            // Kiểu giảm giá là phần trăm
             console.log("Kiểu giảm giá là phần trăm.");
             if ($scope.dotGiamGia.giaTriGiamGia > 100) {
-                alert('Phần trăm giảm không được vượt quá 100%.');
-                console.log("Giảm giá phần trăm không hợp lệ: ", $scope.dotGiamGia.giaTriGiamGia);
-                return;  // Dừng việc lưu đợt giảm giá
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Phần trăm giảm không hợp lệ',
+                    text: 'Phần trăm giảm không được vượt quá 100%.'
+                });
+                return;
             }
         }
-    
+
         // Kiểm tra thông tin đợt giảm giá
         if (!$scope.dotGiamGia.tenDotGiamGia || !$scope.dotGiamGia.giaTriGiamGia || !$scope.dotGiamGia.ngayBatDau || !$scope.dotGiamGia.ngayKetThuc) {
-            alert('Vui lòng điền đầy đủ thông tin.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông tin chưa đầy đủ',
+                text: 'Vui lòng điền đầy đủ thông tin.'
+            });
             return;
         }
-    
+
         // Kiểm tra ngày bắt đầu và ngày kết thúc hợp lệ
         if (new Date($scope.dotGiamGia.ngayBatDau) >= new Date($scope.dotGiamGia.ngayKetThuc)) {
-            alert('Ngày kết thúc phải sau ngày bắt đầu.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Ngày không hợp lệ',
+                text: 'Ngày kết thúc phải sau ngày bắt đầu.'
+            });
             return;
         }
-    
+
         // Nếu không phải là thao tác cập nhật, kiểm tra ít nhất một sản phẩm được chọn
         if (!$routeParams.id) {
             const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
             if (selectedSanPham.length === 0) {
-                alert('Vui lòng chọn ít nhất một sản phẩm cho đợt giảm giá.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Chưa chọn sản phẩm',
+                    text: 'Vui lòng chọn ít nhất một sản phẩm cho đợt giảm giá.'
+                });
                 return;
             }
-            // Cập nhật danh sách sản phẩm cho đợt giảm giá
             $scope.dotGiamGia.sanPhamList = selectedSanPham.map(item => ({
                 sanPham: { idSanPham: item.idSanPham }
             }));
         } else {
-            // Nếu là thao tác cập nhật (có id), kiểm tra nếu có sự thay đổi trong danh sách sản phẩm
             const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
             const selectedSanPhamIds = selectedSanPham.map(item => item.idSanPham);
             const currentSanPhamIds = $scope.dsDaSanPham.map(item => item.idSanPham);
-    
-            // Nếu không có sự thay đổi (sản phẩm chọn hiện tại vẫn giống cũ), giữ nguyên sản phẩm cũ
+
             if (angular.equals(selectedSanPhamIds.sort(), currentSanPhamIds.sort())) {
-                // Giữ nguyên danh sách sản phẩm đã có (dsDaSanPham)
                 $scope.dotGiamGia.sanPhamList = $scope.dsDaSanPham.map(item => ({
                     sanPham: { idSanPham: item.idSanPham }
                 }));
             } else {
-                // Nếu có thay đổi, kết hợp lại danh sách sản phẩm
-                // Kết hợp các sản phẩm đã có và sản phẩm mới chọn
                 const allSelectedSanPhamIds = [...selectedSanPhamIds, ...currentSanPhamIds];
                 $scope.dotGiamGia.sanPhamList = allSelectedSanPhamIds.map(id => ({
                     sanPham: { idSanPham: id }
                 }));
             }
         }
-    
-        // Xử lý thêm mới hoặc cập nhật đợt giảm giá
+
         const request = $routeParams.id
-            ? $http.put(`http://localhost:8080/api/admin/dot_giam_gia/${$routeParams.id}`, $scope.dotGiamGia) // Cập nhật
-            : $http.post('http://localhost:8080/api/admin/dot_giam_gia/create_with_san_pham', $scope.dotGiamGia); // Thêm mới
-    
+            ? $http.put(`http://localhost:8080/api/admin/dot_giam_gia/${$routeParams.id}`, $scope.dotGiamGia)
+            : $http.post('http://localhost:8080/api/admin/dot_giam_gia/create_with_san_pham', $scope.dotGiamGia);
+
         request.then(function (response) {
-            alert('Đợt giảm giá đã được lưu thành công!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Đợt giảm giá đã được lưu thành công!'
+            });
             $location.path('/dot_giam_gia');
         }).catch(function (error) {
             console.error('Lỗi khi lưu đợt giảm giá:', error);
-            alert('Có lỗi xảy ra: ' + (error.data.message || ''));
+            Swal.fire({
+                icon: 'error',
+                title: 'Có lỗi xảy ra',
+                text: error.data.message || 'Vui lòng thử lại.'
+            });
         });
     };
-    
-
-
-
-
-
-
-
-
 
     $scope.selectAll = false;
 
@@ -251,6 +260,65 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
             }
         }
     };
+
+
+
+
+
+    // Hàm xóa sản phẩm giảm giá
+    $scope.xoaSanPhamGiamGia = function (idDotGiamGia, idSanPham) {
+        Swal.fire({
+            title: 'Bạn chắc chắn muốn xóa sản phẩm này?',
+            text: "Sản phẩm sẽ bị xóa khỏi đợt giảm giá!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const url = `http://localhost:8080/api/admin/dot_giam_gia/xoa/${idDotGiamGia}/${idSanPham}`;
+
+                $http.delete(url)
+                    .then(function (response) {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Xóa thành công',
+                                text: 'Sản phẩm đã bị xóa khỏi đợt giảm giá.'
+                            });
+                            $scope.dsDaSanPham = $scope.dsDaSanPham.filter(function (item) {
+                                return item.idSanPham !== idSanPham;
+                            });
+                            $scope.fetchSanPham();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Có lỗi xảy ra',
+                                text: 'Không thể xóa sản phẩm khỏi đợt giảm giá.'
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error('Error during API request:', error);
+                        if (error.status === 401) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi xác thực',
+                                text: 'Bạn không có quyền thực hiện hành động này. Vui lòng đăng nhập.'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Có lỗi xảy ra',
+                                text: 'Không thể xóa sản phẩm khỏi đợt giảm giá.'
+                            });
+                        }
+                    });
+            }
+        });
+    };
+
+
 
 
 };

@@ -321,21 +321,23 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             // Gửi yêu cầu API để cập nhật lịch sử thanh toán
             $http.put('http://localhost:8080/api/admin/lich_su_thanh_toan/update/' + idHoaDon, paymentData)
                 .then(function (response) {
-                    if (response.data.success) {
-                        console.log("Cập nhật lịch sử thanh toán thành công");
-                        alert("Lịch sử thanh toán đã được cập nhật!");
+                    // Kiểm tra nếu có thông báo thành công
+                    if (response.data.message) {
+                        console.log(response.data.message);  // Log thông báo thành công
+                        alert(response.data.message);  // Hiển thị thông báo thành công
                     } else {
                         console.error('Lỗi khi cập nhật thanh toán:', response.data.message);
                         alert(response.data.message);  // Hiển thị lỗi nếu có
-                        // Gọi lại API để tải lại dữ liệu lịch sử thanh toán sau khi cập nhật
-                        $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
-                            .then(function (response) {
-                                $scope.lichSuThanhToan = response.data; // Cập nhật dữ liệu
-                            })
-                            .catch(function (error) {
-                                console.error('Lỗi khi tải lại dữ liệu lịch sử thanh toán:', error);
-                            });
                     }
+
+                    // Gọi lại API để tải lại dữ liệu lịch sử thanh toán sau khi cập nhật
+                    $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
+                        .then(function (response) {
+                            $scope.lichSuThanhToan = response.data; // Cập nhật dữ liệu
+                        })
+                        .catch(function (error) {
+                            console.error('Lỗi khi tải lại dữ liệu lịch sử thanh toán:', error);
+                        });
                 })
                 .catch(function (error) {
                     console.error('Lỗi khi gọi API cập nhật lịch sử thanh toán:', error);
@@ -345,7 +347,6 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             alert('Vui lòng nhập đủ thông tin thanh toán!');
         }
     };
-
 
 
     // Khi người dùng mở modal, tự động điền thông tin vào modal

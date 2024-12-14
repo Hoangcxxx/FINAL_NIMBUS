@@ -583,12 +583,14 @@ go
 
 
 -- Insert data for lich_su_hoa_don
+/*
 INSERT INTO lich_su_hoa_don (so_tien_thanh_toan, id_nguoi_dung) VALUES 
 (500, 4),
 (750, 2),
 (300, 1),
 (1200, 3),
 (150, 5);
+*/
 go
 
 -- Insert data for chat_lieu
@@ -664,7 +666,9 @@ go
 INSERT INTO gio_hang (id_nguoi_dung) VALUES 
 (1), (2), (3), (4), (5);
 go
+
 -- Insert data for hoa_don
+/*
 INSERT INTO hoa_don (ma_hoa_don, id_nguoi_dung,id_nhan_vien, id_voucher, id_dia_chi_van_chuyen, ten_nguoi_nhan, phi_ship, dia_chi, sdt_nguoi_nhan, thanh_tien, mo_ta, id_pt_thanh_toan_hoa_don,loai) VALUES 
 ('HD001', 2,1, 1, 1,  N'Trần Văn A', 30.00, N'Số 1, Đường A, Quận 1', N'0123456789', 500.00, N'Hoa đơn cho sản phẩm A', 1,1),
 ('HD002', 2,1, 2, 2,  N'Nguyễn Thị B', 20.00, N'Số 2, Đường B, Quận 2', N'0123456788', 750.00, N'Hoa đơn cho sản phẩm B', 2,1),
@@ -675,7 +679,7 @@ INSERT INTO hoa_don (ma_hoa_don, id_nguoi_dung,id_nhan_vien, id_voucher, id_dia_
 ('HD007', 2,1, 5, 1, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5,0),
 ('HD008', 3,1, 5, 1,  N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5,1),
 ('HD009', 2,1, 5, 1, N'Nguyễn Văn E', 10.00, N'Số 5, Đường E, Quận 5', N'0123456785', 150.00, N'Hoa đơn cho sản phẩm E', 5,1);
-
+*/
 go
 -- Thêm các loại trạng thái vào bảng loai_trang_thai
 INSERT INTO loai_trang_thai (ten_loai_trang_thai, mo_ta)
@@ -693,6 +697,7 @@ VALUES
 
 -- Insert data for trang_thai_hoa_don
 -- Thêm trạng thái cho hóa đơn với Id_hoa_don là 1
+/*
 INSERT INTO trang_thai_hoa_don (mo_ta,id_nhan_vien, id_loai_trang_thai, id_hoa_don)
 VALUES
 (N'Khách hàng đã tạo đơn hàng.', 1, 1, 1),  -- Trạng thái "Đặt hàng"
@@ -772,7 +777,8 @@ INSERT INTO trang_thai_hoa_don (mo_ta,id_nhan_vien, id_loai_trang_thai, id_hoa_d
 VALUES
 (N'Khách hàng đã tạo đơn hàng.',1, 1, 9),  -- Trạng thái "Đặt hàng"
 (N'Đơn hàng đang chờ xác nhận từ người bán.',1, 2, 9);  -- Trạng thái "Đã giao"
-
+*/
+/*
 go
 INSERT INTO tinh ( [ten_tinh]) VALUES
 ( N'Hà Nội'),
@@ -904,7 +910,7 @@ INSERT INTO dia_chi_van_chuyen ([id_tinh], [id_huyen], [id_xa], [dia_chi_cu_the]
 (3, 3, 7, N'Số 20 Đường Tam Thuận, Đà Nẵng', 3),
 (4, 4, 8, N'Số 30 Đường Vĩnh Niệm, Hải Phòng', 4),
 (5, 5, 9, N'Số 5 Đường Cái Khế, Cần Thơ', 5);
-
+*/
 go
 -- Insert data for pt_thanh_toan
 INSERT INTO pt_thanh_toan (ma_thanh_toan, ten_phuong_thuc, mo_ta) VALUES 
@@ -914,6 +920,7 @@ INSERT INTO pt_thanh_toan (ma_thanh_toan, ten_phuong_thuc, mo_ta) VALUES
 (N'TT004', N'Thu Tiền Tận Nơi', N'Nhân viên sẽ đến thu tiền tại địa chỉ giao hàng.'),
 (N'TT005', N'Thanh Toán Trực Tiếp', N'Khách hàng thanh toán trực tiếp tại cửa hàng.');
 -- Insert data for phi_van_chuyen
+/*
 INSERT INTO phi_van_chuyen (id_dia_chi_van_chuyen,so_tien_van_chuyen,id_hoa_don, mo_ta) VALUES 
 (1,10000,1, N'Phí vận chuyển cho đơn hàng nội tỉnh.'),
 (2,10000,2, N'Phí vận chuyển cho đơn hàng liên tỉnh.'),
@@ -921,14 +928,16 @@ INSERT INTO phi_van_chuyen (id_dia_chi_van_chuyen,so_tien_van_chuyen,id_hoa_don,
 (4,10000,4, N'Phí vận chuyển cho đơn hàng trên 1kg.'),
 (5,10000,5, N'Phí vận chuyển cho đơn hàng đặc biệt.');
 go
-
+*/
 -- Insert data for pt_thanh_toan_hoa_don
+/*
 INSERT INTO pt_thanh_toan_hoa_don (id_pt_thanh_toan, ngay_giao_dich, mo_ta, trang_thai, noi_dung_thanh_toan, id_hoa_don) VALUES 
 (1, GETDATE(), N'Thanh toán đơn hàng 001', N'Hoàn Thành', N'Thanh toán đơn hàng 001', 1),
 (2, GETDATE(), N'Thanh toán đơn hàng 002', N'Hoàn Thành', N'Thanh toán đơn hàng 002', 2),
 (3, GETDATE(), N'Thanh toán đơn hàng 003', N'Hoàn Thành', N'Thanh toán đơn hàng 003', 3),
 (1, GETDATE(), N'Thanh toán đơn hàng 004', N'Hoàn Thành', N'Thanh toán đơn hàng 004', 4),
 (2, GETDATE(), N'Thanh toán đơn hàng 005', N'Hoàn Thành', N'Thanh toán đơn hàng 005', 5);
+*/
 
 go
 INSERT INTO xac_thuc (ma_xac_thuc, id_nguoi_dung, mo_ta) VALUES 
@@ -1010,6 +1019,7 @@ INSERT INTO danh_gia (id_nguoi_dung, id_san_pham, noi_dung, diem) VALUES
 (4, 4, N'Chất vải tốt, mặc rất thoải mái', 4),
 (5, 5, N'Áo chất lượng, đáng tiền', 4);
 go
+/*
 -- Giả sử bạn đã có các bản ghi trong bảng dot_giam_gia
 INSERT INTO dot_giam_gia (ten_dot_giam_gia, gia_tri_giam_gia, mo_ta, ngay_bat_dau, ngay_ket_thuc,id_trang_thai_giam_gia)
 VALUES 
@@ -1028,6 +1038,7 @@ VALUES
 (@Id_dot_giam_gia, 5,100000),
 ( @Id_dot_giam_gia, 6,100000);
 go
+*/
 -- Insert data for san_pham_chi_tiet
 INSERT INTO san_pham_chi_tiet (ma_san_pham_chi_tiet,so_luong, id_kich_thuoc_chi_tiet, id_mau_sac_chi_tiet, id_chat_lieu_chi_tiet, id_san_pham)
 VALUES 
@@ -1801,6 +1812,7 @@ INSERT INTO hinh_anh_san_pham (id_san_pham, url_anh, mo_ta, trang_thai, thu_tu, 
 go
 
 --Insert data for hoa_don_chi_tiet
+/*
 INSERT INTO hoa_don_chi_tiet (id_san_pham_chi_tiet, id_hoa_don, so_luong, tong_tien,so_tien_thanh_toan,tien_tra_lai) VALUES 
 (1, 1, 2, 1000.00, 1000.00,0),
 (2, 1, 1, 500,600,100),
@@ -1812,7 +1824,7 @@ INSERT INTO hoa_don_chi_tiet (id_san_pham_chi_tiet, id_hoa_don, so_luong, tong_t
 (53, 8, 5, 1500, 1500,0),
 (54, 9, 3, 3600,4000,400);
 go
-
+*/
 select * from vai_tro
 select * from nguoi_dung
 select * from voucher_nguoi_dung

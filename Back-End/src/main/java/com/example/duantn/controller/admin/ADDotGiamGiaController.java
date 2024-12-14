@@ -6,6 +6,7 @@ import com.example.duantn.entity.DotGiamGia;
 import com.example.duantn.entity.GiamGiaSanPham;
 import com.example.duantn.entity.Voucher;
 import com.example.duantn.service.DotGiamGiaService;
+import com.example.duantn.service.GiamGiaSanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +24,19 @@ public class ADDotGiamGiaController {
 
     @Autowired
     private DotGiamGiaService dotGiamGiaService;
+    @Autowired
+    private GiamGiaSanPhamService giamGiaSanPhamService;
+
     @GetMapping("/search/tenDotGiamGia")
     public List<DotGiamGia> searchByTenVoucher(@RequestParam String tenVoucher) {
         return dotGiamGiaService.findByTenVoucher(tenVoucher);
     }
+
     @GetMapping("/search/kieuGiamGia")
     public List<DotGiamGia> searchByKieuGiamGia(@RequestParam Boolean kieuGiamGia) {
         return dotGiamGiaService.findByKieuGiamGia(kieuGiamGia);
     }
+
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -57,6 +63,7 @@ public class ADDotGiamGiaController {
         map.put("urlAnh", row[5]);
         return map;
     }
+
     private List<Map<String, Object>> mapDanhMucs(List<Object[]> results) {
         return results.stream().map(this::mapDanhMucDetail).collect(Collectors.toList());
     }
@@ -67,12 +74,14 @@ public class ADDotGiamGiaController {
         List<Map<String, Object>> filteredProducts = mapSanPhams(sanPhams);
         return ResponseEntity.ok(filteredProducts);
     }
+
     @GetMapping("/san_pham_da_giam_gia/{idDotGiamGia}")
     public ResponseEntity<List<Map<String, Object>>> getAllSanPhamDaGiamGias(@PathVariable Integer idDotGiamGia) {
         List<Object[]> sanPhams = dotGiamGiaService.getAllSanPhamDaGiamGia(idDotGiamGia);
         List<Map<String, Object>> filteredProducts = mapSanPhams(sanPhams);
         return ResponseEntity.ok(filteredProducts);
     }
+
     @GetMapping
     public List<DotGiamGia> getAllDotGiamGia() {
         return dotGiamGiaService.getAllDotGiamGia();
@@ -116,12 +125,14 @@ public class ADDotGiamGiaController {
 
         return ResponseEntity.ok(createdDotGiamGia);
     }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<?> getDotGiamGiaDetail(@PathVariable Integer id) {
         Optional<DotGiamGiaDetail> dotGiamGiaDetail = dotGiamGiaService.getDotGiamGiaDetailById(id);
         return dotGiamGiaDetail.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateDotGiamGia(@PathVariable Integer id, @RequestBody DotGiamGiaRequest dotGiamGiaRequest) {
         // Cập nhật đợt giảm giá
@@ -156,8 +167,32 @@ public class ADDotGiamGiaController {
         }
         return ResponseEntity.ok("Sản phẩm đã được thêm thành công!");
     }
+
     @GetMapping("/findDanhMuc/{idDanhMuc}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamsByDanhMuc(@PathVariable Integer idDanhMuc) {
         return ResponseEntity.ok(mapDanhMucs(dotGiamGiaService.getSanPhamChuaGiamGiaByDanhMuc(idDanhMuc)));
     }
+
+
+    // Endpoint xóa sản phẩm giảm giá theo id sản phẩm và id đợt giảm giá
+    @DeleteMapping("/xoa/{idDotGiamGia}/{idSanPham}")
+    public ResponseEntity<Map<String, String>> xoaSanPhamGiamGiaTheoDot(
+            @PathVariable Integer idDotGiamGia,
+            @PathVariable Integer idSanPham) {
+        // In thông tin tham số
+        System.out.println("Đang xóa sản phẩm giảm giá với idDotGiamGia: " + idDotGiamGia + " và idSanPham: " + idSanPham);
+
+        try {
+            giamGiaSanPhamService.xoaSanPhamGiamGiaTheoDot(idDotGiamGia, idSanPham);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Xóa sản phẩm giảm giá theo đợt giảm giá thành công");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            // Log lỗi chi tiết
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Có lỗi xảy ra khi xóa sản phẩm giảm giá: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
 }

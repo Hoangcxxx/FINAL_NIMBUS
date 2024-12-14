@@ -289,6 +289,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 $scope.selectedProductDetails = response.data; // Gán dữ liệu chi tiết vào scope
                 console.log('Chi tiết sản phẩm:', $scope.selectedProductDetails);
                 // Hiển thị modal hoặc chi tiết sản phẩm
+                $scope.quantity = "";
                 $('#productDetailsModal').modal('show'); // Hiển thị modal (nếu sử dụng Bootstrap)
             })
             .catch(function (error) {
@@ -821,6 +822,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 buttonsStyling: false
             });
         }
+        $scope.calculateTotalPrice();
     };
 
     $scope.selectVoucher = function (voucher) {
@@ -828,8 +830,8 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             $scope.selectedVoucher = voucher;
             $scope.voucherCode = voucher.maVoucher;  // Gán mã voucher vào input (nếu cần)
             $scope.voucherError = '';  // Reset lỗi
+
             console.log("Selected Voucher:", $scope.selectedVoucher);
-            $scope.calculateTotalPrice();
         } else {
             $scope.voucherError = 'Voucher này không thể sử dụng.';
         }

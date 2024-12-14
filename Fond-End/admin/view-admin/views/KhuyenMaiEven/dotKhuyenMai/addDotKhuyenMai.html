@@ -139,8 +139,9 @@
                                 <td>{{item.tenDanhMuc}}</td>
                                 <td>{{item.giaBan | currency: '' : 0}} VND</td>
                                 <td>
-                                    <button type="button" class="btn btn-danger" ng-click="removeFromDotGiamGia(item)">
-                                        Xóa
+                                    <button type="button" class="btn btn-danger"
+                                        ng-click="xoaSanPhamGiamGia(dotGiamGia.idDotGiamGia, item.idSanPham)">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>

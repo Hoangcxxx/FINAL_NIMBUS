@@ -7,9 +7,14 @@ SELECT * FROM trang_thai_giam_gia WHERE Id_trang_thai_giam_gia = 5;
 select * from dot_giam_gia
 select * from giam_gia_san_pham
 select * from giam_gia_san_pham
+select * from dia_chi_van_chuyen
+select * from phi_van_chuyen
 select * from voucher 
+select * from hoa_don 
 select * from vai_tro
+select * from dot_giam_gia
 select * from nguoi_dung 
+select * from dia_chi_van_chuyen 
 select * from gio_hang 
 select * from loai_trang_thai
 select tthd.Id_trang_thai_hoa_don, tthd.mo_ta,tthd.ngay_tao,tthd.ngay_cap_nhat,l.ten_loai_trang_thai,tthd.id_hoa_don
@@ -18,6 +23,12 @@ join loai_trang_thai l on l.Id_loai_trang_thai = tthd.id_loai_trang_thai
 where id_hoa_don = 1
 select * from gio_hang
 select * from hoa_don
+select * from trang_thai_hoa_don
+select * from hoa_don
+select * from dot_giam_gia
+select * from giam_gia_san_pham
+select * from trang_thai_giam_gia
+select * from voucher
 select * from hoa_don_chi_tiet
 select * from dia_chi_van_chuyen
 select * from lich_su_thanh_toan
@@ -2312,13 +2323,60 @@ JOIN
 
 	select* from loai_trang_thai	
 	select* from trang_thai_hoa_don	
+	select* from hoa_don	
+	select* from hoa_don_chi_tiet	
 	select* from lich_su_thanh_toan	
+	select* from nguoi_dung	
+	select* from vai_tro	
 	select* from hoa_don	
 	select* from lich_su_thanh_toan	
 	select* from lich_su_thanh_toan	
 
 
 
+SELECT 
+    h.ma_hoa_don, 
+    tthd.mo_ta,
+    ltth.id_loai_trang_thai,
+    ltth.ten_loai_trang_thai,
+    tthd.ngay_tao,
+    nv.ten_nguoi_dung,
+    tthd.ngay_cap_nhat
+FROM 
+    hoa_don h
+JOIN 
+    nguoi_dung nv ON h.id_nhan_vien = nv.id_nguoi_dung
+JOIN 
+    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don
+JOIN 
+    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai
+WHERE 
+    h.Id_hoa_don = 12;
+
+
+
+
+	SELECT 
+    h.ma_hoa_don, 
+    tthd.mo_ta,
+    ltth.id_loai_trang_thai,
+    ltth.ten_loai_trang_thai,
+    tthd.ngay_tao,
+    tthd.id_nhan_vien,
+    nv.ten_nguoi_dung,
+    tthd.ngay_cap_nhat
+FROM 
+    hoa_don h
+JOIN 
+    nguoi_dung nd ON h.id_nguoi_dung = nd.Id_nguoi_dung
+JOIN 
+    nguoi_dung nv ON h.id_nhan_vien = nv.Id_nguoi_dung
+JOIN 
+    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don
+JOIN 
+    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai
+WHERE 
+    h.Id_hoa_don = 42;
 
 
 
@@ -2328,5 +2386,161 @@ JOIN
 
 
 
+
+
+
+
+
+
+
+
+	select * from hoa_don
+	select * from hoa_don_chi_tiet
+	select * from trang_thai_giam_gia
+	select * from trang_thai_giam_gia
+	select * from giam_gia_san_pham
+	select * from voucher
+	select * from loai_voucher
+	select * from nguoi_dung
+	select * from gio_hang
+	select * from gio_hang_chi_tiet
+	select * from loai_trang_thai
+	select * from trang_thai_hoa_don
+select 
+lstt.id_lich_su_thanh_toan,
+lstt.so_tien_thanh_toan,
+lstt.ngay_giao_dich,
+lstt.trang_thai_thanh_toan,
+lstt.mo_ta,
+nv.ten_nguoi_dung 
+from lich_su_thanh_toan lstt
+JOIN 
+    nguoi_dung nv ON tthd.id_nhan_vien = nv.Id_nguoi_dung
+WHERE 
+    h.Id_hoa_don = 1;
+
+
+
+
+	select * from hoa_don
+	select * from trang_thai_hoa_don
+	select * from lich_su_thanh_toan
+	select * from lich_su_thanh_toan where id_hoa_don = 10
+
+
+SELECT 
+    lstt.id_lich_su_thanh_toan,
+    lstt.so_tien_thanh_toan,
+    lstt.ngay_giao_dich,
+    lstt.trang_thai_thanh_toan,
+    lstt.mo_ta,
+    nv.ten_nguoi_dung 
+FROM 
+    lich_su_thanh_toan lstt
+JOIN 
+    hoa_don h ON lstt.id_hoa_don = h.Id_hoa_don -- Thêm liên kết với bảng hoa_don
+JOIN 
+    nguoi_dung nv ON lstt.id_nhan_vien = nv.Id_nguoi_dung -- Thêm liên kết với bảng nguoi_dung
+WHERE 
+    h.Id_hoa_don = 11;
+
+
+	select * from dia_chi_van_chuyen
+	select * from trang_thai_hoa_don
+	select * from lich_su_thanh_toan
+	select * from hoa_don
+	select * from nguoi_dung
+	select * from hoa_don_chi_tiet
+
+
+SELECT 
+    lstt.id_lich_su_thanh_toan,
+    lstt.so_tien_thanh_toan,
+    lstt.ngay_giao_dich,
+    lstt.trang_thai_thanh_toan,
+    lstt.mo_ta,
+    CASE 
+        WHEN lstt.id_nhan_vien IS NOT NULL THEN nv.ten_nguoi_dung
+        ELSE 'N/A'
+    END AS ten_nhan_vien
+FROM 
+    lich_su_thanh_toan lstt
+LEFT JOIN 
+    nguoi_dung nv ON lstt.id_nhan_vien = nv.Id_nguoi_dung
+WHERE 
+    lstt.id_hoa_don = 11;
+
+
+SELECT 
+    h.ma_hoa_don, 
+    tthd.mo_ta,
+    ltth.id_loai_trang_thai,
+    ltth.ten_loai_trang_thai,
+    tthd.ngay_tao,
+    tthd.ngay_cap_nhat,
+    nv.ten_nguoi_dung
+FROM 
+    hoa_don h
+JOIN 
+    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don
+JOIN 
+    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai
+JOIN 
+    nguoi_dung nv ON tthd.id_nhan_vien = nv.Id_nguoi_dung
+WHERE 
+    h.Id_hoa_don = 1;
+
+	select * from giam_gia_san_pham
+	select * from loai_trang_thai
+	select * from trang_thai_hoa_don
+	select * from lich_su_thanh_toan
+	select * from hoa_don
+	select * from dot_giam_gia
+SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    ggs.gia_khuyen_mai,
+    sp.mo_ta,
+    dc.ten_danh_muc,
+    ha.url_anh
+FROM san_pham sp
+LEFT JOIN giam_gia_san_pham ggs 
+    ON sp.Id_san_pham = ggs.id_san_pham
+LEFT JOIN danh_muc dc 
+    ON sp.id_danh_muc = dc.id_danh_muc
+LEFT JOIN hinh_anh_san_pham ha 
+    ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    ha.thu_tu = 1 and ggs.id_dot_giam_gia = 2;
+
+
+
+
+
+
+
+
+
+	select * from giam_gia_san_pham
+	select * from dot
+
+
+	SELECT 
+    sp.Id_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta,
+    dc.ten_danh_muc,
+    ha.url_anh
+FROM san_pham sp
+LEFT JOIN giam_gia_san_pham ggs 
+    ON sp.Id_san_pham = ggs.id_san_pham
+LEFT JOIN danh_muc dc 
+    ON sp.id_danh_muc = dc.id_danh_muc
+LEFT JOIN hinh_anh_san_pham ha 
+    ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    ha.thu_tu = 1 
+    AND ggs.id_dot_giam_gia = :idDotGiamGia;
 
 

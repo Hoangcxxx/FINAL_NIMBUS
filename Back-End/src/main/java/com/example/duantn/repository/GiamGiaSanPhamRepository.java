@@ -26,4 +26,7 @@ public interface GiamGiaSanPhamRepository extends JpaRepository<GiamGiaSanPham, 
 
     public Optional<GiamGiaSanPham> findByDotGiamGiaAndSanPham(DotGiamGia dotGiamGia, SanPham sanPham);
 
+    // Xóa sản phẩm giảm giá theo id sản phẩm và id đợt giảm giá
+    void deleteBySanPhamIdSanPhamAndDotGiamGiaIdDotGiamGia( Integer idDotGiamGia,Integer idSanPham);
+
 }

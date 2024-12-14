@@ -1,4 +1,4 @@
-window.GiohangController = function ($scope, $http) {
+window.GiohangController = function ($scope, $http, $window) {
     $scope.products = [];
     $scope.dsDanhMuc = [];
     $scope.selectedCategoryId = null; // Lưu ID danh mục đã chọn
@@ -64,14 +64,26 @@ window.GiohangController = function ($scope, $http) {
     $scope.removeFromCart = function (idSanPhamChiTiet) {
         $http.delete(`http://localhost:8080/api/nguoi_dung/gio_hang/delete?idGioHang=${$scope.userId}&idSanPhamChiTiet=${idSanPhamChiTiet}`)
             .then(function (response) {
-                alert(response.data.message);
+                Swal.fire({
+                    icon: 'success', // Loại thông báo thành công
+                    title: 'Thành công!',
+                    text: response.data.message,
+                    confirmButtonText: 'Đồng ý'
+                });
                 $scope.getCartItems(); // Lấy lại giỏ hàng sau khi xóa
                 window.location.reload();  // Làm mới route để giao diện được cập nhật
             })
             .catch(function (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Không thể xóa sản phẩm khỏi giỏ hàng.',
+                    confirmButtonText: 'Đồng ý'
+                });
                 console.error("Lỗi xóa sản phẩm khỏi giỏ hàng:", error);
             });
     };
+
 
     $scope.updateCart = function (item) {
         // Kiểm tra nếu có giá khuyến mãi, nếu không thì dùng giá gốc
@@ -125,12 +137,34 @@ window.GiohangController = function ($scope, $http) {
 
 
     $scope.checkout = function () {
-        if ($scope.isValidCart) {
-            $window.location.href = "/#!thanh_toan"; // Chuyển hướng sang trang thanh toán
+        // Kiểm tra tính hợp lệ của giỏ hàng trước khi thanh toán
+        const invalidItems = $scope.cart.filter(item => item.soLuongGioHang < 1 || item.soLuongGioHang > 20);
+
+        if (invalidItems.length > 0) {
+            // Nếu có sản phẩm có số lượng không hợp lệ, hiển thị thông báo lỗi bằng Swal.fire
+            $scope.isValidCart = false;
+            Swal.fire({
+                icon: 'error', // Loại thông báo (error, success, info, warning)
+                title: 'Giỏ hàng không hợp lệ!',
+                text: 'Giỏ hàng của bạn có sản phẩm có số lượng vượt quá 20. Vui lòng kiểm tra lại.',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                // Nếu người dùng nhấn "Đồng ý" sau khi thông báo
+                if (result.isConfirmed) {
+                    console.log("User acknowledged the message.");
+                }
+            });
+            return; // Dừng lại nếu giỏ hàng không hợp lệ, không tiếp tục thanh toán
         } else {
-            alert("Giỏ hàng của bạn có sản phẩm với số lượng không hợp lệ. Vui lòng kiểm tra lại.");
+            // Nếu tất cả số lượng đều hợp lệ, tiếp tục thanh toán
+            $scope.isValidCart = true;
+            // Thực hiện chuyển hướng sang trang thanh toán
+            $window.location.href = "/#!thanh_toan"; // Chuyển hướng sang trang thanh toán
         }
     };
+
+
+
 
 
     // Lấy dữ liệu giỏ hàng ban đầu
@@ -167,10 +201,8 @@ window.GiohangController = function ($scope, $http) {
         });
     }
     $scope.checkQuantity = function (item) {
-        // Đảm bảo item.soLuongGioHang luôn là một chuỗi
-        if (isNaN(item.soLuongGioHang) || item.soLuongGioHang === '') {
-            item.soLuongGioHang = 1; // Gán lại giá trị mặc định nếu không phải số
-        }
+        // Đảm bảo item.soLuongGioHang là một chuỗi
+        item.soLuongGioHang = String(item.soLuongGioHang);
 
         // Chỉ giữ lại các ký tự số hợp lệ, xóa tất cả ký tự không phải là số
         let validQuantity = item.soLuongGioHang.replace(/[^0-9]/g, '');
@@ -187,13 +219,43 @@ window.GiohangController = function ($scope, $http) {
         } else if (item.soLuongGioHang > 20) {
             item.soLuongGioHang = 20; // Đảm bảo số lượng không lớn hơn 20
             item.errorMessage = "Số lượng sản phẩm không được vượt quá 20.";
+        } else if (item.soLuongGioHang > item.soLuong) {
+            // Kiểm tra nếu số lượng giỏ hàng lớn hơn số lượng tồn kho
+            item.soLuongGioHang = item.soLuong; // Điều chỉnh lại số lượng giỏ hàng về số lượng tồn kho
+            item.errorMessage = `Chỉ còn ${item.soLuong} sản phẩm trong kho.`;
         } else {
             item.errorMessage = ''; // Xóa thông báo lỗi nếu số lượng hợp lệ
         }
 
         // Cập nhật giỏ hàng sau khi chỉnh sửa
         $scope.updateCart(item);
+
+        // Kiểm tra tổng số lượng sản phẩm trong giỏ hàng
+        $scope.validateTotalQuantity();
     };
+
+
+    // Phương thức validate tổng số lượng giỏ hàng
+    $scope.validateTotalQuantity = function () {
+        // Tính tổng số lượng sản phẩm trong giỏ hàng
+        let totalQuantity = $scope.cart.reduce((sum, item) => {
+            return sum + item.soLuongGioHang;
+        }, 0);
+
+        // Kiểm tra nếu tổng số lượng vượt quá giới hạn (ví dụ: 100 sản phẩm)
+        if (totalQuantity > 100) {
+            $scope.isValidCart = false; // Giỏ hàng không hợp lệ
+            Swal.fire({
+                icon: 'error',
+                title: 'Giỏ hàng không hợp lệ!',
+                text: 'Tổng số lượng sản phẩm trong giỏ hàng vượt quá giới hạn cho phép. Vui lòng kiểm tra lại.',
+                confirmButtonText: 'Đồng ý'
+            });
+        } else {
+            $scope.isValidCart = true; // Giỏ hàng hợp lệ
+        }
+    };
+
 
 
     fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'products');
