@@ -196,7 +196,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
         // Lấy ID giỏ hàng từ localStorage
         var idGioHang = localStorage.getItem('idGioHang');
 
-        // Nếu không có ID giỏ hàng, yêu cầu người dùng đăng nhập hoặc tạo giỏ hàng
+        // Kiểm tra nếu không có ID giỏ hàng, yêu cầu người dùng đăng nhập hoặc tạo giỏ hàng
         if (!idGioHang) {
             Swal.fire({
                 title: 'Lỗi',
@@ -207,100 +207,125 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
             return;
         }
 
-        // Lấy thông tin giỏ hàng của người dùng để kiểm tra sản phẩm
-        $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${idGioHang}`)
+        // Kiểm tra trạng thái tài khoản người dùng trước khi thao tác với giỏ hàng
+        $http.get(`http://localhost:8080/api/nguoi_dung/${idGioHang}`)
             .then(function (response) {
-                // Log toàn bộ giỏ hàng để kiểm tra
-                console.log("Giỏ hàng hiện tại:", response.data);
-
-
-                // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-                let existingProduct = response.data.find(item =>
-                    item.idSanPhamChiTiet === $scope.sanPhamChiTiet[0].idSanPhamCT &&
-                    item.idMauSac === $scope.selectedColor.idMauSac &&
-                    item.idKichThuoc === $scope.selectedSize.idKichThuoc &&
-                    item.idChatLieu === $scope.selectedMaterial.idChatLieu
-                );
-                // Log số lượng sản phẩm đã có trong giỏ hàng (nếu có)
-                if (existingProduct) {
-                    console.log("Sản phẩm đã có trong giỏ hàng:", existingProduct);
-                    // Kiểm tra số lượng trong giỏ hàng
-                    let totalQuantityInCart = existingProduct.soLuongGioHang + $scope.soluong;
-                    console.log("Tổng số lượng trong giỏ hàng sau khi thêm:", totalQuantityInCart);
-
-                    if (totalQuantityInCart > $scope.soLuongTon) {
-                        Swal.fire({
-                            title: 'Lỗi',
-                            text: `Không thể thêm sản phẩm. Số lượng trong giỏ hàng cộng thêm số lượng bạn chọn vượt quá số lượng tồn kho (tồn kho còn: ${$scope.soLuongTon}).`,
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                        return;
-                    }
-                } else {
-                    console.log("Sản phẩm chưa có trong giỏ hàng.");
-                    // Tiến hành thêm sản phẩm vào giỏ hàng
-                }
-                // Log số lượng tồn kho
-                console.log("Số lượng tồn kho của sản phẩm:", $scope.soLuongTon);
-
-                // Kiểm tra số lượng trong giỏ hàng và số lượng tồn kho
-                if (existingProduct) {
-                    let totalQuantityInCart = existingProduct.soLuongGioHang + $scope.soluong;
-
-                    console.log("Tổng số lượng trong giỏ hàng sau khi thêm:", totalQuantityInCart);
-
-                    if (totalQuantityInCart > $scope.soLuongTon) {
-                        // Nếu số lượng trong giỏ hàng + số lượng người dùng muốn thêm vượt quá số lượng tồn kho
-                        Swal.fire({
-                            title: 'Lỗi',
-                            text: `Không thể thêm sản phẩm. Số lượng trong giỏ hàng cộng thêm số lượng bạn chọn vượt quá số lượng tồn kho (tồn kho còn: ${$scope.soLuongTon}).`,
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                        return;
-                    }
+                // Kiểm tra nếu tài khoản người dùng bị khóa
+                if (!response.data.trangThai) {
+                    Swal.fire({
+                        title: 'Tài khoản của bạn đã bị khóa!',
+                        text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: support@example.com.',
+                        icon: 'error',
+                        confirmButtonText: 'Liên hệ hỗ trợ',
+                        footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
+                    });
+                    return;
                 }
 
-                // Nếu không có sản phẩm trong giỏ hàng hoặc có thể thêm, tiếp tục thêm sản phẩm vào giỏ hàng
-                let cartItem = {
-                    idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
-                    idMauSac: $scope.selectedColor,  // ID màu sắc
-                    idKichThuoc: $scope.selectedSize, // ID kích thước
-                    idChatLieu: $scope.selectedMaterial, // ID chất liệu
-                    soLuong: $scope.soluong // Số lượng mà người dùng chọn
-                };
+                // Lấy thông tin giỏ hàng của người dùng để kiểm tra sản phẩm
+                $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${idGioHang}`)
+                    .then(function (response) {
+                        // Log toàn bộ giỏ hàng để kiểm tra
+                        console.log("Giỏ hàng hiện tại:", response.data);
 
-                // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
-                $http.post(`http://localhost:8080/api/nguoi_dung/gio_hang/add?idUser=${idGioHang}`, cartItem)
-                    .then(function () {
-                        Swal.fire({
-                            title: 'Thành công',
-                            text: 'Sản phẩm đã được thêm vào giỏ hàng.',
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
+                        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+                        let existingProduct = response.data.find(item =>
+                            item.idSanPhamChiTiet === $scope.sanPhamChiTiet[0].idSanPhamCT &&
+                            item.idMauSac === $scope.selectedColor.idMauSac &&
+                            item.idKichThuoc === $scope.selectedSize.idKichThuoc &&
+                            item.idChatLieu === $scope.selectedMaterial.idChatLieu
+                        );
+                        // Log số lượng sản phẩm đã có trong giỏ hàng (nếu có)
+                        if (existingProduct) {
+                            console.log("Sản phẩm đã có trong giỏ hàng:", existingProduct);
+                            // Kiểm tra số lượng trong giỏ hàng
+                            let totalQuantityInCart = existingProduct.soLuongGioHang + $scope.soluong;
+                            console.log("Tổng số lượng trong giỏ hàng sau khi thêm:", totalQuantityInCart);
+
+                            if (totalQuantityInCart > $scope.soLuongTon) {
+                                Swal.fire({
+                                    title: 'Lỗi',
+                                    text: `Không thể thêm sản phẩm. Số lượng trong giỏ hàng cộng thêm số lượng bạn chọn vượt quá số lượng tồn kho (tồn kho còn: ${$scope.soLuongTon}).`,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                                return;
+                            }
+                        } else {
+                            console.log("Sản phẩm chưa có trong giỏ hàng.");
+                            // Tiến hành thêm sản phẩm vào giỏ hàng
+                        }
+                        // Log số lượng tồn kho
+                        console.log("Số lượng tồn kho của sản phẩm:", $scope.soLuongTon);
+
+                        // Kiểm tra số lượng trong giỏ hàng và số lượng tồn kho
+                        if (existingProduct) {
+                            let totalQuantityInCart = existingProduct.soLuongGioHang + $scope.soluong;
+
+                            console.log("Tổng số lượng trong giỏ hàng sau khi thêm:", totalQuantityInCart);
+
+                            if (totalQuantityInCart > $scope.soLuongTon) {
+                                // Nếu số lượng trong giỏ hàng + số lượng người dùng muốn thêm vượt quá số lượng tồn kho
+                                Swal.fire({
+                                    title: 'Lỗi',
+                                    text: `Số lượng tồn của sản phẩm trong kho không đủ(số lượng còn lại là: ${$scope.soLuongTon}).`,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                                return;
+                            }
+                        }
+
+                        // Nếu không có sản phẩm trong giỏ hàng hoặc có thể thêm, tiếp tục thêm sản phẩm vào giỏ hàng
+                        let cartItem = {
+                            idSanPham: $scope.sanPhamChiTiet[0].idSanPham,
+                            idMauSac: $scope.selectedColor,  // ID màu sắc
+                            idKichThuoc: $scope.selectedSize, // ID kích thước
+                            idChatLieu: $scope.selectedMaterial, // ID chất liệu
+                            soLuong: $scope.soluong // Số lượng mà người dùng chọn
+                        };
+
+                        // Gửi yêu cầu POST để thêm sản phẩm vào giỏ hàng
+                        $http.post(`http://localhost:8080/api/nguoi_dung/gio_hang/add?idUser=${idGioHang}`, cartItem)
+                            .then(function () {
+                                Swal.fire({
+                                    title: 'Thành công',
+                                    text: 'Sản phẩm đã được thêm vào giỏ hàng.',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                            })
+                            .catch(function (error) {
+                                console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+                                Swal.fire({
+                                    title: 'Lỗi',
+                                    text: error.data.message || "Sản phẩm đã ngừng bán.",
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            });
                     })
                     .catch(function (error) {
-                        console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+                        console.error('Error fetching cart items:', error);
                         Swal.fire({
                             title: 'Lỗi',
-                            text: error.data.message || "Sản phẩm không còn khả dụng (tình trạng sản phẩm: không kích hoạt).",
+                            text: "Có lỗi xảy ra khi kiểm tra giỏ hàng.",
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
                     });
             })
             .catch(function (error) {
-                console.error('Error fetching cart items:', error);
+                console.error('Error fetching user data:', error);
                 Swal.fire({
                     title: 'Lỗi',
-                    text: "Có lỗi xảy ra khi kiểm tra giỏ hàng.",
+                    text: "Có lỗi xảy ra khi kiểm tra tài khoản người dùng.",
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
             });
     };
+
 
 
 

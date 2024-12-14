@@ -27,4 +27,8 @@ public interface DotGiamGiaRepository extends JpaRepository<DotGiamGia, Integer>
 
     // Tìm kiếm theo kiểu giảm giá
     List<DotGiamGia> findByKieuGiamGia(Boolean kieuGiamGia);
+
+
+    @Query("SELECT d FROM DotGiamGia d ORDER BY d.ngayCapNhat DESC")
+    List<DotGiamGia> findAllOrderByNgayCapNhatDesc();
 }

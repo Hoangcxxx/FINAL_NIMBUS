@@ -78,7 +78,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
     // Lấy danh sách người dùng
     const getLeLe = function () {
         callApi('GET', `${baseURL}/list/khachle`)
-.then(response => {
+            .then(response => {
                 $scope.customers = response.data; // Đổi từ $scope.users thành $scope.customers
             })
             .catch(error => {
@@ -149,7 +149,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
                 })
                 .catch((error) => {
                     console.error("Lỗi khi xóa người dùng:", error);
-alert("Đã xảy ra lỗi khi xóa người dùng!");
+                    alert("Đã xảy ra lỗi khi xóa người dùng!");
                 });
         }
     };

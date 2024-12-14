@@ -71,7 +71,6 @@ window.GiohangController = function ($scope, $http, $window) {
                     confirmButtonText: 'Đồng ý'
                 });
                 $scope.getCartItems(); // Lấy lại giỏ hàng sau khi xóa
-                window.location.reload();  // Làm mới route để giao diện được cập nhật
             })
             .catch(function (error) {
                 Swal.fire({

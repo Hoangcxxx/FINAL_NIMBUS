@@ -18,7 +18,7 @@ public class HoaDonDTO {
 	private Integer idHoaDon;
 	private String maHoaDon;
 	private String tenNguoiNhan;
-	private double phiShip;
+	private BigDecimal phiShip;
 	private String diaChi;
 	private String diaChiCuThe;
 	private String sdtNguoiNhan;

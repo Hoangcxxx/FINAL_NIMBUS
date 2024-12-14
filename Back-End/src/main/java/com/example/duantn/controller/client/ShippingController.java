@@ -1,8 +1,5 @@
 package com.example.duantn.controller.client;
 
-import com.example.duantn.entity.DiaChiVanChuyen;
-import com.example.duantn.entity.HoaDon;
-import com.example.duantn.entity.PhiVanChuyen;
 import com.example.duantn.repository.DiaChiVanChuyenRepository;
 import com.example.duantn.repository.HoaDonRepository;
 import com.example.duantn.repository.PhiVanChuyenRepository;

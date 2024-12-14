@@ -5,16 +5,14 @@ import com.example.duantn.dto.DotGiamGiaRequest;
 import com.example.duantn.entity.DotGiamGia;
 import com.example.duantn.entity.GiamGiaSanPham;
 import com.example.duantn.entity.Voucher;
+import com.example.duantn.repository.DotGiamGiaRepository;
 import com.example.duantn.service.DotGiamGiaService;
 import com.example.duantn.service.GiamGiaSanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,7 +24,8 @@ public class ADDotGiamGiaController {
     private DotGiamGiaService dotGiamGiaService;
     @Autowired
     private GiamGiaSanPhamService giamGiaSanPhamService;
-
+    @Autowired
+    private DotGiamGiaRepository dotGiamGiaRepository;
     @GetMapping("/search/tenDotGiamGia")
     public List<DotGiamGia> searchByTenVoucher(@RequestParam String tenVoucher) {
         return dotGiamGiaService.findByTenVoucher(tenVoucher);
@@ -84,7 +83,10 @@ public class ADDotGiamGiaController {
 
     @GetMapping
     public List<DotGiamGia> getAllDotGiamGia() {
-        return dotGiamGiaService.getAllDotGiamGia();
+        List<DotGiamGia> list = dotGiamGiaRepository.findAll();
+        return list.stream()
+                .sorted(Comparator.comparing(DotGiamGia::getNgayCapNhat).reversed()) // Sắp xếp giảm dần
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/create_with_san_pham")

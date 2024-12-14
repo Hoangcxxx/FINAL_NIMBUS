@@ -277,9 +277,11 @@
                     <!-- Tổng cộng -->
                     <section class="total mb-4">
                         <ul class="list-unstyled">
-                            <li><strong>Tổng tiền trước giảm giá:</strong> {{subtotal}}</li>
-                            <li><strong>Giảm giá:</strong> {{total_discount}}</li>
-                            <li><strong>Phí vận chuyển:</strong> {{shipping_fee}}</li>
+                            <li><strong>Tổng tiền trước giảm giá:</strong> {{totalBeforeDiscount | currency: '': 0}} VND
+                            </li>
+                            <li ng-if="discountAmount > 0"><strong>Giảm giá:</strong> {{discountAmount | currency:
+                                '': 0}} VND</li>
+                            <li><strong>Phí vận chuyển:</strong> {{hoaDon.phiShip | currency: '': 0}} VND</li>
                             <li class="h4 mt-5">
                                 <strong>Tổng thanh toán:</strong>
                                 {{hoaDon.thanhTien/1 | currency: '': 0}} VND
@@ -350,6 +352,9 @@
         </div>
     </div>
 </div>
+
+
+
 <!-- The Modal -->
 <div class="modal" id="xacNhanModal">
     <div class="modal-dialog">

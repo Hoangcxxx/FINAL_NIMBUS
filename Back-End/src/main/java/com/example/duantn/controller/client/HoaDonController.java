@@ -1,8 +1,10 @@
 package com.example.duantn.controller.client;
 
 import com.example.duantn.dto.HoaDonDTO;
+import com.example.duantn.entity.HoaDon;
 import com.example.duantn.service.HoaDonService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +25,20 @@ public class HoaDonController {
     private HoaDonService hoaDonService;
 
     @PostMapping("/them_thong_tin_nhan_hang")
-    public ResponseEntity<Map<String, String>> placeOrder(@RequestBody HoaDonDTO hoaDonDTO, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> placeOrder(@RequestBody HoaDonDTO hoaDonDTO, HttpServletRequest request, HttpServletResponse reso) {
         try {
-            // Tạo đơn hàng và lấy mã đơn hàng mới tạo
-            String maHoaDon = hoaDonService.createOrder(hoaDonDTO, request);
+            // Tạo đơn hàng và lấy mã đơn hàng mới tạo (giả sử bạn nhận được đối tượng hoặc thông tin từ service)
+            HoaDon hoaDon = hoaDonService.createOrder(hoaDonDTO, request, reso);
+
+            // Lấy mã đơn hàng và id đơn hàng từ đối tượng hoaDon (giả sử HoaDon có trường idHoaDon và maHoaDon)
+            String maHoaDon = hoaDon.getMaHoaDon();
+            Integer idHoaDon = hoaDon.getIdHoaDon();
 
             // Tạo phản hồi trả về cho frontend
-            Map<String, String> response = new HashMap<>();
+            Map<String, Object> response = new HashMap<>();
             response.put("message", "Đơn hàng đã được đặt thành công!");
             response.put("maHoaDon", maHoaDon); // Thêm mã đơn hàng vào phản hồi
+            response.put("idHoaDon", idHoaDon); // Thêm idHoaDon vào phản hồi
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {

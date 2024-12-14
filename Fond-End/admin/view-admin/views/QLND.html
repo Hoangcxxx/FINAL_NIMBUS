@@ -52,7 +52,7 @@
                                 <td>{{user.email}}</td>
                                 <td>{{user.sdt}}</td>
                                 <td>{{user.ngayTao | date: 'dd/MM/yyyy'}}</td>
-<td>
+                                <td>
                                     <input type="checkbox" ng-model="user.trangThai"
                                         ng-change="changeUserStatus(user.idNguoiDung, user.trangThai ? 'unlock' : 'lock')"
                                         id="user-status-{{$index}}" class="switch-input">
@@ -109,7 +109,7 @@
                                 <td>{{employee.tenVaiTro}}</td>
                                 <td>{{employee.ngayTao | date: 'dd/MM/yyyy'}}</td>
                                 <td>
-<input type="checkbox" ng-model="employee.trangThai"
+                                    <input type="checkbox" ng-model="employee.trangThai"
                                         ng-change="changeUserStatus(employee.idNguoiDung, employee.trangThai ? 'unlock' : 'lock')"
                                         id="user-status-{{$index}}" class="switch-input">
                                     <label for="user-status-{{$index}}" class="switch"></label>
@@ -133,8 +133,7 @@
                 </div>
 
             </div>
-            <div class="tab-pane fade " id="customerManagement" role="tabpanel"
-                aria-labelledby="customerTab">
+            <div class="tab-pane fade " id="customerManagement" role="tabpanel" aria-labelledby="customerTab">
                 <div class="row">
                     <div class="col-md-6">
                         <input type="text" class="form-control" placeholder="Tìm kiếm khách hàng lẻ..."
@@ -168,7 +167,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addUserModalLabel">Thêm Người Dùng Mới</h5>
-<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addUserForm">
@@ -220,7 +219,7 @@
                         <button type="submit" class="btn btn-primary">Thêm Người Dùng</button>
                     </form>
                 </div>
-</div>
+            </div>
         </div>
     </div>
     <!-- Modal Cập Nhật Thông Tin Người Dùng -->

@@ -41,6 +41,7 @@ public class DotGiamGiaService {
     public List<DotGiamGia> getAllDotGiamGia() {
         return dotGiamGiaRepository.findAll();
     }
+
     public List<Object[]> getAllSanPhamChuaGiamGia() {
         return dotGiamGiaRepository.getAllSanPhamChuaGiamGia();
     }
@@ -98,6 +99,7 @@ public class DotGiamGiaService {
             dotGiamGia.setMoTa(dotGiamGiaDetails.getMoTa());
             dotGiamGia.setNgayBatDau(dotGiamGiaDetails.getNgayBatDau());
             dotGiamGia.setNgayKetThuc(dotGiamGiaDetails.getNgayKetThuc());
+            dotGiamGia.setNgayCapNhat(new Date());
 
             // Kiểm tra ngày bắt đầu và ngày kết thúc
             validateDotGiamGiaDates(dotGiamGia);

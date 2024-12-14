@@ -1,12 +1,14 @@
 package com.example.duantn.controller.client;
 
 import com.example.duantn.entity.DotGiamGia;
+import com.example.duantn.repository.DotGiamGiaRepository;
 import com.example.duantn.service.DotGiamGiaService;
 import com.example.duantn.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,8 @@ public class SanPhamController {
     private SanPhamService sanPhamService;
     @Autowired
     private DotGiamGiaService dotGiamGiaService;
+    @Autowired
+    private DotGiamGiaRepository dotGiamGiaRepository;
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -106,6 +110,9 @@ public class SanPhamController {
     }
     @GetMapping("/dot_giam_gia")
     public List<DotGiamGia> getAllDotGiamGia() {
-        return dotGiamGiaService.getAllDotGiamGia();
+        List<DotGiamGia> list = dotGiamGiaRepository.findAll();
+        return list.stream()
+                .sorted(Comparator.comparing(DotGiamGia::getNgayCapNhat).reversed()) // Sắp xếp giảm dần
+                .collect(Collectors.toList());
     }
 }

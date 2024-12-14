@@ -7,7 +7,7 @@ public class HoaDonQuery {
             "        h.Id_hoa_don, \n" +
             "        h.ma_hoa_don, \n" +
             "        u.ten_nguoi_dung,\n" +
-            "        u.sdt,\n" +
+            "        h.sdt_nguoi_nhan,\n" +
             "        h.thanh_tien, \n" +
             "        h.loai, \n" +
             "        t.ngay_tao,\n" +
@@ -26,7 +26,7 @@ public class HoaDonQuery {
             "    ls.Id_hoa_don, \n" +
             "    ls.ma_hoa_don, \n" +
             "    ls.ten_nguoi_dung,\n" +
-            "    ls.sdt, \n" +
+            "    ls.sdt_nguoi_nhan, \n" +
             "    ls.thanh_tien, \n" +
             "    ls.loai, \n" +
             "    ls.ngay_tao,\n" +
@@ -109,4 +109,14 @@ public class HoaDonQuery {
             "    dot_giam_gia dgg ON ggs.id_dot_giam_gia = dgg.id_dot_giam_gia  -- Liên kết với bảng dot_giam_gia\n" +
             "WHERE \n" +
             "    h.Id_hoa_don = :idHoaDon;  -- Thay @id_hoa_don bằng ID của hóa đơn bạn muốn truy vấn";
+
+
+    public static final String GET_MA_HOA_DON =
+            "SELECT TOP 1 ma_hoa_don\n" +
+                    "FROM hoa_don\n" +
+                    "ORDER BY Id_hoa_don DESC;\n";
+
+
+
+
 }

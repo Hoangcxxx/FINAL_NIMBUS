@@ -2,7 +2,9 @@ package com.example.duantn.controller.admin;
 
 import com.example.duantn.dto.NguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
+import com.example.duantn.service.DangNhapService;
 import com.example.duantn.service.NguoiDungService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ public class ADNguoiDungController {
 
     @Autowired
     private NguoiDungService nguoiDungService;
+
+    @Autowired
+    private DangNhapService dangNhapService;
 
     // Lấy tất cả người dùng có vai trò id = 2
     @GetMapping("/list")
@@ -63,6 +68,29 @@ public class ADNguoiDungController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String sdt) {
         return nguoiDungService.searchNguoiDung(tenNguoiDung, email, sdt);
+    }
+
+    // Cập nhật thông tin người dùng
+    @PutMapping("/{id}")
+    public ResponseEntity<NguoiDung> updateNguoiDung(@PathVariable Integer id, @RequestBody @Valid NguoiDung nguoiDung) {
+        NguoiDung updatedNguoiDung = nguoiDungService.updateNguoiDung(id, nguoiDung);
+        if (updatedNguoiDung != null) {
+            return ResponseEntity.ok(updatedNguoiDung);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+    // Phương thức đăng ký
+    @PostMapping("/dang_ky")
+    public ResponseEntity<NguoiDung> dangKy(@RequestBody NguoiDung nguoiDung) {
+        try {
+            NguoiDung nguoiDungMoi = dangNhapService.dangKy(nguoiDung);
+            return ResponseEntity.ok(nguoiDungMoi);
+        } catch (Exception e) {
+            System.out.println("Đăng ký thất bại: " + e.getMessage()); // Log lỗi khi đăng ký thất bại
+            e.printStackTrace(); // In ra stack trace để dễ dàng theo dõi lỗi
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     // API để lấy tất cả người dùng có vai trò là 2 hoặc 4

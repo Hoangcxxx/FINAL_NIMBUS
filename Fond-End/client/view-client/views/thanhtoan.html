@@ -25,19 +25,21 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="phone" ng-model="userInfo.sdt"
-                            placeholder="Nhập số điện thoại">
+                            placeholder="Nhập số điện thoại" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="address" class="form-label">Địa chỉ cụ thể<span class="text-danger">*</span></label>
+                        <label for="address" class="form-label">Địa chỉ cụ thể <span
+                                class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="address" ng-model="userInfo.diaChi"
                             placeholder="Nhập địa chỉ" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label class="form-label" for="city">Chọn Tỉnh/Thành phố:</label>
+                        <label class="form-label" for="city">Chọn Tỉnh/Thành phố <span
+                                class="text-danger">*</span>:</label>
                         <select class="form-select" ng-model="selectedCity"
                             ng-options="city.name for city in cities track by city.code" ng-change="onCityChange()"
                             required>
@@ -46,7 +48,7 @@
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label class="form-label" for="district">Chọn Huyện:</label>
+                        <label class="form-label" for="district">Chọn Huyện <span class="text-danger">*</span>:</label>
                         <select class="form-select" ng-model="selectedDistrict"
                             ng-options="district.name for district in districts track by district.code"
                             ng-change="onDistrictChange()" ng-disabled="!selectedCity" required>
@@ -55,7 +57,7 @@
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label class="form-label" for="ward">Chọn Xã/Phường:</label>
+                        <label class="form-label" for="ward">Chọn Xã/Phường <span class="text-danger">*</span>:</label>
                         <select class="form-select" ng-model="selectedWard"
                             ng-options="ward.name for ward in wards track by ward.code" ng-disabled="!selectedDistrict"
                             ng-change="calculateShippingFee()" required>
@@ -69,6 +71,7 @@
                         placeholder="Ghi chú"></textarea>
                 </div>
             </form>
+
 
             <!-- Payment Method -->
             <h5 class="mt-4">Phương thức Thanh toán</h5>
@@ -131,11 +134,6 @@
                 <hr>
 
                 <!-- Test phiếu giảm giá -->
-                <div class="mb-3">
-                    <label for="promoCode" class="form-label">Mã voucher</label>
-                    <input type="text" class="form-control" id="promoCode" ng-model="promoCode"
-                        placeholder="Nhập mã khuyến mãi (nếu có)">
-                </div>
                 <button data-bs-toggle="modal" data-bs-target="#voucherModal" ng-click="dsvoucher()"
                     class="btn btn-warning w-100">Áp dụng mã khuyến mãi</button>
                 <hr>
@@ -173,11 +171,11 @@
                         <span ng-if="selectedVoucher">
                             <!-- Kiểm tra kiểu giảm giá -->
                             <span ng-if="!selectedVoucher.kieuGiamGia">
-                                Giảm giá: {{ selectedVoucher.giaTriGiamGia }}% {{
+                                {{ selectedVoucher.giaTriGiamGia }}% {{
                                 calculateDiscountAmount(selectedVoucher) | currency: '' : 0 }}
                             </span>
                             <span ng-if="selectedVoucher.kieuGiamGia">
-                                Giảm giá: {{ selectedVoucher.giaTriGiamGia | currency: '' : 0 }} VND
+                                {{ selectedVoucher.giaTriGiamGia | currency: '' : 0 }} VND
                             </span>
                         </span>
                         <span ng-if="!selectedVoucher">Chưa chọn voucher</span>
@@ -188,12 +186,23 @@
                 <div ng-if="voucherError" class="text-danger">{{ voucherError }}</div>
 
                 <div class="d-flex justify-content-between">
-                    Phí vận chuyển:
-                    <div>
-                        <span ng-if="shippingFee">{{ shippingFee | currency: '' : 0 }} VND </span>
-                        <span ng-if="!shippingFee">Miễn Phí</span>
+                    <div>Phí vận chuyển:</div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <!-- Kiểm tra và hiển thị phí vận chuyển nếu có giá trị và lớn hơn 0 -->
+                            <span ng-if="shippingFee && shippingFee > 0">
+                                {{ shippingFee | currency:'' : 0 }} VND <!-- Hiển thị phí vận chuyển với ký hiệu VND -->
+                            </span>
+
+                            <!-- Thông báo lỗi nếu không có phí vận chuyển hoặc phí vận chuyển <= 0 -->
+                            <span ng-if="!shippingFee || shippingFee <= 0">
+                                0
+                            </span>
+                        </div>
                     </div>
                 </div>
+
+
 
                 <div class="d-flex justify-content-between mt-2 align-items-center" style="font-size: 25px;">
                     <strong>Tổng tiền:</strong>
@@ -266,7 +275,6 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <strong class="text-dark" style="font-size: 1.1rem;">{{voucher.maVoucher}}</strong>
-                                    - {{ voucher.moTa }}
                                 </div>
                                 <span class="badge" ng-style="{
                                                 'background': voucher.isUsable ? 'linear-gradient(to right, #28a745, #218838)' : '#e74c3c',
@@ -279,9 +287,31 @@
                                     {{ voucher.trangThaiGiamGia.tenTrangThaiGiamGia }}
                                 </span>
                             </div>
-                            <small class="text-muted d-block mt-2" style="color: #6c757d;">
-                                Trạng thái: {{ voucher.isUsable ? 'Có thể sử dụng' : 'Không thể sử dụng' }}
-                            </small>
+
+
+                            <!-- Hiển thị thông tin chi tiết về giá tiền -->
+                            <div style="margin-top: 15px; font-size: 1rem; color: #555;">
+
+                                <p>
+                                    <strong>Giảm giá:</strong>
+                                    <span style="color: #e74c3c; font-weight: bold;">
+                                        <!-- Nếu là phần trăm (true) -->
+                                        <span ng-if="voucher.kieuGiamGia">
+                                            {{ voucher.giaTriGiamGia | currency:"":0 }} VND
+                                        </span>
+                                        <!-- Nếu là tiền tệ (false) -->
+                                        <span ng-if="!voucher.kieuGiamGia">
+                                            {{ voucher.giaTriGiamGia | currency:"":0 }} %
+                                        </span>
+                                    </span>
+                                </p>
+                                <p>
+                                    <strong>Áp dụng cho đơn hàng từ:</strong>
+                                    <span>{{ voucher.soTienToiThieu | currency:"":0 }} VND</span>
+                                    đến
+                                    <span>{{ voucher.giaTriToiDa | currency:"":0 }} VND</span>
+                                </p>
+                            </div>
                             <div ng-if="voucher.isUsable" style="color: #28a745; font-weight: bold; font-size: 14px;">
                                 <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>Có thể
                                 sử

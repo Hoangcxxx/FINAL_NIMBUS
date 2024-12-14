@@ -64,4 +64,9 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "tthd.idTrangThaiHoaDon = (SELECT MAX(t.idTrangThaiHoaDon) FROM TrangThaiHoaDon t WHERE t.hoaDon.idHoaDon = h.idHoaDon)")
     List<Object[]> findHoaDonWithTrangThaiAndLoaiByMaHoaDon(@Param("maHoaDon") String maHoaDon);
 
+
+    @Query(value = HoaDonQuery.GET_MA_HOA_DON, nativeQuery = true)
+    String findLatestHoaDon();
+
+
 }

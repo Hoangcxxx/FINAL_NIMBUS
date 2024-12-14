@@ -23,15 +23,18 @@ window.ThanhCongController = function ($scope, $http) {
                     $scope.orderData = {
                         maHoaDon: hoaDon.maHoaDon,
                         tenPhuongThucThanhToan: hoaDon.tenPhuongThucThanhToan,
+                        phiShip: hoaDon.phiShip,
                         tenNguoiNhan: hoaDon.tenNguoiNhan,
                         diaChi: hoaDon.diaChi,
                         sdtNguoiNhan: hoaDon.sdtNguoiNhan,
                         ghiChu: hoaDon.ghiChu,
                         thanhTien: hoaDon.thanhTien,
-                        // phiShip: hoaDon.phiShip,
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
-                        xa: hoaDon.tenXa
+                        xa: hoaDon.tenXa,
+                        giaTriMavoucher: hoaDon.giaTriMavoucher || 0, // Giá trị giảm giá, mặc định là 0 nếu không có
+                        kieugiamgia: hoaDon.kieugiamgia, // 0: %, 1: giá tiền
+                        idlichsuhoadon: hoaDon.idlichsuhoadon || []
                     };
                     console.log("214141414214", $scope.orderData);
                     // Cập nhật chi tiết sản phẩm
@@ -39,15 +42,22 @@ window.ThanhCongController = function ($scope, $http) {
                         $scope.orderDetails = {
                             listSanPhamChiTiet: hoaDon.listSanPhamChiTiet,
                             thanhTien: hoaDon.thanhTien,
-                            phiShip: hoaDon.phiShip
+                            giaTien:hoaDon.giaTien,
+                            maSPCT: hoaDon.maSPCT,
+                            tenSanPham: hoaDon.tenSanPham,
+                            tenmausac: hoaDon.tenmausac, // Đảm bảo trường này tồn tại
+                            tenchatlieu: hoaDon.tenchatlieu, // Đảm bảo trường này tồn tại
+                            tenkichthuoc: hoaDon.tenkichthuoc, // Đảm bảo trường này tồn tại
+                            tongtien: hoaDon.tongtien,
+                            giaKhuyenMai: hoaDon.giaKhuyenMai
                         };
-
+                        console.log("214141414214", $scope.orderDetails);
                         // Lấy hình ảnh cho từng sản phẩm
                         $scope.orderDetails.listSanPhamChiTiet.forEach((item) => {
                             $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${item.idSanPham}`)
                                 .then(function (imageResponse) {
                                     // Gán hình ảnh cho sản phẩm nếu có
-                                    item.urlAnh = imageResponse.data[0]?.urlAnh || '';
+item.urlAnh = imageResponse.data[0]?.urlAnh || '';
                                 })
                                 .catch(function (error) {
                                     console.error("Lỗi khi lấy hình ảnh sản phẩm:", error);

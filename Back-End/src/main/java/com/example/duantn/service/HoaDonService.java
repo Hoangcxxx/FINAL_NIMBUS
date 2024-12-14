@@ -5,6 +5,7 @@ import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
@@ -19,6 +20,8 @@ import java.util.stream.Collectors;
 public class HoaDonService {
     @Autowired
     private HoaDonRepository hoaDonRepository;
+    @Autowired
+    private PhiVanChuyenRepository phiVanChuyenRepository;
     @Autowired
     private LichSuHoaDonRepository lichSuHoaDonRepository;
     @Autowired
@@ -117,7 +120,7 @@ public class HoaDonService {
 
     private HoaDonDTO convertToDTO(HoaDon hoaDon) {
         HoaDonDTO dto = new HoaDonDTO();
-
+        dto.setPhiShip(hoaDon.getPhiShip());
         // Gán thông tin hóa đơn
         dto.setIdHoaDon(hoaDon.getIdHoaDon());
         dto.setMaHoaDon(hoaDon.getMaHoaDon());
@@ -234,7 +237,71 @@ public class HoaDonService {
         lichSuThanhToan.setHoaDon(hoaDon);
         lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
 
+        // Thêm trạng thái "Tạo đơn hàng" - Trạng thái mới của hóa đơn sau khi tạo
+        TrangThaiHoaDon trangThaiHoaDonTaoDon = new TrangThaiHoaDon();
+        TrangThaiHoaDon trangThaiHoaDonChoXuLy = new TrangThaiHoaDon();
+
+// Trạng thái "Tạo đơn hàng"
+        LoaiTrangThai trangThaiTaoDon = loaiTrangThaiRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+        trangThaiHoaDonTaoDon.setMoTa("Tạo đơn hàng");
+        trangThaiHoaDonTaoDon.setNgayTao(new Date());
+        trangThaiHoaDonTaoDon.setIdNhanVien(1);
+        trangThaiHoaDonTaoDon.setNgayCapNhat(new Date());
+        trangThaiHoaDonTaoDon.setLoaiTrangThai(trangThaiTaoDon);
+        trangThaiHoaDonTaoDon.setHoaDon(hoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDonTaoDon);
+
+// Trạng thái "Chờ xử lý" sau khi thanh toán được chọn
+        LoaiTrangThai trangThaiChoXuLy = loaiTrangThaiRepository.findById(2).orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+        trangThaiHoaDonChoXuLy.setMoTa("Chờ xác nhận");
+        trangThaiHoaDonChoXuLy.setNgayTao(new Date());
+        trangThaiHoaDonChoXuLy.setIdNhanVien(1);
+        trangThaiHoaDonChoXuLy.setNgayCapNhat(new Date());
+        trangThaiHoaDonChoXuLy.setLoaiTrangThai(trangThaiChoXuLy);
+        trangThaiHoaDonChoXuLy.setHoaDon(hoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDonChoXuLy);
+
         lichSuThanhToanRepository.save(lichSuThanhToan);
+        // Lấy hoặc lưu thông tin Tỉnh, Huyện, Xã
+        if (hoaDonDTO.getTinh() == null || hoaDonDTO.getHuyen() == null || hoaDonDTO.getXa() == null) {
+            throw new RuntimeException("Thông tin Tỉnh, Huyện, hoặc Xã không hợp lệ");
+        }
+        Tinh tinh = tinhRepository.findById(hoaDonDTO.getTinh()).orElseGet(() -> tinhRepository.save(fetchCityInfo(hoaDonDTO.getTinh().toString())));
+        Huyen huyen = huyenRepository.findById(hoaDonDTO.getHuyen()).orElseGet(() -> huyenRepository.save(fetchDistrictInfo(hoaDonDTO.getHuyen().toString())));
+        Xa xa = xaRepository.findById(hoaDonDTO.getXa()).orElseGet(() -> xaRepository.save(fetchWardInfo(hoaDonDTO.getXa().toString())));
+
+        // Tạo và lưu đối tượng DiaChiVanChuyen
+        DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
+        diaChiVanChuyen.setTinh(tinh);
+        diaChiVanChuyen.setNguoiDung(nguoiDung);
+        diaChiVanChuyen.setDiaChiCuThe(hoaDonDTO.getDiaChiCuThe());
+        diaChiVanChuyen.setHuyen(huyen);
+        diaChiVanChuyen.setXa(xa);
+        diaChiVanChuyen.setTrangThai(true);
+        diaChiVanChuyen.setNgayTao(new Date());
+        diaChiVanChuyen.setNgayCapNhat(new Date());
+        diaChiVanChuyen.setMoTa(String.format("Địa chỉ: %s, %s, %s", xa.getTenXa(), huyen.getTenHuyen(), tinh.getTenTinh()));
+
+        diaChiVanChuyen = diaChiVanChuyenRepository.save(diaChiVanChuyen);
+
+        // Gán địa chỉ vận chuyển đã lưu cho hóa đơn
+        hoaDon.setDiaChiVanChuyen(diaChiVanChuyen);
+        // Khởi tạo đối tượng Phí vận chuyển
+
+        PhiVanChuyen phiVanChuyen = new PhiVanChuyen();
+        phiVanChuyen.setHoaDon(hoaDon);  // Liên kết với hóa đơn đã lưu
+        phiVanChuyen.setDiaChiVanChuyen(diaChiVanChuyen);
+        phiVanChuyen.setSoTienVanChuyen(BigDecimal.valueOf(22000));
+        phiVanChuyen.setTrangThai(true);
+        phiVanChuyen.setMoTa("Phí vận chuyển cho hóa đơn mã: " + hoaDon.getMaHoaDon());
+
+        // Lưu phí vận chuyển
+        phiVanChuyen = phiVanChuyenRepository.save(phiVanChuyen);
+
+        // Gán phí vận chuyển vào hóa đơn
+        hoaDon.setPhiShip(phiVanChuyen.getSoTienVanChuyen());
+
+
         processCartItems(hoaDonDTO, hoaDon);
     }
 
@@ -335,79 +402,38 @@ public class HoaDonService {
         gioHangRepository.save(gioHang);
     }
 
-    public String createOrder(HoaDonDTO hoaDonDTO, HttpServletRequest res) {
+    public HoaDon createOrder(HoaDonDTO hoaDonDTO, HttpServletRequest res, HttpServletResponse res1) {
         if (hoaDonDTO.getIdNguoiDung() == null) {
             throw new RuntimeException("ID Người dùng không được null");
         }
-
         long currentCount = hoaDonRepository.count();
         String generatedMaHoaDon = "HD00" + (currentCount + 1);
 
         HoaDon hoaDon = new HoaDon();
         hoaDon.setMaHoaDon(generatedMaHoaDon);
 
+
         // Kiểm tra và lấy thông tin người dùng
-        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
+        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
         hoaDon.setNguoiDung(nguoiDung);
 
-        // Lấy hoặc lưu thông tin Tỉnh, Huyện, Xã
-        if (hoaDonDTO.getTinh() == null || hoaDonDTO.getHuyen() == null || hoaDonDTO.getXa() == null) {
-            throw new RuntimeException("Thông tin Tỉnh, Huyện, hoặc Xã không hợp lệ");
-        }
-
-        Tinh tinh = tinhRepository.findById(hoaDonDTO.getTinh())
-                .orElseGet(() -> tinhRepository.save(fetchCityInfo(hoaDonDTO.getTinh().toString())));
-
-        Huyen huyen = huyenRepository.findById(hoaDonDTO.getHuyen())
-                .orElseGet(() -> huyenRepository.save(fetchDistrictInfo(hoaDonDTO.getHuyen().toString())));
-
-        Xa xa = xaRepository.findById(hoaDonDTO.getXa())
-                .orElseGet(() -> xaRepository.save(fetchWardInfo(hoaDonDTO.getXa().toString())));
-
-        // Tạo và lưu đối tượng DiaChiVanChuyen
-        DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
-        diaChiVanChuyen.setTinh(tinh);
-        diaChiVanChuyen.setNguoiDung(nguoiDung);
-        diaChiVanChuyen.setDiaChiCuThe(hoaDonDTO.getDiaChiCuThe());
-        diaChiVanChuyen.setHuyen(huyen);
-        diaChiVanChuyen.setXa(xa);
-        diaChiVanChuyen.setTrangThai(true);
-        diaChiVanChuyen.setNgayTao(new Date());
-        diaChiVanChuyen.setNgayCapNhat(new Date());
-        diaChiVanChuyen.setMoTa(String.format("Địa chỉ: %s, %s, %s", xa.getTenXa(), huyen.getTenHuyen(), tinh.getTenTinh()));
-
-        diaChiVanChuyen = diaChiVanChuyenRepository.save(diaChiVanChuyen);
-
-        // Gán địa chỉ vận chuyển đã lưu cho hóa đơn
-        hoaDon.setDiaChiVanChuyen(diaChiVanChuyen);
 
         // Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
         if (hoaDonDTO.getIdvoucher() != null) {
-            // Tìm Voucher theo ID
-            Voucher voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy Voucher với ID: " + hoaDonDTO.getIdvoucher()));
+            Voucher voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher()).orElseThrow(() -> new RuntimeException("Không tìm thấy Voucher với ID: " + hoaDonDTO.getIdvoucher()));
 
-            // Kiểm tra số lượng của voucher còn đủ để sử dụng
             if (voucher.getSoLuong() <= 0) {
                 throw new RuntimeException("Voucher này đã hết số lượng sử dụng.");
             }
 
-            // Trừ đi số lượng voucher
             voucher.setSoLuong(voucher.getSoLuong() - 1);
-
-            // Lưu lại thông tin voucher đã được trừ số lượng
             voucherRepository.save(voucher);
 
-            // Gán voucher vào hóa đơn nếu có
             hoaDon.setVoucher(voucher);
         } else {
-            // Nếu không có idvoucher thì không làm gì, hoặc có thể thực hiện hành động khác nếu cần
-            hoaDon.setVoucher(null);  // Đảm bảo rằng không có voucher nào được gán vào hóa đơn
+            hoaDon.setVoucher(null);
         }
 
-
-        // Gán thông tin khác cho hóa đơn
         hoaDon.setNgayTao(new Date());
         hoaDon.setTenNguoiNhan(hoaDonDTO.getTenNguoiNhan());
         hoaDon.setDiaChi(hoaDonDTO.getDiaChi());
@@ -417,54 +443,21 @@ public class HoaDonService {
         hoaDon.setTrangThai(true);
         hoaDon.setLoai(1);
 
-        // Xử lý phương thức thanh toán
         LoaiTrangThai loaiTrangThai;
         switch (hoaDonDTO.getTenPhuongThucThanhToan()) {
             case "cod":
                 saveCODPayment(hoaDon, generatedMaHoaDon, hoaDonDTO);
-                loaiTrangThai = loaiTrangThaiRepository.findById(2)
-                        .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+                loaiTrangThai = loaiTrangThaiRepository.findById(2).orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
                 break;
             case "vnpay":
                 saveVNPayPayment(hoaDon, generatedMaHoaDon, hoaDonDTO, res);
-                loaiTrangThai = loaiTrangThaiRepository.findById(2)
-                        .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
                 break;
-            case "zalopay":
-                throw new RuntimeException("Chức năng ZaloPay đang phát triển");
             default:
                 throw new RuntimeException("Phương thức thanh toán không hợp lệ");
         }
 
-        // Lưu hóa đơn sau khi đã gán đầy đủ dữ liệu
-        hoaDonRepository.save(hoaDon);
-
-        // Trạng thái "Tạo đơn hàng"
-        TrangThaiHoaDon trangThaiHoaDonTaoDon = new TrangThaiHoaDon();
-        LoaiTrangThai trangThaiTaoDon = loaiTrangThaiRepository.findById(1)
-                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
-        trangThaiHoaDonTaoDon.setMoTa("Tạo đơn hàng");
-        trangThaiHoaDonTaoDon.setNgayTao(new Date());
-        trangThaiHoaDonTaoDon.setNgayCapNhat(new Date());
-        trangThaiHoaDonTaoDon.setLoaiTrangThai(trangThaiTaoDon);
-        trangThaiHoaDonTaoDon.setIdNhanVien(1);
-        trangThaiHoaDonTaoDon.setHoaDon(hoaDon);
-        trangThaiHoaDonRepository.save(trangThaiHoaDonTaoDon);
-
-        // Trạng thái "Chờ xử lý"
-        TrangThaiHoaDon trangThaiHoaDonChoXuLy = new TrangThaiHoaDon();
-        LoaiTrangThai trangThaiChoXuLy = loaiTrangThaiRepository.findById(2)
-                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
-        trangThaiHoaDonChoXuLy.setMoTa("Chờ xác nhận");
-        trangThaiHoaDonChoXuLy.setNgayTao(new Date());
-        trangThaiHoaDonChoXuLy.setNgayCapNhat(new Date());
-        trangThaiHoaDonChoXuLy.setLoaiTrangThai(trangThaiChoXuLy);
-        trangThaiHoaDonChoXuLy.setIdNhanVien(1);
-        trangThaiHoaDonChoXuLy.setHoaDon(hoaDon);
-        trangThaiHoaDonRepository.save(trangThaiHoaDonChoXuLy);
-
-
-        return generatedMaHoaDon;
+        hoaDonDTO.setIdHoaDon(hoaDon.getIdHoaDon());
+        return hoaDon;
     }
 
     // Lấy thông tin Tỉnh từ API

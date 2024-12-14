@@ -1,4 +1,4 @@
-﻿ CREATE DATABASE testdatn2;
+﻿CREATE DATABASE testdatn2;
 GO
 
 USE testdatn2;
@@ -1043,7 +1043,7 @@ go
 INSERT INTO san_pham_chi_tiet (ma_san_pham_chi_tiet,so_luong, id_kich_thuoc_chi_tiet, id_mau_sac_chi_tiet, id_chat_lieu_chi_tiet, id_san_pham)
 VALUES 
 /* Áo phông */
-('SPCT001',100,  1, 3, 1, 1),
+('SPCT001',3,  1, 3, 1, 1),
 ('SPCT002',100, 2, 3, 1,  1),
 ('SPCT003',100,  3, 3, 1,  1),
 ('SPCT004',100,  4, 3, 1, 1),
