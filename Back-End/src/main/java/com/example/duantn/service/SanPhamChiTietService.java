@@ -5,6 +5,7 @@ import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,8 +30,15 @@ public class SanPhamChiTietService {
     public List<Object[]> getById(Integer idSanPhamCT) {
         return sanPhamChiTietRepository.getSanPhamById(idSanPhamCT);
     }
-    public List<Object[]> getSanPhamCTById(Integer idSanPhamCT) {
-        return sanPhamChiTietRepository.getSanPhamCTByIdSanPham(idSanPhamCT);
+
+    public List<Object[]> getAllSanPhamCTById(Integer idSanPham) {
+        return sanPhamChiTietRepository.getAllSanPhamByIdSanPham(idSanPham);
+    }
+    public List<SanPhamChiTiet> timSanPhamChiTiet(Integer idSanPham, Integer idChatLieu, Integer idMauSac, Integer idKichThuoc) {
+        return sanPhamChiTietRepository.findByMauSacChatLieuKichThuocSanPham(idSanPham, idChatLieu, idMauSac, idKichThuoc);
+    }
+    public List<Object[]> getSanPhamCTByIdSanPhamLonHon0(Integer idSanPhamCT) {
+        return sanPhamChiTietRepository.getSanPhamCTByIdSanPhamLonHon0(idSanPhamCT);
     }
     public List<Object[]> getMauSacById(Integer idSanPhamCT) {
         return sanPhamChiTietRepository.getMauSacByIdSanPham(idSanPhamCT);
@@ -56,7 +64,10 @@ public class SanPhamChiTietService {
     public void deleteByIds(List<Integer> idSanPhamCTs) {
         sanPhamChiTietRepository.deleteByIds(idSanPhamCTs);
     }
-
+    @Transactional
+    public void deleteByIdSanPhamCTs(Integer idSanPhamCT) {
+        sanPhamChiTietRepository.deleteSanPhamChiTietByIdSanPhamChiTiet(idSanPhamCT);
+    }
 
     // Giả sử bạn có một phương thức lưu cho ChatLieuChiTiet
 
@@ -83,14 +94,23 @@ public class SanPhamChiTietService {
 
 
     public List<SanPhamChiTiet> createMultiple(List<SanPhamChiTiet> sanPhamChiTietList, Integer idSanPham) throws IOException {
-        for (SanPhamChiTiet spct : sanPhamChiTietList) {
+        // Lấy tổng số lượng sản phẩm chi tiết hiện có trong DB để tăng mã đúng
+        long currentCount = sanPhamChiTietRepository.count();
+
+        for (int i = 0; i < sanPhamChiTietList.size(); i++) {
+            SanPhamChiTiet spct = sanPhamChiTietList.get(i);
+
+            // Tạo mã sản phẩm chi tiết cho từng sản phẩm trong danh sách
+            String generatedMaHoaDon = "SPCT" + String.format("%03d", currentCount + 1 + i);
+
             // Kiểm tra và thiết lập sản phẩm
             SanPham sanPham = new SanPham();
             sanPham.setIdSanPham(idSanPham); // Gán ID sản phẩm từ tham số
+            spct.setMaSanPhamCT(generatedMaHoaDon); // Gán mã sản phẩm chi tiết đã tạo
             spct.setSanPham(sanPham);
             spct.setSoLuong(0);
             spct.setTrangThai(true); // Trạng thái là true
-            spct.setNgayTao(new Date()); // Ngày cập nhật là ngày hiện tại
+            spct.setNgayTao(new Date()); // Ngày tạo là ngày hiện tại
             spct.setNgayCapNhat(new Date()); // Ngày cập nhật là ngày hiện tại
 
             // Lưu chatLieuChiTiet nếu cần
@@ -117,7 +137,11 @@ public class SanPhamChiTietService {
             }
             spct.setKichThuocChiTiet(kichThuocChiTiet);
         }
+
         return sanPhamChiTietRepository.saveAll(sanPhamChiTietList);
     }
 
+    public SanPhamChiTiet getSanPhamChiTietById(Integer idSanPhamChiTiet) {
+        return sanPhamChiTietRepository.findById(idSanPhamChiTiet).orElse(null);
+    }
 }

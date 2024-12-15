@@ -18,11 +18,11 @@ public class TrangThaiHoaDon {
     @Column(name = "Id_trang_thai_hoa_don")
     private Integer idTrangThaiHoaDon;
 
-    @Column(name = "ten_trang_thai", nullable = false)
-    private String tenTrangThai;
-
     @Column(name = "mo_ta")
     private String moTa;
+
+    @Column(name = "id_nhan_vien")
+    private Integer idNhanVien;
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -31,4 +31,11 @@ public class TrangThaiHoaDon {
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
+    @ManyToOne  // Nhiều thông báo có thể thuộc về một người dùng
+    @JoinColumn(name = "id_hoa_don")  // Tên cột khóa ngoại
+    private HoaDon hoaDon;  // Liên kết đến bảng người dùng
+    @ManyToOne
+    @JoinColumn(name = "id_loai_trang_thai")
+    private LoaiTrangThai loaiTrangThai;
+
 }

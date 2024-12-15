@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/san_pham_chi_tiet")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequestMapping("/api/nguoi_dung/san_pham_chi_tiet")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
 public class SanPhamCTController {
     @Autowired
     private SanPhamChiTietService service;
@@ -38,11 +38,19 @@ public class SanPhamCTController {
 
     @GetMapping("/{idSanPhamCT}")
     public ResponseEntity<List<Map<String, Object>>> getById(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getById(idSanPhamCT), "idSanPham", "tenSanPham", "giaBan", "moTa");
+        return getResponse(service.getById(idSanPhamCT), "idSanPham","maSanPham", "tenSanPham","tenDanhMuc","giaBan", "moTa", "ngayTao","tenDotGiamGia","giaKhuyenMai","giaTriGiamGia","kieuGiamGia","ngayBatDau","ngayKetThuc");
     }
-    @GetMapping("/findSanPhamCT/{idSanPhamCT}")
-    public ResponseEntity<List<Map<String, Object>>> getSanPhamCTById(@PathVariable Integer idSanPhamCT) {
-        return getResponse(service.getSanPhamCTById(idSanPhamCT), "idSanPhamCT","idSanPham", "tenSanPham", "soLuong","tenChatLieu","tenMauSac","tenKichThuoc", "moTa");
+
+    // Cập nhật lại method để tìm kiếm sản phẩm chi tiết theo idSanPham và các tham số tùy chọn
+    @GetMapping("/findSanPhamCT/{idSanPham}")
+    public List<SanPhamChiTiet> timSanPhamChiTiet(
+            @PathVariable Integer idSanPham,
+            @RequestParam(required = false) Integer idChatLieu, // idChatLieu từ request params
+            @RequestParam(required = false) Integer idMauSac, // idMauSac từ request params
+            @RequestParam(required = false) Integer idKichThuoc // idKichThuoc từ request params
+    ) {
+        // Gọi service để tìm kiếm và trả về danh sách sản phẩm chi tiết
+        return service.timSanPhamChiTiet(idSanPham, idChatLieu, idMauSac, idKichThuoc);
     }
 
     @GetMapping("/mau_sac/{idSanPhamCT}")
@@ -59,6 +67,7 @@ public class SanPhamCTController {
     public ResponseEntity<List<Map<String, Object>>> getChatLieuById(@PathVariable Integer idSanPhamCT) {
         return getResponse(service.getChatLieuById(idSanPhamCT), "idChatLieu", "tenChatLieu");
     }
+
 
 
 

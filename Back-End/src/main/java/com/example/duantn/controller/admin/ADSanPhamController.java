@@ -1,7 +1,9 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.entity.HinhAnhSanPham;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
+import com.example.duantn.service.HinhAnhSanPhamService;
 import com.example.duantn.service.SanPhamChiTietService;
 import com.example.duantn.service.SanPhamService;
 import jakarta.transaction.Transactional;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,23 +22,57 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/ad_san_pham")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequestMapping("/api/admin/san_pham")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class ADSanPhamController {
 
     @Autowired
     private SanPhamService sanPhamService;
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int SANPHAM_CODE_LENGTH = 5;
+    private static final SecureRandom RANDOM = new SecureRandom();
+    @Autowired
+    private HinhAnhSanPhamService hinhAnhSanPhamService;
+    @GetMapping("/search")
+    public ResponseEntity<List<SanPham>> timSanPhamTheoTenController(@RequestParam("tenSanPham") String tenSanPham) {
+        // Thêm dấu % vào sau tham số để tìm kiếm các sản phẩm bắt đầu với tenSanPham
+        List<SanPham> sanPhamList = sanPhamService.timSanPhamTheoTen(tenSanPham + "%");
+
+        if (sanPhamList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Trả về 204 nếu không có sản phẩm nào
+        }
+        return new ResponseEntity<>(sanPhamList, HttpStatus.OK); // Trả về 200 nếu có sản phẩm
+    }
+    @GetMapping("/hinh_anh/{idSanPham}")
+    public ResponseEntity<List<HinhAnhSanPham>> getHinhAnhBySanPhamId(@PathVariable Integer idSanPham) {
+        List<HinhAnhSanPham> hinhAnhs = hinhAnhSanPhamService.getHinhAnhBySanPhamId(idSanPham);
+        if (hinhAnhs != null && !hinhAnhs.isEmpty()) {
+            return ResponseEntity.ok(hinhAnhs);
+        }
+        return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy hình ảnh
+    }
+
+    // Hàm tạo mã sản phẩm ngẫu nhiên
+    private String generateRandomProductCode() {
+        StringBuilder sb = new StringBuilder(SANPHAM_CODE_LENGTH);
+        for (int i = 0; i < SANPHAM_CODE_LENGTH; i++) {
+            int index = RANDOM.nextInt(CHARACTERS.length());
+            sb.append(CHARACTERS.charAt(index));
+        }
+        return sb.toString();
+    }
 
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
-        map.put("tenSanPham", row[1]);
-        map.put("giaBan", row[2]);
-        map.put("moTa", row[3]);    // Cập nhật chỉ số cho mô tả
-        map.put("tenDanhMuc", row[4]); // Cập nhật chỉ số cho trạng thái
-        map.put("trangThai", row[5]); // Cập nhật chỉ số cho trạng thái
+        map.put("maSanPham", row[1]);
+        map.put("tenSanPham", row[2]);
+        map.put("giaBan", row[3]);
+        map.put("moTa", row[4]);    // Cập nhật chỉ số cho mô tả
+        map.put("tenDanhMuc", row[5]); // Cập nhật chỉ số cho trạng thái
+        map.put("trangThai", row[6]); // Cập nhật chỉ số cho trạng thái
         return map;
     }
 
@@ -68,8 +105,11 @@ public class ADSanPhamController {
         Date ngayTao = new Date();
         Date ngayCapNhat = new Date();
 
+        // Tạo mã sản phẩm ngẫu nhiên
+        String maSanPham = generateRandomProductCode();
+
         // Thêm sản phẩm vào cơ sở dữ liệu (phương thức sẽ lưu và không trả về ID)
-        sanPhamService.addSanPham(idDanhMuc, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
+        sanPhamService.addSanPham(idDanhMuc, maSanPham, tenSanPham, giaBan, moTa, ngayTao, ngayCapNhat, trangThai);
         System.out.println("Sản phẩm đã được thêm.");
 
         // Lấy ID sản phẩm mới nhất
@@ -102,6 +142,7 @@ public class ADSanPhamController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
     // Cập nhật sản phẩm
     @PutMapping("/{id}")
     public ResponseEntity<SanPham> updateSanPham(@PathVariable Integer id, @RequestBody SanPham sanPham) {
@@ -116,7 +157,6 @@ public class ADSanPhamController {
         sanPhamService.deleteSanPham(idSanPham);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
     // Lấy tất cả sản phẩm (nếu cần)
     @GetMapping
@@ -147,5 +187,7 @@ public class ADSanPhamController {
         sanPhamService.toggleStatusById(idSanPham);
         return ResponseEntity.ok().build();
     }
+
+
 
 }

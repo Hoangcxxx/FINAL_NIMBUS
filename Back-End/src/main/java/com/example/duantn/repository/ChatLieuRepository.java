@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ChatLieuRepository extends JpaRepository<ChatLieu, Integer> {
     List<ChatLieu> findByTenChatLieuContaining(String tenChatLieu);
-
+    List<ChatLieu> findAllByOrderByNgayCapNhatDesc();
 }

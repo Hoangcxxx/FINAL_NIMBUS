@@ -1,3 +1,0 @@
-window.UserController = function ($scope) {
-    
-}

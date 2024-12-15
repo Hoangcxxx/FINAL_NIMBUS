@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,12 +23,12 @@ public class GioHang {
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
 
+    @Column(name = "trang_thai")
+    private Boolean trangThai;
+
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
-
-    @Column(name = "trang_thai")
-    private Boolean trangThai;
 
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)

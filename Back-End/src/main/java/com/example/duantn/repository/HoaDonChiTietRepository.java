@@ -16,10 +16,14 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet,Int
     List<Object[]> getAllThongKe();
     @Query(value = HoaDonChiTietQuery.GET_TONG_SO_LUONG_BAN_RA, nativeQuery = true)
     List<Object[]> getAllTongSoLuongBanRa();
-    @Query(value = HoaDonChiTietQuery.GET_SAN_PHAM_BAN_RA, nativeQuery = true)
+    @Query(value = HoaDonChiTietQuery.GET_TONG_SO_LUONG_BAN_RA_HOM_NAY, nativeQuery = true)
     List<Object[]> getAllSanPhamBanRa();
-    @Query(value = HoaDonChiTietQuery.GET_TONG_DOANH_THU, nativeQuery = true)
+    @Query(value = HoaDonChiTietQuery.GET_TONG_HOA_DON_THANG_NAY, nativeQuery = true)
     List<Object[]> getAllTongDoanhThu();
+    @Query(value = HoaDonChiTietQuery.GET_ALL_TONG_HOA_DON_HOM_NAY, nativeQuery = true)
+    List<Object[]> getAllTongHoaDonHomNay();
+    @Query(value = HoaDonChiTietQuery.GET_ALL_TONG_SAN_PHAM_TRONG_THANG, nativeQuery = true)
+    List<Object[]> getAllTongSanPhamTrongThang();
     @Query(value = "SELECT COUNT(*) FROM hoa_don hd JOIN trang_thai_hoa_don th ON hd.id_trang_thai_hoa_don = th.Id_trang_thai_hoa_don WHERE th.Id_trang_thai_hoa_don = 1 AND hd.ngay_tao BETWEEN :startDate AND :endDate", nativeQuery = true)
     Integer countDonHangCho(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
@@ -55,4 +59,11 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet,Int
 
     @Query(value = "SELECT COUNT(*) as so_luong_dh_huy_bo FROM hoa_don hd JOIN trang_thai_hoa_don th ON hd.id_trang_thai_hoa_don = th.Id_trang_thai_hoa_don WHERE th.Id_trang_thai_hoa_don = 4", nativeQuery = true)
     Integer countDonHangHuyBo();
+
+    @Query("SELECT h FROM HoaDonChiTiet h WHERE h.hoaDon.idHoaDon = :hoaDonId")
+    List<HoaDonChiTiet> findByHoaDon_IdHoaDon(@Param("hoaDonId") Integer hoaDonId);
+
+
+
+
 }
