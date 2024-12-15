@@ -1,10 +1,8 @@
 package com.example.duantn.controller.client;
 
-import com.example.duantn.entity.*;
-import com.example.duantn.repository.DiaChiVanChuyenRepository;
 import com.example.duantn.service.TestDemoService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,34 +13,33 @@ import java.util.Map;
 @RequestMapping("/api/nguoi_dung/test")
 @CrossOrigin(origins = "http://127.0.0.1:5502") // Đảm bảo frontend có thể gọi được API từ domain này
 public class LocationController {
-
     @Autowired
-    private TestDemoService testDemoService;
+    private final TestDemoService testDemoSevice;
 
-    @Autowired
-    private DiaChiVanChuyenRepository diaChiVanChuyenRepository;
+    public LocationController(TestDemoService testDemoSevice) {
+        this.testDemoSevice = testDemoSevice;
+    }
 
     // API để lấy danh sách tỉnh thành
     @GetMapping("/cities")
     public ResponseEntity<?> getCities() {
         try {
-            List<?> cities = testDemoService.getCities();
-            return ResponseEntity.ok(cities);
+            return ResponseEntity.ok(testDemoSevice.getCities());  // Trả về danh sách tỉnh/thành phố
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi khi lấy danh sách tỉnh thành");
+            return ResponseEntity.status(500).body("Có lỗi khi lấy tỉnh thành");
         }
     }
+
 
     // API để lấy danh sách huyện theo mã tỉnh
     @GetMapping("/districts/{cityCode}")
     public ResponseEntity<?> getDistricts(@PathVariable String cityCode) {
         try {
-            List<?> districts = testDemoService.getDistricts(cityCode);
-            return ResponseEntity.ok(districts);
+            return ResponseEntity.ok(testDemoSevice.getDistricts(cityCode)); // Trả về danh sách huyện của tỉnh
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi khi lấy danh sách huyện");
+            return ResponseEntity.status(500).body("Có lỗi khi lấy huyện");
         }
     }
 
@@ -50,48 +47,26 @@ public class LocationController {
     @GetMapping("/wards/{districtCode}")
     public ResponseEntity<?> getWards(@PathVariable String districtCode) {
         try {
-            List<?> wards = testDemoService.getWards(districtCode);
-            return ResponseEntity.ok(wards);
+            return ResponseEntity.ok(testDemoSevice.getWards(districtCode)); // Trả về danh sách xã của huyện
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi khi lấy danh sách xã");
+            return ResponseEntity.status(500).body("Có lỗi khi lấy xã");
         }
     }
 
-    // API để lưu địa chỉ vào DB và đặt làm địa chỉ mặc định
-    @PostMapping("/saveAndSetDefault")
-    public ResponseEntity<String> saveAndSetDefaultAddress(
-            @RequestParam Integer userId,
-            @RequestParam String cityCode,
-            @RequestParam String districtCode,
-            @RequestParam String wardCode,
-            @RequestParam String specificAddress,
-            @RequestParam Boolean setAsDefault) {
-
-        try {
-            testDemoService.saveAndSetDefaultAddress(userId, cityCode, districtCode, wardCode, specificAddress, setAsDefault);
-            return ResponseEntity.ok("Địa chỉ đã được lưu thành công!");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Lỗi: " + e.getMessage());
-        }
-    }
-
-    // API để lưu địa chỉ vào DB
     @PostMapping("/save-location")
     public ResponseEntity<String> saveLocationToDB(
             @RequestParam Integer userId,
             @RequestParam String cityCode,
             @RequestParam String districtCode,
             @RequestParam String wardCode) {
-
         try {
-            testDemoService.saveCityDistrictWardToDB(userId, cityCode, districtCode, wardCode);
+            // Gọi service để lưu tỉnh, huyện, xã vào DB
+            testDemoSevice.saveCityDistrictWardToDB(userId, cityCode, districtCode, wardCode);
             return ResponseEntity.ok("Lưu địa chỉ thành công");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi khi lưu địa chỉ");
+            return ResponseEntity.status(500).body("Có lỗi khi lưu địa chỉ");
         }
     }
 
@@ -100,7 +75,7 @@ public class LocationController {
     @GetMapping("/available-services")
     public ResponseEntity<List<Map<String, Object>>> getShippingServices() {
         try {
-            List<Map<String, Object>> services = testDemoService.getShippingServices();
+            List<Map<String, Object>> services = testDemoSevice.getShippingServices();
             return ResponseEntity.ok(services);
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,7 +92,7 @@ public class LocationController {
             @RequestParam Integer weight) {
 
         try {
-            Map<String, Object> feeDetails = testDemoService.calculateShippingFee(service_id, districtId, wardId, weight);
+            Map<String, Object> feeDetails = testDemoSevice.calculateShippingFee(service_id, districtId, wardId, weight);
             return ResponseEntity.ok(feeDetails);
         } catch (Exception e) {
             e.printStackTrace();

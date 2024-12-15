@@ -38,7 +38,7 @@ public class TrangThaiHoaDonService {
         List<TrangThaiHoaDon> existingStatuses = trangThaiHoaDonRepository.findByHoaDon_IdHoaDonAndLoaiTrangThai_IdLoaiTrangThai(idHoaDon, idLoaiTrangThai);
         return !existingStatuses.isEmpty();  // Trả về true nếu trạng thái đã tồn tại
     }
-    public List<TrangThaiHoaDon> saveTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai) {
+    public List<TrangThaiHoaDon> saveTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai, Integer idNhanVien) {
         Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
         Optional<LoaiTrangThai> loaiTrangThaiOpt = loaiTrangThaiRepository.findById(idLoaiTrangThai);
 
@@ -68,13 +68,13 @@ public class TrangThaiHoaDonService {
             trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
             trangThaiHoaDon.setNgayTao(new Date());
             trangThaiHoaDon.setNgayCapNhat(new Date());
+            trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
             trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
 
             // Lưu trạng thái hóa đơn vào database
             TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
             System.out.println("Trạng thái hóa đơn đã được lưu: " + savedTrangThai);
 
-            // Kiểm tra idLoaiTrangThai và thêm trạng thái liên quan (4 & 6)
             if (idLoaiTrangThai == 3) {
                 // Nếu trạng thái là 3, thêm trạng thái 4
                 LoaiTrangThai loaiTrangThaiThanhToan = loaiTrangThaiRepository.findById(4).orElse(null); // idLoaiTrangThai == 4: Chờ thanh toán
@@ -84,22 +84,10 @@ public class TrangThaiHoaDonService {
                     trangThaiThanhToan.setLoaiTrangThai(loaiTrangThaiThanhToan);
                     trangThaiThanhToan.setNgayTao(new Date());
                     trangThaiThanhToan.setNgayCapNhat(new Date());
+                    trangThaiThanhToan.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái 'Chờ thanh toán'
                     trangThaiThanhToan.setMoTa(loaiTrangThaiThanhToan.getMoTa());  // Mô tả từ loại trạng thái
                     trangThaiHoaDonRepository.save(trangThaiThanhToan);
                     System.out.println("Trạng thái 'Chờ thanh toán' đã được tạo thêm.");
-                }
-            } else if (idLoaiTrangThai == 5) {
-                // Nếu trạng thái là 5, thêm trạng thái 6
-                LoaiTrangThai loaiTrangThaiHoanTat = loaiTrangThaiRepository.findById(6).orElse(null); // idLoaiTrangThai == 6: Hoàn tất
-                if (loaiTrangThaiHoanTat != null) {
-                    TrangThaiHoaDon trangThaiHoanTat = new TrangThaiHoaDon();
-                    trangThaiHoanTat.setHoaDon(hoaDon);
-                    trangThaiHoanTat.setLoaiTrangThai(loaiTrangThaiHoanTat);
-                    trangThaiHoanTat.setNgayTao(new Date());
-                    trangThaiHoanTat.setNgayCapNhat(new Date());
-                    trangThaiHoanTat.setMoTa(loaiTrangThaiHoanTat.getMoTa());  // Mô tả từ loại trạng thái
-                    trangThaiHoaDonRepository.save(trangThaiHoanTat);
-                    System.out.println("Trạng thái 'Hoàn tất' đã được tạo thêm.");
                 }
             }
 
@@ -110,13 +98,13 @@ public class TrangThaiHoaDonService {
         return null;
     }
 
-    public void TrangThaiHoaDonKhiChonPTTT(Integer hoaDonId) {
+
+    public void TrangThaiHoaDonKhiChonPTTT(Integer hoaDonId, Integer idNhanVien) {
         // Tiến hành tạo trạng thái hóa đơn mới nếu chưa tồn tại
         HoaDon savedHoaDon = hoaDonRepository.findById(hoaDonId)
                 .orElseThrow(() -> new IllegalArgumentException("Hóa đơn không tồn tại!"));
 
-        // Mặc định loại trạng thái là 4
-        int loaiTrangThaiId = 4;
+        int loaiTrangThaiId = 6;
 
         // Tạo trạng thái hóa đơn mới
         TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
@@ -130,6 +118,9 @@ public class TrangThaiHoaDonService {
 
         trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
         trangThaiHoaDon2.setHoaDon(savedHoaDon);
+
+        // Lưu idNhanVien vào trạng thái hóa đơn (Giả sử TrangThaiHoaDon có một trường để lưu idNhanVien)
+        trangThaiHoaDon2.setIdNhanVien(idNhanVien);
 
         // Lưu trạng thái hóa đơn vào cơ sở dữ liệu
         trangThaiHoaDonRepository.save(trangThaiHoaDon2);

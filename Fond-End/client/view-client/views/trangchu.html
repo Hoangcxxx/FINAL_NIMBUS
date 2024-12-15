@@ -65,39 +65,42 @@
 
     <div class="prod-cont">
         <div class="prod" ng-repeat="item in dsSanPhamGiamGia">
-            <img ng-src="{{item.urlAnh}}" alt="">
-            <div class="des">
-                <span>{{item.tenSanPham}}</span>
-                <h5>{{item.moTa}}</h5>
-                <div class="d-flex align-items-center">
-                    <span class="badge bg-danger me-2 text-light text-center">
-                        <i class="fa-solid fa-tag text-light d-flex align-items-center">
-                            <div class="ms-1">
-                                {{item.kieuGiamGia ? (item.giaTriKhuyenMai | number) + ' VND' : item.giaTriKhuyenMai +
-                                '%'}}
-                            </div>
-                        </i>
-                    </span>
-                    <div class="star">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
+            <a href="#!san_pham_ct/{{item.idSanPham}}" class="text-decoration-none text-dark">
+                <img ng-src="{{item.urlAnh}}" alt="">
+                <div class="des">
+                    <span>{{item.tenSanPham}}</span>
+                    <h5>{{item.moTa}}</h5>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-danger me-2 text-light text-center">
+                            <i class="fa-solid fa-tag text-light d-flex align-items-center">
+                                <div class="ms-1">
+                                    {{item.kieuGiamGia ? (item.giaTriKhuyenMai | number) + ' VND' : item.giaTriKhuyenMai
+                                    +
+                                    '%'}}
+                                </div>
+                            </i>
+                        </span>
+                        <div class="star">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="text-danger me-3" style="font-weight: bold; font-size: 20px;">
+                            {{ item.giaKhuyenMai | currency: '': 0}} VND
+                        </span>
+                        <span style="font-size: 13px;">
+                            <del style="font-size: 13px;">{{ item.giaBan | currency: '': 0}}</del> VND
+                        </span>
                     </div>
                 </div>
-                <div class="d-flex align-items-center">
-                    <span class="text-danger me-3" style="font-weight: bold; font-size: 20px;">
-                        {{ item.giaKhuyenMai | currency: '': 0}} VND
-                    </span>
-                    <span style="font-size: 13px;">
-                        <del style="font-size: 13px;">{{ item.giaBan | currency: '': 0}}</del> VND
-                    </span>
+                <div>
+                    <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
                 </div>
-            </div>
-            <div>
-                <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-            </div>
+            </a>
         </div>
     </div>
 </section>

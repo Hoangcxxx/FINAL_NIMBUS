@@ -8,10 +8,12 @@ window.ThanhCongController = function ($scope, $http) {
         return;
     }
 
+    
+
+    // Lấy chi tiết hóa đơn từ API
     function getOrderDetails(maHoaDon) {
         const apiUrl = `http://localhost:8080/api/nguoi_dung/hoa_don/${maHoaDon}`;
 
-        // Gọi API để lấy chi tiết hóa đơn
         $http.get(apiUrl)
             .then(function (response) {
                 const hoaDon = response.data.hoaDon && Array.isArray(response.data.hoaDon) && response.data.hoaDon.length > 0
@@ -19,32 +21,37 @@ window.ThanhCongController = function ($scope, $http) {
                     : null;
 
                 if (hoaDon) {
-                    // Cập nhật thông tin đơn hàng
+                    // Cập nhật thông tin đơn hàng vào scope
                     $scope.orderData = {
                         maHoaDon: hoaDon.maHoaDon,
                         tenPhuongThucThanhToan: hoaDon.tenPhuongThucThanhToan,
+                        phiShip: hoaDon.phiShip,
                         tenNguoiNhan: hoaDon.tenNguoiNhan,
                         diaChi: hoaDon.diaChi,
                         sdtNguoiNhan: hoaDon.sdtNguoiNhan,
                         ghiChu: hoaDon.ghiChu,
                         thanhTien: hoaDon.thanhTien,
-                        // phiShip: hoaDon.phiShip,
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
-                        xa: hoaDon.tenXa
+                        xa: hoaDon.tenXa,
+                        giaTriMavoucher: hoaDon.giaTriMavoucher || 0,
+                        kieugiamgia: hoaDon.kieugiamgia,
+                        idlichsuhoadon: hoaDon.idlichsuhoadon || []
                     };
-                    console.log("214141414214", $scope.orderData);
+
                     // Cập nhật chi tiết sản phẩm
                     if (hoaDon.listSanPhamChiTiet && hoaDon.listSanPhamChiTiet.length > 0) {
                         $scope.orderDetails = {
+                            
                             listSanPhamChiTiet: hoaDon.listSanPhamChiTiet,
                             thanhTien: hoaDon.thanhTien,
-                            phiShip: hoaDon.phiShip,
+                            giaTien: hoaDon.giaTien,
                             maSPCT: hoaDon.maSPCT,
                             tenSanPham: hoaDon.tenSanPham,
-                            tenmausac: hoaDon.tenmausac, // Đảm bảo trường này tồn tại
-                            tenchatlieu: hoaDon.tenchatlieu, // Đảm bảo trường này tồn tại
-                            tenkichthuoc: hoaDon.tenkichthuoc, // Đảm bảo trường này tồn tại
+                            tenmausac: hoaDon.tenmausac,
+                            tenchatlieu: hoaDon.tenchatlieu,
+                            tenkichthuoc: hoaDon.tenkichthuoc,
+                            tongtien: hoaDon.tongtien,
                             giaKhuyenMai: hoaDon.giaKhuyenMai
                         };
 
@@ -52,8 +59,7 @@ window.ThanhCongController = function ($scope, $http) {
                         $scope.orderDetails.listSanPhamChiTiet.forEach((item) => {
                             $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${item.idSanPham}`)
                                 .then(function (imageResponse) {
-                                    // Gán hình ảnh cho sản phẩm nếu có
-item.urlAnh = imageResponse.data[0]?.urlAnh || '';
+                                    item.urlAnh = imageResponse.data[0]?.urlAnh || '';
                                 })
                                 .catch(function (error) {
                                     console.error("Lỗi khi lấy hình ảnh sản phẩm:", error);
@@ -69,17 +75,66 @@ item.urlAnh = imageResponse.data[0]?.urlAnh || '';
             });
     }
 
-    // Giả sử bạn có một API hoặc sự kiện thanh toán thành công
-    function onPaymentSuccess() {
-        // Xóa mã hóa đơn khỏi localStorage
-        localStorage.removeItem("maHoaDon");
-        console.log("Mã hóa đơn đã được xóa khỏi localStorage.");
-        alert("Thanh toán thành công!");
-        // Bạn có thể điều hướng người dùng tới trang khác sau khi thanh toán thành công
-        window.location.href = "/thank-you"; // Ví dụ chuyển hướng tới trang cảm ơn
-    }
+    $scope.getTotalProductPrice = function() {
+        let total = 0;
+        // Lặp qua tất cả các sản phẩm và cộng tiền
+        angular.forEach($scope.orderDetails.listSanPhamChiTiet, function(item) {
+            total += item.tongtien || 0; // Thêm giá của mỗi sản phẩm vào tổng
+        });
+        return total;
+    };
+    
 
+    // Hàm xử lý thanh toán
+    $scope.payment = function () {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const totalAmount = JSON.parse(localStorage.getItem("totalAmount"));
+        const storedData = JSON.parse(localStorage.getItem("shippingData"));
+        const cart = JSON.parse(localStorage.getItem("cart"));
+        const idTinh = localStorage.getItem("idTinh");
+        const idHuyen = localStorage.getItem("idHuyen");
+        const idXa = localStorage.getItem("idXa");
+
+        // Tạo danh sách sản phẩm chi tiết từ giỏ hàng
+        const listSanPhamChiTiet = cart.map(item => ({
+            idspct: item.idSanPhamCT, // ID sản phẩm chi tiết
+            soLuong: item.soLuongGioHang, // Số lượng sản phẩm trong giỏ hàng
+            giaTien: item.giaKhuyenMai !== null ? item.giaKhuyenMai : item.giaBan // Giá tiền ưu tiên giá khuyến mãi
+        }));
+
+        // Tạo đối tượng orderData
+        const orderData = {
+            idNguoiDung: user.idNguoiDung,
+            tinh: idTinh,
+            huyen: idHuyen,
+            xa: idXa,
+            email: storedData.email || "",
+            tenNguoiNhan: storedData.name || "",
+            diaChi: storedData.address || "",
+            sdtNguoiNhan: storedData.phone || "",
+            ghiChu: storedData.note || "",
+            cartId: user.idNguoiDung,
+            tenPhuongThucThanhToan: "vnpay",
+            listSanPhamChiTiet: listSanPhamChiTiet,
+            thanhTien: totalAmount,
+            idvoucher: $scope.selectedVoucher && $scope.selectedVoucher.idVoucher ? $scope.selectedVoucher.idVoucher : null
+        };
+
+        console.log("orderData:", orderData);
+
+        // Gửi request thanh toán
+        $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/thanh_toan_vnpay", orderData)
+            .then(function (response) {
+                const maHoaDon = response.data.maHoaDon;
+
+                // Lưu mã hóa đơn và chuyển hướng tới cổng thanh toán
+                localStorage.setItem("maHoaDon", maHoaDon);
+                getOrderDetails(maHoaDon);
+
+            },);
+    };
+
+    $scope.payment();
     // Gọi API để lấy chi tiết đơn hàng
     getOrderDetails(maHoaDon);
-
-}
+};

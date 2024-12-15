@@ -18,11 +18,15 @@ public interface GiamGiaSanPhamRepository extends JpaRepository<GiamGiaSanPham, 
     @Query("SELECT g.giaKhuyenMai FROM GiamGiaSanPham g WHERE g.sanPham.idSanPham = :sanPhamId AND CURRENT_TIMESTAMP BETWEEN g.dotGiamGia.ngayBatDau AND g.dotGiamGia.ngayKetThuc")
     Optional<BigDecimal> findGiaKhuyenMaiHienTaiBySanPhamId(@Param("sanPhamId") Integer sanPhamId);
     Optional<GiamGiaSanPham> findBySanPham(SanPham sanPham);
-
     @Query("SELECT g.giaKhuyenMai FROM GiamGiaSanPham g " +
             "WHERE g.sanPham.idSanPham = :idSanPham " +
-            "ORDER BY g.ngayCapNhat DESC") // Lấy giá mới nhất
-
+            "ORDER BY g.ngayCapNhat DESC")
     BigDecimal findGiaKhuyenMaiBySanPhamId(@Param("idSanPham") Integer idSanPham);
+
+
+    public Optional<GiamGiaSanPham> findByDotGiamGiaAndSanPham(DotGiamGia dotGiamGia, SanPham sanPham);
+
+    // Xóa sản phẩm giảm giá theo id sản phẩm và id đợt giảm giá
+    void deleteBySanPhamIdSanPhamAndDotGiamGiaIdDotGiamGia( Integer idDotGiamGia,Integer idSanPham);
 
 }

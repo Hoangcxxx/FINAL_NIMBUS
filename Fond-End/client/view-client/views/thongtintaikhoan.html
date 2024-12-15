@@ -15,16 +15,10 @@
                         </a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#orders" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
-                            Đơn hàng
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
                         <a href="#address" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
                             Địa chỉ giao hàng
                         </a>
                     </li>
-                    
                 </ul>
             </div>
         </div>
@@ -66,7 +60,7 @@
                                 </div>
                                 <!-- Nút thay đổi thông tin -->
                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#editCustomerModal" ng-click="openEditModal()" >
+                                    data-bs-target="#editCustomerModal" ng-click="openEditModal()">
                                     Thay đổi thông tin
                                 </button>
                             </div>
@@ -113,7 +107,46 @@
                     </div>
                 </div>
 
-               
+                <!-- Lịch sử mua hàng -->
+                <div class="tab-pane fade" id="downloads">
+                    <h3 class="mb-4 text-primary">Lịch Sử Mua Hàng</h3>
+                    <div class="card border-0 shadow-sm p-4">
+                        <div ng-if="purchaseHistory.length === 0">
+                            <p>Hiện tại bạn chưa có lịch sử mua hàng nào.</p>
+                        </div>
+                        <div ng-if="purchaseHistory.length > 0">
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="order in purchaseHistory">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h5>Đơn hàng #{{ order.orderNumber }}</h5>
+                                            <p><strong>Ngày mua: </strong> {{ order.purchaseDate | date: 'dd/MM/yyyy' }}
+                                            </p>
+                                            <p><strong>Tổng tiền: </strong> {{ order.totalAmount | currency }}</p>
+                                            <p><strong>Trạng thái: </strong> {{ order.status }}</p>
+                                        </div>
+                                        <div>
+                                            <a href="#orderDetails" class="btn btn-info btn-sm"
+                                                ng-click="viewOrderDetails(order.id)">Xem chi tiết</a>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <h6>Chi tiết sản phẩm:</h6>
+                                        <ul>
+                                            <li ng-repeat="product in order.products">
+                                                <p><strong>Tên sản phẩm:</strong> {{ product.name }}</p>
+                                                <p><strong>Giá:</strong> {{ product.price | currency }}</p>
+                                                <p><strong>Số lượng:</strong> {{ product.quantity }}</p>
+                                                <p><strong>Thành tiền:</strong> {{ product.totalPrice | currency }}</p>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Địa chỉ -->
                 <div class="tab-pane fade" id="address">

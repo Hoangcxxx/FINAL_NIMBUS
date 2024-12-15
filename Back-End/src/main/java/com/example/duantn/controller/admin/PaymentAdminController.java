@@ -64,6 +64,7 @@ public class PaymentAdminController {
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
         Iterator<String> itr = fieldNames.iterator();
+
         while (itr.hasNext()) {
             String fieldName = itr.next();
             String fieldValue = vnp_Params.get(fieldName);
@@ -99,7 +100,7 @@ public class PaymentAdminController {
         String orderId = request.getParameter("vnp_TxnRef");
         if ("00".equals(transactionStatus)) {
 
-            response.sendRedirect("http://127.0.0.1:5502/index.html");
+            response.sendRedirect("http://127.0.0.1:5500/admin.html#!/ban_hang?message=Thanh%20toan%20thanh%20cong");
         } else {
             response.sendRedirect("http://127.0.0.1:5500/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai");
         }

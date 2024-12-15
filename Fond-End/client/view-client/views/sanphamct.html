@@ -43,17 +43,17 @@
                         <div>
                             <div>
                                 <!-- Hiển thị giá khuyến mãi nếu có giảm giá -->
-                                <span ng-if="sanPhamChiTiet.kieuGiamGia" class="text-danger me-3"
+                                <span ng-if="sanPhamChiTiet.giaKhuyenMai" class="text-danger me-3"
                                     style="font-weight: bold; font-size: 30px;">
                                     {{ sanPhamChiTiet.giaKhuyenMai | currency: '': 0}} VND
                                 </span>
                                 <!-- Hiển thị giá ban đầu nếu có giảm giá -->
-                                <span ng-if="sanPhamChiTiet.kieuGiamGia" style="font-size: 20px;">
+                                <span ng-if="sanPhamChiTiet.giaKhuyenMai" style="font-size: 20px;">
                                     <del>{{ sanPhamChiTiet.giaBan | currency: '': 0}}</del> VND
                                 </span>
                                 <!-- Nếu không có giảm giá, chỉ hiển thị giá gốc -->
                             </div>
-                            <h4 ng-if="!sanPhamChiTiet.kieuGiamGia" style="font-size: 30px;">
+                            <h4 ng-if="!sanPhamChiTiet.giaKhuyenMai" style="font-size: 30px;">
                                 <span>{{ sanPhamChiTiet.giaBan | currency: '': 0}} VND</span>
                             </h4>
                         </div>
@@ -115,15 +115,15 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex mb-2">
                             <!-- Add to Favorite Button -->
-                            <div class="flex-grow-1 me-2">
+                            <!-- <div class="flex-grow-1 me-2">
                                 <a href="#" class="text-decoration-none">
                                     <button class="btn btn-danger w-100" style="font-size: 18px;">
                                         <i class="fa-solid fa-heart" style="font-size: 24px;"></i> Sản phẩm yêu thích
                                     </button>
                                 </a>
-                            </div>
+                            </div> -->
                             <!-- Thêm vào Giỏ hàng Button -->
-                            <div class="flex-grow-1" ng-disabled="soLuongTon === 0">
+                            <div class="flex-grow-1 mt-4" ng-disabled="soLuongTon === 0">
                                 <button class="btn btn-danger w-100" style="font-size: 18px;"
                                     ng-click="addToCart(sanPhamChiTiet)">
                                     <i class="fa-solid fa-bag-shopping" style="font-size: 24px;"></i> Giỏ hàng
@@ -131,14 +131,14 @@
                             </div>
                         </div>
                         <!-- Buy Now Button -->
-                        <div class="border border-3 rounded border-danger" ng-disabled="soLuongTon === 0">
+                        <!-- <div class="border border-3 rounded border-danger" ng-disabled="soLuongTon === 0">
                             <a href="#!thanh_toan" class="text-decoration-none ">
                                 <button class="btn btn-light text-danger w-100" style="font-size: 18px;"
                                     ng-click="thanhtoan(sanPhamChiTiet)">
                                     <i class="fa-solid fa-bolt" style="font-size: 24px;"></i> Mua ngay
                                 </button>
                             </a>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Additional Information Icons -->
@@ -177,7 +177,7 @@
             </div>
 
             <!-- Đánh giá từ khách hàng -->
-            <div class="accordion-item">
+            <!-- <div class="accordion-item">
                 <h2 class="accordion-header" id="headingReviews">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapseReviews" aria-expanded="false" aria-controls="collapseReviews">
@@ -187,14 +187,14 @@
                 <div id="collapseReviews" class="accordion-collapse collapse" aria-labelledby="headingReviews"
                     data-bs-parent="#productAccordion">
                     <div class="accordion-body">
-                        <p>{{sanPhamChiTiet.danhGia}}</p> <!-- Sửa thành thuộc tính đúng nếu cần -->
+                        <p>{{sanPhamChiTiet.danhGia}}</p>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
         <hr>
 
-        <section id="product1" class="section-p1">
+        <!-- <section id="product1" class="section-p1">
             <h2>Sản phẩm liên quan</h2>
             <p>Summer Collection New Morden Design</p>
             <div class="prod-cont">
@@ -263,6 +263,6 @@
                     <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
                 </div>
             </div>
-        </section>
+        </section> -->
     </section>
 </div>

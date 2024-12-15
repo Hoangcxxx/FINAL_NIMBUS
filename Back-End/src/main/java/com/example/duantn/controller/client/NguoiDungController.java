@@ -43,19 +43,6 @@ public class NguoiDungController {
         }
     }
 
-    @PutMapping("/khoa/{id}")
-    public ResponseEntity<String> khoaNguoiDung(@PathVariable Integer id) {
-        nguoiDungService.khoaNguoiDung(id);
-        return ResponseEntity.ok("Người dùng đã bị khóa.");
-    }
-
-    // API để mở khóa người dùng
-    @PutMapping("/mo_khoa/{id}")
-    public ResponseEntity<String> moKhoaNguoiDung(@PathVariable Integer id) {
-        nguoiDungService.moKhoaNguoiDung(id);
-        return ResponseEntity.ok("Người dùng đã được mở khóa.");
-    }
-
     // Phương thức đăng nhập
     @PostMapping("/dang_nhap")
     public ResponseEntity<NguoiDung> dangNhap(@RequestBody LoginRequest loginRequest) {
@@ -112,6 +99,8 @@ public class NguoiDungController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+
 
 
     // Phương thức quên mật khẩu

@@ -27,6 +27,9 @@ public class HoaDon {
     @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
 
+    @Column(name = "id_nhan_vien")
+    private Integer idNhanVien;
+
     @ManyToOne
     @JoinColumn(name = "id_voucher")
     private Voucher voucher;
@@ -78,8 +81,6 @@ public class HoaDon {
     private List<TrangThaiHoaDon> trangThaiHoaDons;
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
     private List<PhuongThucThanhToanHoaDon> phuongThucThanhToanHoaDons;
-
-
 
 
 }

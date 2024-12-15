@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface DotGiamGiaRepository extends JpaRepository<DotGiamGia, Integer> {
     @Query(value = DotGiamGiaQuery.GET_SAN_PHAM_CHUA_GIAM_GIA, nativeQuery = true)
     List<Object[]> getAllSanPhamChuaGiamGia();
+    @Query(value = DotGiamGiaQuery.GET_SAN_PHAM_DA_GIAM_GIA_BY_ID_DOT_GIAM_GIA, nativeQuery = true)
+    List<Object[]> getAllSanPhamDaGiamGia(Integer idDotGiamGia);
     Optional<DotGiamGia> findByTenDotGiamGia(String tenDotGiamGia);
     Optional<DotGiamGia> findDotGiamGiaByKieuGiamGia(Boolean kieuGiamGia);
     @Query(value = DotGiamGiaQuery.GET_SAN_PHAM_CHUA_GIAM_GIA_BY_DANH_MUC, nativeQuery = true)
@@ -25,4 +27,8 @@ public interface DotGiamGiaRepository extends JpaRepository<DotGiamGia, Integer>
 
     // Tìm kiếm theo kiểu giảm giá
     List<DotGiamGia> findByKieuGiamGia(Boolean kieuGiamGia);
+
+
+    @Query("SELECT d FROM DotGiamGia d ORDER BY d.ngayCapNhat DESC")
+    List<DotGiamGia> findAllOrderByNgayCapNhatDesc();
 }

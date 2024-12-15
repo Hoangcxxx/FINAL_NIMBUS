@@ -1,36 +1,26 @@
-package com.example.duantn.controller.admin;
+package com.example.duantn.service;
 
 import com.example.duantn.config.Config;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@RestController
-@RequestMapping("/api/nguoi_dung/payment")
-@CrossOrigin(origins = "http://127.0.0.1:5502")
-public class PaymentnguoidungController {
+@Service
+public class PaymentService {
 
-    @PostMapping("/creat_payment")
-    public void createPayment(
-            @RequestParam(required = false, defaultValue = "0") long amount,
-            @RequestParam String paymentMethod,
-            HttpServletRequest req, HttpServletResponse response) throws IOException {
-
-        String orderType = "other";
-
-        // Lấy thông tin cần thiết
+    public String createPayment(long amount, String paymentMethod, HttpServletRequest req) throws UnsupportedEncodingException {
+        String orderType = "other"; // Bạn có thể thay đổi tùy theo loại đơn hàng
         String vnp_TxnRef = Config.getRandomNumber(8);
         String vnp_IpAddr = Config.getIpAddress(req);
         String vnp_TmnCode = Config.vnp_TmnCode;
-
-        System.out.println("Payment Method: " + paymentMethod);
-        System.out.println("Received amount: " + amount);
 
         // Tạo tham số VNPAY
         Map<String, String> vnp_Params = new HashMap<>();
@@ -59,11 +49,14 @@ public class PaymentnguoidungController {
         cld.add(Calendar.MINUTE, 15); // Thời gian hết hạn 15 phút
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
+        // Tạo query và hash data
         List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
         Iterator<String> itr = fieldNames.iterator();
+
         while (itr.hasNext()) {
             String fieldName = itr.next();
             String fieldValue = vnp_Params.get(fieldName);
@@ -84,24 +77,27 @@ public class PaymentnguoidungController {
         String queryUrl = query.toString();
         String vnp_SecureHash = Config.hmacSHA512(Config.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        String paymentUrl = Config.vnp_PayUrl + "?" + queryUrl;
 
-        response.setContentType("text/html;charset=UTF-8");
-        response.getWriter().println("<html><head><title>Redirecting...</title></head>" +
-                "<body><script type='text/javascript'>window.location.href='" + paymentUrl + "';</script>" +
-                "<p>If you are not redirected, <a href='" + paymentUrl + "'>click here</a>.</p></body></html>");
+        return Config.vnp_PayUrl + "?" + queryUrl;
     }
 
-
-    @RequestMapping("/vnpay_return")
-    public void vnpayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String handleVnpayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String transactionStatus = request.getParameter("vnp_TransactionStatus");
-        String orderId = request.getParameter("vnp_TxnRef");
-        if ("00".equals(transactionStatus)) {
+        String transactionNo = request.getParameter("vnp_TransactionNo");
+        String amount = request.getParameter("vnp_Amount");
+        String bankCode = request.getParameter("vnp_BankCode");
+        String orderInfo = request.getParameter("vnp_OrderInfo");
 
-            response.sendRedirect("http://127.0.0.1:5502/#!/thanhcong");
+        // Kiểm tra trạng thái giao dịch
+        if ("00".equals(transactionStatus)) {
+            // Giao dịch thành công, chuyển hướng người dùng đến trang thành công
+            response.sendRedirect("http://127.0.0.1:5500/#!/thanhcong");
         } else {
-            response.sendRedirect("http://127.0.0.1:5500/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai");
+            // Giao dịch không thành công, chuyển hướng người dùng đến trang thất bại
+            response.sendRedirect("http://127.0.0.1:5500/admin.html#!/thanh_toan_that_bai");
         }
+
+        return null; // Trả về null để không cần trả form nữa
     }
+
 }

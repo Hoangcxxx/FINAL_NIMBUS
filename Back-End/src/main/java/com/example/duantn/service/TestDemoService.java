@@ -2,12 +2,10 @@ package com.example.duantn.service;
 
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
-import jakarta.transaction.Transactional;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +39,6 @@ public class TestDemoService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
     }
-
-
 
     // 1. Lấy danh sách các phương thức vận chuyển khả dụng
     public List<Map<String, Object>> getShippingServices() {
@@ -178,50 +174,5 @@ public class TestDemoService {
         throw new RuntimeException("Không thể lấy dữ liệu xã từ API");
     }
 
-
-    // Lưu địa chỉ vận chuyển và đặt mặc định
-    @Transactional
-    public void saveAndSetDefaultAddress(Integer userId, String cityCode, String districtCode, String wardCode, String specificAddress, Boolean setAsDefault) {
-        if (userId == null) throw new IllegalArgumentException("UserId không được null");
-
-        NguoiDung nguoiDung = nguoiDungRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
-
-        // Nếu setAsDefault = true, đặt tất cả địa chỉ hiện tại thành không mặc định
-        if (Boolean.TRUE.equals(setAsDefault)) {
-            diaChiVanChuyenRepository.updateAddressStatusByUserId(userId, false); // Đặt tất cả địa chỉ thành không mặc định
-        }
-
-        // Tạo địa chỉ mới
-        DiaChiVanChuyen newAddress = new DiaChiVanChuyen();
-        newAddress.setNguoiDung(nguoiDung);
-        newAddress.setDiaChiCuThe(specificAddress);
-        newAddress.setNgayTao(new Date());
-        newAddress.setTrangThai(setAsDefault);
-
-        // Lấy thông tin tỉnh, huyện, xã từ DB hoặc API
-        newAddress.setTinh(getOrFetchCity(cityCode));
-        newAddress.setHuyen(getOrFetchDistrict(districtCode));
-        newAddress.setXa(getOrFetchWard(wardCode));
-
-        diaChiVanChuyenRepository.save(newAddress);
-    }
-
-
-    // Hàm lấy hoặc tạo mới Tỉnh
-    private Tinh getOrFetchCity(String cityCode) {
-        return tinhRepository.findByMaTinh(cityCode)
-                .orElseGet(() -> tinhRepository.save(fetchCityInfo(cityCode)));
-    }
-
-    private Huyen getOrFetchDistrict(String districtCode) {
-        return huyenRepository.findByMaHuyen(districtCode)
-                .orElseGet(() -> huyenRepository.save(fetchDistrictInfo(districtCode)));
-    }
-
-    private Xa getOrFetchWard(String wardCode) {
-        return xaRepository.findByMaXa(wardCode)
-                .orElseGet(() -> xaRepository.save(fetchWardInfo(wardCode)));
-    }
 
 }

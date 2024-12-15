@@ -1,25 +1,23 @@
 package com.example.duantn.controller.client;
 
-import com.example.duantn.dto.HoaDonDTO;
 import com.example.duantn.service.HoaDonService;
-
-import com.example.duantn.service.VnpayService;
+import com.example.duantn.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-@RestController
-@RequestMapping("/api/nguoi_dung/vnpays")
-@CrossOrigin(origins = "http://127.0.0.1:5502")
-public class vnpayController {
 
+@RestController
+@RequestMapping("/api/nguoi_dung/payment")
+@CrossOrigin(origins = "http://127.0.0.1:5502")
+public class PaymentClientController {
 
     @Autowired
-    private VnpayService paymentService;
+    private PaymentService paymentService;
 
-    @PostMapping("/create_payment")
+    @PostMapping("/creat_payment")
     public void createPayment(
             @RequestParam(required = false, defaultValue = "0") long amount,
             @RequestParam String paymentMethod,
@@ -34,8 +32,8 @@ public class vnpayController {
     }
 
     @RequestMapping("/vnpay_return")
-    public void vnpayReturn(HttpServletRequest request, HttpServletResponse response, HoaDonDTO hoaDonDTO) throws IOException {
-        String redirectUrl = paymentService.handleVnpayReturn(request,hoaDonDTO);
+    public void vnpayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String redirectUrl = paymentService.handleVnpayReturn(request,response);
         response.sendRedirect(redirectUrl);
     }
 }

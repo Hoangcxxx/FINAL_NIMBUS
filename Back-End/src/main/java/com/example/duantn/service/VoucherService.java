@@ -18,6 +18,10 @@ public class VoucherService {
 
     @Autowired
     private VoucherRepository voucherRepository;
+    @Autowired
+    private VoucherNguoiDungRepository voucherNguoiDungRepository;
+    @Autowired
+    private NguoiDungRepository nguoiDungRepository;
 
     @Autowired
     private TrangThaiGiamGiaRepository trangThaiGiamGiaRepository;
@@ -231,7 +235,7 @@ public class VoucherService {
                 })
                 .collect(Collectors.toList());
     }
-    public Voucher apdungvoucher(String maVoucher, BigDecimal tongTien) {
+    public Voucher apdungvoucher(String maVoucher, BigDecimal tongTien, Integer idNguoiDung) {
         // Lấy voucher từ repository
         Voucher voucher = voucherRepository.findByMaVoucher(maVoucher);
 
@@ -267,6 +271,16 @@ public class VoucherService {
         if (voucher.getGiaTriToiDa() != null && tongTien.compareTo(voucher.getGiaTriToiDa()) > 0) {
             throw new IllegalArgumentException("Tổng tiền vượt quá mức tối đa để áp dụng voucher.");
         }
+        NguoiDung nguoiDung = nguoiDungRepository.findById(idNguoiDung)
+                .orElseThrow(() -> new IllegalArgumentException("Người dùng không tồn tại"));
+        VoucherNguoiDung voucherNguoiDung = new VoucherNguoiDung();
+        voucherNguoiDung.setVoucher(voucher);
+        voucherNguoiDung.setNguoiDung(nguoiDung);
+
+        voucherNguoiDungRepository.save(voucherNguoiDung);
+        // Cập nhật số lượng voucher
+        voucher.setSoLuong(voucher.getSoLuong() - 1);
+        voucherRepository.save(voucher);
 
         return voucher;
     }

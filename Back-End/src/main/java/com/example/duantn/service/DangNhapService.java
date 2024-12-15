@@ -51,10 +51,7 @@ public class DangNhapService {
         nguoiDung.setMaNguoiDung(nguoiDung.getMaNguoiDung() == null ? generateUniqueCode() : nguoiDung.getMaNguoiDung());
 
         // Gán vai trò và thời gian tạo
-        int vaiTroId = nguoiDung.getVaiTro().getIdVaiTro(); // Lấy vai trò từ người dùng gửi lên
-        nguoiDung.setVaiTro(vaiTroRepository.findById(vaiTroId).orElseThrow(() -> new RuntimeException("Vai trò không tồn tại")));
-        nguoiDung.setGioiTinh(nguoiDung.getGioiTinh());
-        nguoiDung.setSdt(nguoiDung.getSdt());
+        nguoiDung.setVaiTro(vaiTroRepository.findById(2).orElseThrow(() -> new RuntimeException("Vai trò không tồn tại")));
         LocalDateTime now = LocalDateTime.now();
         nguoiDung.setNgayTao(new Date());
         nguoiDung.setNgayCapNhat(new Date());
@@ -78,7 +75,6 @@ public class DangNhapService {
     }
 
 
-
     private String generateUniqueCode() {
         String code;
         do {
@@ -96,17 +92,11 @@ public class DangNhapService {
     }
 
     // Phương thức đăng nhập
-    // Phương thức đăng nhập
-    public NguoiDung    dangNhap(String email, String matKhau) {
+    public NguoiDung dangNhap(String email, String matKhau) {
         // Tìm người dùng theo email
         Optional<NguoiDung> nguoiDungOptional = nguoiDungRepository.findByEmail(email);
         if (nguoiDungOptional.isPresent()) {
             NguoiDung nguoiDung = nguoiDungOptional.get();
-
-            // Kiểm tra trạng thái người dùng (nếu bị khóa)
-            if (!nguoiDung.getTrangThai()) {
-                throw new RuntimeException("Tài khoản của bạn đã bị khóa.");
-            }
 
             // Kiểm tra mật khẩu
             if (passwordEncoder.matches(matKhau, nguoiDung.getMatKhau())) {

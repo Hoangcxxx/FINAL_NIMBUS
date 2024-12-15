@@ -21,6 +21,9 @@ public class TrangThaiHoaDon {
     @Column(name = "mo_ta")
     private String moTa;
 
+    @Column(name = "id_nhan_vien")
+    private Integer idNhanVien;
+
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;

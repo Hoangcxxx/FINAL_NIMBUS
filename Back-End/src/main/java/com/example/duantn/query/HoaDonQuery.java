@@ -7,7 +7,7 @@ public class HoaDonQuery {
             "        h.Id_hoa_don, \n" +
             "        h.ma_hoa_don, \n" +
             "        u.ten_nguoi_dung,\n" +
-            "        u.sdt,\n" +
+            "        h.sdt_nguoi_nhan,\n" +
             "        h.thanh_tien, \n" +
             "        h.loai, \n" +
             "        t.ngay_tao,\n" +
@@ -26,7 +26,7 @@ public class HoaDonQuery {
             "    ls.Id_hoa_don, \n" +
             "    ls.ma_hoa_don, \n" +
             "    ls.ten_nguoi_dung,\n" +
-            "    ls.sdt, \n" +
+            "    ls.sdt_nguoi_nhan, \n" +
             "    ls.thanh_tien, \n" +
             "    ls.loai, \n" +
             "    ls.ngay_tao,\n" +
@@ -44,14 +44,18 @@ public class HoaDonQuery {
             "    ltth.id_loai_trang_thai,\n" +
             "    ltth.ten_loai_trang_thai,\n" +
             "    tthd.ngay_tao,\n" +
-            "    tthd.ngay_cap_nhat\n" +
+            "    tthd.ngay_cap_nhat,\n" +
+            "    nv.ten_nguoi_dung\n" +
             "FROM \n" +
             "    hoa_don h\n" +
             "JOIN \n" +
             "    trang_thai_hoa_don tthd ON h.Id_hoa_don = tthd.id_hoa_don\n" +
             "JOIN \n" +
             "    loai_trang_thai ltth ON tthd.id_loai_trang_thai = ltth.Id_loai_trang_thai\n" +
-            "where h.Id_hoa_don = :idHoaDon";
+            "JOIN \n" +
+            "    nguoi_dung nv ON tthd.id_nhan_vien = nv.Id_nguoi_dung\n" +
+            "WHERE \n" +
+            "    h.Id_hoa_don = :idHoaDon;";
     public static final String GET_VOUCHER_HOA_DON_BY_ID_HOA_DON = "SELECT \n" +
             "    v.ma_voucher,\n" +
             "    v.ten_voucher,\n" +
@@ -77,7 +81,8 @@ public class HoaDonQuery {
             "    dgg.gia_tri_giam_gia,\n" +
             "    dgg.kieu_giam_gia,\n" +
             "    dgg.ten_dot_giam_gia,\n" +
-            "    ghct.tong_tien\n" +
+            "    ghct.tong_tien,\n" +
+            "    spct.ma_san_pham_chi_tiet\n" +
             "FROM \n" +
             "    hoa_don h\n" +
             "INNER JOIN \n" +
@@ -104,4 +109,14 @@ public class HoaDonQuery {
             "    dot_giam_gia dgg ON ggs.id_dot_giam_gia = dgg.id_dot_giam_gia  -- Liên kết với bảng dot_giam_gia\n" +
             "WHERE \n" +
             "    h.Id_hoa_don = :idHoaDon;  -- Thay @id_hoa_don bằng ID của hóa đơn bạn muốn truy vấn";
+
+
+    public static final String GET_MA_HOA_DON =
+            "SELECT TOP 1 ma_hoa_don\n" +
+                    "FROM hoa_don\n" +
+                    "ORDER BY Id_hoa_don DESC;\n";
+
+
+
+
 }

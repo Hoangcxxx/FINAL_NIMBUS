@@ -6,5 +6,5 @@ public class NguoiDungQuery {
             "SELECT id_nguoi_dung, ten_nguoi_dung, sdt " +
                     "FROM [nguoi_dung] " +
                     "WHERE sdt LIKE ? " +
-                    "AND id_vai_tro = 2";
+                    "AND id_vai_tro = 3";
 }

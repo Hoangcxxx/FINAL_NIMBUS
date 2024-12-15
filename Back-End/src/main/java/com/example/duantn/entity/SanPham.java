@@ -56,7 +56,5 @@ public class SanPham {
         }
         return null;  // Trả về null nếu không có hình ảnh
     }
-    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL)
-    private List<GiamGiaSanPham> giamGiaSanPhamList;
 
 }

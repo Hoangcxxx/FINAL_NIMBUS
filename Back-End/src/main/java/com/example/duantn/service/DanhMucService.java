@@ -22,7 +22,6 @@ public class DanhMucService {
         return danhMucRepository.findAll();
     }
 
-
     public com.example.duantn.entity.DanhMuc createDanhMuc(com.example.duantn.entity.DanhMuc DanhMuc) {
         DanhMuc.setNgayTao(new Date());
         DanhMuc.setNgayCapNhat(new Date());

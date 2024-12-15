@@ -22,6 +22,7 @@ public class ADNguoiDungController {
 
     @Autowired
     private NguoiDungService nguoiDungService;
+
     @Autowired
     private DangNhapService dangNhapService;
 
@@ -34,19 +35,6 @@ public class ADNguoiDungController {
         }
         return new ResponseEntity<>(nguoiDungs, HttpStatus.OK);
     }
-    // Phương thức đăng ký
-    @PostMapping("/dang_ky")
-    public ResponseEntity<NguoiDung> dangKy(@RequestBody NguoiDung nguoiDung) {
-        try {
-            NguoiDung nguoiDungMoi = dangNhapService.dangKy(nguoiDung);
-            return ResponseEntity.ok(nguoiDungMoi);
-        } catch (Exception e) {
-            System.out.println("Đăng ký thất bại: " + e.getMessage()); // Log lỗi khi đăng ký thất bại
-            e.printStackTrace(); // In ra stack trace để dễ dàng theo dõi lỗi
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
 
     // Lấy người dùng theo ID
     @GetMapping("/{id}")
@@ -92,16 +80,23 @@ public class ADNguoiDungController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+    // Phương thức đăng ký
+    @PostMapping("/dang_ky")
+    public ResponseEntity<NguoiDung> dangKy(@RequestBody NguoiDung nguoiDung) {
+        try {
+            NguoiDung nguoiDungMoi = dangNhapService.dangKy(nguoiDung);
+            return ResponseEntity.ok(nguoiDungMoi);
+        } catch (Exception e) {
+            System.out.println("Đăng ký thất bại: " + e.getMessage()); // Log lỗi khi đăng ký thất bại
+            e.printStackTrace(); // In ra stack trace để dễ dàng theo dõi lỗi
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
     // API để lấy tất cả người dùng có vai trò là 2 hoặc 4
     @GetMapping("/list/nguoidung")
     public List<NguoiDungDTO> getAllNguoiDung() {
         return nguoiDungService.getAllNguoiDung();  // Trả về danh sách người dùng đã lọc theo vai trò
-    }
-    // API để lấy tất cả người dùng có vai trò là 2 hoặc 4
-    @GetMapping("/list/khachle")
-    public List<NguoiDungDTO> getAllKhachhangle() {
-        return nguoiDungService.getAllkhachhangle();  // Trả về danh sách người dùng đã lọc theo vai trò
     }
     @GetMapping("/list/nhanvien")
     public List<NguoiDungDTO> getAllNhanvien() {
@@ -124,7 +119,10 @@ public class ADNguoiDungController {
         return ResponseEntity.ok(response);
     }
 
-
+    @GetMapping("/list/khachle")
+    public List<NguoiDungDTO> getAllKhachhangle() {
+        return nguoiDungService.getAllkhachhangle();  // Trả về danh sách người dùng đã lọc theo vai trò
+    }
     @GetMapping("/check_trang_thai/{idNguoiDung}")
     public ResponseEntity<?> checkTrangThaiNguoiDung(@PathVariable Integer idNguoiDung) {
         Optional<NguoiDung> optionalNguoiDung = Optional.ofNullable(nguoiDungService.findById(idNguoiDung));
@@ -135,6 +133,5 @@ public class ADNguoiDungController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng.");
         }
     }
-
 
 }

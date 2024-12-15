@@ -74,6 +74,7 @@ public class Voucher {
     }
     @Transient
     private boolean isUsable;
+
     public boolean getIsUsable() {
         return isUsable;
     }
@@ -81,4 +82,5 @@ public class Voucher {
     public void setIsUsable(boolean isUsable) {
         this.isUsable = isUsable;
     }
+
 }

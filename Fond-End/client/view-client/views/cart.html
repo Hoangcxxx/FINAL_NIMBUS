@@ -60,11 +60,10 @@
                     <input type="number" ng-model="item.soLuongGioHang" min="1" max="20" ng-blur="updateCart(item)"
                         aria-label="Số lượng sản phẩm" class="number-input" ng-change="checkQuantity(item)"
                         inputmode="numeric" pattern="[0-9]*" placeholder="Số lượng" />
-                    <small class="text-danger" ng-if="item.errorMessage">{{ item.errorMessage }}</small>
+                    <div>
+                        <small class="text-danger" ng-if="item.errorMessage">{{ item.errorMessage }}</small>
+                    </div>
                 </td>
-
-
-
                 <td>
                     <!-- Tính toán Thành Tiền dựa trên giá sản phẩm và số lượng -->
                     <span>{{ item.soLuongGioHang * (item.giaKhuyenMai || item.giaBan) | currency: '' : 0 }} VND</span>
@@ -96,11 +95,13 @@
             </tbody>
         </table>
         <div class="text-center mt-3">
-            <a href="#!thanh_toan" class="text-decoration-none" ng-click="thanhtoan(sanPhamChiTiet)">
-                <button type="button" class="btn btn-success" ng-disabled="!isValidCart">
-                    <i class="fas fa-check me-2"></i>Thanh toán
-                </button>
-            </a>
+            <div class="text-center mt-3">
+                <a ng-disabled="!isValidCart" ng-click="checkout()">
+                    <button type="button" class="btn btn-success" class="text-decoration-none text-light">
+                        <i class="fas fa-check me-2"></i>Thanh toán
+                    </button>
+                </a>
+            </div>
         </div>
     </div>
 </section>

@@ -14,5 +14,5 @@ public class DiaChiVanChuyenDTO {
         private Integer idXa;
         private Integer idNguoiDung;  // Sử dụng Integer thay vì String
         private String moTa;
-        private  Integer Weight;
+
 }

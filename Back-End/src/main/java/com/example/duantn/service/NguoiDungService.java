@@ -116,16 +116,9 @@ public class NguoiDungService {
 
     // Cập nhật thông tin người dùng
     public NguoiDung updateNguoiDung(Integer id, NguoiDung nguoiDungDetails) {
-        // Tìm người dùng trong cơ sở dữ liệu
         NguoiDung existingNguoiDung = nguoiDungRepository.findById(id).orElse(null);
 
         if (existingNguoiDung != null) {
-            // Kiểm tra trạng thái người dùng (khóa hay không)
-            if (!existingNguoiDung.getTrangThai()) {
-                throw new RuntimeException("Tài khoản của bạn đã bị khóa, không thể cập nhật thông tin.");
-            }
-
-            // Cập nhật thông tin người dùng
             existingNguoiDung.setTenNguoiDung(nguoiDungDetails.getTenNguoiDung());
             existingNguoiDung.setEmail(nguoiDungDetails.getEmail());
             existingNguoiDung.setSdt(nguoiDungDetails.getSdt());
@@ -135,20 +128,13 @@ public class NguoiDungService {
             existingNguoiDung.setAnhDaiDien(nguoiDungDetails.getAnhDaiDien());
             existingNguoiDung.setNgayCapNhat(new Date());
 
-            // Lưu lại thông tin đã cập nhật
             return nguoiDungRepository.save(existingNguoiDung);
         } else {
-            // Trả về null nếu không tìm thấy người dùng
             return null;
         }
     }
-
     public NguoiDung addNguoiDung1(NguoiDung nguoiDung) {
         nguoiDung.setMaNguoiDung("user" + System.currentTimeMillis());
-        String email = nguoiDung.getTenNguoiDung().replaceAll(" ", "").toLowerCase() + "@gmail.com";
-        nguoiDung.setEmail(email);
-        nguoiDung.setMatKhau(UUID.randomUUID().toString().replace("-", "").substring(0, 8));
-
         return nguoiDungRepository.save(nguoiDung);
     }
     public NguoiDung findById(Integer idNguoiDung) {
@@ -244,7 +230,29 @@ public class NguoiDungService {
                 })
                 .collect(Collectors.toList());
     }
+    // Phương thức khóa người dùng
+    public void khoaNguoiDung(Integer idNguoiDung) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
+        if (nguoiDung.isPresent()) {
+            NguoiDung user = nguoiDung.get();
+            user.setTrangThai(false);  // Thiết lập trạng thái khóa (false)
+            nguoiDungRepository.save(user);  // Lưu lại thay đổi
+        } else {
+            throw new RuntimeException("Người dùng không tồn tại.");
+        }
+    }
 
+    // Phương thức mở khóa người dùng
+    public void moKhoaNguoiDung(Integer idNguoiDung) {
+        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
+        if (nguoiDung.isPresent()) {
+            NguoiDung user = nguoiDung.get();
+            user.setTrangThai(true);  // Thiết lập trạng thái mở khóa (true)
+            nguoiDungRepository.save(user);  // Lưu lại thay đổi
+        } else {
+            throw new RuntimeException("Người dùng không tồn tại.");
+        }
+    }
     public List<NguoiDungDTO> getAllkhachhangle() {
         List<NguoiDung> nguoiDungList = nguoiDungRepository.findAll();
 
@@ -270,28 +278,6 @@ public class NguoiDungService {
                 })
                 .collect(Collectors.toList());
     }
-    // Phương thức khóa người dùng
-    public void khoaNguoiDung(Integer idNguoiDung) {
-        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
-        if (nguoiDung.isPresent()) {
-            NguoiDung user = nguoiDung.get();
-            user.setTrangThai(false);  // Thiết lập trạng thái khóa (false)
-            nguoiDungRepository.save(user);  // Lưu lại thay đổi
-        } else {
-            throw new RuntimeException("Người dùng không tồn tại.");
-        }
-    }
 
-    // Phương thức mở khóa người dùng
-    public void moKhoaNguoiDung(Integer idNguoiDung) {
-        Optional<NguoiDung> nguoiDung = nguoiDungRepository.findById(idNguoiDung);
-        if (nguoiDung.isPresent()) {
-            NguoiDung user = nguoiDung.get();
-            user.setTrangThai(true);  // Thiết lập trạng thái mở khóa (true)
-            nguoiDungRepository.save(user);  // Lưu lại thay đổi
-        } else {
-            throw new RuntimeException("Người dùng không tồn tại.");
-        }
-    }
 
 }

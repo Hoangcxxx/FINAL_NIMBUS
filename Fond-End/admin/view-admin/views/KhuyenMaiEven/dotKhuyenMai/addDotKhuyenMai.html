@@ -44,7 +44,6 @@
                                 </div>
                             </div>
 
-
                             <!-- Ngày Bắt Đầu và Ngày Kết Thúc -->
                             <div class="mb-3">
                                 <label for="ngayBatDau" class="form-label">Ngày Bắt Đầu</label>
@@ -64,7 +63,7 @@
                 </div>
 
                 <div class="col-md-7">
-                    <div class="border rounded p-3">
+                    <div class="border rounded p-3" style="height: 100%;">
                         <div class="d-flex align-items-center justify-content-between">
                             <h5>Danh Sách Sản Phẩm</h5>
                             <div class="form-group">
@@ -81,7 +80,8 @@
                         <div ng-if="message" class="alert alert-warning">
                             {{ message }}
                         </div>
-                        <div class="table-responsive">
+                        <!-- Bảng sản phẩm chưa giảm giá -->
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                             <table class="table table-hover align-middle">
                                 <thead>
                                     <tr>
@@ -99,20 +99,57 @@
                                     <tr ng-repeat="item in dsSanPham track by $index">
                                         <th scope="row">
                                             <input type="checkbox" ng-model="item.selected"
-                                                ng-change="updateSelectAll()">
+                                                ng-change="updateProductSelection(item)">
                                         </th>
                                         <td><img src="{{item.urlAnh}}" class="img-fluid" alt="{{item.tenSanPham}}"
                                                 width="50"></td>
                                         <td>{{item.tenSanPham}}</td>
                                         <td>{{item.tenDanhMuc}}</td>
-                                        <td>{{item.giaBan}}</td>
+                                        <td>{{item.giaBan | currency: '' : 0}} VND</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
+
                     </div>
                 </div>
             </div>
+
+            <!-- Bảng sản phẩm đã chọn thêm vào đợt giảm giá -->
+            <div class="border rounded p-3 mt-4">
+                <h5 class="mb-3">Sản Phẩm Được Chọn</h5>
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Ảnh Sản Phẩm</th>
+                                <th scope="col">Tên Sản Phẩm</th>
+                                <th scope="col">Tên Danh Mục</th>
+                                <th scope="col">Giá Khuyến Mãi</th>
+                                <th scope="col">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in dsDaSanPham track by $index">
+                                <td>{{ $index + 1 }}</td>
+                                <td><img src="{{item.urlAnh}}" class="img-fluid" alt="{{item.tenSanPham}}" width="50">
+                                </td>
+                                <td>{{item.tenSanPham}}</td>
+                                <td>{{item.tenDanhMuc}}</td>
+                                <td>{{item.giaBan | currency: '' : 0}} VND</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger"
+                                        ng-click="xoaSanPhamGiamGia(dotGiamGia.idDotGiamGia, item.idSanPham)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </main>

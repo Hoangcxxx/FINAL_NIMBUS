@@ -29,7 +29,10 @@ public class ADDangNhapController {
             if (nguoiDung.getVaiTro().getIdVaiTro() == 1) {
                 // Quản trị viên, trả về quyền truy cập đầy đủ
                 return ResponseEntity.ok(nguoiDung);
-            }  else {
+            } else if (nguoiDung.getVaiTro().getIdVaiTro() == 4) {
+                // Nhân viên bán hàng, trả về quyền truy cập đầy đủ
+                return ResponseEntity.ok(nguoiDung);
+            } else {
                 // Vai trò không hợp lệ
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
             }

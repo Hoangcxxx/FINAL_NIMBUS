@@ -35,7 +35,6 @@
                                     <th scope="col">Ngày đặt hàng</th>
                                     <th scope="col">Thành tiền</th>
                                     <th scope="col">Trạng thái</th>
-                                    <!-- <th scope="col">Lịch sử thanh toán</th> -->
                                     <th scope="col">Thao tác</th>
                                 </tr>
                             </thead>
@@ -44,34 +43,29 @@
                                 <tr ng-repeat="hoaDon in orderData">
                                     <td>{{ hoaDon.maHoaDon }}</td>
                                     <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
-                                    <td>{{ hoaDon.thanhTien | currency:"":0 }}đ</td>
-                                    <td>{{ hoaDon.tenLoaiTrangThai }}</td>
-                                    <!-- <td>
-                                        <span ng-if="hoaDon.idlichsuhoadon && hoaDon.idlichsuhoadon.length > 0">
-                                            {{ hoaDon.idlichsuhoadon[0].trangThaiThanhToan }}
-                                        </span>
-                                        <span ng-if="!hoaDon.idlichsuhoadon || hoaDon.idlichsuhoadon.length === 0">
-                                            Chưa có thông tin
-                                        </span>
-                                    </td> -->
+                                    <td>{{ hoaDon.thanhTien | currency:"":0 }} VND</td>
+                                    <td>
+                                        <span>{{ hoaDon.tenLoaiTrangThai }}</span>
+                                    </td>
+                                    <!-- Nút mở modal Chi Tiết Đơn Hàng -->
                                     <td>
                                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                             data-bs-target="#orderDetailsModal" ng-click="showOrderDetails(hoaDon)">
                                             Chi tiết
                                         </button>
                                     </td>
+
                                 </tr>
+
                                 <!-- Trường hợp không có đơn hàng -->
                                 <tr ng-if="!orderData || orderData.length === 0">
-                                    <td colspan="6" class="text-center">Không có đơn hàng nào</td>
+                                    <td colspan="5" class="text-center">Không có đơn hàng nào</td>
                                 </tr>
                             </tbody>
                         </table>
-                        
                     </div>
                 </div>
 
-                <!-- Modal Chi Tiết Đơn Hàng -->
                 <!-- Modal Chi Tiết Đơn Hàng -->
                 <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="modalspcn"
                     aria-hidden="true">
@@ -102,9 +96,10 @@
                                         <p>
                                     </div>
 
-                                    <p><strong class="text-muted">Địa Chỉ:</strong> {{ orderHieu.diaChi }}, {{
+                                    <p><strong class="text-muted">Địa chỉ:</strong> {{
                                         orderHieu.tinh }},
                                         {{ orderHieu.huyen }}, {{ orderHieu.xa }}</p>
+                                    <p><strong class="text-muted">Địa chỉ cụ thể:</strong> {{ orderHieu.diaChi }}</p>
                                 </div>
                             </div>
                             <div class="container">
@@ -115,9 +110,8 @@
                                         <thead class="table-light text-center">
                                             <tr>
                                                 <th>#</th>
-                                                <th>Mã sản phẩm chi tiết</th>
                                                 <th>Hình Ảnh</th>
-                                                <th>Sản Phẩm</th>
+                                                <th>Tên Sản Phẩm</th>
                                                 <th>Màu Sắc</th>
                                                 <th>Chất Liệu</th>
                                                 <th>Kích Thước</th>
@@ -129,7 +123,6 @@
                                         <tbody>
                                             <tr ng-repeat="item in orderlist.listSanPhamChiTiet">
                                                 <td class="text-center">{{ $index + 1 }}</td>
-                                                <td class="text-center">{{ item.maSPCT }}</td>
                                                 <td class="text-center">
                                                     <img ng-if="item.urlAnh" ng-src="{{ item.urlAnh }}"
                                                         alt="{{ item.tenSanPham }}" class="img-fluid rounded-3"
@@ -153,27 +146,16 @@
                                 <!-- Tổng tiền và phí ship -->
                                 <div class="mt-4">
                                     <div class="d-flex justify-content-between">
-                                        <p>
-                                            <strong class="text-muted">Voucher:</strong>
-                                            <span class="text-success">
-                                                {{ orderHieu.giaTriMavoucher || 0 }}
-                                                <span ng-switch="orderHieu.kieugiamgia">
-                                                    <span ng-switch-when="0">%</span>
-                                                    <span ng-switch-when="1">VND</span>
-                                                    <span ng-switch-default></span> <!-- Trường hợp mặc định -->
-                                                </span>
-                                            </span>
-                                        </p>
-                                    </div>
-
-
-                                    <div class="d-flex justify-content-between">
-                                        <p><strong class="text-muted">Tổng Tiền:</strong> <span class="text-success">{{
-                                                orderlist.thanhTien | currency:"":0 }} VND</span></p>
+                                        <p><strong class="text-muted">Voucher:</strong> <span class="text-success">{{
+                                                orderHieu.giaTriMavoucher || 0 }} VND</span></p>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <p><strong class="text-muted">Phí Ship:</strong> <span class="text-warning">{{
-                                                orderlist.phiShip | currency:"":0 }}VND</span></p>
+                                                orderlist.phiShip | currency:"":0 }} VND</span></p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p><strong class="text-muted">Tổng Tiền:</strong> <span class="text-success">{{
+                                                orderlist.thanhTien | currency:"":0 }} VND</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -225,8 +207,8 @@
                             <p>Ngày Đặt Hàng: {{ orderHieu.ngayTao | date:'dd/MM/yyyy' }}</p>
                             <p>Số Điện Thoại: {{ orderHieu.sdtNguoiNhan }}</p>
                             <p>Tên Khách Hàng: {{ orderHieu.tenNguoiNhan }}</p>
-                            <p>Địa Chỉ: {{ orderHieu.diaChi }}, {{ orderHieu.tinh }}, {{ orderHieu.huyen }}, {{
-                                orderHieu.xa }}</p>
+                            <p>Địa Chỉ: {{ orderHieu.tinh }}, {{ orderHieu.huyen }}, {{
+                                orderHieu.xa }}, {{ orderHieu.diaChi }}</p>
 
                             <h6>Giỏ Hàng</h6>
                             <table class="table table-bordered">
@@ -244,9 +226,9 @@
                                     <tr ng-repeat="item in orderlist.listSanPhamChiTiet">
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ item.tenSanPham }}</td>
-                                        <td>{{ item.giaTien | currency:"":0 }}đ</td>
+                                        <td>{{ item.giaTien | currency:"":0 }}VND</td>
                                         <td>{{ item.soLuong }}</td>
-                                        <td>{{ item.soLuong * item.giaTien | currency:"":0 }}đ</td>
+                                        <td>{{ item.soLuong * item.giaTien | currency:"":0 }}VND</td>
                                         <td>
                                             <img ng-if="item.urlAnh" ng-src="{{ item.urlAnh }}"
                                                 alt="{{ item.tenSanPham }}"
@@ -257,8 +239,8 @@
                                 </tbody>
                             </table>
 
-                            <p>Tổng Tiền: {{ orderlist.thanhTien | currency:"":0 }}đ</p>
-                            <p>Phí Ship: {{ orderlist.phiShip | currency:"":0 }}đ</p>
+                            <p>Tổng Tiền: {{ orderlist.thanhTien | currency:"":0 }}VND</p>
+                            <p>Phí Ship: {{ orderlist.phiShip | currency:"":0 }}VND</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -291,9 +273,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
-</div>
 </div>

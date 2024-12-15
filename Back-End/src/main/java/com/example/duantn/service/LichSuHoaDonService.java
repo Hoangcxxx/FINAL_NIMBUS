@@ -15,4 +15,5 @@ public class LichSuHoaDonService {
     public List<LichSuHoaDon> getLichSuHoaDonByNguoiDungId(Integer nguoiDungId) {
         return lichSuHoaDonRepository.findByNguoiDung_IdNguoiDungOrderByIdLichSuHoaDon(nguoiDungId);
     }
+
 }

@@ -44,8 +44,8 @@ window.DonHangController = function ($scope, $http) {
         { id: 'chua-xu-ly', label: 'Chờ xác nhận', status: 'Chờ xác nhận' },  // Chỉnh lại giá trị trạng thái
         { id: 'cho-thanh-toan', label: 'Chờ thanh toán', status: 'Chờ thanh toán' },  // Chỉnh lại giá trị trạng thái
         { id: 'chao-giao', label: 'Chờ giao hàng', status: 'Chờ giao hàng' },      // Chỉnh lại giá trị trạng thái
-        { id: 'hoan-thanh', label: 'Hoàn thành', status: 'Hoàn thành' },  // Chỉnh lại giá trị trạng thái
-        { id: 'da-huy', label: 'Đã hủy', status: 'Đã hủy' }               // Chỉnh lại giá trị trạng thái
+        { id: 'hoan-thanh', label: 'Hoàn thành', status: 'Hoàn thành' }  // Chỉnh lại giá trị trạng thái
+        // { id: 'da-huy', label: 'Đã hủy', status: 'Đã hủy' }               
     ];
 
     // Function to switch the selected tab

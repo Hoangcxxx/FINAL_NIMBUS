@@ -9,33 +9,34 @@
         <div class="col-lg-8">
             <h2 class="cart-title text-center mb-4">Thanh Toán</h2>
             <!-- Shipping Information -->
+             <div>
             <h5 class="mt-4">Thông tin Giao hàng</h5>
             <form ng-submit="placeOrder()" class="compact-form">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="email" ng-model="userInfo.email"
-                            placeholder="Nhập email" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" ng-model="userInfo.tenNguoiDung"
-                            placeholder="Nhập họ và tên" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="email" ng-model="userInfo.email" 
+                           placeholder="Nhập email" ng-change="autoSave()" required>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="phone" ng-model="userInfo.sdt"
-                            placeholder="Nhập số điện thoại" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="address" class="form-label">Địa chỉ cụ thể <span
-                                class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="address" ng-model="userInfo.diaChi"
-                            placeholder="Nhập địa chỉ" required>
-                    </div>
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="name" ng-model="userInfo.tenNguoiDung" 
+                           placeholder="Nhập họ và tên" ng-change="autoSave()" required>
                 </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="phone" ng-model="userInfo.sdt" 
+                           placeholder="Nhập số điện thoại" ng-change="autoSave()" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="address" class="form-label">Địa chỉ cụ thể <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="address" ng-model="userInfo.diaChi" 
+                           placeholder="Nhập địa chỉ" ng-change="autoSave()" required>
+                </div>
+            </div>
+            </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label" for="city">Chọn Tỉnh/Thành phố <span

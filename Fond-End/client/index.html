@@ -135,7 +135,7 @@
                         alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
                     }
                 );
-            };  
+            };
 
             // Hàm load thông tin giỏ hàng
             function loadCartInfo() {
@@ -219,7 +219,6 @@
                 $scope.idNguoiDung = $scope.infoUser.idNguoiDung;  // Lấy tên người dùng
                 $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
                 $scope.vaiTro = $scope.infoUser.vaiTro;  // Lấy thông tin vai trò của người dùng
-
                 // Kiểm tra vai trò của người dùng, nếu là Quản trị viên (idVaiTro = 1)
                 if ($scope.vaiTro.idVaiTro === 1) {
                     $scope.isAdmin = true;  // Cho phép hiển thị mục "Trang quản lý"
@@ -256,7 +255,6 @@
     <!-- Thêm SweetAlert CDN vào trong phần head của file HTML -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="lib/bootstrap.js"></script>
- 
     <script src="view-client/assets/javascript/script.js"></script>
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 
