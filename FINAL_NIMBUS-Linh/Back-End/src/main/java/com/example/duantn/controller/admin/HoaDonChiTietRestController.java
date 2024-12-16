@@ -1,7 +1,6 @@
 package com.example.duantn.controller.admin;
 
 import com.example.duantn.dto.HoaDonChiTietDTO;
-import com.example.duantn.entity.HoaDonChiTiet;
 import com.example.duantn.service.HoaDonChiTietService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/hoa-don-chi-tiet")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequestMapping("/api/admin/hoa_don_chi_tiet")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class HoaDonChiTietRestController {
     @Autowired
     private HoaDonChiTietService hoaDonChiTietService;

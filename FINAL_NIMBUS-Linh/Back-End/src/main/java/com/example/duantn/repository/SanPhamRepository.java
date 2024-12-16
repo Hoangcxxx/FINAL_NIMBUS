@@ -15,26 +15,24 @@ import java.util.List;
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Query(value = SanPhamQuery.BASE_QUERY, nativeQuery = true)
     List<Object[]> getAllSanPham();
-    @Query(value = SanPhamQuery.GET_SAN_PHAM_BAN_HANG, nativeQuery = true)
-    List<Object[]> getAllSanPhamBanHang();
-    @Query(value = SanPhamQuery.GET_SAN_PHAM_CHI_TIET, nativeQuery = true)
-    List<Object[]> getSanPhamCTBanHang(@Param("id_san_pham") Integer id_san_pham);
-
 
     @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_DANH_MUC, nativeQuery = true)
     List<Object[]> getSanPhamByDanhMuc(@Param("idDanhMuc") Integer idDanhMuc);
-
+    @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_ID_DOT_GIAM_GIA, nativeQuery = true)
+    List<Object[]> getSanPhamByIdDotGiamGia(@Param("idDotGiamGia") Integer idDotGiamGia);
     @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_ID, nativeQuery = true)
     List<Object[]> getSanPhamById(@Param("idSanPham") String idSanPham);
 
     @Query(value = SanPhamQuery.GET_SAN_PHAM_AD, nativeQuery = true)
     List<Object[]> getAllSanPhamAD();
-
+    @Query(value = SanPhamQuery.GET_SAN_PHAM_GIAM_GIA, nativeQuery = true)
+    List<Object[]> getAllSanPhamGiamGia();
 
     @Modifying
     @Transactional
     @Query(value = SanPhamQuery.ADD_SAN_PHAM_AD, nativeQuery = true)
     Integer addSanPham(@Param("idDanhMuc") Integer idDanhMuc,
+                       @Param("maSanPham") String maSanPham,
                        @Param("tenSanPham") String tenSanPham,
                        @Param("giaBan") BigDecimal giaBan,
                        @Param("moTa") String moTa,
@@ -75,7 +73,13 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
             "ngay_cap_nhat = GETDATE() " +
             "WHERE Id_san_pham = :idSanPham", nativeQuery = true)
     void updateStatusById(@Param("idSanPham") Integer idSanPham);
-    @Query("SELECT sp FROM SanPham sp " +
+
+    @Query(value = SanPhamQuery.GET_SAN_PHAM_BAN_HANG, nativeQuery = true)
+    List<Object[]> getAllSanPhamBanHang();
+    @Query(value = SanPhamQuery.GET_SAN_PHAM_CHI_TIET, nativeQuery = true)
+    List<Object[]> getSanPhamCTBanHang(@Param("id_san_pham") Integer id_san_pham);
+
+    @Query(value = "SELECT sp FROM SanPham sp " +
             "LEFT JOIN sp.danhMuc dm " +
             "LEFT JOIN sp.giamGiaSanPham ggsp " +
             "LEFT JOIN ggsp.dotGiamGia dgg " +
@@ -90,5 +94,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     List<SanPham> findSanPhamForBanHang();
 
 
+
+    @Query("select s FROM SanPham s WHERE s.tenSanPham LIKE :tenSanPham%")
+    List<SanPham> findByTenSanPham(@Param("tenSanPham") String tenSanPham);
 
 }

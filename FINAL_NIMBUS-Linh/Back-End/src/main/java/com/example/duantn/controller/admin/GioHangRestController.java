@@ -1,20 +1,24 @@
 package com.example.duantn.controller.admin;
 
-import com.example.duantn.dto.*;
-import com.example.duantn.service.GIoHangService;
+import com.example.duantn.dto.GioHangRequest;
+import com.example.duantn.dto.GioHangResponse;
+import com.example.duantn.service.GioHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/gio-hang")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequestMapping("/api/admin/gio_hang")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class GioHangRestController {
     @Autowired
-    private GIoHangService gioHangService;
+    private GioHangService gioHangService;
     @PostMapping("/them/{idNguoiDung}")
     public ResponseEntity<Map<String, String>> themSanPhamVaoGioHang(@PathVariable Integer idNguoiDung, @RequestBody GioHangRequest request) {
         gioHangService.themSanPhamVaoGioHang(idNguoiDung, request);
@@ -83,5 +87,19 @@ public class GioHangRestController {
         response.put("message", "Xóa tất cả chi tiết giỏ hàng của người dùng thành công");
         return ResponseEntity.ok(response);
     }
-
+    @DeleteMapping("/xoa/{idNguoiDung}")
+    public ResponseEntity<Map<String, String>> xoaTatCaSanPhamKhoiGioHangCapNhatSoLuongLai(@PathVariable Integer idNguoiDung) {
+        try {
+            gioHangService.xoaTatCaSanPhamKhoiGioHang(idNguoiDung);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Tất cả sản phẩm đã được xóa khỏi giỏ hàng.");
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", "Lỗi khi xóa giỏ hàng: " + e.getMessage()));
+        }
+    }
 }

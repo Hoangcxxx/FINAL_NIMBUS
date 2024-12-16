@@ -3,13 +3,16 @@ package com.example.duantn.controller.admin;
 import com.example.duantn.dto.PhuongThucThanhToanDTO;
 import com.example.duantn.service.PhuongThucThanhToanService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/phuong-thuc-thanh-toan")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RequestMapping("/api/admin/phuong_thuc_thanh_toan")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class PhuongThucThanhToanRestController {
 
     @Autowired
@@ -18,5 +21,4 @@ public class PhuongThucThanhToanRestController {
     public List<PhuongThucThanhToanDTO> getAllPhuongThucThanhToan() {
         return phuongThucThanhToanService.getAllTenPhuongThucThanhToan();
     }
-
 }

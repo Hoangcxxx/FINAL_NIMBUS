@@ -18,7 +18,8 @@ public class SanPhamChiTiet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_san_pham_chi_tiet")
     private Integer idSanPhamChiTiet;
-
+    @Column(name = "ma_san_pham_chi_tiet")
+    private String maSanPhamCT;
     @Column(name = "so_luong", nullable = false)
     private Integer soLuong;
     @Column(name = "ngay_tao")
@@ -33,19 +34,18 @@ public class SanPhamChiTiet {
     private Boolean trangThai;
 
     @ManyToOne
-    @JoinColumn(name = "id_kich_thuoc_chi_tiet", referencedColumnName = "Id_kich_thuoc_chi_tiet")
+    @JoinColumn(name = "id_kich_thuoc_chi_tiet")
     private KichThuocChiTiet kichThuocChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_mau_sac_chi_tiet", referencedColumnName = "Id_mau_sac_chi_tiet")
+    @JoinColumn(name = "id_mau_sac_chi_tiet")
     private MauSacChiTiet mauSacChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_chat_lieu_chi_tiet", referencedColumnName = "Id_chat_lieu_chi_tiet")
+    @JoinColumn(name = "id_chat_lieu_chi_tiet")
     private ChatLieuChiTiet chatLieuChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "Id_san_pham", referencedColumnName = "Id_san_pham")
+    @JoinColumn(name = "id_san_pham")
     private SanPham sanPham;
-
 }

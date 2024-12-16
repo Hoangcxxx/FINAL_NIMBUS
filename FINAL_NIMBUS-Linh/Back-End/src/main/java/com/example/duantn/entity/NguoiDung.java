@@ -1,8 +1,10 @@
 package com.example.duantn.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -13,45 +15,50 @@ import java.util.Date;
 @Entity
 @Table(name = "nguoi_dung")
 public class NguoiDung {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_nguoi_dung")
-    private Integer id;
+    private Integer idNguoiDung;
 
-    @Column(name = "ten_nguoi_dung", nullable = false, length = 100)
-    private String tenNguoiDung;
-
-    @Column(name = "ma_nguoi_dung")
+    @Column(name = "ma_nguoi_dung", unique = true, nullable = false)
     private String maNguoiDung;
 
-    @Column(name = "Email")
+    @Column(name = "ten_nguoi_dung", nullable = false)
+    private String tenNguoiDung;
+
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "sdt", length = 15)
-    private String sdt;
-
-    @Column(name = "Ngay_Sinh")
-    @Temporal(TemporalType.DATE)
-    private Date ngaySinh;
-
-    @Column(name = "Dia_Chi", length = 255)
-    private String diaChi;
-
-    @Column(name = "Gioi_Tinh", length = 10)
-    private String gioiTinh;
-
-    @Column(name = "Mat_Khau", nullable = false, length = 255)
+    @Column(name = "mat_khau", nullable = false)
     private String matKhau;
 
-    @Column(name = "Anh_Dai_Dien", length = 255)
+    @Column(name = "sdt", nullable = false)
+    private String sdt;
+
+    @Column(name = "ngay_sinh", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDate ngaySinh;
+
+    @Column(name = "dia_chi", nullable = false)
+    private String diaChi;
+
+    @Column(name = "gioi_tinh", nullable = false)
+    private String gioiTinh;
+
+    @Column(name = "anh_dai_dien", nullable = false)
     private String anhDaiDien;
 
-    @Column(name = "Trang_thai", columnDefinition = "BIT DEFAULT 1")
+    @Column(name = "trang_thai")
     private Boolean trangThai;
 
-    @Column(name = "ngay_cap_nhat", columnDefinition = "DATETIME DEFAULT GETDATE()")
+    @Column(name = "ngay_tao")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayCapNhat;
+    private Date ngayTao; // Changed to LocalDateTime
+
+    @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayCapNhat; // Changed to LocalDateTime
 
     @ManyToOne
     @JoinColumn(name = "id_vai_tro")

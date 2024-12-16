@@ -18,18 +18,19 @@ public class GioHang {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_gio_hang")
     private Integer idGioHang;
-    @Column(name = "ngay_tao", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ngayTao;
-    @Column(name = "id_nguoi_dung", nullable = false)
-    private Integer idNguoiDung;
+
+    @ManyToOne
+    @JoinColumn(name = "id_nguoi_dung")
+    private NguoiDung nguoiDung;
 
     @Column(name = "trang_thai")
     private Boolean trangThai;
 
+    @Column(name = "ngay_tao", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao;
+
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
-    @OneToMany(mappedBy = "gioHang", cascade = CascadeType.ALL)
-    private List<GioHangChiTiet> gioHangChiTietList;
 }

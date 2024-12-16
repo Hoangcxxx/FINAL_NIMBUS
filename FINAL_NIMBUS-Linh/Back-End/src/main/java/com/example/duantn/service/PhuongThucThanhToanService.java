@@ -19,8 +19,8 @@ public class PhuongThucThanhToanService {
 
         // Lọc danh sách phương thức thanh toán để chỉ lấy các id là 1, 2, 3
         return danhSachPhuongThuc.stream()
-                .filter(pt -> pt.getId() == 1 || pt.getId() == 2 || pt.getId() == 3)
-                .map(pt -> new PhuongThucThanhToanDTO(pt.getId(), pt.getTenPhuongThuc()))
+                .filter(pt -> pt.getIdPTThanhToan() == 1 || pt.getIdPTThanhToan() == 3)
+                .map(pt -> new PhuongThucThanhToanDTO(pt.getIdPTThanhToan(), pt.getTenPhuongThuc()))
                 .collect(Collectors.toList());
     }
 

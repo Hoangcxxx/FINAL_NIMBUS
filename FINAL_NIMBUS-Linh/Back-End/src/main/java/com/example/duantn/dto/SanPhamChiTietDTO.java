@@ -1,30 +1,53 @@
 package com.example.duantn.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class SanPhamChiTietDTO {
-    private int idSanPhamChiTiet;
-    private int soLuong;
-    private String danhMuc;
-    private String tenMauSac;
-    private String tenKichThuoc;
-    private String tenChatLieu;
-    private String tenSanPham;
-    private BigDecimal giaBan;
-    private boolean trangThai;
-    private Date ngayTao;
-    private Date ngayCapNhat;
-    private String urlAnh;
+	private Integer idspct;
+	private String MaSPCT;
+	private Integer soLuong;
+	private BigDecimal giaKhuyenMai;
+	private String tenkichthuoc;
+	private BigDecimal giaTien;
+	private String tenmausac;
 
+	private String tenchatlieu;
 
+	private String TenSanPham;
+
+	private String MoTa;
+
+	private Integer idSanPham;
+
+	private  Integer DotGiamGia;
+	private BigDecimal Tongtien;
+
+	@Override
+	public String toString() {
+		return "SanPhamChiTietDTO{" +
+				"idspct=" + idspct +
+				", MaSPCT='" + MaSPCT + '\'' +
+				", soLuong=" + soLuong +
+				", giaKhuyenMai=" + giaKhuyenMai +
+				", tenkichthuoc='" + tenkichthuoc + '\'' +
+				", giaTien=" + giaTien +
+				", tenmausac='" + tenmausac + '\'' +
+				", tenchatlieu='" + tenchatlieu + '\'' +
+				", TenSanPham='" + TenSanPham + '\'' +
+				", MoTa='" + MoTa + '\'' +
+				", idSanPham=" + idSanPham +
+				", DotGiamGia=" + DotGiamGia +
+				", Tongtien=" + Tongtien +
+				'}';
+	}
 }

@@ -17,26 +17,26 @@ public class HoaDonChiTiet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_hoa_don_chi_tiet")
-    private int idHoaDonChiTiet;
+    private Integer idHoaDonChiTiet;
 
     @ManyToOne
-    @JoinColumn(name = "id_san_pham_chi_tiet", referencedColumnName = "Id_san_pham_chi_tiet")
+    @JoinColumn(name = "id_san_pham_chi_tiet", nullable = false)
     private SanPhamChiTiet sanPhamChiTiet;
     @ManyToOne
     @JoinColumn(name = "id_lich_su_hoa_don")
     private LichSuHoaDon lichSuHoaDon;
     @ManyToOne
-    @JoinColumn(name = "id_hoa_don")
+    @JoinColumn(name = "id_hoa_don", nullable = false)
     private HoaDon hoaDon;
 
     @Column(name = "so_luong", nullable = false)
-    private int soLuong;
+    private Integer soLuong;
 
-    @Column(name = "tong_tien", precision = 18, scale = 2)
+    @Column(name = "tong_tien", nullable = false)
     private BigDecimal tongTien;
-    @Column(name = "so_tien_thanh_toan", precision = 18, scale = 2)
+    @Column(name = "so_tien_thanh_toan", nullable = false)
     private BigDecimal soTienThanhToan;
-    @Column(name = "tien_tra_lai", precision = 18, scale = 2)
+    @Column(name = "tien_tra_lai", nullable = false)
     private BigDecimal tienTraLai;
 
     @Column(name = "ngay_tao")
@@ -48,8 +48,8 @@ public class HoaDonChiTiet {
     private Date ngayCapNhat;
 
     @Column(name = "trang_thai")
-    private boolean trangThai;
+    private Boolean trangThai;
 
-    @Column(name = "mo_ta", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "mo_ta")
     private String moTa;
 }

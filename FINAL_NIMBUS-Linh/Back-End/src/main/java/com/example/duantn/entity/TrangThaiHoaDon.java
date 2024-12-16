@@ -7,33 +7,35 @@ import java.util.Date;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "trang_thai_hoa_don")
 public class TrangThaiHoaDon {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_trang_thai_hoa_don")
-    private Integer id;
+    private Integer idTrangThaiHoaDon;
 
-    @Column(name = "mo_ta", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "mo_ta")
     private String moTa;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "id_nhan_vien")
+    private Integer idNhanVien;
+
     @Column(name = "ngay_tao", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
-
+    @ManyToOne  // Nhiều thông báo có thể thuộc về một người dùng
+    @JoinColumn(name = "id_hoa_don")  // Tên cột khóa ngoại
+    private HoaDon hoaDon;  // Liên kết đến bảng người dùng
     @ManyToOne
-    @JoinColumn(name = "id_loai_trang_thai", referencedColumnName = "Id_loai_trang_thai")
+    @JoinColumn(name = "id_loai_trang_thai")
     private LoaiTrangThai loaiTrangThai;
 
-    @ManyToOne
-    @JoinColumn(name = "id_hoa_don", referencedColumnName = "Id_hoa_don")
-    private HoaDon hoaDon;
 }

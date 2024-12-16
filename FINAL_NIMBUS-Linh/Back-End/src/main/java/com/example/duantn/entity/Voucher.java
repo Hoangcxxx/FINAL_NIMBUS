@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -18,46 +17,64 @@ public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_voucher")
-    private int id_voucher;
+    private Integer idVoucher;
 
-    @Column(name = "ma_voucher", nullable = false, unique = true, length = 50)
+    @Column(name = "ma_voucher", unique = true, nullable = false)
     private String maVoucher;
-    @Column(name = "kieu_giam_gia")
-    private Boolean kieuGiamGia;
+    @Column(name = "ten_voucher")
+    private String  tenVoucher;
 
-    @Column(name = "gia_tri_giam_gia", precision = 18, scale = 2)
+    @Column(name = "gia_tri_giam_gia")
     private BigDecimal giaTriGiamGia;
 
     @Column(name = "so_luong")
-    private int soLuong;
+    private Integer soLuong;
 
-    @Column(name = "gia_tri_toi_da", precision = 18, scale = 2)
+    @Column(name = "gia_tri_toi_da")
     private BigDecimal giaTriToiDa;
 
-    @Column(name = "so_tien_toi_thieu", precision = 18, scale = 2)
+    @Column(name = "kieu_giam_gia")
+    private Boolean kieuGiamGia;
+
+    @Column(name = "so_tien_toi_thieu")
     private BigDecimal soTienToiThieu;
 
-    @Column(name = "mo_ta", columnDefinition = "NVARCHAR(MAX)")
-    private String mo_ta;
+    @Column(name = "mo_ta")
+    private String moTa;
 
     @Column(name = "ngay_bat_dau")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date ngayBatDau;
 
     @Column(name = "ngay_ket_thuc")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date ngayKetThuc;
 
-    @Column(name = "ngay_tao", columnDefinition = "DATETIME DEFAULT GETDATE()")
-    private Date ngay_tao;
+    @Column(name = "ngay_tao", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayTao = new Date();
 
-    @Column(name = "ngay_cap_nhat", columnDefinition = "DATETIME DEFAULT GETDATE()")
-    private Date ngay_cap_nhat;
+    @Column(name = "ngay_cap_nhat")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date ngayCapNhat = new Date();
 
-
-    @ManyToOne
-    @JoinColumn(name = "id_trang_thai_giam_gia", nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_trang_thai_giam_gia")
     private TrangThaiGiamGia trangThaiGiamGia;
+
+    @PrePersist
+    protected void onCreate() {
+        ngayTao = new Date();
+        ngayCapNhat = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        ngayCapNhat = new Date();
+    }
     @Transient
     private boolean isUsable;
+
     public boolean getIsUsable() {
         return isUsable;
     }
@@ -65,4 +82,5 @@ public class Voucher {
     public void setIsUsable(boolean isUsable) {
         this.isUsable = isUsable;
     }
+
 }

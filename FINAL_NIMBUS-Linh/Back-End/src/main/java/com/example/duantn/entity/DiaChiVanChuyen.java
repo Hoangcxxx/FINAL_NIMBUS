@@ -9,7 +9,6 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "dia_chi_van_chuyen")
 public class DiaChiVanChuyen {
@@ -18,14 +17,20 @@ public class DiaChiVanChuyen {
     @Column(name = "Id_dia_chi_van_chuyen")
     private Integer idDiaChiVanChuyen;
 
-    @Column(name = "tinh")
-    private String tinh;
+    @ManyToOne
+    @JoinColumn(name = "id_tinh")
+    private Tinh tinh;
 
-    @Column(name = "huyen")
-    private String huyen;
+    @ManyToOne
+    @JoinColumn(name = "id_huyen")
+    private Huyen huyen;
 
-    @Column(name = "xa")
-    private String xa;
+    @ManyToOne
+    @JoinColumn(name = "id_xa")
+    private Xa xa;
+
+    @Column(name = "dia_chi_cu_the")
+    private String diaChiCuThe;
 
     @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -35,10 +40,13 @@ public class DiaChiVanChuyen {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
 
+    @Column(name = "trang_thai")
+    private Boolean trangThai;
+
     @Column(name = "mo_ta")
     private String moTa;
 
     @ManyToOne
-    @JoinColumn(name = "id_phi_van_chuyen")
-    private PhiVanChuyen phiVanChuyen;
+    @JoinColumn(name = "id_nguoi_dung")
+    private NguoiDung nguoiDung;
 }

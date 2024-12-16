@@ -12,45 +12,54 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "hoa_don")
 public class HoaDon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id_hoa_don")
-    private int idHoaDon;
+    private Integer idHoaDon;
 
-    @Column(name = "ma_hoa_don", nullable = false, unique = true, length = 50)
+    @Column(name = "ma_hoa_don", nullable = false, unique = true)
     private String maHoaDon;
 
     @ManyToOne
-    @JoinColumn(name = "id_nguoi_dung", referencedColumnName = "Id_nguoi_dung")
+    @JoinColumn(name = "id_nguoi_dung")
     private NguoiDung nguoiDung;
 
-    @Column(name = "ten_nguoi_nhan")
+    @Column(name = "id_nhan_vien")
+    private Integer idNhanVien;
+
+    @ManyToOne
+    @JoinColumn(name = "id_voucher")
+    private Voucher voucher;
+
+    @ManyToOne
+    @JoinColumn(name = "id_dia_chi_van_chuyen")
+    private DiaChiVanChuyen diaChiVanChuyen;
+
+    @Column(name = "ten_nguoi_nhan", nullable = false)
     private String tenNguoiNhan;
 
     @Column(name = "phi_ship")
     private BigDecimal phiShip;
 
-    @Column(name = "dia_chi")
+    @Column(name = "dia_chi", nullable = false)
     private String diaChi;
 
-    @Column(name = "sdt_nguoi_nhan", length = 15)
+    @Column(name = "sdt_nguoi_nhan")
     private String sdtNguoiNhan;
 
-    @Column(name = "thanh_tien")
-    private BigDecimal thanhTien;
-    @Column(name = "ngay_tao")
+    @Column(name = "ngay_tao", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayTao;
 
-    @Column(name = "mo_ta", columnDefinition = "NVARCHAR(MAX)")
+    @Column(name = "mo_ta")
     private String moTa;
-
+    @Column(name = "thanh_tien")
+    private BigDecimal thanhTien;
     @Column(name = "trang_thai")
-    private boolean trangThai;
+    private Boolean trangThai;
 
     @Column(name = "ngay_thanh_toan")
     @Temporal(TemporalType.TIMESTAMP)
@@ -60,16 +69,10 @@ public class HoaDon {
 
     @ManyToOne
     @JoinColumn(name = "id_pt_thanh_toan_hoa_don")
-    private PtThanhToanHoaDon ptThanhToanHoaDon;
-    @ManyToOne
-    @JoinColumn(name = "id_voucher")
-    private Voucher Voucher;
-    @OneToMany(mappedBy = "hoaDon")
-    @JsonIgnore // Bỏ qua danh sách chi tiết hóa đơn khi serialize
-    private List<HoaDonChiTiet> hoaDonChiTietList;
-
+    private PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon;
     @OneToMany(mappedBy = "hoaDon")
     @JsonIgnore // Bỏ qua danh sách trạng thái hóa đơn khi serialize
     private List<TrangThaiHoaDon> trangThaiHoaDons;
+
 
 }

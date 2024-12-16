@@ -1,3 +1,0 @@
-window.ThanhtoanController = function ($scope) {
-   
-}

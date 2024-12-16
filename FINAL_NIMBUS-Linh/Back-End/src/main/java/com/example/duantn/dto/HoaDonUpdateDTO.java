@@ -14,7 +14,7 @@ public class HoaDonUpdateDTO {
     private BigDecimal phiShip = BigDecimal.ZERO;
     private Date ngayThanhToan;
     private BigDecimal thanhTien;
-    private int idPtThanhToanHoaDon;
+    private int idThanhToanHoaDon;
     private Integer trangThaiHoaDon;
     private String setSdtNguoiNhan;
     private int idVoucher;

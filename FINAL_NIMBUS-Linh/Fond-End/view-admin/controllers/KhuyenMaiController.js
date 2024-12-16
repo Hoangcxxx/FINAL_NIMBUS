@@ -1,3 +1,0 @@
-window.KhuyenMaiController = function ($scope) {
-    
-}
