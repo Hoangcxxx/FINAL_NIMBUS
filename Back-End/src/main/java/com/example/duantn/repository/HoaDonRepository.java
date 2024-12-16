@@ -43,10 +43,9 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "JOIN hd.nguoiDung nd " +
             "LEFT JOIN hd.phuongThucThanhToanHoaDon ptthd " +
             "LEFT JOIN ptthd.phuongThucThanhToan ptt " +
-            "LEFT JOIN hd.hoaDonChiTietList hdct " +
+            "LEFT JOIN HoaDonChiTiet hdct ON hdct.hoaDon.idHoaDon = hd.idHoaDon " + // Truy vấn trực tiếp HoaDonChiTiet
             "GROUP BY  hd.idHoaDon, hd.maHoaDon, nd.tenNguoiDung, nd.sdt, hd.ngayTao, ptt.tenPhuongThuc, hd.loai")
     List<HoaDonDTO> getHoaDonWithDetails();
-
 
 
     @Query("SELECT h, tthd, ttLoai FROM HoaDon h " +

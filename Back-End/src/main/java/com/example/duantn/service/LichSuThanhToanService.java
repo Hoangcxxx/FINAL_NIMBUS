@@ -31,7 +31,7 @@ public class LichSuThanhToanService {
     @Autowired
     private NguoiDungRepository nguoiDungRepository;
 
-    public LichSuThanhToan createLichSuThanhToan(Integer idHoaDon, Integer idNguoiDung, BigDecimal soTienThanhToan) {
+    public LichSuThanhToan createLichSuThanhToan(Integer idHoaDon, Integer idNguoiDung, Integer idNhanVien, BigDecimal soTienThanhToan) {
         // Tìm hóa đơn từ ID
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy hóa đơn với ID: " + idHoaDon));
@@ -39,14 +39,18 @@ public class LichSuThanhToanService {
         // Tìm người dùng từ ID
         NguoiDung nguoiDung = nguoiDungRepository.findById(idNguoiDung)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với ID: " + idNguoiDung));
+
+        // Tạo mới Lịch sử thanh toán
         LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
         lichSuThanhToan.setHoaDon(hoaDon);
         lichSuThanhToan.setNguoiDung(nguoiDung);
+        lichSuThanhToan.setIdNhanVien(idNhanVien); // Gán ID nhân viên
         lichSuThanhToan.setSoTienThanhToan(soTienThanhToan);
         lichSuThanhToan.setNgayTao(new Date());
         lichSuThanhToan.setNgayCapNhat(new Date());
         lichSuThanhToan.setNgayGiaoDich(new Date());
         lichSuThanhToan.setTrangThaiThanhToan(true);
+
         return lichSuThanhToanRepository.save(lichSuThanhToan);
     }
     public List<Object[]> getlichSuHoaDonByidHoaDon(Integer idHoaDon) {

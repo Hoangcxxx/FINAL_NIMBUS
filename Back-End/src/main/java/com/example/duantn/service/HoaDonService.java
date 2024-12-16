@@ -130,20 +130,24 @@ public class HoaDonService {
         dto.setDiaChi(hoaDon.getDiaChi());
         dto.setThanhTien(hoaDon.getThanhTien());
         dto.setGhiChu(hoaDon.getMoTa());
-// Kiểm tra xem voucher có tồn tại không
         if (hoaDon.getVoucher() != null) {
             dto.setGiaTriMavoucher(hoaDon.getVoucher().getGiaTriGiamGia());
-            dto.setMavoucher(hoaDon.getVoucher().getMaVoucher()); // Nếu cần thêm mã voucher
+            dto.setMavoucher(hoaDon.getVoucher().getMaVoucher());
+
+            // Kiểm tra kiểu giảm giá tự động
+            if (hoaDon.getVoucher().getGiaTriGiamGia().compareTo(BigDecimal.ZERO) > 0) {
+                // Giảm giá theo số tiền (BigDecimal)
+                dto.setKieuGiamGia(false);  // Nếu voucher giảm giá theo tiền
+            } else if (hoaDon.getVoucher().getGiaTriGiamGia().compareTo(BigDecimal.ZERO) < 0) {
+                // Giảm giá theo phần trăm (giả sử giá trị âm biểu thị phần trăm)
+                dto.setKieuGiamGia(true);   // Nếu voucher giảm giá theo phần trăm
+            }
         } else {
-            dto.setGiaTriMavoucher(BigDecimal.ZERO); // Hoặc giá trị mặc định phù hợp
+            dto.setGiaTriMavoucher(BigDecimal.ZERO); // Giá trị mặc định nếu không có voucher
             dto.setMavoucher(null);
+
         }
 
-        // Thông tin người dùng
-        if (hoaDon.getNguoiDung() != null) {
-            dto.setIdNguoiDung(hoaDon.getNguoiDung().getIdNguoiDung());
-            dto.setEmail(hoaDon.getNguoiDung().getEmail());
-        }
 
         // Thông tin địa chỉ vận chuyển
         if (hoaDon.getDiaChiVanChuyen() != null) {

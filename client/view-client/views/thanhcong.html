@@ -1,0 +1,134 @@
+<section id="thank-you-section" class="thank-you-section">
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card p-4 shadow-sm border-light">
+                    <h2 class="text-center mb-4 text-success">Cảm ơn bạn đã đặt hàng!</h2>
+                    <p class="text-center mb-4 text-muted">
+                        Chúng tôi đã nhận được đơn hàng của bạn và đang xử lý. Vui lòng kiểm tra email của bạn để nhận
+                        thông tin chi tiết về đơn hàng.
+                    </p>
+
+                    <!-- Order Info Section -->
+                    <div class="order-info mt-4">
+                        <h4 class="mb-3 text-primary">Thông tin đơn hàng:</h4>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Mã đơn hàng:</th>
+                                    <td>#{{orderData.maHoaDon}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Phương thức thanh toán:</th>
+                                    <td>{{orderData.tenPhuongThucThanhToan}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Product Details Section -->
+                    <div class="product-details mt-4">
+                        <h4 class="mb-3 text-primary">Chi tiết sản phẩm:</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Hình ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Màu sắc</th>
+                                    <th>Kích thước</th>
+                                    <th>Chất liệu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in orderDetails.listSanPhamChiTiet">
+                                    <td>
+                                        <img ng-src="{{item.urlAnh}}" alt="Hình ảnh sản phẩm" class="img-thumbnail"
+                                            style="width: 80px; height: 80px;" ng-if="item.urlAnh">
+                                    </td>
+                                    <td>{{item.tenSanPham}}</td>
+                                    <td>{{ item.giaKhuyenMai | currency:"":0 }} VND</td>
+                                    <td>{{item.soLuong}}</td>
+                                    <td>{{item.tenmausac}}</td>
+                                    <td>{{item.tenkichthuoc}}</td>
+                                    <td>{{item.tenchatlieu}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Total Payment Section -->
+                    <!-- Total Payment Section -->
+                    <div class="total-payment mt-4">
+                        <h4 class="text-primary">Tổng tiền:</h4>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Phí giao hàng:</th>
+                                    <td>{{ orderData.phiShip | currency:"":0 }} VND</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Voucher:</th>
+                                    <td>
+                                        {{ (orderData.giaTriMavoucher || 0) | currency:"":0 }} VND
+                                        <!-- <span ng-switch="orderData.kieugiamgia">
+                                            <span ng-switch-when="0">%</span>
+                                            <span ng-switch-when="1">VND</span>
+                                        </span> -->
+                                    </td>
+                                </tr>
+                                <!-- Tổng Tiền Sản Phẩm -->
+                                <tr>
+                                    <th scope="row">Tổng Tiền Sản Phẩm:</th>
+                                    <td>{{ getTotalProductPrice() | currency:"":0 }} VND</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+
+
+                    <!-- Total Amount -->
+                    <h4 class="mt-2 text-success"><strong>Tổng thanh toán:</strong> {{(orderData.thanhTien) | currency:
+                        '' : 0}} VND</h4>
+                </div>
+
+                <!-- Shipping Info Section -->
+                <div class="shipping-info mt-4">
+                    <h4 class="mb-3 text-primary">Thông tin nhận hàng:</h4>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Tên người nhận:</th>
+                                <td>{{orderData.tenNguoiNhan}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Số điện thoại:</th>
+                                <td>{{orderData.sdtNguoiNhan}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Địa chỉ nhận hàng:</th>
+                                <td>{{orderData.diaChi}}, {{orderData.tinh}}, {{orderData.huyen}}, {{orderData.xa}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ghi chú:</th>
+                                <td>{{orderData.ghiChu}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer Note -->
+                <p class="mt-4 text-center text-muted">
+                    Sau khi "Đặt hàng" thành công, Nimbus sẽ liên hệ xác nhận đơn hàng theo số Hotline 02836220632.
+                </p>
+
+                <!-- Back to Home Button -->
+                <div class="text-center mt-4">
+                    <a href="/" class="btn btn-primary btn-lg">Quay lại trang chủ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
