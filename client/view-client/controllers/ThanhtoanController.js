@@ -45,13 +45,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
         $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${iduser}`)
             .then(response => {
                 $scope.cart = response.data;
-
-                // Nếu giỏ hàng trống, thông báo và thoát
-                if ($scope.cart.length === 0) {
-                    alert("Giỏ hàng của bạn đang trống!");
-                    return;
-                }
-
                 // Duyệt qua từng sản phẩm trong giỏ để lấy ảnh sản phẩm
                 $scope.cart.forEach(item => {
                     // Lấy ảnh sản phẩm từ API
@@ -264,12 +257,13 @@ window.ThanhToanController = function ($scope, $http, $window) {
         if (!$scope.userInfo.tenNguoiDung || $scope.userInfo.tenNguoiDung.trim() === "") {
             Swal.fire({
                 title: 'Lỗi!',
-                text: 'Vui lòng nhập tên người dùng hợp lệ!',
+                text: 'Tên người dùng không được để trống!',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
             return false;
         }
+        
         if (!$scope.userInfo.email || $scope.userInfo.email.trim() === "") {
             Swal.fire({
                 title: 'Lỗi!',
@@ -343,10 +337,21 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
     $scope.validateOrderDetails = function () {
         if (!$scope.cart || $scope.cart.length === 0) {
-            swal("Lỗi!", "Giỏ hàng của bạn đang trống!", "error");
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Giỏ hàng của bạn đang trống!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
             return false;
         }
         if (!$scope.selectedPaymentMethod) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng chọn phương thức thanh toán!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
             swal("Lỗi!", "Vui lòng chọn phương thức thanh toán!", "error");
             return false;
         }
