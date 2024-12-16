@@ -329,8 +329,6 @@
                                 placeholder="Nhập mô tả tại đây..."
                                 style="font-size: 1rem; border-radius: 5px; height: 100px;"></textarea>
                         </div>
-
-
                         <!-- Khi chưa chọn voucher -->
                         <div class="mb-3" ng-show="!selectedVoucher">
                             <div class="voucher-default"
@@ -343,18 +341,24 @@
                                 </p>
                             </div>
                         </div>
+
                         <!-- Khi đã chọn voucher -->
                         <div class="mb-3" ng-if="selectedVoucher">
                             <div class="voucher-info"
                                 style="border-radius: 10px; padding: 20px; background-color: #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); margin: 20px 0;">
                                 <div class="voucher-header"
-                                    style="display: flex; align-items: center; border-bottom: 2px solid #ff0000; padding-bottom: 10px; margin-bottom: 10px;">
-                                    <i class="fas fa-tags"
-                                        style="font-size: 1.5em; color: #ff0000; margin-right: 10px;"></i>
-                                    <h2 style="font-size: 1.5em; color: #333;">
-                                        Voucher áp dụng:
-                                        <strong>{{ selectedVoucher.maVoucher }}</strong>
-                                    </h2>
+                                    style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ff0000; padding-bottom: 10px; margin-bottom: 10px;">
+                                    <div style="display: flex; align-items: center;">
+                                        <i class="fas fa-tags"
+                                            style="font-size: 1.5em; color: #ff0000; margin-right: 10px;"></i>
+                                        <h2 style="font-size: 1.5em; color: #333;">
+                                            Voucher áp dụng:
+                                            <strong>{{ selectedVoucher.maVoucher }}</strong>
+                                        </h2>
+                                    </div>
+                                    <!-- Icon "X" để hủy voucher -->
+                                    <i class="fas fa-times" style="font-size: 1.5em; color: #ff0000; cursor: pointer;"
+                                        ng-click="removeVoucher()"></i>
                                 </div>
                                 <div class="voucher-details"
                                     style="background-color: #f9f9f9; border-radius: 5px; padding: 15px; border-left: 5px solid #ff0000;">
@@ -362,8 +366,15 @@
                                         <p>
                                             <strong>Áp dụng cho đơn hàng từ:</strong>
                                             <span>{{ selectedVoucher.soTienToiThieu | currency:"":0 }} VND</span>
-                                            đến
-                                            <span>{{ selectedVoucher.giaTriToiDa | currency:"":0 }} VND</span>
+        
+                                            <span ng-if="selectedVoucher.kieuGiamGia === false">
+                                                đến
+                                                <span>{{ selectedVoucher.giaTriToiDa | currency:"":0 }} VND</span>
+                                            </span>
+        
+                                            <span ng-if="selectedVoucher.kieuGiamGia === true">
+                                                trở lên
+                                            </span>
                                         </p>
                                         <p>
                                             <strong>Giảm giá:</strong>
@@ -391,12 +402,6 @@
                                 <i class="fa-solid fa-check"></i> Thanh toán
                             </button>
 
-                            <!-- Nút Thanh toán và In hóa đơn -->
-                            <button class="btn btn-primary"
-                                style="font-size: 1.1rem; padding: 12px 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; background: linear-gradient(135deg, #007bff, #0056b3); border: none; color: white; flex-grow: 1;"
-                                ng-click="thanhtoanvain()">
-                                <i class="fa-solid fa-check"></i> Thanh toán và In hóa đơn
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -712,7 +717,6 @@
 
 
 
-
 <!-- Modal chọn voucher -->
 <div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -743,14 +747,15 @@
 
                 <div>
                     <h5 class="fw-semibold" style="font-size: 1.1rem; color: #333;">Danh sách voucher khả dụng:</h5>
-                    <div class="list-group" style="max-height: 500px; overflow-y: auto;">
+                    <div class="list-group"
+                        style="max-height: 500px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #007bff #e0e0e0;">
                         <button type="button" class="list-group-item list-group-item-action p-4 mb-3 rounded-3"
                             ng-repeat="voucher in availableVouchers" ng-click="selectVoucher(voucher)" ng-style="{
-                                'opacity': (voucher.kiemtravoucher || !voucher.isUsable) ? '0.5' : '1', 
-                                'pointer-events': (voucher.kiemtravoucher || !voucher.isUsable) ? 'none' : 'auto', 
-                                'cursor': (voucher.kiemtravoucher || !voucher.isUsable) ? 'not-allowed' : 'pointer',
-                                'background-color': (voucher.kiemtravoucher || !voucher.isUsable) ? '#f7f7f7' : '#ffffff'
-                            }">
+                                    'opacity': (voucher.isUsable === false || (voucher.kieuGiamGia === false && (voucher.soTienToiThieu > totalAmount || voucher.giaTriToiDa < totalAmount))) ? '0.5' : '1', 
+                                    'pointer-events': (voucher.isUsable === false || (voucher.kieuGiamGia === false && (voucher.soTienToiThieu > totalAmount || voucher.giaTriToiDa < totalAmount))) ? 'none' : 'auto', 
+                                    'cursor': (voucher.isUsable === false || (voucher.kieuGiamGia === false && (voucher.soTienToiThieu > totalAmount || voucher.giaTriToiDa < totalAmount))) ? 'not-allowed' : 'pointer',
+                                    'background-color': (voucher.isUsable === false || (voucher.kieuGiamGia === false && (voucher.soTienToiThieu > totalAmount || voucher.giaTriToiDa < totalAmount))) ? '#f7f7f7' : '#ffffff'
+                                }">
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <strong class="text-dark" style="font-size: 1.1rem;">{{voucher.maVoucher}}</strong>
@@ -767,17 +772,15 @@
                                     {{ voucher.trangThaiGiamGia.tenTrangThaiGiamGia }}
                                 </span>
                             </div>
+
                             <!-- Hiển thị thông tin chi tiết về giá tiền -->
                             <div style="margin-top: 15px; font-size: 1rem; color: #555;">
-
                                 <p>
                                     <strong>Giảm giá:</strong>
                                     <span style="color: #e74c3c; font-weight: bold;">
-                                        <!-- Nếu là phần trăm (true) -->
                                         <span ng-if="voucher.kieuGiamGia">
                                             {{ voucher.giaTriGiamGia | currency:"":0 }} VND
                                         </span>
-                                        <!-- Nếu là tiền tệ (false) -->
                                         <span ng-if="!voucher.kieuGiamGia">
                                             {{ voucher.giaTriGiamGia | currency:"":0 }} %
                                         </span>
@@ -786,21 +789,24 @@
                                 <p>
                                     <strong>Áp dụng cho đơn hàng từ:</strong>
                                     <span>{{ voucher.soTienToiThieu | currency:"":0 }} VND</span>
-                                    đến
-                                    <span>{{ voucher.giaTriToiDa | currency:"":0 }} VND</span>
+
+                                    <span ng-if="voucher.kieuGiamGia === false">
+                                        đến
+                                        <span>{{ voucher.giaTriToiDa | currency:"":0 }} VND</span>
+                                    </span>
+
+                                    <span ng-if="voucher.kieuGiamGia === true">
+                                        trở lên
+                                    </span>
                                 </p>
                             </div>
 
                             <!-- Hiển thị trạng thái sử dụng -->
-                            <div ng-if="voucher.kiemtravoucher"
-                                style="color: #e74c3c; font-weight: bold; font-size: 14px; margin-top: 10px;">
-                                <i class="fas fa-times-circle" style="color: #e74c3c; margin-right: 5px;"></i>Đã sử dụng
-                            </div>
-                            <div ng-if="!voucher.kiemtravoucher && !voucher.isUsable"
+                            <div ng-if="!voucher.isUsable"
                                 style="color: #e74c3c; font-weight: bold; font-size: 14px; margin-top: 10px;">
                                 <i class="fas fa-ban" style="color: #e74c3c; margin-right: 5px;"></i>Không thể sử dụng
                             </div>
-                            <div ng-if="!voucher.kiemtravoucher && voucher.isUsable"
+                            <div ng-if="voucher.isUsable"
                                 style="color: #28a745; font-weight: bold; font-size: 14px; margin-top: 10px;">
                                 <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>Có thể sử
                                 dụng
@@ -808,6 +814,8 @@
                         </button>
                     </div>
                 </div>
+
+
 
 
             </div>
@@ -822,6 +830,7 @@
         </div>
     </div>
 </div>
+
 
 
 

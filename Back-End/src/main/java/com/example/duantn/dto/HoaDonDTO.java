@@ -45,4 +45,6 @@ public class HoaDonDTO {
 	private Integer Loai;
 	private String Mavoucher;
 	private BigDecimal GiaTriMavoucher;
+	private BigDecimal giaTriGiamGia;
+	private Boolean kieuGiamGia;
 }

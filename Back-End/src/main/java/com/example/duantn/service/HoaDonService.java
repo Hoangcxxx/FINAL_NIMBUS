@@ -130,20 +130,24 @@ public class HoaDonService {
         dto.setDiaChi(hoaDon.getDiaChi());
         dto.setThanhTien(hoaDon.getThanhTien());
         dto.setGhiChu(hoaDon.getMoTa());
-// Kiểm tra xem voucher có tồn tại không
         if (hoaDon.getVoucher() != null) {
             dto.setGiaTriMavoucher(hoaDon.getVoucher().getGiaTriGiamGia());
-            dto.setMavoucher(hoaDon.getVoucher().getMaVoucher()); // Nếu cần thêm mã voucher
+            dto.setMavoucher(hoaDon.getVoucher().getMaVoucher());
+
+            // Kiểm tra kiểu giảm giá tự động
+            if (hoaDon.getVoucher().getGiaTriGiamGia().compareTo(BigDecimal.ZERO) > 0) {
+                // Giảm giá theo số tiền (BigDecimal)
+                dto.setKieuGiamGia(false);  // Nếu voucher giảm giá theo tiền
+            } else if (hoaDon.getVoucher().getGiaTriGiamGia().compareTo(BigDecimal.ZERO) < 0) {
+                // Giảm giá theo phần trăm (giả sử giá trị âm biểu thị phần trăm)
+                dto.setKieuGiamGia(true);   // Nếu voucher giảm giá theo phần trăm
+            }
         } else {
-            dto.setGiaTriMavoucher(BigDecimal.ZERO); // Hoặc giá trị mặc định phù hợp
+            dto.setGiaTriMavoucher(BigDecimal.ZERO); // Giá trị mặc định nếu không có voucher
             dto.setMavoucher(null);
+
         }
 
-        // Thông tin người dùng
-        if (hoaDon.getNguoiDung() != null) {
-            dto.setIdNguoiDung(hoaDon.getNguoiDung().getIdNguoiDung());
-            dto.setEmail(hoaDon.getNguoiDung().getEmail());
-        }
 
         // Thông tin địa chỉ vận chuyển
         if (hoaDon.getDiaChiVanChuyen() != null) {
@@ -310,40 +314,13 @@ public class HoaDonService {
             // Gửi yêu cầu thanh toán VNPay và lấy URL thanh toán
             String paymentUrl = paymentService.createPayment(hoaDonDTO.getThanhTien().longValue(), "vnpay", req);
             System.out.println("URL thanh toán VNPay: " + paymentUrl);
-
-            // Lưu hóa đơn
-            hoaDonRepository.save(hoaDon);
-            PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon = new PhuongThucThanhToanHoaDon();
-            phuongThucThanhToanHoaDon.setPhuongThucThanhToan(phuongThucThanhToanRepository.findById(2).orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ"))); // 2 là mã phương thức thanh toán cho VNPay
-            phuongThucThanhToanHoaDon.setNgayGiaoDich(new Date());
-            phuongThucThanhToanHoaDon.setMoTa("Thanh toán VNPay cho đơn hàng " + generatedMaHoaDon);
-            phuongThucThanhToanHoaDon.setHoaDon(hoaDon);
-            phuongThucThanhToanHoaDonRepository.save(phuongThucThanhToanHoaDon);
-            hoaDon.setPhuongThucThanhToanHoaDon(phuongThucThanhToanHoaDon);
-            // Kiểm tra và lấy thông tin người dùng
-            NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
-            hoaDon.setNguoiDung(nguoiDung);
-
-            // Tạo và lưu lịch sử thanh toán
-            LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
-            lichSuThanhToan.setSoTienThanhToan(hoaDonDTO.getThanhTien());
-            lichSuThanhToan.setNgayTao(new Date());
-            lichSuThanhToan.setNgayGiaoDich(new Date());  // Hoặc bạn có thể dùng ngày giao dịch từ hệ thống thanh toán
-            lichSuThanhToan.setNgayCapNhat(new Date());
-            lichSuThanhToan.setTrangThaiThanhToan(true); // Thực tế có thể thay đổi tùy vào trạng thái thanh toán thực tế
-            lichSuThanhToan.setHoaDon(hoaDon);
-            lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
-
-            lichSuThanhToanRepository.save(lichSuThanhToan);
-            hoaDonRepository.save(hoaDon);
-
-            processCartItems(hoaDonDTO, hoaDon);
             updateHoaDonAfterPaymentSuccess(hoaDon, paymentUrl);
 
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi tạo URL thanh toán VNPay", e);
         }
     }
+
 
     private void updateHoaDonAfterPaymentSuccess(HoaDon hoaDon, String paymentUrl) {
         hoaDon.setThanhTien(hoaDon.getThanhTien());
@@ -390,6 +367,7 @@ public class HoaDonService {
         clearGioHangByUserId(hoaDonDTO.getCartId());
     }
 
+
     public void clearGioHangByUserId(Integer idNguoiDung) {
         GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
         if (gioHang == null) {
@@ -400,6 +378,139 @@ public class HoaDonService {
         gioHangChiTietRepository.deleteAll(chiTietList);
         gioHang.setNgayCapNhat(new Date());
         gioHangRepository.save(gioHang);
+    }
+
+    public HoaDon apithanhtoanvnpay(HoaDonDTO hoaDonDTO, HttpServletRequest request, HttpServletResponse response, String generatedMaHoaDon, HoaDon hoaDon) {
+        if (hoaDonDTO.getIdNguoiDung() == null) {
+            throw new RuntimeException("ID Người dùng không được null");
+        }
+        long currentCount = hoaDonRepository.count();
+        generatedMaHoaDon = "HD00" + (currentCount + 1);
+
+        hoaDon.setMaHoaDon(generatedMaHoaDon);
+
+        // Kiểm tra và lấy thông tin người dùng
+        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
+        hoaDon.setNguoiDung(nguoiDung);
+
+
+        // Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
+        if (hoaDonDTO.getIdvoucher() != null) {
+            Voucher voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher()).orElseThrow(() -> new RuntimeException("Không tìm thấy Voucher với ID: " + hoaDonDTO.getIdvoucher()));
+
+            if (voucher.getSoLuong() <= 0) {
+                throw new RuntimeException("Voucher này đã hết số lượng sử dụng.");
+            }
+
+            voucher.setSoLuong(voucher.getSoLuong() - 1);
+            voucherRepository.save(voucher);
+
+            hoaDon.setVoucher(voucher);
+        } else {
+            hoaDon.setVoucher(null);
+        }
+
+        hoaDon.setNgayTao(new Date());
+        hoaDon.setTenNguoiNhan(hoaDonDTO.getTenNguoiNhan());
+        hoaDon.setDiaChi(hoaDonDTO.getDiaChi());
+        hoaDon.setSdtNguoiNhan(hoaDonDTO.getSdtNguoiNhan());
+        hoaDon.setThanhTien(hoaDonDTO.getThanhTien());
+        hoaDon.setMoTa(hoaDonDTO.getGhiChu());
+        hoaDon.setTrangThai(true);
+        hoaDon.setLoai(1);
+
+
+        hoaDonRepository.save(hoaDon);
+        PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon = new PhuongThucThanhToanHoaDon();
+        phuongThucThanhToanHoaDon.setPhuongThucThanhToan(phuongThucThanhToanRepository.findById(2).get()); // COD
+        phuongThucThanhToanHoaDon.setNgayGiaoDich(new Date());
+        phuongThucThanhToanHoaDon.setMoTa("Thanh toán vnpay cho đơn hàng " + generatedMaHoaDon);
+        phuongThucThanhToanHoaDon.setHoaDon(hoaDon);
+        phuongThucThanhToanHoaDonRepository.save(phuongThucThanhToanHoaDon);
+        hoaDon.setPhuongThucThanhToanHoaDon(phuongThucThanhToanHoaDon);
+        hoaDonRepository.save(hoaDon);
+
+
+        // Tạo và lưu lịch sử thanh toán
+        LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
+        lichSuThanhToan.setSoTienThanhToan(hoaDonDTO.getThanhTien());
+        lichSuThanhToan.setNgayTao(new Date());
+        lichSuThanhToan.setNgayGiaoDich(new Date());  // Hoặc bạn có thể dùng ngày giao dịch từ hệ thống thanh toán
+        lichSuThanhToan.setNgayCapNhat(new Date());
+        lichSuThanhToan.setTrangThaiThanhToan(false); // Thực tế có thể thay đổi tùy vào trạng thái thanh toán thực tế
+        lichSuThanhToan.setHoaDon(hoaDon);
+        lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
+        lichSuThanhToanRepository.save(lichSuThanhToan);
+        // Thêm trạng thái "Tạo đơn hàng" - Trạng thái mới của hóa đơn sau khi tạo
+        TrangThaiHoaDon trangThaiHoaDonTaoDon = new TrangThaiHoaDon();
+        TrangThaiHoaDon trangThaiHoaDonChoXuLy = new TrangThaiHoaDon();
+
+        // Trạng thái "Tạo đơn hàng"
+        LoaiTrangThai trangThaiTaoDon = loaiTrangThaiRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+        trangThaiHoaDonTaoDon.setMoTa("Tạo đơn hàng");
+        trangThaiHoaDonTaoDon.setNgayTao(new Date());
+        trangThaiHoaDonTaoDon.setNgayCapNhat(new Date());
+        trangThaiHoaDonTaoDon.setIdNhanVien(1);
+        trangThaiHoaDonTaoDon.setLoaiTrangThai(trangThaiTaoDon);
+        trangThaiHoaDonTaoDon.setHoaDon(hoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDonTaoDon);
+
+        // Trạng thái "Chờ xử lý" sau khi thanh toán được chọn
+        LoaiTrangThai trangThaiChoXuLy = loaiTrangThaiRepository.findById(2).orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+        trangThaiHoaDonChoXuLy.setMoTa("Chờ xác nhận");
+        trangThaiHoaDonChoXuLy.setNgayTao(new Date());
+        trangThaiHoaDonChoXuLy.setNgayCapNhat(new Date());
+        trangThaiHoaDonChoXuLy.setIdNhanVien(1);
+        trangThaiHoaDonChoXuLy.setLoaiTrangThai(trangThaiChoXuLy);
+        trangThaiHoaDonChoXuLy.setHoaDon(hoaDon);
+        trangThaiHoaDonRepository.save(trangThaiHoaDonChoXuLy);
+
+        lichSuThanhToanRepository.save(lichSuThanhToan);
+        // Lấy hoặc lưu thông tin Tỉnh, Huyện, Xã
+        if (hoaDonDTO.getTinh() == null || hoaDonDTO.getHuyen() == null || hoaDonDTO.getXa() == null) {
+            throw new RuntimeException("Thông tin Tỉnh, Huyện, hoặc Xã không hợp lệ");
+        }
+        Tinh tinh = tinhRepository.findById(hoaDonDTO.getTinh()).orElseGet(() -> tinhRepository.save(fetchCityInfo(hoaDonDTO.getTinh().toString())));
+        Huyen huyen = huyenRepository.findById(hoaDonDTO.getHuyen()).orElseGet(() -> huyenRepository.save(fetchDistrictInfo(hoaDonDTO.getHuyen().toString())));
+        Xa xa = xaRepository.findById(hoaDonDTO.getXa()).orElseGet(() -> xaRepository.save(fetchWardInfo(hoaDonDTO.getXa().toString())));
+
+        // Tạo và lưu đối tượng DiaChiVanChuyen
+        DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
+        diaChiVanChuyen.setTinh(tinh);
+        diaChiVanChuyen.setNguoiDung(nguoiDung);
+        diaChiVanChuyen.setDiaChiCuThe(hoaDonDTO.getDiaChiCuThe());
+        diaChiVanChuyen.setHuyen(huyen);
+        diaChiVanChuyen.setXa(xa);
+        diaChiVanChuyen.setTrangThai(true);
+        diaChiVanChuyen.setNgayTao(new Date());
+        diaChiVanChuyen.setNgayCapNhat(new Date());
+        diaChiVanChuyen.setMoTa(String.format("Địa chỉ: %s, %s, %s", xa.getTenXa(), huyen.getTenHuyen(), tinh.getTenTinh()));
+
+        diaChiVanChuyen = diaChiVanChuyenRepository.save(diaChiVanChuyen);
+
+        // Gán địa chỉ vận chuyển đã lưu cho hóa đơn
+        hoaDon.setDiaChiVanChuyen(diaChiVanChuyen);
+        // Khởi tạo đối tượng Phí vận chuyển
+
+        PhiVanChuyen phiVanChuyen = new PhiVanChuyen();
+        phiVanChuyen.setHoaDon(hoaDon);  // Liên kết với hóa đơn đã lưu
+        phiVanChuyen.setDiaChiVanChuyen(diaChiVanChuyen);
+        phiVanChuyen.setSoTienVanChuyen(BigDecimal.valueOf(22000));
+        phiVanChuyen.setTrangThai(true);
+        phiVanChuyen.setMoTa("Phí vận chuyển cho hóa đơn mã: " + hoaDon.getMaHoaDon());
+
+        // Lưu phí vận chuyển
+        phiVanChuyen = phiVanChuyenRepository.save(phiVanChuyen);
+
+        // Gán phí vận chuyển vào hóa đơn
+        hoaDon.setPhiShip(phiVanChuyen.getSoTienVanChuyen());
+
+
+        processCartItems(hoaDonDTO, hoaDon);
+        updateHoaDonAfterPaymentSuccess(hoaDon, generatedMaHoaDon);
+        // Không lưu hóa đơn ngay tại đây, sẽ lưu sau khi nhận thông báo thanh toán từ VNPa
+        return hoaDon;
+
     }
 
     public HoaDon createOrder(HoaDonDTO hoaDonDTO, HttpServletRequest res, HttpServletResponse res1) {

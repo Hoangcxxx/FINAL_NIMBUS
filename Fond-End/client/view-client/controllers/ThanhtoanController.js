@@ -35,9 +35,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
                     address: $scope.userInfo.address
                 });
 
-                // Store the user and shipping info in localStorage
-                localStorage.setItem('userInfo', JSON.stringify($scope.userInfo));
-                localStorage.setItem('shippingInfo', JSON.stringify($scope.shippingInfo));
 
             })
             .catch(error => console.error("Lỗi khi lấy thông tin người dùng:", error));
@@ -48,13 +45,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
         $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${iduser}`)
             .then(response => {
                 $scope.cart = response.data;
-
-                // Nếu giỏ hàng trống, thông báo và thoát
-                if ($scope.cart.length === 0) {
-                    alert("Giỏ hàng của bạn đang trống!");
-                    return;
-                }
-
                 // Duyệt qua từng sản phẩm trong giỏ để lấy ảnh sản phẩm
                 $scope.cart.forEach(item => {
                     // Lấy ảnh sản phẩm từ API
@@ -71,15 +61,13 @@ window.ThanhToanController = function ($scope, $http, $window) {
             })
             .catch(error => console.error("Lỗi khi lấy sản phẩm trong giỏ hàng:", error));
     };
+
     $scope.selectVoucher = function (voucher) {
         // Kiểm tra điều kiện sử dụng voucher
         if (voucher.isUsable) {
             $scope.selectedVoucher = voucher;
             $scope.voucherCode = voucher.maVoucher;  // Gán mã voucher vào input (nếu cần)
             $scope.voucherError = '';  // Reset lỗi
-
-            // Lưu voucher đã chọn vào localStorage
-            localStorage.setItem('selectedVoucher', JSON.stringify($scope.selectedVoucher));
         } else {
             $scope.voucherError = 'Voucher này không thể sử dụng.';
         }
@@ -176,8 +164,13 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
             // Tính lại tổng tiền sau khi áp dụng voucher
             $scope.calculateTotal(); // Tính lại tổng tiền sau khi áp dụng voucher
+
+            // Lưu voucher và tổng tiền vào localStorage
+            localStorage.setItem('selectedVoucher', JSON.stringify($scope.selectedVoucher));
+            localStorage.setItem('totalAmount', $scope.totalAmount);
         }
     };
+
     $scope.dsvoucher = function () {
         // Calculate the total amount from the cart
         $scope.totalAmount = $scope.cart.reduce(function (total, item) {
@@ -189,6 +182,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
         // Log the total amount for debugging
         console.log("Tổng tiền giỏ hàng: " + $scope.totalAmount);
+
         // If the totalAmount is 0 or less, don't fetch vouchers
         if ($scope.totalAmount <= 0) {
             $scope.Voucher = []; // No valid vouchers if there's no total amount
@@ -254,41 +248,134 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
         // Lưu tổng tiền vào localStorage
         localStorage.setItem('totalAmount', $scope.totalAmount);
+
         console.log("Tổng tiền sản phẩm (theo giá bán cơ bản): ", totalProductPrice);
         console.log("Tổng tiền sau khi áp dụng voucher và phí ship: ", totalDiscountedPrice);
     };
 
+    $scope.validateUserInfo = function () {
+        if (!$scope.userInfo.tenNguoiDung || $scope.userInfo.tenNguoiDung.trim() === "") {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Tên người dùng không được để trống!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        
+        if (!$scope.userInfo.email || $scope.userInfo.email.trim() === "") {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng nhập email.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        } else {
+            // Loại bỏ dấu cách thừa trước và sau email trước khi kiểm tra
+            var email = $scope.userInfo.email.trim();
+        
+            // Kiểm tra định dạng email
+            var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        
+            if (!emailPattern.test(email)) {
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Định dạng email không hợp lệ! Vui lòng kiểm tra lại.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
+        }
+        
+        if (!$scope.userInfo.sdt || $scope.userInfo.sdt.trim() === "") {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng nhập số điện thoại!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        } else if (!/^\d{10,11}$/.test($scope.userInfo.sdt)) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Số điện thoại phải chứa từ 10 đến 11 chữ số!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        if (!$scope.userInfo.diaChi || $scope.userInfo.diaChi.trim() === "") {
+            Swal.fire({
+                title: 'Không Được Bỏ Trống Địa Chỉ',
+                text: 'Vui lòng nhập địa chỉ giao hàng!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
 
+        // Nếu tất cả hợp lệ
+        return true;
+    };
+
+
+    $scope.validateShippingInfo = function () {
+        if (!$scope.selectedCity || !$scope.selectedDistrict || !$scope.selectedWard) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng chọn đầy đủ thông tin nhận hàng!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        return true;
+    };
+
+    $scope.validateOrderDetails = function () {
+        if (!$scope.cart || $scope.cart.length === 0) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Giỏ hàng của bạn đang trống!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        if (!$scope.selectedPaymentMethod) {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng chọn phương thức thanh toán!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            swal("Lỗi!", "Vui lòng chọn phương thức thanh toán!", "error");
+            return false;
+        }
+        return true;
+    };
 
     $scope.placeOrder = function () {
-        if ($scope.cart.length === 0) {
-            alert("Giỏ hàng của bạn đang trống!");
-            return;
-        }
 
         // Kiểm tra thông tin người dùng
-        if (!$scope.userInfo.tenNguoiDung) {
-            alert("Vui lòng nhập tên người dùng!");
-            return;
-        }
-        if (!$scope.userInfo.email) {
-            alert("Vui lòng nhập email!");
-            return;
-        }
-        if (!$scope.userInfo.sdt) {
-            alert("Vui lòng nhập số điện thoại!");
-            return;
-        }
-        if (!$scope.userInfo.diaChi) {
-            alert("Vui lòng nhập địa chỉ!");
+        if (!$scope.validateUserInfo()) {
             return;
         }
 
         // Kiểm tra thông tin giao hàng
-        if (!$scope.selectedCity || !$scope.selectedDistrict || !$scope.selectedWard) {
-            alert("Vui lòng chọn đầy đủ thông tin nhận hàng!");
+        if (!$scope.validateShippingInfo()) {
             return;
         }
+
+        // Kiểm tra thông tin hóa đơn
+        if (!$scope.validateOrderDetails()) {
+            return;
+        }
+
+
 
         // Tạo danh sách sản phẩm chi tiết từ giỏ hàng
         const listSanPhamChiTiet = $scope.cart.map(item => ({
@@ -330,22 +417,11 @@ window.ThanhToanController = function ($scope, $http, $window) {
             $http.post(paymentUrl)
                 .then(function (response) {
                     const paymentUrlMatch = response.data.match(/window\.location\.href='([^']+)'/);
+
                     if (paymentUrlMatch && paymentUrlMatch[1]) {
                         const paymentRedirectUrl = paymentUrlMatch[1];
                         console.error("orderData:", orderData);
-
-                        $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData)
-                            .then(response => {
-                                const maHoaDon = response.data.maHoaDon;
-
-                                // Lưu mã hóa đơn và chuyển hướng tới cổng thanh toán
-                                localStorage.setItem("maHoaDon", maHoaDon);
-                                window.location.href = paymentRedirectUrl;
-                            })
-                            .catch(error => {
-                                console.error("Lỗi khi đặt hàng:", error);
-                                alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
-                            });
+                        window.location.href = paymentRedirectUrl;
                     } else {
                         alert('Không thể tạo thanh toán VNPAY. Vui lòng thử lại.');
                     }
@@ -376,7 +452,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 $scope.cart = [];
 
                 // Điều hướng đến trang thành công
-                $window.location.href = "/#!thanhcong?maHoaDon=" + response.data.maHoaDon;
+                $window.location.href = "/#!Thanhcong?";
 
                 // Gửi email xác nhận sau khi đặt hàng thành công
                 $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
@@ -391,101 +467,13 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
     // Lấy thông tin tỉnh thành, quận huyện và phường xã
     $scope.getProvinces = function () {
-        $http.get("http://localhost:8080/api/nguoi_dung/dia_chi/all")
+        $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/cities")
             .then(response => $scope.provinces = response.data)
             .catch(error => console.error("Lỗi khi lấy tỉnh thành:", error));
     };
 
 
-    // Lắng nghe sự thay đổi khi chọn tỉnh
-    $scope.$watch("shippingInfo.province", function (newProvince) {
-        if (newProvince) {
-            $http.get(`http://localhost:8080/api/nguoi_dung/test/districts/${newProvince}`)
-                .then(response => $scope.districts = response.data)
-                .catch(error => console.error("Lỗi khi lấy quận huyện:", error));
-
-            // Tính phí vận chuyển khi tỉnh thay đổi
-            $scope.calculateShippingFee();
-        }
-    });
-
-    // Lắng nghe sự thay đổi khi chọn quận
-    $scope.$watch("shippingInfo.district", function (newDistrict) {
-        if (newDistrict) {
-            $http.get(`http://localhost:8080/api/nguoi_dung/test/wards/${newDistrict}`)
-                .then(response => $scope.wards = response.data)
-                .catch(error => console.error("Lỗi khi lấy phường xã:", error));
-
-            // Tính phí vận chuyển khi quận thay đổi
-            $scope.calculateShippingFee();
-        }
-    });
-
-    // Lắng nghe sự thay đổi khi chọn xã
-    $scope.$watch("shippingInfo.ward", function (newWard) {
-        if (newWard) {
-            // Tính phí vận chuyển khi xã thay đổi
-            $scope.calculateShippingFee();
-        }
-    });
-
     $scope.getProvinces(); if (user) $scope.getUserInfo(iduser); $scope.getCartItems();
-
-    // Định nghĩa hàm tính phí ship
-    $scope.calculateShippingFee = function () {
-        if ($scope.selectedCity && $scope.selectedDistrict && $scope.selectedWard) {
-            // Lấy thông tin tỉnh, huyện, xã đã chọn
-            const fromProvinceId = 201; // Mã tỉnh gửi hàng (có thể thay đổi theo thực tế)
-            const fromDistrictId = 201; // Mã quận gửi hàng (có thể thay đổi theo thực tế)
-            const toProvinceId = $scope.selectedCity.code;  // Mã tỉnh nhận hàng
-            const toDistrictId = $scope.selectedDistrict.code; // Mã quận nhận hàng
-            const toWardCode = $scope.selectedWard.code; // Mã phường nhận hàng
-
-            // Trọng lượng gói hàng (ví dụ 800g)
-            const weight = 800;
-            // Kích thước gói hàng (ví dụ chiều dài 50cm, chiều rộng 30cm, chiều cao 15cm)
-            const length = 50;
-            const width = 30;
-            const height = 15;
-            // ID dịch vụ (ví dụ dịch vụ mặc định)
-            const serviceId = 53321;
-
-            // Tạo đối tượng gửi request API
-            const requestData = {
-                from_province_id: fromProvinceId,
-                from_district_id: fromDistrictId,
-                to_province_id: toProvinceId,
-                to_district_id: toDistrictId,
-                to_ward_code: toWardCode,
-                weight: weight,
-                length: length,
-                width: width,
-                height: height,
-                service_id: serviceId,
-                insurance_value: null,
-                cod_failed_amount: null,
-                coupon: null
-            };
-
-            // Gửi yêu cầu API tính phí vận chuyển
-            $http.post("http://localhost:8080/api/admin/shipping/get-shipping-fee", requestData)
-                .then(function (response) {
-                    // Khi nhận được phản hồi thành công, cập nhật phí ship
-                    if (response.data.code === 200) {
-                        $scope.shippingFee = response.data.data.total;
-                        // Log ra số tiền phí vận chuyển
-                        console.log("Phí vận chuyển: ", $scope.shippingFee);
-                    } else {
-                        console.error("Lỗi tính phí vận chuyển:", response.data.message);
-                    }
-                })
-                .catch(function (error) {
-                    console.error("Có lỗi xảy ra khi tính phí vận chuyển:", error);
-                });
-        } else {
-            console.log("Vui lòng chọn đầy đủ tỉnh, huyện và xã.");
-        }
-    };
 
     // Khởi tạo dữ liệu ban đầu
     $scope.cities = [];
@@ -514,8 +502,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 if (response.data && Array.isArray(response.data)) {
                     $scope.cities = response.data;
 
-                    // Lưu vào localStorage
-                    localStorage.setItem('cities', JSON.stringify($scope.cities));
+
                 } else {
                     console.error('Không có dữ liệu tỉnh thành trả về.');
                 }
@@ -534,13 +521,12 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
         if ($scope.selectedCity && $scope.selectedCity.code) {
             console.log('ID tỉnh vừa chọn:', $scope.selectedCity.code);
+            localStorage.setItem("idTinh", JSON.stringify($scope.selectedCity.code));
             $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/districts/" + $scope.selectedCity.code)
                 .then(function (response) {
                     if (response.data && Array.isArray(response.data)) {
                         $scope.districts = response.data;
 
-                        // Lưu vào localStorage
-                        localStorage.setItem('districts_' + $scope.selectedCity.code, JSON.stringify($scope.districts));
                     } else {
                         console.error('Không có dữ liệu huyện trả về.');
                     }
@@ -560,13 +546,13 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
         if ($scope.selectedDistrict && $scope.selectedDistrict.code) {
             console.log('ID huyện vừa chọn:', $scope.selectedDistrict.code);
+            localStorage.setItem("idHuyen", JSON.stringify($scope.selectedDistrict.code));
             $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/wards/" + $scope.selectedDistrict.code)
                 .then(function (response) {
                     if (response.data && Array.isArray(response.data)) {
                         $scope.wards = response.data;
 
-                        // Lưu vào localStorage
-                        localStorage.setItem('wards_' + $scope.selectedDistrict.code, JSON.stringify($scope.wards));
+
                     } else {
                         console.error('Không có dữ liệu xã trả về.');
                     }
@@ -586,7 +572,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
             alert("Vui lòng chọn đầy đủ thông tin quận/huyện và phường/xã!");
             return;
         }
-
+        localStorage.setItem("idXa", JSON.stringify($scope.selectedWard.code));
         // Lấy thông tin cần thiết
         const cityCode = $scope.selectedCity.code;      // Mã tỉnh/thành phố
         const districtCode = $scope.selectedDistrict.code; // Mã quận/huyện
@@ -648,6 +634,20 @@ window.ThanhToanController = function ($scope, $http, $window) {
             alert("Vui lòng chọn đầy đủ địa chỉ.");
         }
     };
+    $scope.autoSave = function () {
+        const shippingData = {
+            email: $scope.userInfo.email || '',
+            name: $scope.userInfo.tenNguoiDung || '',
+            phone: $scope.userInfo.sdt || '',
+            address: $scope.userInfo.diaChi || '',
+
+        };
+
+        // Lưu dữ liệu vào localStorage
+        localStorage.setItem("shippingData", JSON.stringify(shippingData));
+        console.log("Đã lưu thông tin tự động:", shippingData);
+    };
+
     // Gọi API lấy danh sách tỉnh thành khi trang được tải
     getCities();
     $scope.dsvoucher();

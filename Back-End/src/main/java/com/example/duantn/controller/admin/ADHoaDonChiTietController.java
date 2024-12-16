@@ -22,11 +22,12 @@ public class ADHoaDonChiTietController {
     private Map<String, Object> mapThongKe(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("tenSanPham", row[0]);
-        map.put("soLuong", row[1]);
-        map.put("doanhThu", row[2]);
+        map.put("giaBan", row[1]);
+        map.put("soLuongBanRa", row[2]);
+        map.put("urlHinhAnh", row[3]);
+        map.put("thuTu", row[4]);
         return map;
     }
-
     private List<Map<String, Object>> mapThongKes(List<Object[]> results) {
         return results.stream().map(this::mapThongKe).collect(Collectors.toList());
     }
@@ -37,8 +38,23 @@ public class ADHoaDonChiTietController {
         List<Map<String, Object>> filteredProducts = mapThongKes(hoaDonChiTiets);
         return ResponseEntity.ok(filteredProducts);
     }
-
-    @GetMapping("/tong_so_luong_ban_ra")
+    private Map<String, Object> mapThongKeTrangThai(Object[] row) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("idLoaiTrangThai", row[0]);
+        map.put("tenTrangThai", row[1]);
+        map.put("soLuongHoaDon", row[2]);
+        return map;
+    }
+    private List<Map<String, Object>> mapThongKeTrangThais(List<Object[]> results) {
+        return results.stream().map(this::mapThongKeTrangThai).collect(Collectors.toList());
+    }
+    @GetMapping("/tong_so_luong_trang_thai_hoa_don")
+    public ResponseEntity<List<Map<String, Object>>> getAllSoluongLoaiTrangThaiHoaDon() {
+        List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllSoluongLoaiTrangThaiHoaDon();
+        List<Map<String, Object>> filteredProducts = mapThongKeTrangThais(hoaDonChiTiets);
+        return ResponseEntity.ok(filteredProducts);
+    }
+    @GetMapping("/tong_so_luong_ban_ra_thanh_nay")
     public ResponseEntity<List<Map<String, Object>>> getAllSoLuongBanRa() {
         List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllSoLuongBanRa();
         List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
@@ -47,7 +63,7 @@ public class ADHoaDonChiTietController {
         return ResponseEntity.ok(filteredResults);
     }
 
-    @GetMapping("/san_pham_ban_ra")
+    @GetMapping("/san_pham_ban_ra_hom_nay")
     public ResponseEntity<List<Map<String, Object>>> getAllSanPhamBanRa() {
         List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllSanPhamBanRa();
         List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
@@ -56,95 +72,31 @@ public class ADHoaDonChiTietController {
         return ResponseEntity.ok(filteredResults);
     }
 
-    @GetMapping("/tong_doanh_thu")
+    @GetMapping("/tong_hoa_don_thang_nay")
     public ResponseEntity<List<Map<String, Object>>> getAllTongDoanhThu() {
         List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllTongDoanhThu();
         List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
-                .map(row -> Map.of("tongDoanhThu", row[0]))
+                .map(row -> Map.of("tongHoaDonThangNay", row[0]))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(filteredResults);
     }
-    @GetMapping("/don_hang_cho")
-    public ResponseEntity<Map<Object, Integer>> getDonHangCho(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
-        Integer soLuong;
-        if (startDate == null || endDate == null) {
-            soLuong = hoaDonChiTietService.getSoLuongDhCho(); // Trả về tổng số lượng
-        } else {
-            LocalDate start = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
-            soLuong = hoaDonChiTietService.getSoLuongDonHangCho(start, end);
-        }
-        Map<Object, Integer> response = new HashMap<>();
-        response.put("soLuongDonHangCho", soLuong);
-        return ResponseEntity.ok(response);
+    @GetMapping("/tong_hoa_don_hom_nay")
+    public ResponseEntity<List<Map<String, Object>>> getAllTongHoaDonHomNay() {
+        List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllTongHoaDonHomNay();
+        List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
+                .map(row -> Map.of("tongHoaDonHomNay", row[0]))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filteredResults);
+    }
+    @GetMapping("/tong_san_pham_trong_thang_nay")
+    public ResponseEntity<List<Map<String, Object>>> getAllTongSanPhamTrongThang() {
+        List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllTongSanPhamTrongThang();
+        List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
+                .map(row -> Map.of("tongSanPhamTrongThangNay", row[0]))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filteredResults);
     }
 
-    @GetMapping("/don_hang_dang_giao")
-    public ResponseEntity<Map<Object, Integer>> getDonHangDangGiao(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
-        Integer soLuong;
-        if (startDate == null || endDate == null) {
-            soLuong = hoaDonChiTietService.getSoLuongDhDangGiao(); // Trả về tổng số lượng
-        } else {
-            LocalDate start = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
-            soLuong = hoaDonChiTietService.getSoLuongDonHangDangGiao(start, end);
-        }
-        Map<Object, Integer> response = new HashMap<>();
-        response.put("soLuongDonHangDangGiao", soLuong);
-        return ResponseEntity.ok(response);
-    }
 
-    @GetMapping("/don_hang_hoan_thanh")
-    public ResponseEntity<Map<Object, Integer>> getDonHangHoanThanh(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
-        Integer soLuong;
-        if (startDate == null || endDate == null) {
-            soLuong = hoaDonChiTietService.getSoLuongDhHoanThanh(); // Trả về tổng số lượng
-        } else {
-            LocalDate start = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
-            soLuong = hoaDonChiTietService.getSoLuongDonHangHoanThanh(start, end);
-        }
-        Map<Object, Integer> response = new HashMap<>();
-        response.put("soLuongDonHangHoanThanh", soLuong);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/don_hang_huy_bo")
-    public ResponseEntity<Map<Object, Integer>> getDonHangHuyBo(@RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
-        Integer soLuong;
-        if (startDate == null || endDate == null) {
-            soLuong = hoaDonChiTietService.getSoLuongDhHuyBo(); // Trả về tổng số lượng
-        } else {
-            LocalDate start = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
-            soLuong = hoaDonChiTietService.getSoLuongDonHangHuyBo(start, end);
-        }
-        Map<Object, Integer> response = new HashMap<>();
-        response.put("soLuongDonHangHuyBo", soLuong);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/doanh_thu_theo_thang_nam")
-    public ResponseEntity<Double> getDoanhThuTheoThangNam(@RequestParam int month, @RequestParam int year) {
-        if (month < 1 || month > 12) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        if (year < 2000 || year > 2100) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
-        Double doanhThu = hoaDonChiTietService.findDoanhThuByMonthAndYear(month, year);
-        return ResponseEntity.ok(doanhThu);
-    }
-
-    @GetMapping("/doanh_thu_theo_nam")
-    public ResponseEntity<Double> getDoanhThuTheoNam(@RequestParam int year) {
-        if (year < 2000 || year > 2100) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
-        Double doanhThu = hoaDonChiTietService.findDoanhThuByYear(year);
-        return ResponseEntity.ok(doanhThu);
-    }
 
 }

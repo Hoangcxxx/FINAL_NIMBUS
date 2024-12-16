@@ -12,56 +12,82 @@
                     <!-- Order Info Section -->
                     <div class="order-info mt-4">
                         <h4 class="mb-3 text-primary">Thông tin đơn hàng:</h4>
-                        <ul class="list-unstyled">
-                            <li><strong>Mã đơn hàng:</strong> #{{orderData.maHoaDon}}</li>
-                            <li><strong>Phương thức thanh toán:</strong> {{orderData.tenPhuongThucThanhToan}}</li>
-                        </ul>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Mã đơn hàng:</th>
+                                    <td>#{{orderData.maHoaDon}}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Phương thức thanh toán:</th>
+                                    <td>{{orderData.tenPhuongThucThanhToan}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
                     <!-- Product Details Section -->
                     <div class="product-details mt-4">
                         <h4 class="mb-3 text-primary">Chi tiết sản phẩm:</h4>
-                        <div ng-repeat="item in orderDetails.listSanPhamChiTiet" class="d-flex align-items-start mb-3">
-                            <img ng-src="{{item.urlAnh}}" alt="Hình ảnh sản phẩm" class="img-thumbnail me-3"
-                                style="width: 80px; height: 80px;" ng-if="item.urlAnh">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 text-dark">{{item.tenSanPham}}</h6>
-                                <div class="text-muted small">
-                                    <span><strong>Giá:</strong> {{ item.giaKhuyenMai | currency:"":0 }} VND</span>
-                                    <br>
-                                    <span><strong>Số lượng:</strong> {{item.soLuong}}</span>
-                                    <br>
-                                    <span><strong>Màu sắc:</strong> {{item.tenmausac}}</span>
-                                    <br>
-                                    <span><strong>Kích thước:</strong> {{item.tenkichthuoc}}</span>
-                                    <br>
-                                    <span><strong>Chất liệu:</strong> {{item.tenchatlieu}}</span>
-                                </div>
-                            </div>
-                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Hình ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Màu sắc</th>
+                                    <th>Kích thước</th>
+                                    <th>Chất liệu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in orderDetails.listSanPhamChiTiet">
+                                    <td>
+                                        <img ng-src="{{item.urlAnh}}" alt="Hình ảnh sản phẩm" class="img-thumbnail"
+                                            style="width: 80px; height: 80px;" ng-if="item.urlAnh">
+                                    </td>
+                                    <td>{{item.tenSanPham}}</td>
+                                    <td>{{ item.giaKhuyenMai | currency:"":0 }} VND</td>
+                                    <td>{{item.soLuong}}</td>
+                                    <td>{{item.tenmausac}}</td>
+                                    <td>{{item.tenkichthuoc}}</td>
+                                    <td>{{item.tenchatlieu}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
                     <!-- Total Payment Section -->
+                    <!-- Total Payment Section -->
                     <div class="total-payment mt-4">
                         <h4 class="text-primary">Tổng tiền:</h4>
-                        <p><strong>Phí giao hàng:</strong> {{orderData.phiShip | currency:"":0}} VND</p>
-                        <div class="d-flex justify-content-between">
-                            <p>
-                                <strong class="text-muted">Voucher:</strong>
-                                <span class="text-success">
-                                    {{ orderData.giaTriMavoucher || 0 }}
-                                    <span ng-switch="orderData.kieugiamgia">
-                                        <span ng-switch-when="0">%</span>
-                                        <span ng-switch-when="1">VND</span>
-                                        <span ng-switch-default></span> <!-- Trường hợp mặc định -->
-                                    </span>
-                                </span>
-                            </p>
-                        </div>
-                        <div ng-repeat="item in orderDetails.listSanPhamChiTiet" class="d-flex align-items-start mb-3">
-                            <span><strong>Tổng Tiền Sản Phẩm:</strong> {{item.tongtien | currency:"":0}} VND</span>
-                        </div>
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Phí giao hàng:</th>
+                                    <td>{{ orderData.phiShip | currency:"":0 }} VND</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Voucher:</th>
+                                    <td>
+                                        {{ (orderData.giaTriMavoucher || 0) | currency:"":0 }} VND
+                                        <!-- <span ng-switch="orderData.kieugiamgia">
+                                            <span ng-switch-when="0">%</span>
+                                            <span ng-switch-when="1">VND</span>
+                                        </span> -->
+                                    </td>
+                                </tr>
+                                <!-- Tổng Tiền Sản Phẩm -->
+                                <tr>
+                                    <th scope="row">Tổng Tiền Sản Phẩm:</th>
+                                    <td>{{ getTotalProductPrice() | currency:"":0 }} VND</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+                    
+
 
                     <!-- Total Amount -->
                     <h4 class="mt-2 text-success"><strong>Tổng thanh toán:</strong> {{(orderData.thanhTien) | currency:
@@ -71,13 +97,26 @@
                 <!-- Shipping Info Section -->
                 <div class="shipping-info mt-4">
                     <h4 class="mb-3 text-primary">Thông tin nhận hàng:</h4>
-                    <ul class="list-unstyled">
-                        <li><strong>Tên người nhận:</strong> {{orderData.tenNguoiNhan}}</li>
-                        <li><strong>Số điện thoại:</strong> {{orderData.sdtNguoiNhan}}</li>
-                        <li><strong>Địa chỉ nhận hàng:</strong> {{orderData.diaChi}}, {{orderData.tinh}},
-                            {{orderData.huyen}}, {{orderData.xa}}</li>
-                        <li><strong>Ghi chú:</strong> {{orderData.ghiChu}}</li>
-                    </ul>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Tên người nhận:</th>
+                                <td>{{orderData.tenNguoiNhan}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Số điện thoại:</th>
+                                <td>{{orderData.sdtNguoiNhan}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Địa chỉ nhận hàng:</th>
+                                <td>{{orderData.diaChi}}, {{orderData.tinh}}, {{orderData.huyen}}, {{orderData.xa}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Ghi chú:</th>
+                                <td>{{orderData.ghiChu}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <!-- Footer Note -->

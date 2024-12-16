@@ -45,10 +45,10 @@ public class LichSuThanhToanController {
     public LichSuThanhToan createLichSuThanhToan(@RequestBody Map<String, Object> payload) {
         Integer idHoaDon = (Integer) payload.get("idHoaDon");
         Integer idNguoiDung = (Integer) payload.get("idNguoiDung");
+        Integer idNhanVien = (Integer) payload.get("idNhanVien"); // Lấy ID nhân viên từ payload
         BigDecimal soTienThanhToan = new BigDecimal(payload.get("soTienThanhToan").toString());
-        return lichSuThanhToanService.createLichSuThanhToan(idHoaDon, idNguoiDung, soTienThanhToan);
+        return lichSuThanhToanService.createLichSuThanhToan(idHoaDon, idNguoiDung, idNhanVien, soTienThanhToan);
     }
-
     @PutMapping("/update/{idHoaDon}")
     public ResponseEntity<Map<String, Object>> updateLichSuThanhToan(
             @PathVariable("idHoaDon") Integer idHoaDon, // ID của hóa đơn
@@ -69,7 +69,4 @@ public class LichSuThanhToanController {
         // Trả về 200 với thông báo thành công
         return ResponseEntity.ok(response);
     }
-
-
-
 }

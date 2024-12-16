@@ -245,7 +245,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
                             if (totalQuantityInCart > $scope.soLuongTon) {
                                 Swal.fire({
                                     title: 'Lỗi',
-                                    text: `Không thể thêm sản phẩm. Số lượng trong giỏ hàng cộng thêm số lượng bạn chọn vượt quá số lượng tồn kho (tồn kho còn: ${$scope.soLuongTon}).`,
+                                    text: `Số lượng tồn của sản phẩm trong kho không đủ(số lượng còn lại là: ${$scope.soLuongTon}).`,
                                     icon: 'error',
                                     confirmButtonText: 'OK'
                                 });

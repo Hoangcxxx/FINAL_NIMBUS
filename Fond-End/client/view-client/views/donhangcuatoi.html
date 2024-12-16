@@ -27,7 +27,21 @@
             <div class="tab-content shadow-sm p-4 mb-5 bg-white rounded">
                 <div class="tab-pane fade show active" id="dashboard">
                     <h4 class="mt-4 text-primary">Đơn hàng của bạn</h4>
-                    <div class="card shadow-sm p-3">
+                    <div>
+                        <!-- Dropdown để chọn trạng thái -->
+                        <label for="statusFilter">Lọc theo trạng thái:</label>
+                        <select id="statusFilter" class="form-select" ng-model="selectedStatus">
+                            <option value="">Tất cả</option>
+                            <option value="Chờ xác nhận">Chờ xác nhận</option>
+                            <option value="Chờ Thanh Toán">Chờ Thanh Toán</option>
+                            <option value="Chờ giao hàng">Chờ giao hàng</option>
+                            <option value="Thanh toán thành công">Thanh toán thành công</option>
+                            <option value="Hoàn thành">Hoàn thành</option>
+                        </select>
+                    </div>
+                
+                    <!-- Phần bảng có thanh cuộn -->
+                    <div class="table-scrollable" style="max-height: 300px; overflow-y: auto;">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -39,8 +53,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Hiển thị danh sách đơn hàng -->
-                                <tr ng-repeat="hoaDon in orderData">
+                                <!-- Hiển thị danh sách đơn hàng với bộ lọc trạng thái -->
+                                <tr ng-repeat="hoaDon in orderData | filter:{tenLoaiTrangThai:selectedStatus} | limitTo: 5">
                                     <td>{{ hoaDon.maHoaDon }}</td>
                                     <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
                                     <td>{{ hoaDon.thanhTien | currency:"":0 }} VND</td>
@@ -50,13 +64,12 @@
                                     <!-- Nút mở modal Chi Tiết Đơn Hàng -->
                                     <td>
                                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#orderDetailsModal" ng-click="showOrderDetails(hoaDon)">
+                                                data-bs-target="#orderDetailsModal" ng-click="showOrderDetails(hoaDon)">
                                             Chi tiết
                                         </button>
                                     </td>
-
                                 </tr>
-
+                
                                 <!-- Trường hợp không có đơn hàng -->
                                 <tr ng-if="!orderData || orderData.length === 0">
                                     <td colspan="5" class="text-center">Không có đơn hàng nào</td>
@@ -65,6 +78,7 @@
                         </table>
                     </div>
                 </div>
+                
 
                 <!-- Modal Chi Tiết Đơn Hàng -->
                 <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="modalspcn"
@@ -147,15 +161,15 @@
                                 <div class="mt-4">
                                     <div class="d-flex justify-content-between">
                                         <p><strong class="text-muted">Voucher:</strong> <span class="text-success">{{
-                                                orderHieu.giaTriMavoucher || 0 }} VND</span></p>
-                                    </div>
-                                    <div class="d-flex justify-content-between">
-                                        <p><strong class="text-muted">Tổng Tiền:</strong> <span class="text-success">{{
-                                                orderlist.thanhTien | currency:"":0 }} VND</span></p>
+                                                orderHieu.giaTriMavoucher | currency:"":0 }} VND</span></p>
                                     </div>
                                     <div class="d-flex justify-content-between">
                                         <p><strong class="text-muted">Phí Ship:</strong> <span class="text-warning">{{
                                                 orderlist.phiShip | currency:"":0 }} VND</span></p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p><strong class="text-muted">Tổng Tiền:</strong> <span class="text-success">{{
+                                                orderlist.thanhTien | currency:"":0 }} VND</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -276,3 +290,10 @@
         </div>
     </div>
 </div>
+<style>
+    .table-scrollable {
+    max-height: 300px;   /* Giới hạn chiều cao */
+    overflow-y: auto;    /* Cho phép cuộn dọc */
+}
+
+</style>

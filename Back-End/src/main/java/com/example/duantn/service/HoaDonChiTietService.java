@@ -43,44 +43,17 @@ public class HoaDonChiTietService {
     public List<Object[]> getAllTongDoanhThu() {
         return hoaDonChiTietRepository.getAllTongDoanhThu();
     }
-
-    public Integer getSoLuongDonHangCho(LocalDate startDate, LocalDate endDate) {
-        return hoaDonChiTietRepository.countDonHangCho(startDate, endDate);
+    public List<Object[]> getAllTongHoaDonHomNay() {
+        return hoaDonChiTietRepository.getAllTongHoaDonHomNay();
+    }
+    public List<Object[]> getAllTongSanPhamTrongThang() {
+        return hoaDonChiTietRepository.getAllTongSanPhamTrongThang();
     }
 
-    public Integer getSoLuongDonHangDangGiao(LocalDate startDate, LocalDate endDate) {
-        return hoaDonChiTietRepository.countDonHangDangGiao(startDate, endDate);
+    public List<Object[]> getAllSoluongLoaiTrangThaiHoaDon() {
+        return hoaDonChiTietRepository.getAllSoluongLoaiTrangThaiHoaDon();
     }
 
-    public Integer getSoLuongDonHangHoanThanh(LocalDate startDate, LocalDate endDate) {
-        return hoaDonChiTietRepository.countDonHangHoanThanh(startDate, endDate);
-    }
-
-    public Integer getSoLuongDonHangHuyBo(LocalDate startDate, LocalDate endDate) {
-        return hoaDonChiTietRepository.countDonHangHuyBo(startDate, endDate);
-    }
-    public Double findDoanhThuByMonthAndYear(int month, int year) {
-        return hoaDonChiTietRepository.findDoanhThuByMonthAndYear(month, year);
-    }
-
-    public Double findDoanhThuByYear(int year) {
-        return hoaDonChiTietRepository.findDoanhThuByYear(year);
-    }
-    public Integer getSoLuongDhCho() {
-        return hoaDonChiTietRepository.countDonHangCho();
-    }
-
-    public Integer getSoLuongDhDangGiao() {
-        return hoaDonChiTietRepository.countDonHangDangGiao();
-    }
-
-    public Integer getSoLuongDhHoanThanh() {
-        return hoaDonChiTietRepository.countDonHangHoanThanh();
-    }
-
-    public Integer getSoLuongDhHuyBo() {
-        return hoaDonChiTietRepository.countDonHangHuyBo();
-    }
     public void createHoaDonChiTiet(HoaDonChiTietDTO hoaDonChiTietDTO) {
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(hoaDonChiTietDTO.getIdSanPhamChiTiet())

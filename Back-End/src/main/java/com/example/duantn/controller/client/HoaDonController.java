@@ -93,4 +93,23 @@ public class HoaDonController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+    @PostMapping("/thanh_toan_vnpay")
+    public ResponseEntity<Map<String, Object>> thanhToanVnPay(@RequestBody HoaDonDTO hoaDonDTO, HttpServletRequest request, HttpServletResponse response,String generatedMaHoaDon,HoaDon hoaDon) {
+        try {
+            // Gọi service để tạo và xử lý hóa đơn
+            hoaDonService.apithanhtoanvnpay(hoaDonDTO, request, response,generatedMaHoaDon,hoaDon);
+
+            // Chuẩn bị dữ liệu phản hồi
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("message", "Đơn hàng đã được đặt thành công!");
+            responseBody.put("maHoaDon", hoaDon.getMaHoaDon());
+            responseBody.put("idHoaDon", hoaDon.getIdHoaDon());
+
+            return ResponseEntity.ok(responseBody);
+        } catch (Exception e) {
+            // Xử lý lỗi và trả về phản hồi lỗi
+            return ResponseEntity.badRequest().body(Map.of("error", "Không thể đặt đơn hàng: " + e.getMessage()));
+        }
+    }
 }

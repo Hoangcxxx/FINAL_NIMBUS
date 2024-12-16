@@ -1,5 +1,7 @@
 window.DonHangCuaToiController = function ($scope, $http, $window) {
 
+
+    
     // Lấy thông tin người dùng từ localStorage
     var userInfo = localStorage.getItem('user');
     // Lắng nghe sự kiện click trên nút "Tra Cứu"

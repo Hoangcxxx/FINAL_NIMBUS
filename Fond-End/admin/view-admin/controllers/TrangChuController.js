@@ -11,11 +11,13 @@ window.TrangChuController = function ($scope, $http) {
         const selectedInvoice = JSON.parse(localStorage.getItem('selectedInvoice'));
         const selectedUser = JSON.parse(localStorage.getItem('selectedUser'));
         const totalPriceInfo = JSON.parse(localStorage.getItem('totalPriceInfo'));
+        const user = JSON.parse(localStorage.getItem('user'));
         // Kiểm tra tính hợp lệ
         // Dữ liệu gửi lên server
         const paymentData = {
             idHoaDon: selectedInvoice.idHoaDon,
             idNguoiDung: selectedUser.idNguoiDung,
+            idNhanVien: user.idNguoiDung,
             soTienThanhToan: totalPriceInfo.totalPrice,
         };
 
@@ -57,9 +59,11 @@ window.TrangChuController = function ($scope, $http) {
 
         // Tạo phương thức thanh toán
         $http.post("http://localhost:8080/api/admin/phuong_thuc_thanh_toan_hoa_don/" + selectedInvoice.idHoaDon + "/thanh-toan", paymentMethod)
+        
             .then(function (response) {
                 console.log("Phản hồi từ POST:", response.data);
                 if (response.data && response.data.idThanhToanHoaDon) {
+                    const selectedVoucher = JSON.parse(localStorage.getItem('selectedVoucher'));
                     // Phương thức thanh toán đã được tạo thành công, tiếp tục cập nhật hóa đơn
                     var updatedInvoice = {
                         phiShip: 0,
@@ -68,7 +72,7 @@ window.TrangChuController = function ($scope, $http) {
                         idThanhToanHoaDon: response.data.idThanhToanHoaDon,
                         setSdtNguoiNhan: userFromStorage.sdt, // Lấy số điện thoại từ localStorage
                         trangThaiHoaDon: $scope.selectedPhuongThucThanhToan === 2 ? 4 : 5,
-                        idVoucher: $scope.selectedVoucher ? $scope.selectedVoucher.idVoucher : null
+                        idVoucher: selectedVoucher ? selectedVoucher.idVoucher : null
                     };
 
                     var user = JSON.parse(localStorage.getItem("user"));
@@ -139,7 +143,24 @@ window.TrangChuController = function ($scope, $http) {
             $scope.hoaDonChiTietDTO.push(detail);
         });
     };
+    $scope.deductVoucherQuantity = async function () {
+        const selectedVoucher = JSON.parse(localStorage.getItem('selectedVoucher'));
+        const originalTotalPrice = JSON.parse(localStorage.getItem('originalTotalPrice'));
+        try {
+            // Gửi yêu cầu trừ số lượng voucher, sử dụng tổng tiền trước giảm giá
+            const response = await $http.post(
+                `http://localhost:8080/api/admin/ban_hang/use/${selectedVoucher.maVoucher}`,
+                originalTotalPrice
+                 // Sử dụng tổng tiền chưa giảm giá
+            );
+            console.log("Số lượng voucher đã được trừ.");
 
+            // Cập nhật lại số lượng voucher trong giao diện người dùng
+            selectedVoucher.soLuong--;
+        } catch (error) {
+            console.error('Lỗi khi trừ số lượng voucher:', error);
+        }
+    };
     $scope.thanhtoanck = async function () {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -180,9 +201,9 @@ window.TrangChuController = function ($scope, $http) {
                 { params: { userId: userId } }
             );
             console.log("Hóa đơn chi tiết:", response.data);
-
+            const selectedVoucher = JSON.parse(localStorage.getItem('selectedVoucher'));
             // Trừ voucher nếu có
-            if ($scope.selectedVoucher) {
+            if (selectedVoucher) {
                 await $scope.deductVoucherQuantity();
             }
 

@@ -137,7 +137,7 @@ public class VnpayService {
         String orderInfo = request.getParameter("vnp_OrderInfo");
         String maHoaDon = hoaDonRepository.findLatestHoaDon();
         if ("00".equals(transactionStatus)) {
-            return "http://127.0.0.1:5502/#!/thanhcong?maHoaDon=" + maHoaDon;
+            return "http://127.0.0.1:5502/#!/thanhcong";
         } else {
             return "http://127.0.0.1:5502/index.html#!/thanh_toan"; // Thanh toán thất bại
         }

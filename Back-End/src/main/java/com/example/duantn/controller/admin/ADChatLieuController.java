@@ -18,8 +18,8 @@ public class ADChatLieuController {
 
     @GetMapping
     public ResponseEntity<List<ChatLieu>> getAllChatLieu() {
-        List<ChatLieu> ChatLieucList = chatLieuService.getAllChatLieu();
-        return new ResponseEntity<>(ChatLieucList, HttpStatus.OK);
+        List<ChatLieu> chatLieucList = chatLieuService.getAllChatLieu();
+        return new ResponseEntity<>(chatLieucList, HttpStatus.OK);
     }
     @GetMapping("/{tenChatLieu}")
     public ResponseEntity<List<ChatLieu>> searchChatLieu(@PathVariable String tenChatLieu) {

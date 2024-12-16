@@ -233,45 +233,52 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                     // Kiểm tra nếu backend trả về thành công
                     if (response.data.success) {
                         console.log("Cập nhật thành công");
-                        alert("Cập nhật trạng thái hóa đơn thành công");
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cập nhật thành công',
+                            text: 'Trạng thái hóa đơn đã được cập nhật thành công!'
+                        });
 
-                        // Tải lại dữ liệu sau khi cập nhật trạng thái
-                        fetchStatusAndInvoiceData();  // Tải lại dữ liệu trạng thái hóa đơn
+                        // Tải lại dữ liệu trạng thái hóa đơn sau khi cập nhật
+                        fetchStatusAndInvoiceData();  // Gọi lại hàm fetchStatusAndInvoiceData để tải lại dữ liệu
+
+                        // Đóng modal sau khi cập nhật
                         $('#ghiChuModal').modal('hide'); // Đóng modal
-                        $scope.resetModal();
+                        $scope.resetModal();  // Reset modal
 
-                        // Tải lại chi tiết lịch sử trạng thái
-                        $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
-                            .then(function (response) {
-                                // Cập nhật lại dữ liệu filteredStatuses
-                                $scope.statuses = response.data;
-
-                                // Lọc lại các trạng thái cần thiết
-                                $scope.filteredStatuses = $scope.statuses.filter(function (status) {
-                                    return [1, 3, 5, 6, 7, 8].includes(status.idLoaiTrangThaiHoaDon);
-                                });
-
-                                // Cập nhật lại bảng chi tiết trạng thái
-                                console.log("Dữ liệu chi tiết trạng thái:", $scope.filteredStatuses);
-                            })
-                            .catch(function (error) {
-                                console.error("Lỗi khi tải lại dữ liệu trạng thái:", error);
-                            });
                     } else {
                         // Nếu không thành công, hiển thị thông báo lỗi từ backend
-                        console.error('Error updating status:', response.data.message);
-                        alert(response.data.message);  // Hiển thị thông báo lỗi từ backend
+                        console.error('Lỗi khi cập nhật trạng thái:', response.data.message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Cập nhật thất bại',
+                            text: response.data.message || "Không rõ lỗi từ server"
+                        });
                     }
                 })
                 .catch(function (error) {
                     // Nếu có lỗi khi gọi API
                     console.error('Error calling API:', error);
-                    alert("Không thể cập nhật trạng thái 'Hoàn thành' vì hóa đơn chưa xác nhận thanh toán.");
+                    // Xử lý lỗi đúng với thông báo từ backend
+                    let errorMessage = error.data && error.data.message ? error.data.message : "Đã xảy ra lỗi trong quá trình cập nhật trạng thái.";
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi khi chuyển trạng thái',
+                        text: errorMessage
+                    });
                 });
         } else {
-            alert('Vui lòng chọn trạng thái trước khi cập nhật!');
+            // Nếu chưa chọn trạng thái hoặc chưa có idHoaDon
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng kiểm tra thông tin',
+                text: 'Vui lòng chọn trạng thái và hóa đơn trước khi cập nhật!'
+            });
         }
     };
+
+
+
 
 
 
@@ -337,7 +344,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     $scope.updatePaymentHistory = function () {
         var amountGiven = document.getElementById("amountGiven").value;
         var notes = document.getElementById("notes").value;
-
+    
         if (amountGiven && notes) {
             // Tạo đối tượng dữ liệu thanh toán
             var paymentData = {
@@ -347,19 +354,34 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 moTa: notes,  // Lấy ghi chú
                 trangThaiThanhToan: true  // Trạng thái thanh toán
             };
-
+    
             // Gửi yêu cầu API để cập nhật lịch sử thanh toán
             $http.put('http://localhost:8080/api/admin/lich_su_thanh_toan/update/' + idHoaDon, paymentData)
                 .then(function (response) {
                     // Kiểm tra nếu có thông báo thành công
                     if (response.data.message) {
                         console.log(response.data.message);  // Log thông báo thành công
-                        alert(response.data.message);  // Hiển thị thông báo thành công
+    
+                        // Hiển thị thông báo thành công với Swal
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cập nhật thành công!',
+                            text: response.data.message
+                        }).then(function() {
+                            // Đóng modal sau khi hiển thị thông báo
+                            $('#xacNhanModal').modal('hide'); // Đóng modal bằng jQuery
+                        });
                     } else {
                         console.error('Lỗi khi cập nhật thanh toán:', response.data.message);
-                        alert(response.data.message);  // Hiển thị lỗi nếu có
+    
+                        // Hiển thị lỗi với Swal
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: response.data.message
+                        });
                     }
-
+    
                     // Gọi lại API để tải lại dữ liệu lịch sử thanh toán sau khi cập nhật
                     $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
                         .then(function (response) {
@@ -371,13 +393,24 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 })
                 .catch(function (error) {
                     console.error('Lỗi khi gọi API cập nhật lịch sử thanh toán:', error);
-                    alert("Không thể cập nhật lịch sử thanh toán.");
+    
+                    // Hiển thị lỗi khi gặp sự cố gọi API với Swal
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: "Không thể cập nhật lịch sử thanh toán."
+                    });
                 });
         } else {
-            alert('Vui lòng nhập đủ thông tin thanh toán!');
+            // Thông báo khi người dùng chưa nhập đủ thông tin
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Vui lòng nhập đủ thông tin thanh toán!'
+            });
         }
     };
-
+    
 
     // Khi người dùng mở modal, tự động điền thông tin vào modal
     $('#xacNhanModal').on('show.bs.modal', function () {
