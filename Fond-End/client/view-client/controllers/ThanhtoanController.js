@@ -330,7 +330,12 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
     $scope.validateShippingInfo = function () {
         if (!$scope.selectedCity || !$scope.selectedDistrict || !$scope.selectedWard) {
-            swal("Lỗi!", "Vui lòng chọn đầy đủ thông tin nhận hàng!", "error");
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng chọn đầy đủ thông tin nhận hàng!',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
             return false;
         }
         return true;

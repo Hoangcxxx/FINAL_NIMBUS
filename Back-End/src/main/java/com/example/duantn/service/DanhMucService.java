@@ -1,5 +1,6 @@
 package com.example.duantn.service;
 
+import com.example.duantn.entity.ChatLieu;
 import com.example.duantn.entity.DanhMuc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,8 @@ public class DanhMucService {
     private com.example.duantn.repository.DanhMucRepository danhMucRepository;
 
     public List<DanhMuc> getAllDanhMuc() {
-        return danhMucRepository.findAll();
+        // Lấy danh sách sắp xếp theo ngày cập nhật giảm dần
+        return danhMucRepository.findAllByOrderByNgayCapNhatDesc();
     }
     public List<DanhMuc> searchDanhMucByTen(String tenDanhMuc) {
         return danhMucRepository.findByTenDanhMucContaining(tenDanhMuc);

@@ -43,7 +43,12 @@ public class HoaDonChiTietService {
     public List<Object[]> getAllTongDoanhThu() {
         return hoaDonChiTietRepository.getAllTongDoanhThu();
     }
-
+    public List<Object[]> getAllTongHoaDonHomNay() {
+        return hoaDonChiTietRepository.getAllTongHoaDonHomNay();
+    }
+    public List<Object[]> getAllTongSanPhamTrongThang() {
+        return hoaDonChiTietRepository.getAllTongSanPhamTrongThang();
+    }
     public Integer getSoLuongDonHangCho(LocalDate startDate, LocalDate endDate) {
         return hoaDonChiTietRepository.countDonHangCho(startDate, endDate);
     }

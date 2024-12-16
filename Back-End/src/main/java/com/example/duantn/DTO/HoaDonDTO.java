@@ -45,8 +45,4 @@ public class HoaDonDTO {
 	private Integer Loai;
 	private String Mavoucher;
 	private BigDecimal GiaTriMavoucher;
-	private Boolean Kieugiamgia;
-	private List<LichSuThanhToanDTO> idlichsuhoadon;
-
-
 }

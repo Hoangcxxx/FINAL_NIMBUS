@@ -34,7 +34,7 @@ public class SanPhamQuery {
             "        WHEN ggsp.id_san_pham IS NOT NULL THEN 0 -- Sản phẩm có khuyến mãi sẽ xuất hiện đầu tiên\n" +
             "        ELSE 1\n" +
             "    END,\n" +
-            "    sp.ten_san_pham ASC, -- Sắp xếp theo tên sản phẩm (A-Z)\n" +
+            "    sp.ngay_cap_nhat DESC, -- Sắp xếp theo tên sản phẩm (A-Z)\n" +
             "    sp.gia_ban ASC; -- Sắp xếp theo giá (tăng dần)";
 
 
@@ -73,7 +73,7 @@ public class SanPhamQuery {
             "        WHEN ggsp.id_san_pham IS NOT NULL THEN 0 -- Sản phẩm có khuyến mãi sẽ xuất hiện đầu tiên\n" +
             "        ELSE 1\n" +
             "    END,\n" +
-            "    sp.ten_san_pham ASC, -- Sắp xếp theo tên sản phẩm (A-Z)\n" +
+            "    sp.ngay_cap_nhat DESC, -- Sắp xếp theo tên sản phẩm (A-Z)\n" +
             "    sp.gia_ban ASC; -- Sắp xếp theo giá (tăng dần)";
     public static final String GET_SAN_PHAM_BY_ID_DOT_GIAM_GIA = "\n" +
             "SELECT \n" +

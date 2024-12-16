@@ -47,6 +47,29 @@ window.ThongTinNguoiDungController = function ($scope, $http, $window) {
             // Định dạng lại ngày sinh theo dd-MM-yyyy
             $scope.ngaySinhNguoiDung = day + '-' + month + '-' + year;
         }
+
+        // Validate dữ liệu
+        if (!$scope.tenNguoiDung || $scope.tenNguoiDung.trim() === "") {
+            Swal.fire('Lỗi', 'Tên người dùng không được để trống!', 'error');
+            return;
+        }
+        if (!$scope.emailNguoiDung || !$scope.emailNguoiDung.match(/^\S+@\S+\.\S+$/)) {
+            Swal.fire('Lỗi', 'Email không hợp lệ!', 'error');
+            return;
+        }
+        if (!$scope.sdtNguoiDung || !$scope.sdtNguoiDung.match(/^\d{10,11}$/)) {
+            Swal.fire('Lỗi', 'Số điện thoại phải từ 10-11 chữ số!', 'error');
+            return;
+        }
+        if (!$scope.ngaySinhNguoiDung || !$scope.ngaySinhNguoiDung.match(/^\d{2}-\d{2}-\d{4}$/)) {
+            Swal.fire('Lỗi', 'Ngày sinh không hợp lệ! Định dạng đúng: dd-MM-yyyy.', 'error');
+            return;
+        }
+        if (!$scope.diaChiNguoiDung || $scope.diaChiNguoiDung.trim() === "") {
+            Swal.fire('Lỗi', 'Địa chỉ không được để trống!', 'error');
+            return;
+        }
+
         // Chuẩn bị dữ liệu người dùng mới để gửi đi
         var updatedUser = {
             tenNguoiDung: $scope.tenNguoiDung,
@@ -56,8 +79,7 @@ window.ThongTinNguoiDungController = function ($scope, $http, $window) {
             diaChi: $scope.diaChiNguoiDung,
             gioiTinh: $scope.gioiTinh,
         };
-        // Log dữ liệu đã chỉnh sửa
-        console.log('Dữ liệu người dùng sau khi chỉnh sửa: ', updatedUser);
+
         // Gửi yêu cầu PUT đến API cập nhật người dùng
         $http.put('http://localhost:8080/api/nguoi_dung/' + $scope.infoUser.idNguoiDung, updatedUser)
             .then(function (response) {
@@ -73,16 +95,19 @@ window.ThongTinNguoiDungController = function ($scope, $http, $window) {
                 $scope.ngaySinhNguoiDung = response.data.ngaySinh;
                 $scope.gioiTinh = response.data.gioiTinh;
 
-                // Đóng modal
+                // Đóng modal và hiển thị thông báo thành công
                 $('#editCustomerModal').modal('hide');
-                alert('Thông tin đã được cập nhật thành công!');
-                $window.location.href = "/#!thong_tin_nguoi_dung"; // Chuyển hướng sang trang thanh toán
+                Swal.fire('Thành công', 'Thông tin đã được cập nhật!', 'success')
+                    .then(() => {
+                        $window.location.href = "/#!thong_tin_nguoi_dung"; // Chuyển hướng sang trang thông tin
+                    });
             })
             .catch(function (error) {
                 console.log('Cập nhật thông tin thất bại:', error);
-                alert('Có lỗi xảy ra khi cập nhật thông tin!');
+                Swal.fire('Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin!', 'error');
             });
     };
+
     $scope.formatDate = function () {
         let date = $scope.ngaySinhNguoiDung;
 
@@ -227,24 +252,37 @@ window.ThongTinNguoiDungController = function ($scope, $http, $window) {
             alert('Vui lòng điền đầy đủ thông tin địa chỉ!');
             return;
         }
-    
+
         // Chuẩn bị dữ liệu để gửi
         var addressData = {
             idTinh: $scope.selectedTinh,
             idHuyen: $scope.selectedHuyen,
             idXa: $scope.selectedXa,
-            diaChiCuThe: $scope.specificAddress,
+            diaChi: $scope.diaChiNguoiDung,
             moTa: $scope.description, // Mô tả
             idNguoiDung: $scope.idNguoiDung // ID người dùng từ localStorage hoặc từ $scope
         };
-    
+
         // Gửi yêu cầu POST để thêm địa chỉ mới
         $http.post('http://localhost:8080/api/nguoi_dung/dia_chi/add', addressData)
             .then(function (response) {
                 // Nếu thêm thành công
+                $scope.addresses = response.data.map(function (address) {
+                    return {
+                        idDiaChiVanChuyen: address.idDiaChiVanChuyen,
+                        diaChiCuThe: address.diaChiCuThe,
+                        moTa: address.moTa,
+                        tinh: address.tinh ? address.tinh.tenTinh : 'N/A',
+                        huyen: address.huyen ? address.huyen.tenHuyen : 'N/A',
+                        xa: address.xa ? address.xa.tenXa : 'N/A',
+                        trangThai: address.trangThai ? 'Đang sử dụng' : 'Không sử dụng'
+                    };
+                });
                 alert('Địa chỉ đã được thêm thành công!');
                 $('#addAddressModal').modal('hide'); // Đóng modal
-    
+
+                console.log('Dữ liệu địa chỉ sau khi thêm:', JSON.stringify($scope.addresses, null, 2));
+
                 // Sau khi thêm thành công, có thể gọi lại API để lấy danh sách địa chỉ mới
                 $http.get('http://localhost:8080/api/nguoi_dung/dia_chi/' + $scope.idNguoiDung)
                     .then(function (response) {
@@ -260,7 +298,7 @@ window.ThongTinNguoiDungController = function ($scope, $http, $window) {
                             };
                         });
                         console.log('Dữ liệu địa chỉ sau khi thêm:', JSON.stringify($scope.addresses, null, 2));
-    
+
                         // Gọi lại hàm reset modal sau khi thêm thành công
                         $scope.openAddAddressModal();
                     })
@@ -273,8 +311,104 @@ window.ThongTinNguoiDungController = function ($scope, $http, $window) {
                 alert('Có lỗi xảy ra khi thêm địa chỉ! Vui lòng thử lại.');
             });
     };
+
+
+    // Khởi tạo dữ liệu ban đầu
+    $scope.cities = [];
+    $scope.districts = [];
+    $scope.wards = [];
+    $scope.shippingInfo = {
+        province: null,
+        district: null,
+        ward: null,
+        address: ''
+    };
+  
+
+    // Hàm gọi API lấy danh sách tỉnh thành
+    function getCities() {
+        if ($scope.selectedCity && $scope.selectedCity.code) {
+            console.log('Province ID:', $scope.selectedCity.code);
+        } else {
+            console.warn('Chưa chọn tỉnh thành.');
+        }
+
+        $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/cities")
+            .then(function (response) {
+                if (response.data && Array.isArray(response.data)) {
+                    $scope.cities = response.data;
+
+                    // Lưu vào localStorage
+                    localStorage.setItem('cities', JSON.stringify($scope.cities));
+                } else {
+                    console.error('Không có dữ liệu tỉnh thành trả về.');
+                }
+            })
+            .catch(function (error) {
+                console.error('Có lỗi xảy ra khi lấy tỉnh thành:', error);
+            });
+    }
+
+    // Hàm gọi API lấy danh sách huyện theo mã tỉnh
+    $scope.onCityChange = function () {
+        $scope.districts = [];
+        $scope.wards = [];
+        $scope.shippingInfo.district = null;
+        $scope.shippingInfo.ward = null;
+
+        if ($scope.selectedCity && $scope.selectedCity.code) {
+            console.log('ID tỉnh vừa chọn:', $scope.selectedCity.code);
+            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/districts/" + $scope.selectedCity.code)
+                .then(function (response) {
+                    if (response.data && Array.isArray(response.data)) {
+                        $scope.districts = response.data;
+
+                        // Lưu vào localStorage
+                        localStorage.setItem('districts_' + $scope.selectedCity.code, JSON.stringify($scope.districts));
+                    } else {
+                        console.error('Không có dữ liệu huyện trả về.');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Có lỗi xảy ra khi lấy huyện:', error);
+                });
+        } else {
+            console.warn('Chưa chọn tỉnh thành.');
+        }
+    };
+
+    // Hàm gọi API lấy danh sách xã theo mã huyện
+    $scope.onDistrictChange = function () {
+        $scope.wards = [];
+        $scope.shippingInfo.ward = null;
+
+        if ($scope.selectedDistrict && $scope.selectedDistrict.code) {
+            console.log('ID huyện vừa chọn:', $scope.selectedDistrict.code);
+            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/wards/" + $scope.selectedDistrict.code)
+                .then(function (response) {
+                    if (response.data && Array.isArray(response.data)) {
+                        $scope.wards = response.data;
+
+                        // Lưu vào localStorage
+                        localStorage.setItem('wards_' + $scope.selectedDistrict.code, JSON.stringify($scope.wards));
+                    } else {
+                        console.error('Không có dữ liệu xã trả về.');
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Có lỗi xảy ra khi lấy xã:', error);
+                });
+        } else {
+            console.warn('Chưa chọn huyện.');
+        }
+    };
+
+
+
+
+
     
-
-
+    // Gọi API lấy danh sách tỉnh thành khi trang được tải
+    getCities();
 
 };

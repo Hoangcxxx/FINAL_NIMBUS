@@ -608,7 +608,8 @@ INSERT INTO chat_lieu_chi_tiet (id_chat_lieu) VALUES
 (2),
 (3),
 (4),
-(5);
+(5),
+(6);
 go
 -- Insert data for kich_thuoc
 INSERT INTO kich_thuoc (ten_kich_thuoc, mo_ta) VALUES 
@@ -1830,7 +1831,7 @@ select * from nguoi_dung
 select * from voucher_nguoi_dung
 select * from nguoi_dung
 select * from voucher
-select * from danh_muc
+select * from nguoi_dung
 select * from danh_gia
 select * from chat_lieu
 select * from chat_lieu_chi_tiet
@@ -1854,9 +1855,13 @@ select * from xac_thuc
 select * from lich_su_hoa_don
 select * from san_pham
 select * from san_pham_chi_tiet 
+select * from hinh_anh_san_pham 
 select * from gio_hang_chi_tiet
 select * from gio_hang
 select * from hinh_anh_san_pham
 select * from dot_giam_gia
 select * from giam_gia_san_pham
 select * from trang_thai_giam_gia
+
+
+

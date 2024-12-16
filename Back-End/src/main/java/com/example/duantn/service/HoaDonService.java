@@ -317,6 +317,7 @@ public class HoaDonService {
         }
     }
 
+
     private void updateHoaDonAfterPaymentSuccess(HoaDon hoaDon, String paymentUrl) {
         hoaDon.setThanhTien(hoaDon.getThanhTien());
         hoaDonRepository.save(hoaDon);
@@ -361,6 +362,7 @@ public class HoaDonService {
         // Sau khi tạo hóa đơn, clear giỏ hàng
         clearGioHangByUserId(hoaDonDTO.getCartId());
     }
+
 
     public void clearGioHangByUserId(Integer idNguoiDung) {
         GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
@@ -412,6 +414,8 @@ public class HoaDonService {
         hoaDon.setMoTa(hoaDonDTO.getGhiChu());
         hoaDon.setTrangThai(true);
         hoaDon.setLoai(1);
+
+
         hoaDonRepository.save(hoaDon);
         PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon = new PhuongThucThanhToanHoaDon();
         phuongThucThanhToanHoaDon.setPhuongThucThanhToan(phuongThucThanhToanRepository.findById(2).get()); // COD
@@ -432,7 +436,7 @@ public class HoaDonService {
         lichSuThanhToan.setTrangThaiThanhToan(false); // Thực tế có thể thay đổi tùy vào trạng thái thanh toán thực tế
         lichSuThanhToan.setHoaDon(hoaDon);
         lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
-
+        lichSuThanhToanRepository.save(lichSuThanhToan);
         // Thêm trạng thái "Tạo đơn hàng" - Trạng thái mới của hóa đơn sau khi tạo
         TrangThaiHoaDon trangThaiHoaDonTaoDon = new TrangThaiHoaDon();
         TrangThaiHoaDon trangThaiHoaDonChoXuLy = new TrangThaiHoaDon();

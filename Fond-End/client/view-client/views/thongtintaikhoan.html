@@ -188,7 +188,6 @@
         </div>
     </div>
 </div>
-<!-- Modal Thêm địa chỉ giao hàng-->
 <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -199,35 +198,38 @@
             <div class="modal-body">
                 <form>
                     <div class="mb-3">
-                        <label for="province" class="form-label">Tỉnh</label>
-                        <select class="form-select" id="province" ng-model="selectedTinh" ng-change="onTinhChange()">
-                            <option value="">Chọn Tỉnh</option>
-                            <option value="{{item.idTinh}}" ng-repeat="item in tinhList">{{item.tenTinh}}</option>
+                        <label class="form-label" for="city">Tỉnh/Thành phố <span class="text-danger">*</span>:</label>
+                        <select class="form-select" ng-model="selectedCity" 
+                                ng-options="city.name for city in cities track by city.code" 
+                                ng-change="onCityChange()" required>
+                            <option value="">--Chọn Tỉnh/Thành phố--</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="district" class="form-label">Huyện</label>
-                        <select class="form-select" id="district" ng-model="selectedHuyen" ng-change="onHuyenChange()">
-                            <option value="">Chọn Huyện</option>
-                            <option value="{{item.idHuyen}}" ng-repeat="item in huyenList">{{item.tenHuyen}}</option>
+                        <label class="form-label" for="district">Quận/Huyện <span class="text-danger">*</span>:</label>
+                        <select class="form-select" ng-model="selectedDistrict" 
+                                ng-options="district.name for district in districts track by district.code" 
+                                ng-change="onDistrictChange()" ng-disabled="!selectedCity" required>
+                            <option value="">--Chọn Quận/Huyện--</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="ward" class="form-label">Xã</label>
-                        <select class="form-select" id="ward" ng-model="selectedXa">
-                            <option value="">Chọn Xã</option>
-                            <option value="{{item.idXa}}" ng-repeat="item in xaList">{{item.tenXa}}</option>
+                        <label class="form-label" for="ward">Phường/Xã <span class="text-danger">*</span>:</label>
+                        <select class="form-select" ng-model="selectedWard" 
+                                ng-options="ward.name for ward in wards track by ward.code" 
+                                ng-disabled="!selectedDistrict" required>
+                            <option value="">--Chọn Phường/Xã--</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="specificAddress" class="form-label">Địa Chỉ Cụ Thể</label>
-                        <input type="text" class="form-control" id="specificAddress" placeholder="Nhập địa chỉ cụ thể"
-                            ng-model="specificAddress">
+                        <input type="text" class="form-control" id="specificAddress" placeholder="Nhập địa chỉ cụ thể" 
+                               ng-model="specificAddress" required>
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">Mô Tả</label>
-                        <textarea class="form-control" id="description" rows="3" placeholder="Nhập mô tả"
-                            ng-model="description"></textarea>
+                        <label for="description" class="form-label">Mô Tả (Không bắt buộc)</label>
+                        <textarea class="form-control" id="description" rows="3" 
+                                  placeholder="Nhập mô tả" ng-model="description"></textarea>
                     </div>
                 </form>
             </div>
@@ -238,6 +240,7 @@
         </div>
     </div>
 </div>
+
 
 
 

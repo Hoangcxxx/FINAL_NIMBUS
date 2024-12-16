@@ -22,11 +22,12 @@ public class ADHoaDonChiTietController {
     private Map<String, Object> mapThongKe(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("tenSanPham", row[0]);
-        map.put("soLuong", row[1]);
-        map.put("doanhThu", row[2]);
+        map.put("giaBan", row[1]);
+        map.put("soLuongBanRa", row[2]);
+        map.put("urlHinhAnh", row[3]);
+        map.put("thuTu", row[4]);
         return map;
     }
-
     private List<Map<String, Object>> mapThongKes(List<Object[]> results) {
         return results.stream().map(this::mapThongKe).collect(Collectors.toList());
     }
@@ -38,7 +39,7 @@ public class ADHoaDonChiTietController {
         return ResponseEntity.ok(filteredProducts);
     }
 
-    @GetMapping("/tong_so_luong_ban_ra")
+    @GetMapping("/tong_so_luong_ban_ra_thanh_nay")
     public ResponseEntity<List<Map<String, Object>>> getAllSoLuongBanRa() {
         List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllSoLuongBanRa();
         List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
@@ -47,7 +48,7 @@ public class ADHoaDonChiTietController {
         return ResponseEntity.ok(filteredResults);
     }
 
-    @GetMapping("/san_pham_ban_ra")
+    @GetMapping("/san_pham_ban_ra_hom_nay")
     public ResponseEntity<List<Map<String, Object>>> getAllSanPhamBanRa() {
         List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllSanPhamBanRa();
         List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
@@ -56,11 +57,27 @@ public class ADHoaDonChiTietController {
         return ResponseEntity.ok(filteredResults);
     }
 
-    @GetMapping("/tong_doanh_thu")
+    @GetMapping("/tong_hoa_don_thang_nay")
     public ResponseEntity<List<Map<String, Object>>> getAllTongDoanhThu() {
         List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllTongDoanhThu();
         List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
-                .map(row -> Map.of("tongDoanhThu", row[0]))
+                .map(row -> Map.of("tongHoaDonThangNay", row[0]))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filteredResults);
+    }
+    @GetMapping("/tong_hoa_don_hom_nay")
+    public ResponseEntity<List<Map<String, Object>>> getAllTongHoaDonHomNay() {
+        List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllTongHoaDonHomNay();
+        List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
+                .map(row -> Map.of("tongHoaDonHomNay", row[0]))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filteredResults);
+    }
+    @GetMapping("/tong_san_pham_trong_thang_nay")
+    public ResponseEntity<List<Map<String, Object>>> getAllTongSanPhamTrongThang() {
+        List<Object[]> hoaDonChiTiets = hoaDonChiTietService.getAllTongSanPhamTrongThang();
+        List<Map<String, Object>> filteredResults = hoaDonChiTiets.stream()
+                .map(row -> Map.of("tongSanPhamTrongThangNay", row[0]))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(filteredResults);
     }

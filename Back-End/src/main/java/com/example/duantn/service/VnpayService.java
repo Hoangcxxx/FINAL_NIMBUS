@@ -144,4 +144,54 @@ public class VnpayService {
     }
 
 
+    private void updateHoaDonAfterPaymentSuccess(HoaDon hoaDon, String paymentUrl) {
+        hoaDon.setThanhTien(hoaDon.getThanhTien());
+
+        hoaDonRepository.save(hoaDon);
+    }
+
+    private void processCartItems(HoaDonDTO hoaDonDTO, HoaDon hoaDon) {
+        // Xử lý các sản phẩm trong giỏ hàng
+        hoaDonDTO.getListSanPhamChiTiet().forEach(sanPham -> {
+            SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(sanPham.getIdspct()).orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm chi tiết"));
+
+            // Kiểm tra số lượng tồn kho
+            if (sanPhamChiTiet.getSoLuong() <= 0 || sanPham.getSoLuong() > sanPhamChiTiet.getSoLuong()) {
+                throw new RuntimeException("Số lượng tồn kho không đủ");
+            }
+            // Cập nhật số lượng tồn kho
+            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - sanPham.getSoLuong());
+            sanPhamChiTietRepository.save(sanPhamChiTiet);
+            // Tạo hoặc lấy LichSuHoaDon
+            LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+            lichSuHoaDon.setNgayGiaoDich(new Date());
+            lichSuHoaDon.setSoTienThanhToan(hoaDonDTO.getListSanPhamChiTiet().stream().map(sp -> sp.getGiaTien().multiply(BigDecimal.valueOf(sp.getSoLuong()))).reduce(BigDecimal.ZERO, BigDecimal::add));
+            lichSuHoaDon.setNguoiDung(hoaDon.getNguoiDung());
+            lichSuHoaDonRepository.save(lichSuHoaDon);
+            // Lưu chi tiết hóa đơn
+            HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
+            hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
+            hoaDonChiTiet.setHoaDon(hoaDon);
+            hoaDonChiTiet.setSoLuong(sanPham.getSoLuong());
+            hoaDonChiTiet.setTongTien(sanPham.getGiaTien().multiply(BigDecimal.valueOf(sanPham.getSoLuong())));
+            hoaDonChiTiet.setNgayTao(new Date());
+            hoaDonChiTiet.setNgayCapNhat(new Date());
+            hoaDonChiTiet.setTrangThai(true);
+            hoaDonChiTietRepository.save(hoaDonChiTiet);
+        });
+        // Sau khi tạo hóa đơn, clear giỏ hàng
+        clearGioHangByUserId(hoaDonDTO.getCartId());
+    }
+
+    public void clearGioHangByUserId(Integer idNguoiDung) {
+        GioHang gioHang = gioHangRepository.findByNguoiDung_IdNguoiDung(idNguoiDung);
+        if (gioHang == null) {
+            throw new RuntimeException("Giỏ hàng không tồn tại cho người dùng với ID: " + idNguoiDung);
+        }
+
+        List<GioHangChiTiet> chiTietList = gioHangChiTietRepository.findByGioHang_IdGioHang(gioHang.getIdGioHang());
+        gioHangChiTietRepository.deleteAll(chiTietList);
+        gioHang.setNgayCapNhat(new Date());
+        gioHangRepository.save(gioHang);
+    }
 }
