@@ -433,9 +433,9 @@ public class HoaDonService {
 
         // Tạo và lưu lịch sử thanh toán
         LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
-        lichSuThanhToan.setSoTienThanhToan(null);
+        lichSuThanhToan.setSoTienThanhToan(hoaDonDTO.getThanhTien());
         lichSuThanhToan.setNgayTao(new Date());
-        lichSuThanhToan.setNgayGiaoDich(null);  // Hoặc bạn có thể dùng ngày giao dịch từ hệ thống thanh toán
+        lichSuThanhToan.setNgayGiaoDich(new Date());  // Hoặc bạn có thể dùng ngày giao dịch từ hệ thống thanh toán
         lichSuThanhToan.setNgayCapNhat(new Date());
         lichSuThanhToan.setTrangThaiThanhToan(false); // Thực tế có thể thay đổi tùy vào trạng thái thanh toán thực tế
         lichSuThanhToan.setHoaDon(hoaDon);
@@ -450,6 +450,7 @@ public class HoaDonService {
         trangThaiHoaDonTaoDon.setMoTa("Tạo đơn hàng");
         trangThaiHoaDonTaoDon.setNgayTao(new Date());
         trangThaiHoaDonTaoDon.setNgayCapNhat(new Date());
+        trangThaiHoaDonTaoDon.setIdNhanVien(1);
         trangThaiHoaDonTaoDon.setLoaiTrangThai(trangThaiTaoDon);
         trangThaiHoaDonTaoDon.setHoaDon(hoaDon);
         trangThaiHoaDonRepository.save(trangThaiHoaDonTaoDon);
@@ -459,6 +460,7 @@ public class HoaDonService {
         trangThaiHoaDonChoXuLy.setMoTa("Chờ xác nhận");
         trangThaiHoaDonChoXuLy.setNgayTao(new Date());
         trangThaiHoaDonChoXuLy.setNgayCapNhat(new Date());
+        trangThaiHoaDonChoXuLy.setIdNhanVien(1);
         trangThaiHoaDonChoXuLy.setLoaiTrangThai(trangThaiChoXuLy);
         trangThaiHoaDonChoXuLy.setHoaDon(hoaDon);
         trangThaiHoaDonRepository.save(trangThaiHoaDonChoXuLy);

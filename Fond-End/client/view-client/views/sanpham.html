@@ -1,0 +1,86 @@
+<section id="page-header">
+    <!-- <h2>#stayhome</h2>
+    <p>Save more with coupons & up to 70% off!</p> -->
+</section>
+<section id="product1" class="section-p1">
+    <h2>Sản Phẩm Đang Giảm Giá</h2>
+    <p>Bộ sưu tập những sản phẩm đang được giảm giá</p>
+    <button class="btn" data-bs-toggle="collapse" data-bs-target="#demo">
+        Danh Mục Sản Phẩm
+        <i class="fa-solid fa-angle-down"></i>
+    </button>
+
+
+
+
+
+    <div id="demo" class="collapse mt-3">
+        <div class="alert alert-info" role="alert">
+            <div class="text-center">
+                <a href="" class="menu-link text-dark text-decoration-none me-5" ng-repeat="item in dsDanhMuc"
+                    ng-click="onclickDanhMuc(item.idDanhMuc)">{{item.tenDanhMuc}}</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="prod-cont">
+        <div class="prod" ng-repeat="item in dsSanPham">
+            <a href="#!san_pham_ct/{{item.idSanPham}}" class="text-decoration-none text-dark">
+                <img ng-src="{{item.urlAnh}}" alt="">
+                <div class="des">
+                    <b>{{item.tenSanPham}}</b>
+                    <h5>{{item.moTa}}</h5>
+                    <div class="d-flex align-items-center">
+                        <!-- Kiểm tra nếu có giảm giá thì hiển thị badge giảm giá -->
+                        <span ng-if="item.kieuGiamGia !== null" class="badge bg-danger me-2 text-light text-center">
+                            <i class="fa-solid fa-tag text-light d-flex align-items-center">
+                                <div class="ms-1">
+                                    {{item.kieuGiamGia ? (item.giaTriKhuyenMai | number) + ' VND' : item.giaTriKhuyenMai
+                                    + ' %'}}
+                                </div>
+                            </i>
+                        </span>
+
+
+                        <div class="star">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <!-- Hiển thị giá khuyến mãi nếu có giảm giá -->
+                        <span ng-if="item.giaKhuyenMai" class="text-danger me-3"
+                            style="font-weight: bold; font-size: 20px;">
+                            {{ item.giaKhuyenMai | currency: '': 0}} VND
+                        </span>
+                        <!-- Hiển thị giá ban đầu nếu có giảm giá -->
+                        <span ng-if="item.giaKhuyenMai" style="font-size: 13px;">
+                            <del>{{ item.giaBan | currency: '': 0}}</del> VND
+                        </span>
+                        <!-- Nếu không có giảm giá, chỉ hiển thị giá gốc -->
+                        <h4 ng-if="!item.giaKhuyenMai" style="font-size: 18px;">
+                            <span>{{ item.giaBan | currency: '': 0}} VND</span>
+                        </h4>
+                    </div>
+                </div>
+                <div>
+                    <a href="#!san_pham_ct/{{item.idSanPham}}"><i class="fa-solid fa-cart-shopping cart"></i></a>
+                </div>
+            </a>
+        </div>
+    </div>
+
+
+
+</section>
+
+<section id="pagination" class="section-p1">
+    <a href="#">1</a>
+    <a href="#">2</a>
+    <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+</section>
