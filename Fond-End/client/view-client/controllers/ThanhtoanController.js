@@ -299,15 +299,33 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 confirmButtonText: 'OK'
             });
             return false;
-        } else if (!/^\d{10,11}$/.test($scope.userInfo.sdt)) {
-            Swal.fire({
-                title: 'Lỗi!',
-                text: 'Số điện thoại phải chứa từ 10 đến 11 chữ số!',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return false;
+        } else {
+            // Loại bỏ khoảng trắng trước và sau số điện thoại
+            let phoneNumber = $scope.userInfo.sdt.trim();
+            
+            // Kiểm tra nếu số điện thoại chỉ chứa số và có độ dài 10 hoặc 11 chữ số
+            if (!/^\d{10,11}$/.test(phoneNumber)) {
+                // Kiểm tra nếu có bất kỳ ký tự chữ nào trong số điện thoại
+                if (/[a-zA-Z]/.test(phoneNumber)) {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Số điện thoại chỉ được phép chứa các chữ số!',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
+                }
+        
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Số điện thoại phải chứa từ 10 đến 11 chữ số!',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
         }
+        
         if (!$scope.userInfo.diaChi || $scope.userInfo.diaChi.trim() === "") {
             Swal.fire({
                 title: 'Không Được Bỏ Trống Địa Chỉ',
@@ -528,7 +546,12 @@ window.ThanhToanController = function ($scope, $http, $window) {
             })
             .catch(error => {
                 console.error("Lỗi khi đặt hàng:", error);
-                alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
+                Swal.fire({
+                    icon: 'error', // Loại thông báo (error, success, info, warning)
+                    title: 'Thanh Toán Thất Bại!',
+                    text: item.errorMessage,  // Hiển thị thông báo lỗi về số lượng sản phẩm
+                    confirmButtonText: 'Đồng ý'
+                });
             });
     };
 

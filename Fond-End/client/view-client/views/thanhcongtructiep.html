@@ -70,14 +70,16 @@
                                 <tr>
                                     <th scope="row">Voucher:</th>
                                     <td>
-                                        <span ng-if="orderData.kieugiamgia === true">
-                                            {{ orderData.giaTriMavoucher || 0 }} %  <!-- Hiển thị phần trăm -->
-                                        </span>
-                                        <span ng-if="orderData.kieugiamgia === false">
-                                            {{ orderData.giaTriMavoucher | currency:'' : 0 }} VND  <!-- Hiển thị giá trị VND -->
-                                        </span>
+                                      <!-- Kiểm tra kiểu giảm giá -->
+                                      <span ng-if="orderData.kieugiamgia === false">
+                                        {{ orderData.giaTriMavoucher || 0 }} %  <!-- Hiển thị phần trăm khi là giảm giá phần trăm -->
+                                      </span>
+                                      <span ng-if="orderData.kieugiamgia === true">
+                                        {{ orderData.giaTriMavoucher | currency:'' : 0 }} VND  <!-- Hiển thị giá trị VND khi là giảm giá tiền -->
+                                      </span>
                                     </td>
-                                </tr>
+                                  </tr>
+                                  
                                 
                                 
                                 <!-- Tổng Tiền Sản Phẩm -->

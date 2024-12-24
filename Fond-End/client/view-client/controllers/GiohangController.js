@@ -145,22 +145,39 @@ window.GiohangController = function ($scope, $http, $window) {
             Swal.fire({
                 icon: 'error', // Loại thông báo (error, success, info, warning)
                 title: 'Giỏ hàng không hợp lệ!',
-                text: 'Giỏ hàng của bạn có sản phẩm có số lượng vượt quá 20. Vui lòng kiểm tra lại.',
+                text: 'Số lượng sản phẩm trong giỏ hàng phải từ 1 đến 20. Vui lòng kiểm tra lại.',
                 confirmButtonText: 'Đồng ý'
             }).then((result) => {
-                // Nếu người dùng nhấn "Đồng ý" sau khi thông báo
                 if (result.isConfirmed) {
                     console.log("User acknowledged the message.");
                 }
             });
             return; // Dừng lại nếu giỏ hàng không hợp lệ, không tiếp tục thanh toán
-        } else {
-            // Nếu tất cả số lượng đều hợp lệ, tiếp tục thanh toán
-            $scope.isValidCart = true;
-            // Thực hiện chuyển hướng sang trang thanh toán
-            $window.location.href = "/#!thanh_toan"; // Chuyển hướng sang trang thanh toán
         }
+
+        // Kiểm tra số lượng giỏ hàng với số lượng tồn kho
+        const outOfStockItems = $scope.cart.filter(item => item.soLuongGioHang > item.soLuong);
+
+        if (outOfStockItems.length > 0) {
+            // Nếu có sản phẩm có số lượng giỏ hàng vượt quá số lượng tồn kho
+            $scope.isValidCart = false;
+            outOfStockItems.forEach(item => {
+                Swal.fire({
+                    icon: 'error', // Loại thông báo (error, success, info, warning)
+                    title: 'Sản phẩm trong giỏ hàng không đủ số lượng!',
+                    text: item.errorMessage,  // Hiển thị thông báo lỗi về số lượng sản phẩm
+                    confirmButtonText: 'Đồng ý'
+                });
+            });
+            return; // Dừng lại nếu có sản phẩm vượt quá số lượng tồn kho, không tiếp tục thanh toán
+        }
+
+        // Nếu tất cả số lượng đều hợp lệ, tiếp tục thanh toán
+        $scope.isValidCart = true;
+        // Thực hiện chuyển hướng sang trang thanh toán
+        $window.location.href = "/#!thanh_toan"; // Chuyển hướng sang trang thanh toán
     };
+
 
 
 
@@ -221,7 +238,16 @@ window.GiohangController = function ($scope, $http, $window) {
         } else if (item.soLuongGioHang > item.soLuong) {
             // Kiểm tra nếu số lượng giỏ hàng lớn hơn số lượng tồn kho
             item.soLuongGioHang = item.soLuong; // Điều chỉnh lại số lượng giỏ hàng về số lượng tồn kho
+
             item.errorMessage = `Chỉ còn ${item.soLuong} sản phẩm trong kho.`;
+            Swal.fire({
+                icon: 'error', // Loại thông báo (error, success, info, warning)
+                title: 'Sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!',
+                text: item.errorMessage,  // Hiển thị thông báo lỗi về số lượng sản phẩm
+                confirmButtonText: 'Đồng ý'
+            });
+
+
         } else {
             item.errorMessage = ''; // Xóa thông báo lỗi nếu số lượng hợp lệ
         }
