@@ -94,7 +94,6 @@
                                 <th>Số Điện Thoại</th>
                                 <th>Vị Trí</th>
                                 <th>Ngày Tạo</th>
-                                <th>Trạng Thái</th>
                                 <th>Giới Tính</th>
                                 <th>Thao Tác</th>
                             </tr>
@@ -108,14 +107,6 @@
                                 <td>{{employee.sdt}}</td>
                                 <td>{{employee.tenVaiTro}}</td>
                                 <td>{{employee.ngayTao | date: 'dd/MM/yyyy'}}</td>
-                                <td>
-                                    <input type="checkbox" ng-model="employee.trangThai"
-                                        ng-change="changeUserStatus(employee.idNguoiDung, employee.trangThai ? 'unlock' : 'lock')"
-                                        id="user-status-{{$index}}" class="switch-input">
-                                    <label for="user-status-{{$index}}" class="switch"></label>
-
-
-                                </td>
                                 <td>{{employee.gioiTinh}}</td>
                                 <td>
                                     <!-- Nút sửa và xóa -->
@@ -175,24 +166,24 @@
                         <div class="mb-3">
                             <label for="username" class="form-label">Tên Người Dùng</label>
                             <input type="text" class="form-control" id="username" placeholder="Nhập tên người dùng"
-                                required>
+                                >
                         </div>
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Nhập email" required>
-                        </div>
+                            <input type="email" class="form-control" id="email" placeholder="Nhập email" ng-model="email" >
+                        </div>                        
                         <!-- Số điện thoại -->
                         <div class="mb-3">
                             <label for="phone" class="form-label">Số Điện Thoại</label>
                             <input type="text" class="form-control" id="phone" placeholder="Nhập số điện thoại"
-                                required>
+                                >
                         </div>
 
                         <!-- Giới tính -->
                         <div class="mb-3">
                             <label for="gender" class="form-label">Giới Tính</label>
-                            <select class="form-select" id="gender" required>
+                            <select class="form-select" id="gender" >
                                 <option value="" disabled selected>Chọn Giới Tính</option>
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
@@ -203,7 +194,7 @@
                         <!-- Vai trò -->
                         <div class="mb-3">
                             <label for="role" class="form-label">Vai Trò</label>
-                            <select class="form-select" id="role" required>
+                            <select class="form-select" id="role" >
                                 <option value="" disabled selected>Chọn Vai Trò</option>
                                 <option value="2">Khách hàng</option>
                                 <option value="4">Nhân viên bán hàng</option>
@@ -213,7 +204,7 @@
                         <!-- Mật khẩu -->
                         <div class="mb-3">
                             <label for="password" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" id="password" placeholder="Mật khẩu" required>
+                            <input type="password" class="form-control" id="password" placeholder="Mật khẩu" >
                         </div>
                         <!-- Nút submit -->
                         <button type="submit" class="btn btn-primary">Thêm Người Dùng</button>
@@ -236,7 +227,7 @@
                         <div class="mb-3">
                             <label for="updateUsername" class="form-label">Tên Người Dùng</label>
                             <input type="text" class="form-control" id="updateUsername"
-                                ng-model="selectedUser.tenNguoiDung" placeholder="Nhập tên người dùng" required>
+                                ng-model="selectedUser.tenNguoiDung" placeholder="Nhập tên người dùng" >
                         </div>
                         <div class="mb-3">
                             <label for="updateEmail" class="form-label">Email</label>
@@ -246,11 +237,11 @@
                         <div class="mb-3">
                             <label for="updatePhone" class="form-label">Số Điện Thoại</label>
                             <input type="text" class="form-control" id="updatePhone" ng-model="selectedUser.sdt"
-                                placeholder="Nhập số điện thoại" required>
+                                placeholder="Nhập số điện thoại" >
                         </div>
                         <div class="mb-3">
                             <label for="updateGender" class="form-label">Giới Tính</label>
-                            <select class="form-select" id="updateGender" ng-model="selectedUser.gioiTinh" required>
+                            <select class="form-select" id="updateGender" ng-model="selectedUser.gioiTinh" >
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
                                 <option value="Khác">Khác</option>

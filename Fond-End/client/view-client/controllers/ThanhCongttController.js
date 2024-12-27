@@ -34,9 +34,8 @@ window.ThanhCongttController = function ($scope, $http, $window) {
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
                         xa: hoaDon.tenXa,
-                        giaTriMavoucher: hoaDon.giaTriMavoucher,  // Giá trị mặc định là 0
-                        kieugiamgia: hoaDon.kieugiamgia,
-
+                        giaTriMavoucher: hoaDon.giaTriMavoucher,  
+                        kieuGiamGia: hoaDon.kieuGiamGia,
                         idlichsuhoadon: hoaDon.idlichsuhoadon || []
 
 
@@ -44,7 +43,7 @@ window.ThanhCongttController = function ($scope, $http, $window) {
 
                     console.log("Giá trị mã voucher:", $scope.orderData.giaTriMavoucher);
 
-                    console.log("Kieeur Giam Gia :", $scope.orderData.kieugiamgia);
+                    console.log("Kieeur Giam Gia :", $scope.orderData.kieuGiamGia);
                     // Tính toán giảm giá
 
                     // Cập nhật chi tiết sản phẩm
@@ -97,6 +96,28 @@ window.ThanhCongttController = function ($scope, $http, $window) {
 
         return total;
     };
+
+    $scope.calculateDiscount = function () {
+        let discount = 0;
+        if ($scope.orderData) {
+            if ($scope.orderData.kieuGiamGia === false) {
+                // Giảm giá theo phần trăm
+                discount = ($scope.getTotalProductPrice() * $scope.orderData.giaTriMavoucher) / 100;
+            } else if ($scope.orderData.kieuGiamGia === true) {
+                // Giảm giá trực tiếp bằng số tiền
+                discount = $scope.orderData.giaTriMavoucher;
+            }
+        }
+        return discount;
+    };
+    
+    $scope.calculateTotalAfterDiscount = function () {
+        const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
+        const discount = $scope.calculateDiscount(); // Số tiền giảm giá
+        return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
+    };
+    
+    
 
 
     // Gọi API để lấy chi tiết đơn hàng

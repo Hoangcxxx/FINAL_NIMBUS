@@ -298,7 +298,7 @@ button.normal {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    background-image: url("../img/banner/b17.jpg");
+    background-image: url("https://marketingai.mediacdn.vn/603488451643117568/2024/11/8/content-sale-tet-1731053234642282879682.jpg");
     min-width: 580px;
     height: 50vh;
     background-size: cover;
@@ -307,7 +307,7 @@ button.normal {
 }
 
 #sm-banner .banner-box2 {
-    background-image: url("../img/banner/b10.jpg");
+    background-image: url("https://lavenderstudio.com.vn/wp-content/uploads/2023/12/concept-chup-hinh-tet-dep-nam-20243.jpg");
 }
 
 #sm-banner h4 {
@@ -369,6 +369,28 @@ button.white {
     padding: 20px;
     margin-bottom: 20px;
 }
+
+.modal-body-heprl {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* Căn giữa nội dung trong modal */
+    background-image: url("../img/banner/Chọn\ Size\ Quần\ Áo.png");
+    background-size: contain; /* Đảm bảo hình ảnh không bị vỡ hoặc cắt */
+    background-position: center;
+    background-repeat: no-repeat; /* Không lặp lại hình ảnh */
+    min-width: 80%; /* Đặt chiều rộng của modal lớn hơn */
+    height: 70vh; /* Làm cho chiều cao của modal lớn hơn */
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.modal-dialog {
+    width: 90%;  /* Hoặc bất kỳ chiều rộng nào bạn mong muốn */
+    max-width: none;  /* Hủy bỏ giới hạn max-width mặc định */
+    height: auto; /* Đảm bảo chiều cao của modal có thể thay đổi tùy thuộc vào nội dung */
+}
+
 
 #l-banner .banner-box2 {
     background-image: url("../img/banner/b4.jpg");
@@ -1004,7 +1026,7 @@ footer a:hover {
     padding: 30px;
     border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
     border-radius: 10px;
-    background-color: transparent;
+    background-color: #fafafa;
     box-shadow: none;
 }
 
@@ -1014,7 +1036,7 @@ footer a:hover {
     padding: 30px;
     border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
     border-radius: 10px;
-    background-color: transparent;
+    background-color: #fafafa;
     box-shadow: none;
 }
 
@@ -1024,7 +1046,7 @@ footer a:hover {
     padding: 30px;
     border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
     border-radius: 10px;
-    background-color: transparent;
+    background-color: #fafafa;
     box-shadow: none;
 }
 
@@ -1034,7 +1056,7 @@ footer a:hover {
     padding: 30px;
     border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
     border-radius: 10px;
-    background-color: transparent;
+    background-color: #fafafa;
     box-shadow: none;
 }
 
@@ -1044,7 +1066,7 @@ footer a:hover {
     padding: 30px;
     border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
     border-radius: 10px;
-    background-color: transparent;
+    background-color: #fafafa;
     box-shadow: none;
 }
 

@@ -55,7 +55,7 @@
                             <tbody>
                                 <!-- Hiển thị danh sách đơn hàng với bộ lọc trạng thái -->
                                 <tr
-                                    ng-repeat="hoaDon in orderData | filter:{tenLoaiTrangThai:selectedStatus} | limitTo: 5">
+                                    ng-repeat="hoaDon in orderData | filter:{tenLoaiTrangThai:selectedStatus} | limitTo: 100">
                                     <td>{{ hoaDon.maHoaDon }}</td>
                                     <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
                                     <td>{{ hoaDon.thanhTien | currency:"":0 }} VND</td>
@@ -111,9 +111,8 @@
                                         <p>
                                     </div>
 
-                                    <p><strong class="text-muted">Địa chỉ:</strong> {{
-                                        orderHieu.tinh }},
-                                        {{ orderHieu.huyen }}, {{ orderHieu.xa }}</p>
+                                    <p><strong class="text-muted">Địa chỉ:</strong>
+                                        {{ orderHieu.xa }}, {{ orderHieu.huyen}} ,{{orderHieu.tinh }}</p>
                                     <p><strong class="text-muted">Địa chỉ cụ thể:</strong> {{ orderHieu.diaChi }}</p>
                                 </div>
                             </div>
@@ -160,19 +159,57 @@
 
                                 <!-- Tổng tiền và phí ship -->
                                 <div class="mt-4">
+                                    <!-- Voucher -->
                                     <div class="d-flex justify-content-between">
-                                        <p><strong class="text-muted">Voucher:</strong> <span class="text-success">{{
-                                                orderHieu.giaTriMavoucher | currency:"":0 }} VND</span></p>
+                                        <p class="mb-0">
+                                            <strong class="text-muted">Voucher:</strong>
+                                        </p>
+                                        <!-- Kiểm tra nếu không có voucher -->
+                                        <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0" class="text-secondary">
+                                            0 VND
+                                        </span>
+                                        <!-- Kiểm tra kiểu giảm giá nếu có voucher -->
+                                        <span ng-if="orderHieu.giaTriMavoucher && orderHieu.giaTriMavoucher !== 0">
+                                            <span ng-if="orderHieu.kieuGiamGia === false" class="text-success">
+                                                {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} %
+                                            </span>
+                                            <span ng-if="orderHieu.kieuGiamGia === true" class="text-danger">
+                                                {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} VND
+                                            </span>
+                                        </span>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <p><strong class="text-muted">Phí Ship:</strong> <span class="text-warning">{{
-                                                orderlist.phiShip | currency:"":0 }} VND</span></p>
+                                
+                                    <!-- Số tiền giảm giá -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <strong class="text-muted">Số tiền giảm giá:</strong>
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="text-muted">
+                                                {{ calculateTotalAfterDiscount() | currency:"":0 }} VND
+                                            </span>
+                                            <span class="text-danger">
+                                                (Giảm {{ calculateDiscount() | currency:"":0 }} VND)
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <p><strong class="text-muted">Tổng Tiền:</strong> <span class="text-success">{{
-                                                orderlist.thanhTien | currency:"":0 }} VND</span></p>
+                                
+                                    <!-- Phí Ship -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <p class="mb-0"><strong class="text-muted">Phí Ship:</strong></p>
+                                        <span class="text-warning">
+                                            {{ orderlist.phiShip | currency:"":0 }} VND
+                                        </span>
+                                    </div>
+                                
+                                    <!-- Tổng Tiền -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <p class="mb-0"><strong class="text-muted">Tổng Tiền:</strong></p>
+                                        <span class="text-success">
+                                            {{ orderlist.thanhTien | currency:"":0 }} VND
+                                        </span>
                                     </div>
                                 </div>
+                                
+
                             </div>
                         </div>
 
@@ -182,7 +219,7 @@
                     <div class="card border-0 shadow-sm p-4">
                         <!-- Nội dung chính -->
                         <h5 class="text-center text-primary">Tra Cứu Đơn Hàng</h5>
-    
+
                         <!-- Form tra cứu -->
                         <div class="mb-3">
                             <label for="orderCode" class="form-label">Mã Đơn Hàng</label>
@@ -190,7 +227,7 @@
                                 placeholder="Nhập mã đơn hàng...">
                         </div>
                         <button class="btn btn-danger w-100 btn-sm" id="searchOrder">Tra Cứu</button>
-    
+
                         <!-- Khu vực hiển thị thông tin đơn hàng -->
                         <div class="order-info mt-3 p-3" id="orderInfo"
                             style="display: none; border: 1px solid #ddd; border-radius: 10px;">
@@ -202,11 +239,11 @@
                         </div>
                     </div>
                 </div>
-    
+
             </div>
 
 
-     
+
 
 
 

@@ -117,60 +117,67 @@ window.ThanhToanController = function ($scope, $http, $window) {
         }
     };
 
-    $scope.applyVoucher = function () {
-        if ($scope.selectedVoucher) {
-            // Kiểm tra giá trị tối thiểu và tối đa của voucher
-            const minValue = $scope.selectedVoucher.soTienToiThieu;
-            const maxValue = $scope.selectedVoucher.giaTriToiDa;
+$scope.applyVoucher = function () {
+    if ($scope.selectedVoucher) {
+        // Kiểm tra giá trị tối thiểu và tối đa của voucher
+        const minValue = $scope.selectedVoucher.soTienToiThieu;
+        const maxValue = $scope.selectedVoucher.giaTriToiDa;
 
-            // In ra giá trị tối thiểu và tối đa
-            console.log("Giá trị tối thiểu voucher: ", minValue);
-            console.log("Giá trị tối đa voucher: ", maxValue);
+        // In ra giá trị tối thiểu và tối đa
+        console.log("Giá trị tối thiểu voucher: ", minValue);
+        console.log("Giá trị tối đa voucher: ", maxValue);
 
-            // Kiểm tra nếu tổng tiền nhỏ hơn giá trị tối thiểu của voucher, không áp dụng giảm giá
-            if ($scope.totalAmount < minValue) {
-                $scope.voucherError = 'Tổng tiền không đủ điều kiện áp dụng voucher.';
-                return; // Không thực hiện giảm giá nếu tổng tiền nhỏ hơn giá trị tối thiểu
-            }
-
-            if (isNaN($scope.selectedVoucher.giaTriGiamGia) || $scope.selectedVoucher.giaTriGiamGia < 0) {
-                console.error('Giá trị giảm giá không hợp lệ:', $scope.selectedVoucher.giaTriGiamGia);
-                $scope.selectedVoucher.giaTriGiamGia = 0;
-            }
-
-            // Áp dụng giảm giá theo loại voucher
-            let discount = 0;
-            if ($scope.selectedVoucher.kieuGiamGia === false) {
-                // Giảm theo phần trăm
-                discount = $scope.totalAmount * ($scope.selectedVoucher.giaTriGiamGia / 100);
-            } else if ($scope.selectedVoucher.kieuGiamGia === true) {
-                // Giảm theo giá trị cố định
-                discount = $scope.selectedVoucher.giaTriGiamGia;
-            }
-
-            // Trừ giảm giá vào tổng tiền
-            $scope.totalAmount -= discount;
-            $scope.totalAmount = Math.max($scope.totalAmount, 0); // Đảm bảo tổng tiền không âm
-
-            console.log("Giảm giá: ", discount);
-            console.log("Tổng tiền sau giảm: ", $scope.totalAmount);
-
-            // Hiển thị thông báo thành công
+        // Kiểm tra nếu tổng tiền nhỏ hơn giá trị tối thiểu của voucher, không áp dụng giảm giá
+        if ($scope.totalAmount < minValue) {
+            $scope.voucherError = 'Tổng tiền không đủ điều kiện áp dụng voucher.';  // Cập nhật thông báo lỗi
             Swal.fire({
-                icon: 'success',
-                title: 'Voucher đã được áp dụng!',
-                text: 'Mã voucher: ' + $scope.selectedVoucher.maVoucher + ' đã thành công.',
+                icon: 'error',
+                title: 'Voucher không hợp lệ',
+                text: $scope.voucherError,  // Hiển thị thông báo lỗi
                 confirmButtonText: 'OK'
             });
-
-            // Tính lại tổng tiền sau khi áp dụng voucher
-            $scope.calculateTotal(); // Tính lại tổng tiền sau khi áp dụng voucher
-
-            // Lưu voucher và tổng tiền vào localStorage
-            localStorage.setItem('selectedVoucher', JSON.stringify($scope.selectedVoucher));
-            localStorage.setItem('totalAmount', $scope.totalAmount);
+            return; // Không thực hiện giảm giá nếu tổng tiền nhỏ hơn giá trị tối thiểu
         }
-    };
+
+        if (isNaN($scope.selectedVoucher.giaTriGiamGia) || $scope.selectedVoucher.giaTriGiamGia < 0) {
+            console.error('Giá trị giảm giá không hợp lệ:', $scope.selectedVoucher.giaTriGiamGia);
+            $scope.selectedVoucher.giaTriGiamGia = 0;
+        }
+
+        // Áp dụng giảm giá theo loại voucher
+        let discount = 0;
+        if ($scope.selectedVoucher.kieuGiamGia === false) {
+            // Giảm theo phần trăm
+            discount = $scope.totalAmount * ($scope.selectedVoucher.giaTriGiamGia / 100);
+        } else if ($scope.selectedVoucher.kieuGiamGia === true) {
+            // Giảm theo giá trị cố định
+            discount = $scope.selectedVoucher.giaTriGiamGia;
+        }
+
+        // Trừ giảm giá vào tổng tiền
+        $scope.totalAmount -= discount;
+        $scope.totalAmount = Math.max($scope.totalAmount, 0); // Đảm bảo tổng tiền không âm
+
+        console.log("Giảm giá: ", discount);
+        console.log("Tổng tiền sau giảm: ", $scope.totalAmount);
+
+        // Hiển thị thông báo thành công
+        Swal.fire({
+            icon: 'success',
+            title: 'Voucher đã được áp dụng!',
+            text: 'Mã voucher: ' + $scope.selectedVoucher.maVoucher + ' đã thành công.',
+            confirmButtonText: 'OK'
+        });
+
+        // Tính lại tổng tiền sau khi áp dụng voucher
+        $scope.calculateTotal(); // Tính lại tổng tiền sau khi áp dụng voucher
+
+        // Lưu voucher và tổng tiền vào localStorage
+        localStorage.setItem('selectedVoucher', JSON.stringify($scope.selectedVoucher));
+        localStorage.setItem('totalAmount', $scope.totalAmount);
+    }
+};
+
 
     $scope.dsvoucher = function () {
         // Calculate the total amount from the cart

@@ -57,13 +57,10 @@
                     </div>
                 </td>
                 <td>
-                    <input type="number" ng-model="item.soLuongGioHang" min="1" max="20" ng-blur="updateCart(item)"
-                        aria-label="Số lượng sản phẩm" class="number-input" ng-change="checkQuantity(item)"
-                        inputmode="numeric" pattern="[0-9]*" placeholder="Số lượng" />
-                    <div>
-                        <small class="text-danger" ng-if="item.errorMessage">{{ item.errorMessage }}</small>
-                    </div>
+                    <input type="number" ng-model="item.soLuongGioHang" ng-blur="updateCart(item)"
+                           aria-label="Số lượng sản phẩm" class="number-input" ng-change="checkQuantity(item)" placeholder="Số lượng" />
                 </td>
+                
                 <td>
                     <!-- Tính toán Thành Tiền dựa trên giá sản phẩm và số lượng -->
                     <span>{{ item.soLuongGioHang * (item.giaKhuyenMai || item.giaBan) | currency: '' : 0 }} VND</span>
