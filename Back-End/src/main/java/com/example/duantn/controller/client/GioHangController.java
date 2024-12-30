@@ -57,9 +57,9 @@ public class GioHangController {
 
 
     @PutMapping("/update")
-    public ResponseEntity<GioHang> updateProductInGioHang(@RequestParam Integer idGioHang,
+    public ResponseEntity<GioHang> updateProductInGioHang(@RequestParam Integer idNguoiDung,
                                                           @RequestBody GioHangChiTietDTO gioHangChiTietDTO) {
-        GioHang gioHang = gioHangService.updateGioHangChiTiet(idGioHang, gioHangChiTietDTO);
+        GioHang gioHang = gioHangService.updateGioHangChiTiet(idNguoiDung, gioHangChiTietDTO);
         return ResponseEntity.ok(gioHang);
     }
 

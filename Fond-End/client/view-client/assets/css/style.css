@@ -391,6 +391,12 @@ button.white {
     height: auto; /* Đảm bảo chiều cao của modal có thể thay đổi tùy thuộc vào nội dung */
 }
 
+.modal-header {
+    background: linear-gradient(to right, #ff8c66, #ffd54f);
+    color: #000; /* Màu chữ trong header */
+    padding: 15px;
+}
+
 
 #l-banner .banner-box2 {
     background-image: url("../img/banner/b4.jpg");

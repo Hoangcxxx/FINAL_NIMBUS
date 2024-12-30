@@ -47,4 +47,7 @@ public class HoaDonDTO {
 	private BigDecimal GiaTriMavoucher;
 	private BigDecimal giaTriGiamGia;
 	private Boolean kieuGiamGia;
+
+	// Thêm trường ngày giao dự kiến
+	private Date ngayGiaoDuKien;
 }

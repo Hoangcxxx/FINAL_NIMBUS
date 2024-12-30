@@ -100,7 +100,7 @@ window.GiohangController = function ($scope, $http, $window) {
 
         $http({
             method: "PUT",
-            url: `http://localhost:8080/api/nguoi_dung/gio_hang/update?idGioHang=${$scope.userId}`,
+            url: `http://localhost:8080/api/nguoi_dung/gio_hang/update?idNguoiDung=${$scope.userId}`,
             data: value,
             headers: {
                 "Content-Type": "application/json",

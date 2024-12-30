@@ -130,6 +130,9 @@ public class HoaDonService {
         dto.setDiaChi(hoaDon.getDiaChi());
         dto.setThanhTien(hoaDon.getThanhTien());
         dto.setGhiChu(hoaDon.getMoTa());
+
+
+
         if (hoaDon.getVoucher() != null) {
             dto.setGiaTriMavoucher(hoaDon.getVoucher().getGiaTriGiamGia());
             dto.setMavoucher(hoaDon.getVoucher().getMaVoucher());
@@ -204,6 +207,17 @@ public class HoaDonService {
             dto.setTenLoaiTrangThai(loaiTrangThai.getTenLoaiTrangThai());
             dto.setIdTrangThaiHoaDon(trangThai.getIdTrangThaiHoaDon());
             dto.setTenTrangThai(trangThai.getLoaiTrangThai().getTenLoaiTrangThai());
+
+            // Kiểm tra loại trạng thái là 4 mới tính toán ngày giao dự kiến
+            if (loaiTrangThai.getIdLoaiTrangThai() == 4) {
+                // Tính toán ngày giao dự kiến
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(hoaDon.getNgayTao());  // Lấy ngày tạo
+                int daysToAdd = 5;  // Thêm 5 ngày vào ngày tạo
+                calendar.add(Calendar.DAY_OF_MONTH, daysToAdd);  // Cộng thêm số ngày vào ngày tạo
+                dto.setNgayGiaoDuKien(calendar.getTime());  // Đặt ngày giao dự kiến
+            }
+
         }
 
         return dto;
@@ -211,7 +225,11 @@ public class HoaDonService {
 
 
     private void saveCODPayment(HoaDon hoaDon, String generatedMaHoaDon, HoaDonDTO hoaDonDTO) {
-        hoaDonRepository.save(hoaDon);
+        // Tạo mã hóa đơn duy nhất
+        generatedMaHoaDon = generateMaHoaDon();
+        hoaDon.setMaHoaDon(generatedMaHoaDon); // Gán mã hóa đơn cho đối tượng hoaDon
+
+        hoaDonRepository.save(hoaDon); // Lưu hóa đơn vào cơ sở dữ liệu
         PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon = new PhuongThucThanhToanHoaDon();
         phuongThucThanhToanHoaDon.setPhuongThucThanhToan(phuongThucThanhToanRepository.findById(4).get()); // COD
         phuongThucThanhToanHoaDon.setNgayGiaoDich(new Date());
