@@ -167,20 +167,47 @@ public class ADSanPhamController {
     }
 
     @PostMapping("/multiple")
-    public ResponseEntity<List<SanPhamChiTiet>> createMultiple(@RequestBody List<SanPhamChiTiet> sanPhamChiTietList) throws IOException {
-        if (sanPhamChiTietList.isEmpty()) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<?> createMultiple(@RequestBody List<SanPhamChiTiet> sanPhamChiTietList) {
+        try {
+            // Kiểm tra danh sách rỗng
+            if (sanPhamChiTietList.isEmpty()) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Danh sách sản phẩm chi tiết không được để trống."));
+            }
 
-        SanPhamChiTiet firstChiTiet = sanPhamChiTietList.get(0);
-        if (firstChiTiet.getSanPham() == null || firstChiTiet.getSanPham().getIdSanPham() == null) {
-            return ResponseEntity.badRequest().body(null); // Handle null cases
-        }
+            SanPhamChiTiet firstChiTiet = sanPhamChiTietList.get(0);
 
-        Integer idSanPham = firstChiTiet.getSanPham().getIdSanPham();
-        List<SanPhamChiTiet> savedProducts = sanPhamChiTietService.createMultiple(sanPhamChiTietList, idSanPham);
-        return ResponseEntity.ok(savedProducts);
+            // Kiểm tra sản phẩm null hoặc ID sản phẩm null
+            if (firstChiTiet.getSanPham() == null || firstChiTiet.getSanPham().getIdSanPham() == null) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Thông tin sản phẩm không hợp lệ."));
+            }
+
+            Integer idSanPham = firstChiTiet.getSanPham().getIdSanPham();
+
+            // Thực hiện lưu các sản phẩm chi tiết
+            List<SanPhamChiTiet> savedProducts = sanPhamChiTietService.createMultiple(sanPhamChiTietList, idSanPham);
+
+            // Trả về phản hồi thành công
+            return ResponseEntity.ok(Map.of(
+                    "message", "Thêm sản phẩm chi tiết thành công.",
+                    "data", savedProducts
+            ));
+        } catch (IllegalArgumentException e) {
+            // Lỗi logic từ service (ví dụ: sản phẩm đã tồn tại)
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT) // HTTP 409
+                    .body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            // Xử lý lỗi không mong muốn
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Đã xảy ra lỗi không mong muốn.", "error", e.getMessage()));
+        }
     }
+
 
     @PutMapping("/update_status/{idSanPham}")
     public ResponseEntity<Void> updateStatus(@PathVariable Integer idSanPham) {

@@ -214,7 +214,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
                 if (!response.data.trangThai) {
                     Swal.fire({
                         title: 'Tài khoản của bạn đã bị khóa!',
-                        text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: support@example.com.',
+                        text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
                         icon: 'error',
                         confirmButtonText: 'Liên hệ hỗ trợ',
                         footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'

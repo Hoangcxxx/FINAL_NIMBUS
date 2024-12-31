@@ -46,8 +46,8 @@
                                         <th scope="col">#</th>
                                         <th scope="col">Tên sản phẩm</th>
                                         <th scope="col">Mô tả</th>
-                                        <th scope="col">Trạng thái</th>
-                                        <th scope="col">Thao tác</th>
+                                        <th scope="col" class="text-center">Trạng thái</th>
+                                        <th scope="col " class="text-center">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -61,16 +61,19 @@
                                                 id="user-status-{{$index}}" class="switch-input">
                                             <label for="user-status-{{$index}}" class="switch"></label>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
+                                            <a href="#!add_sp/{{item.idSanPham}}" class="btn btn-success btn-sm">
+                                                <i class="fa-solid fa-plus"></i>
+                                            </a>
+                                            <a href="#!detail_sp/{{item.idSanPham}}" class="btn btn-light btn-sm">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
                                             <a href="#!detail_sp/{{item.idSanPham}}" class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <a href="#!san_pham" class="btn btn-danger btn-sm"
                                                 ng-click="xoaSanPham(item.idSanPham)">
                                                 <i class="fas fa-trash"></i>
-                                            </a>
-                                            <a href="#!add_sp/{{item.idSanPham}}" class="btn btn-success btn-sm">
-                                                <i class="fa-solid fa-plus"></i>
                                             </a>
                                         </td>
                                     </tr>

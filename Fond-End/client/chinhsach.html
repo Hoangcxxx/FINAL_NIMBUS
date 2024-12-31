@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chính sách sử dụng</title>
+    <!-- Thêm Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        ul li strong {
+            color: #333;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Chính sách sử dụng</h1>
+</header>
+<button type="button" class="btn btn-primary mb-3" onclick="window.history.back();">Quay lại trang</button>
+<div class="container">
+    <p>Đây là nơi chứa các thông tin về chính sách sử dụng của chúng tôi. Hãy đọc kỹ để đảm bảo bạn hiểu rõ về quyền và nghĩa vụ của mình khi sử dụng dịch vụ.</p>
+
+    <h2>Các lý do tài khoản có thể bị khóa</h2>
+    <ul>
+        <li>
+            <strong>Vi phạm quy tắc sử dụng</strong>: 
+            Vi phạm các quy định của chúng tôi, chẳng hạn như sử dụng dịch vụ vào mục đích trái phép hoặc vi phạm quyền lợi của người khác.
+            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viPhamModal">Xem chi tiết</button>
+        </li>
+        <li>
+            <strong>Hoạt động đáng ngờ</strong>: 
+            Thực hiện các hành động có dấu hiệu lừa đảo, tấn công hoặc xâm phạm hệ thống của chúng tôi.
+            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#hoatDongModal">Xem chi tiết</button>
+        </li>
+        <li>
+            <strong>Không tuân thủ thanh toán</strong>: 
+            Không thanh toán đúng hạn cho các dịch vụ đã đăng ký hoặc có hành vi gian lận liên quan đến thanh toán.
+            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#thanhToanModal">Xem chi tiết</button>
+        </li>
+        <li>
+            <strong>Sử dụng tài khoản không hợp lệ</strong>: 
+            Đăng ký tài khoản bằng thông tin sai lệch hoặc giả mạo.
+            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#taiKhoanModal">Xem chi tiết</button>
+        </li>
+        <li>
+            <strong>Spam hoặc quấy rối người khác</strong>: 
+            Gửi thư rác, quảng cáo không mong muốn hoặc có hành động quấy rối đối với người dùng khác.
+            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#spamModal">Xem chi tiết</button>
+        </li>
+        <li>
+            <strong>Vi phạm quyền riêng tư</strong>: 
+            Tiết lộ thông tin cá nhân của người khác mà không có sự đồng ý của họ.
+            <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#quyenRiengTuModal">Xem chi tiết</button>
+        </li>
+    </ul>
+</div>
+
+<footer>
+    <p>&copy; 2024 Công ty ABC. Tất cả quyền được bảo lưu.</p>
+</footer>
+
+<!-- Modal Vi phạm quy tắc sử dụng -->
+<div class="modal fade" id="viPhamModal" tabindex="-1" aria-labelledby="viPhamModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viPhamModalLabel">Vi phạm quy tắc sử dụng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Vi phạm quy tắc sử dụng của chúng tôi có thể dẫn đến việc tài khoản bị khóa tạm thời hoặc vĩnh viễn. Các hành vi vi phạm bao gồm sử dụng dịch vụ vào mục đích trái phép, gây thiệt hại cho người khác hoặc xâm phạm quyền lợi của tổ chức.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Hoạt động đáng ngờ -->
+<div class="modal fade" id="hoatDongModal" tabindex="-1" aria-labelledby="hoatDongModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="hoatDongModalLabel">Hoạt động đáng ngờ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Các hành động đáng ngờ, chẳng hạn như lừa đảo, tấn công vào hệ thống hoặc cố gắng xâm nhập vào tài khoản của người khác, sẽ dẫn đến việc tài khoản bị khóa.</p>
+                <!-- Thêm ảnh hacker vào đây -->
+                <img src="https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/04/anh-hacker-25.jpg" alt="Hacker Image" class="img-fluid" style="width: 100%; height: auto;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Không tuân thủ thanh toán -->
+<div class="modal fade" id="thanhToanModal" tabindex="-1" aria-labelledby="thanhToanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="thanhToanModalLabel">Không tuân thủ thanh toán</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Nếu không thanh toán đúng hạn cho các dịch vụ đã đăng ký hoặc có hành vi gian lận trong quá trình thanh toán, tài khoản của bạn có thể bị khóa.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sử dụng tài khoản không hợp lệ -->
+<div class="modal fade" id="taiKhoanModal" tabindex="-1" aria-labelledby="taiKhoanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="taiKhoanModalLabel">Sử dụng tài khoản không hợp lệ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Đăng ký tài khoản bằng thông tin sai lệch hoặc giả mạo sẽ dẫn đến việc tài khoản bị khóa vĩnh viễn.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Spam hoặc quấy rối người khác -->
+<div class="modal fade" id="spamModal" tabindex="-1" aria-labelledby="spamModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="spamModalLabel">Spam hoặc quấy rối người khác</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Các hành động gửi thư rác, quảng cáo không mong muốn hoặc quấy rối người dùng khác sẽ dẫn đến việc tài khoản bị khóa.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Vi phạm quyền riêng tư -->
+<div class="modal fade" id="quyenRiengTuModal" tabindex="-1" aria-labelledby="quyenRiengTuModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quyenRiengTuModalLabel">Vi phạm quyền riêng tư</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Việc tiết lộ thông tin cá nhân của người khác mà không có sự đồng ý của họ là hành vi vi phạm quyền riêng tư và sẽ dẫn đến việc tài khoản bị khóa.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Thêm Bootstrap 5 JS và Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

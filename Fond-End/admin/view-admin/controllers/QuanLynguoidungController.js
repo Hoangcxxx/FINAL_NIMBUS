@@ -35,7 +35,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
     $scope.editUser = function (user) {
         $scope.selectedUser = angular.copy(user); // Sao chép đối tượng người dùng được chọn
     };
-    // Cập nhật thông tin người dùng
+
     $scope.updateUser = function () {
         if ($scope.updateUserForm.$valid) {
             const url = `${baseURL}/${$scope.selectedUser.idNguoiDung}`; // Sử dụng idNguoiDung từ đối tượng đã chọn
@@ -171,6 +171,88 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
         }
     };
     $scope.registerUser = function () {
+        // Kiểm tra các trường đầu vào
+        if (!$scope.tenNguoiDung || !$scope.email || !$scope.password || !$scope.phone || !$scope.gender || !$scope.role) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin!',
+                text: 'Vui lòng điền đầy đủ thông tin trước khi đăng ký.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra định dạng tên người dùng (chỉ chứa ký tự và số, ít nhất 3 ký tự)
+        // Kiểm tra tên người dùng không chứa ký tự '@'
+        if ($scope.tenNguoiDung.includes('@')) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Tên người dùng không hợp lệ!',
+                text: 'Tên người dùng không được chứa ký tự "@"',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+
+        // Kiểm tra định dạng email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test($scope.email)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Email không hợp lệ!',
+                text: 'Vui lòng nhập đúng định dạng email.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra độ dài mật khẩu
+        if ($scope.password.length < 6) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Mật khẩu quá ngắn!',
+                text: 'Mật khẩu phải có ít nhất 6 ký tự.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra định dạng số điện thoại (giả sử số điện thoại có 10 chữ số)
+        const phonePattern = /^[0-9]{10}$/;
+        if (!phonePattern.test($scope.phone)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số điện thoại không hợp lệ!',
+                text: 'Số điện thoại phải bao gồm 10 chữ số.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra giới tính (giả sử chỉ có 'Nam' và 'Nữ' là hợp lệ)
+        if ($scope.gender !== 'Nam' && $scope.gender !== 'Nữ') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Giới tính không hợp lệ!',
+                text: 'Vui lòng chọn giới tính đúng.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra vai trò (giả sử vai trò phải là 1 hoặc 2)
+        if ($scope.role !== 1 && $scope.role !== 2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Vai trò không hợp lệ!',
+                text: 'Vui lòng chọn vai trò hợp lệ (1 cho người dùng hoặc 2 cho quản trị viên).',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Gửi yêu cầu đăng ký
         const registerData = {
             tenNguoiDung: $scope.tenNguoiDung,
             email: $scope.email,
@@ -184,9 +266,8 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
             .then(function () {
                 Swal.fire({
                     icon: 'success',
-                    title: 'tạo tài khoản thành công !',
+                    title: 'Tạo tài khoản thành công!',
                     html: '<p>Bạn đã tạo tài khoản thành công. Hãy đăng nhập để bắt đầu trải nghiệm!</p>',
-                    confirmButtonText: 'Đăng nhập ngay'
                 }).then(() => {
                     window.location.reload(); // Reload lại toàn bộ trang
                 });
@@ -200,6 +281,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
                 });
             });
     };
+
 
 
     // Lắng nghe sự kiện submit form

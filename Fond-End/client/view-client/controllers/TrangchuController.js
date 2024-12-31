@@ -1,7 +1,8 @@
-window.TrangchuController = function ($scope, $http) {
+window.TrangchuController = function ($scope, $http,$location) {
     $scope.dsSanPham = [];
     $scope.dsSanPhamGiamGia = [];
     $scope.dsDotGiamGia = [];
+
 
     // Hàm lấy dữ liệu sản phẩm từ API
     $scope.fetchData = function (url, target) {
@@ -35,4 +36,12 @@ window.TrangchuController = function ($scope, $http) {
     // Lấy dữ liệu ban đầu
     $scope.fetchData('http://localhost:8080/api/nguoi_dung/san_pham/san_pham_giam_gia', 'dsSanPhamGiamGia');
     $scope.fetchData('http://localhost:8080/api/nguoi_dung/san_pham/dot_giam_gia', 'dsDotGiamGia');
+
+
+    var currentUrl = $location.absUrl();
+    // Kiểm tra trạng thái
+    if (currentUrl.includes('status=PAID')) {
+        // Chuyển hướng đến trang 'thanhcong'
+        window.location.href = "http://127.0.0.1:5502/#!/thanhcong";
+    }
 };

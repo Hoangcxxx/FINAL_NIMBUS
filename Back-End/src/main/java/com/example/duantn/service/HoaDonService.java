@@ -133,20 +133,13 @@ public class HoaDonService {
         if (hoaDon.getVoucher() != null) {
             dto.setGiaTriMavoucher(hoaDon.getVoucher().getGiaTriGiamGia());
             dto.setMavoucher(hoaDon.getVoucher().getMaVoucher());
-
-            // Kiểm tra kiểu giảm giá tự động
-            if (hoaDon.getVoucher().getGiaTriGiamGia().compareTo(BigDecimal.ZERO) > 0) {
-                // Giảm giá theo số tiền (BigDecimal)
-                dto.setKieuGiamGia(false);  // Nếu voucher giảm giá theo tiền
-            } else if (hoaDon.getVoucher().getGiaTriGiamGia().compareTo(BigDecimal.ZERO) < 0) {
-                // Giảm giá theo phần trăm (giả sử giá trị âm biểu thị phần trăm)
-                dto.setKieuGiamGia(true);   // Nếu voucher giảm giá theo phần trăm
-            }
+            dto.setKieuGiamGia(hoaDon.getVoucher().getKieuGiamGia());
         } else {
-            dto.setGiaTriMavoucher(BigDecimal.ZERO); // Giá trị mặc định nếu không có voucher
+            dto.setGiaTriMavoucher(BigDecimal.ZERO); // Default value if no voucher
             dto.setMavoucher(null);
-
+            dto.setKieuGiamGia(null); // Ensure this is null if no voucher is present
         }
+
 
 
         // Thông tin địa chỉ vận chuyển

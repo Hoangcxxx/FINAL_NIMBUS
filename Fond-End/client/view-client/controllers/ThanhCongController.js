@@ -1,26 +1,37 @@
 window.ThanhCongController = function ($scope, $http) {
     // Lấy mã hóa đơn từ URL hoặc localStorage nếu có
-    var maHoaDon = new URLSearchParams(window.location.search).get("maHoaDon") || localStorage.getItem("maHoaDon");
+    var maHoaDon = new URLSearchParams(window.location.search).get("maHoaDon");
+    console.log("maHoaDon từ URL:", maHoaDon);
 
-    // Nếu không có mã hóa đơn thì thông báo lỗi
     if (!maHoaDon) {
-        alert("Mã hóa đơn không hợp lệ!");
-        return;
+        maHoaDon = localStorage.getItem("maHoaDon");
+        console.log("maHoaDon từ localStorage:", maHoaDon);
     }
 
-    
+    if (!maHoaDon) {
+        console.error("Không tìm thấy mã hóa đơn trong URL hoặc localStorage.");
+        alert("Mã hóa đơn không hợp lệ! Vui lòng kiểm tra lại URL hoặc đăng nhập lại.");
+    } else {
+        console.log("Mã hóa đơn hợp lệ:", maHoaDon);
+    }
+
 
     // Lấy chi tiết hóa đơn từ API
     function getOrderDetails(maHoaDon) {
         const apiUrl = `http://localhost:8080/api/nguoi_dung/hoa_don/${maHoaDon}`;
+        console.log("Gửi yêu cầu đến API chi tiết hóa đơn với URL:", apiUrl);
 
         $http.get(apiUrl)
             .then(function (response) {
+                console.log("Phản hồi từ API hóa đơn:", response.data);
+
                 const hoaDon = response.data.hoaDon && Array.isArray(response.data.hoaDon) && response.data.hoaDon.length > 0
                     ? response.data.hoaDon[0]
                     : null;
 
                 if (hoaDon) {
+                    console.log("Dữ liệu hóa đơn đã xử lý:", hoaDon);
+
                     // Cập nhật thông tin đơn hàng vào scope
                     $scope.orderData = {
                         maHoaDon: hoaDon.maHoaDon,
@@ -39,10 +50,10 @@ window.ThanhCongController = function ($scope, $http) {
                         idlichsuhoadon: hoaDon.idlichsuhoadon || []
                     };
 
-                    // Cập nhật chi tiết sản phẩm
                     if (hoaDon.listSanPhamChiTiet && hoaDon.listSanPhamChiTiet.length > 0) {
+                        console.log("Chi tiết sản phẩm:", hoaDon.listSanPhamChiTiet);
+
                         $scope.orderDetails = {
-                            
                             listSanPhamChiTiet: hoaDon.listSanPhamChiTiet,
                             thanhTien: hoaDon.thanhTien,
                             giaTien: hoaDon.giaTien,
@@ -55,10 +66,12 @@ window.ThanhCongController = function ($scope, $http) {
                             giaKhuyenMai: hoaDon.giaKhuyenMai
                         };
 
-                        // Lấy hình ảnh cho từng sản phẩm
                         $scope.orderDetails.listSanPhamChiTiet.forEach((item) => {
+                            console.log("Đang lấy hình ảnh cho sản phẩm với ID:", item.idSanPham);
+
                             $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${item.idSanPham}`)
                                 .then(function (imageResponse) {
+                                    console.log("Phản hồi hình ảnh cho sản phẩm ID", item.idSanPham, ":", imageResponse.data);
                                     item.urlAnh = imageResponse.data[0]?.urlAnh || '';
                                 })
                                 .catch(function (error) {
@@ -75,15 +88,14 @@ window.ThanhCongController = function ($scope, $http) {
             });
     }
 
-    $scope.getTotalProductPrice = function() {
+    $scope.getTotalProductPrice = function () {
         let total = 0;
-        // Lặp qua tất cả các sản phẩm và cộng tiền
-        angular.forEach($scope.orderDetails.listSanPhamChiTiet, function(item) {
-            total += item.tongtien || 0; // Thêm giá của mỗi sản phẩm vào tổng
+        angular.forEach($scope.orderDetails?.listSanPhamChiTiet || [], function (item) {
+            total += item.tongtien || 0;
         });
+        console.log("Tổng giá trị sản phẩm:", total);
         return total;
     };
-    
 
     // Hàm xử lý thanh toán
     $scope.payment = function () {
@@ -94,6 +106,21 @@ window.ThanhCongController = function ($scope, $http) {
         const idTinh = localStorage.getItem("idTinh");
         const idHuyen = localStorage.getItem("idHuyen");
         const idXa = localStorage.getItem("idXa");
+
+        // Kiểm tra nếu `storedData` hoặc các dữ liệu quan trọng khác không tồn tại
+        if (!user || !totalAmount || !cart || !storedData || !idTinh || !idHuyen || !idXa) {
+            alert("Dữ liệu thanh toán không hợp lệ. Vui lòng kiểm tra lại!");
+            console.error("Dữ liệu bị thiếu:", {
+                user,
+                totalAmount,
+                cart,
+                storedData,
+                idTinh,
+                idHuyen,
+                idXa
+            });
+            return;
+        }
 
         // Tạo danh sách sản phẩm chi tiết từ giỏ hàng
         const listSanPhamChiTiet = cart.map(item => ({
@@ -129,11 +156,15 @@ window.ThanhCongController = function ($scope, $http) {
                 // Lưu mã hóa đơn và chuyển hướng tới cổng thanh toán
                 localStorage.setItem("maHoaDon", maHoaDon);
                 getOrderDetails(maHoaDon);
-
-            },);
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi thực hiện thanh toán:", error);
+                alert("Thanh toán không thành công. Vui lòng thử lại!");
+            });
     };
 
+
+    // Gọi thanh toán và lấy chi tiết đơn hàng
     $scope.payment();
-    // Gọi API để lấy chi tiết đơn hàng
     getOrderDetails(maHoaDon);
 };

@@ -114,14 +114,7 @@
                     <!-- Add to Cart and Buy Now buttons -->
                     <div class="d-flex flex-column">
                         <div class="d-flex mb-2">
-                            <!-- Add to Favorite Button -->
-                            <!-- <div class="flex-grow-1 me-2">
-                                <a href="#" class="text-decoration-none">
-                                    <button class="btn btn-danger w-100" style="font-size: 18px;">
-                                        <i class="fa-solid fa-heart" style="font-size: 24px;"></i> Sản phẩm yêu thích
-                                    </button>
-                                </a>
-                            </div> -->
+            
                             <!-- Thêm vào Giỏ hàng Button -->
                             <div class="flex-grow-1 mt-4" ng-disabled="soLuongTon === 0">
                                 <button class="btn btn-danger w-100" style="font-size: 18px;"
@@ -130,35 +123,33 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- Buy Now Button -->
-                        <!-- <div class="border border-3 rounded border-danger" ng-disabled="soLuongTon === 0">
-                            <a href="#!thanh_toan" class="text-decoration-none ">
-                                <button class="btn btn-light text-danger w-100" style="font-size: 18px;"
-                                    ng-click="thanhtoan(sanPhamChiTiet)">
-                                    <i class="fa-solid fa-bolt" style="font-size: 24px;"></i> Mua ngay
-                                </button>
-                            </a>
-                        </div> -->
+
+                        <!-- Button for Size Guide -->
+                        <button class="btn btn-info mt-2" data-bs-toggle="modal" data-bs-target="#sizeGuideModal">
+                            Hướng dẫn chọn kích thước
+                        </button>
                     </div>
 
-                    <!-- Additional Information Icons -->
-                    <!-- <div class="mt-4 d-flex justify-content-between text-center">
-                        <div>
-                            <i class="fa-solid fa-truck" style="font-size: 32px; color: red;"></i>
-                            <p>Miễn phí giao hàng xem tại giỏ hàng</p>
-                        </div>
-                        <div>
-                            <i class="fa-solid fa-repeat" style="font-size: 32px; color: red;"></i>
-                            <p>1 đổi 1 trong vòng 7 ngày</p>
-                        </div>
-                        <div>
-                            <i class="fa-solid fa-sack-dollar" style="font-size: 32px; color: red;"></i>
-                            <p>Kiểm tra hàng trước khi thanh toán</p>
-                        </div>
-                    </div> -->
                 </div>
             </div>
         </div>
+
+        <!-- Modal for Size Guide -->
+        <div class="modal fade" id="sizeGuideModal" tabindex="-1" aria-labelledby="sizeGuideModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sizeGuideModalLabel">Hướng dẫn chọn Size</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body-heprl">
+                        <!-- Nội dung khác của modal, nếu có -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
         <div class="accordion" id="productAccordion">
             <!-- Mô tả sản phẩm -->
             <div class="accordion-item">
@@ -176,93 +167,7 @@
                 </div>
             </div>
 
-            <!-- Đánh giá từ khách hàng -->
-            <!-- <div class="accordion-item">
-                <h2 class="accordion-header" id="headingReviews">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#collapseReviews" aria-expanded="false" aria-controls="collapseReviews">
-                        Đánh giá từ khách hàng
-                    </button>
-                </h2>
-                <div id="collapseReviews" class="accordion-collapse collapse" aria-labelledby="headingReviews"
-                    data-bs-parent="#productAccordion">
-                    <div class="accordion-body">
-                        <p>{{sanPhamChiTiet.danhGia}}</p>
-                    </div>
-                </div>
-            </div> -->
         </div>
         <hr>
-
-        <!-- <section id="product1" class="section-p1">
-            <h2>Sản phẩm liên quan</h2>
-            <p>Summer Collection New Morden Design</p>
-            <div class="prod-cont">
-                <div class="prod">
-                    <img src="/view-client/assets/img/products/n1.jpg" alt="">
-                    <div class="des">
-                        <span>adidas</span>
-                        <h5>Cartoon Astronaut T-Shirts</h5>
-                        <div class="star">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h4>$78</h4>
-                    </div>
-                    <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-                </div>
-                <div class="prod">
-                    <img src="/view-client/assets/img/products/n2.jpg" alt="">
-                    <div class="des">
-                        <span>adidas</span>
-                        <h5>Cartoon Astronaut T-Shirts</h5>
-                        <div class="star">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h4>$78</h4>
-                    </div>
-                    <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-                </div>
-                <div class="prod">
-                    <img src="/view-client/assets/img/products/n3.jpg" alt="">
-                    <div class="des">
-                        <span>adidas</span>
-                        <h5>Cartoon Astronaut T-Shirts</h5>
-                        <div class="star">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h4>$78</h4>
-                    </div>
-                    <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-                </div>
-                <div class="prod">
-                    <img src="/view-client/assets/img/products/n4.jpg" alt="">
-                    <div class="des">
-                        <span>adidas</span>
-                        <h5>Cartoon Astronaut T-Shirts</h5>
-                        <div class="star">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h4>$78</h4>
-                    </div>
-                    <a href="#"><i class="fa-solid fa-cart-shopping cart"></i></a>
-                </div>
-            </div>
-        </section> -->
     </section>
 </div>

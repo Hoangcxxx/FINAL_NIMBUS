@@ -14,11 +14,6 @@
                             Thông Tin Cá Nhân
                         </a>
                     </li>
-                    <!-- <li class="nav-item mb-2">
-                        <a href="#address" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
-                            Địa chỉ giao hàng
-                        </a>
-                    </li> -->
                 </ul>
             </div>
         </div>
@@ -68,246 +63,359 @@
                     </div>
                 </div>
 
-                <!-- Đơn hàng -->
-                <div class="tab-pane fade" id="orders">
-                    <h4 class="mt-4 text-primary">Đơn hàng Mới Nhất</h4>
-                    <div class="card shadow-sm p-3">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Mã đơn hàng</th>
-                                    <th scope="col">Ngày đặt</th>
-                                    <th scope="col">Thành tiền</th>
-                                    <th scope="col">Trạng thái thanh toán</th>
-                                    <th scope="col">Vận chuyển</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Lặp qua danh sách đơn hàng -->
-                                <tr ng-repeat="hoaDon in orderData">
-                                    <td>#{{ hoaDon.maHoaDon }}</td>
-                                    <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
-                                    <td>{{ hoaDon.thanhTien | currency:"":0 }}đ</td>
-                                    <td>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 1">Chờ Xử Lý</span>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 2">Đang Giao Hàng</span>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 3">Hoàn Thành</span>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 4">Hủy Bỏ</span>
-                                        <span ng-if="hoaDon.idtrangthaihoadon === 5">Thất Bại</span>
-                                    </td>
-                                    <td>{{ hoaDon.diaChi }}, {{ hoaDon.tenTinh }}, {{ hoaDon.tenHuyen }}, {{
-                                        hoaDon.tenXa }}</td>
-                                </tr>
-                                <!-- Trường hợp không có đơn hàng -->
-                                <tr ng-if="!orderData || orderData.length === 0">
-                                    <td colspan="5" class="text-center">Không có đơn hàng nào</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <!-- Lịch sử mua hàng -->
-                <div class="tab-pane fade" id="downloads">
-                    <h3 class="mb-4 text-primary">Lịch Sử Mua Hàng</h3>
-                    <div class="card border-0 shadow-sm p-4">
-                        <div ng-if="purchaseHistory.length === 0">
-                            <p>Hiện tại bạn chưa có lịch sử mua hàng nào.</p>
-                        </div>
-                        <div ng-if="purchaseHistory.length > 0">
-                            <ul class="list-group">
-                                <li class="list-group-item" ng-repeat="order in purchaseHistory">
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <h5>Đơn hàng #{{ order.orderNumber }}</h5>
-                                            <p><strong>Ngày mua: </strong> {{ order.purchaseDate | date: 'dd/MM/yyyy' }}
-                                            </p>
-                                            <p><strong>Tổng tiền: </strong> {{ order.totalAmount | currency }}</p>
-                                            <p><strong>Trạng thái: </strong> {{ order.status }}</p>
-                                        </div>
-                                        <div>
-                                            <a href="#orderDetails" class="btn btn-info btn-sm"
-                                                ng-click="viewOrderDetails(order.id)">Xem chi tiết</a>
-                                        </div>
+                <!-- Modal chỉnh sửa thông tin cá nhân -->
+                <div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header text-black" style="background-color: #e3e6f3;">
+                                <h5 class="modal-title" style="font-weight: bold;" id="editCustomerModalLabel">Chỉnh Sửa
+                                    Thông Tin Cá
+                                    Nhân</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form ng-submit="saveCustomerDetails()">
+                                    <!-- Tên khách hàng -->
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="editCustomerName"
+                                            ng-model="tenNguoiDung" placeholder="Nhập tên khách hàng" required>
+                                        <label for="editCustomerName">Tên Khách Hàng</label>
                                     </div>
-                                    <hr>
-                                    <div>
-                                        <h6>Chi tiết sản phẩm:</h6>
-                                        <ul>
-                                            <li ng-repeat="product in order.products">
-                                                <p><strong>Tên sản phẩm:</strong> {{ product.name }}</p>
-                                                <p><strong>Giá:</strong> {{ product.price | currency }}</p>
-                                                <p><strong>Số lượng:</strong> {{ product.quantity }}</p>
-                                                <p><strong>Thành tiền:</strong> {{ product.totalPrice | currency }}</p>
-                                            </li>
-                                        </ul>
+
+                                    <!-- Email khách hàng -->
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control" id="editCustomerEmail"
+                                            ng-model="emailNguoiDung" placeholder="Nhập email" required>
+                                        <label for="editCustomerEmail">Email</label>
                                     </div>
-                                </li>
-                            </ul>
+
+                                    <!-- Số điện thoại khách hàng -->
+                                    <div class="form-floating mb-3">
+                                        <input type="tel" class="form-control" id="editCustomerPhone"
+                                            ng-model="sdtNguoiDung" placeholder="Nhập số điện thoại" required>
+                                        <label for="editCustomerPhone">Số điện thoại</label>
+                                    </div>
+
+                                    <!-- Input ngày sinh -->
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="editCustomerDob"
+                                            ng-model="ngaySinhNguoiDung" placeholder="Chọn ngày sinh" required
+                                            ng-keyup="formatDate()" ng-blur="formatDate()">
+                                        <label for="editCustomerDob">Ngày sinh</label>
+                                    </div>
+
+                                    <!-- Giới tính khách hàng -->
+                                    <div class="form-floating mb-3">
+                                        <select class="form-control" id="editCustomerGender" ng-model="gioiTinh"
+                                            required>
+                                            <option value="" disabled selected>Chọn giới tính</option>
+                                            <option value="Nam">Nam</option>
+                                            <option value="Nữ">Nữ</option>
+                                            <option value="Khác">Khác</option>
+                                        </select>
+                                        <label for="editCustomerGender">Giới tính</label>
+                                    </div>
+
+                                    <!-- Địa chỉ khách hàng -->
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="editCustomerAddress"
+                                            ng-model="diaChiNguoiDung" placeholder="Nhập địa chỉ" required>
+                                        <label for="editCustomerAddress">Địa chỉ</label>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Đóng</button>
+                                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <style>
+                    .table-scrollable {
+                        max-height: 300px;
+                        /* Giới hạn chiều cao */
+                        overflow-y: auto;
+                        /* Cho phép cuộn dọc */
 
-                <!-- Địa chỉ -->
-                <div class="tab-pane fade" id="address">
-                    <h3 class="mb-4 text-primary">Địa Chỉ Giao Hàng</h3>
-                    <div class="container my-5">
-                        <!-- Nút mở modal -->
-                        <button type="button" class="btn btn-danger mb-2" data-bs-toggle="modal"
-                            data-bs-target="#addAddressModal">
-                            Thêm địa chỉ giao hàng
-                        </button>
-                        <!-- Bảng Hiển Thị Dữ Liệu Địa Chỉ Vận Chuyển -->
-                        <table class="table table-bordered table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Tỉnh</th>
-                                    <th>Huyện</th>
-                                    <th>Xã</th>
-                                    <th>Địa Chỉ Cụ Thể</th>
-                                    <th>Mô Tả</th>
-                                    <th>Trạng Thái</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="address in addresses">
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ address.tinh }}</td>
-                                    <td>{{ address.huyen }}</td>
-                                    <td>{{ address.xa }}</td>
-                                    <td>{{ address.diaChiCuThe }}</td>
-                                    <td>{{ address.moTa }}</td>
-                                    <td>{{ address.trangThai ? 'Đang sử dụng' : 'Không sử dụng' }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addAddressModalLabel">Thêm địa chỉ giao hàng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label" for="city">Tỉnh/Thành phố <span class="text-danger">*</span>:</label>
-                        <select class="form-select" ng-model="selectedCity" 
-                                ng-options="city.name for city in cities track by city.code" 
-                                ng-change="onCityChange()" required>
-                            <option value="">--Chọn Tỉnh/Thành phố--</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="district">Quận/Huyện <span class="text-danger">*</span>:</label>
-                        <select class="form-select" ng-model="selectedDistrict" 
-                                ng-options="district.name for district in districts track by district.code" 
-                                ng-change="onDistrictChange()" ng-disabled="!selectedCity" required>
-                            <option value="">--Chọn Quận/Huyện--</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="ward">Phường/Xã <span class="text-danger">*</span>:</label>
-                        <select class="form-select" ng-model="selectedWard" 
-                                ng-options="ward.name for ward in wards track by ward.code" 
-                                ng-disabled="!selectedDistrict" required>
-                            <option value="">--Chọn Phường/Xã--</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="specificAddress" class="form-label">Địa Chỉ Cụ Thể</label>
-                        <input type="text" class="form-control" id="specificAddress" placeholder="Nhập địa chỉ cụ thể" 
-                               ng-model="specificAddress" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Mô Tả (Không bắt buộc)</label>
-                        <textarea class="form-control" id="description" rows="3" 
-                                  placeholder="Nhập mô tả" ng-model="description"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" ng-click="saveAddress()">Lưu Địa Chỉ</button>
-            </div>
-        </div>
-    </div>
-</div>
+                    }
 
 
 
+                    #page-header h2 {
+                        font-size: 2.5rem;
+                        font-weight: 700;
+                    }
 
-<!-- Modal chỉnh sửa thông tin cá nhân -->
-<div class="modal fade" id="editCustomerModal" tabindex="-1" aria-labelledby="editCustomerModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header text-black" style="background-color: #e3e6f3;">
-                <h5 class="modal-title" style="font-weight: bold;" id="editCustomerModalLabel">Chỉnh Sửa Thông Tin Cá
-                    Nhân</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form ng-submit="saveCustomerDetails()">
-                    <!-- Tên khách hàng -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="editCustomerName" ng-model="tenNguoiDung"
-                            placeholder="Nhập tên khách hàng" required>
-                        <label for="editCustomerName">Tên Khách Hàng</label>
-                    </div>
+                    #page-header p {
+                        font-size: 1.2rem;
+                        margin-top: 10px;
+                    }
 
-                    <!-- Email khách hàng -->
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control" id="editCustomerEmail" ng-model="emailNguoiDung"
-                            placeholder="Nhập email" required>
-                        <label for="editCustomerEmail">Email</label>
-                    </div>
+                    /* Sidebar */
+                    .dashboard_tab_button {
+                        background: #fff;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    }
 
-                    <!-- Số điện thoại khách hàng -->
-                    <div class="form-floating mb-3">
-                        <input type="tel" class="form-control" id="editCustomerPhone" ng-model="sdtNguoiDung"
-                            placeholder="Nhập số điện thoại" required>
-                        <label for="editCustomerPhone">Số điện thoại</label>
-                    </div>
+                    .dashboard_tab_button ul {
+                        padding: 0;
+                        list-style: none;
+                    }
 
-                    <!-- Input ngày sinh -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="editCustomerDob" ng-model="ngaySinhNguoiDung"
-                            placeholder="Chọn ngày sinh" required ng-keyup="formatDate()" ng-blur="formatDate()">
-                        <label for="editCustomerDob">Ngày sinh</label>
-                    </div>
+                    .dashboard_tab_button .nav-item a {
+                        padding: 10px 15px;
+                        display: block;
+                        color: #555;
+                        transition: all 0.3s ease;
+                    }
 
-                    <!-- Giới tính khách hàng -->
-                    <div class="form-floating mb-3">
-                        <select class="form-control" id="editCustomerGender" ng-model="gioiTinh" required>
-                            <option value="" disabled selected>Chọn giới tính</option>
-                            <option value="Nam">Nam</option>
-                            <option value="Nữ">Nữ</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                        <label for="editCustomerGender">Giới tính</label>
-                    </div>
+                    .dashboard_tab_button .nav-item a:hover,
+                    .dashboard_tab_button .nav-item a.active {
+                        background: #f6d365;
+                        color: #fff;
+                    }
 
-                    <!-- Địa chỉ khách hàng -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="editCustomerAddress" ng-model="diaChiNguoiDung"
-                            placeholder="Nhập địa chỉ" required>
-                        <label for="editCustomerAddress">Địa chỉ</label>
-                    </div>
+                    /* Bảng đơn hàng */
+                    .table-scrollable {
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                    }
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                    .table-scrollable table {
+                        background: #fff;
+                        border-radius: 8px;
+                        overflow: hidden;
+                    }
+
+                    .table-scrollable table th {
+                        background: #f6d365;
+                        color: #fff;
+                        text-align: center;
+                    }
+
+                    .table-scrollable table td {
+                        text-align: center;
+                    }
+
+                    /* Nút bấm */
+                    button {
+                        transition: all 0.3s ease;
+                    }
+
+                    button:hover {
+                        transform: scale(1.05);
+                        background-color: #fda085 !important;
+                    }
+
+                    /* Modal */
+                    .modal-header {
+                        background: #f6d365;
+                        color: #fff;
+                    }
+
+                    .modal-content {
+                        border-radius: 8px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    }
+
+                    /* Modal tổng quan */
+                    .modal-content {
+                        border-radius: 10px;
+                        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                        background: #fdfdfd;
+                        overflow: hidden;
+                    }
+
+                    /* Tiêu đề Modal */
+                    .modal-header {
+                        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+                        color: #fff;
+                        border-bottom: none;
+                        padding: 15px 20px;
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+
+                    .modal-title {
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    }
+
+                    .modal-header .btn-close {
+                        background-color: #fff;
+                        color: #ff7e5f;
+                        opacity: 0.8;
+                        transition: all 0.3s ease;
+                    }
+
+                    .modal-header .btn-close:hover {
+                        opacity: 1;
+                        transform: scale(1.2);
+                    }
+
+                    /* Nội dung Modal */
+                    .modal-body {
+                        padding: 20px;
+                        font-size: 14px;
+                        color: #333;
+                        background: #f9f9f9;
+                    }
+
+                    /* Thông tin đơn hàng */
+                    .modal-body h6 {
+                        font-size: 16px;
+                        color: #333;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                    }
+
+                    .modal-body p {
+                        margin-bottom: 8px;
+                        color: #555;
+                        font-size: 14px;
+                    }
+
+                    /* Bảng giỏ hàng */
+                    .modal-body .table {
+                        margin-top: 15px;
+                        background: #fff;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        overflow: hidden;
+                    }
+
+                    .modal-body .table th {
+                        background: #ff7e5f;
+                        color: #fff;
+                        text-align: center;
+                        font-size: 14px;
+                        padding: 10px;
+                    }
+
+                    .modal-body .table td {
+                        text-align: center;
+                        font-size: 13px;
+                        color: #555;
+                        vertical-align: middle;
+                    }
+
+                    .modal-body .table td img {
+                        border-radius: 4px;
+                        transition: transform 0.3s ease;
+                    }
+
+                    .modal-body .table td img:hover {
+                        transform: scale(1.2);
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    }
+
+                    /* Tổng tiền, phí ship */
+                    .modal-body p:last-child {
+                        font-weight: bold;
+                        color: #333;
+                        font-size: 15px;
+                    }
+
+
+                    /* Card tra cứu đơn hàng */
+                    .card {
+                        background: #f8f9fa;
+                        border-radius: 12px;
+                        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                    }
+
+                    /* Tiêu đề tra cứu đơn hàng */
+                    .card h5 {
+                        font-size: 20px;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        margin-bottom: 20px;
+                        letter-spacing: 1px;
+                    }
+
+                    /* Form nhập mã đơn hàng */
+                    #orderCode {
+                        border-radius: 8px;
+                        border: 1px solid #ccc;
+                        padding: 8px 12px;
+                        font-size: 14px;
+                        transition: all 0.3s ease;
+                    }
+
+                    #orderCode:focus {
+                        border-color: #007bff;
+                        box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+                        outline: none;
+                    }
+
+                    /* Nút tra cứu */
+                    #searchOrder {
+                        border-radius: 20px;
+                        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+                        color: #fff;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        transition: all 0.3s ease;
+                    }
+
+                    #searchOrder:hover {
+                        background: linear-gradient(90deg, #feb47b, #ff7e5f);
+                        transform: scale(1.05);
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                    }
+
+                    /* Thông tin đơn hàng */
+                    #orderInfo {
+                        background: #fff;
+                        border-radius: 12px;
+                        padding: 15px;
+                        margin-top: 15px;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    }
+
+                    #orderInfo h6 {
+                        font-size: 18px;
+                        font-weight: bold;
+                        color: #17a2b8;
+                        margin-bottom: 15px;
+                        text-transform: uppercase;
+                    }
+
+                    #orderInfo p {
+                        font-size: 14px;
+                        margin-bottom: 10px;
+                        color: #333;
+                    }
+
+                    #orderInfo p strong {
+                        color: #555;
+                    }
+
+                    /* Responsive cho màn hình nhỏ */
+                    @media (max-width: 576px) {
+                        .card {
+                            padding: 15px;
+                        }
+
+                        #orderCode {
+                            font-size: 13px;
+                            padding: 6px 10px;
+                        }
+
+                        #searchOrder {
+                            font-size: 12px;
+                            padding: 8px 12px;
+                        }
+
+                        #orderInfo {
+                            padding: 10px;
+                        }
+                    }
+                </style>

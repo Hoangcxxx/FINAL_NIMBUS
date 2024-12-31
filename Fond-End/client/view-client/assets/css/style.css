@@ -91,7 +91,7 @@ body {
 /* Home */
 
 #hero {
-    background-image: url("../img/hero4.png");
+    background-image: url("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjgp3uAxOlj8osNQI8PwT9gE_Ur2AtCDo_tp1LcVt0WKZRJocGqtXnk0CPyDMvyzca5dbneLEBrScpJdHgI2WsnJ18wGxfF78oiFCMjWfL5YYiaUxn6KZTwMzrTpuBBp9t7mwdEL-dEuvrDLdp6sw9nffCMFF55cHQGhNW9rIJr2viBfzIGAsMIG_nyud4/s16000-rw/Background-tet-2025.jpg");
     height: 90vh;
     width: 100%;
     background-size: cover;
@@ -274,7 +274,7 @@ button.normal {
     font-weight: 600;
     padding: 15px 30px;
     color: #000;
-    background-color: #fff;
+    background-color: #ec971f;
     border-radius: 4px;
     cursor: pointer;
     border: none;
@@ -298,7 +298,7 @@ button.normal {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    background-image: url("../img/banner/b17.jpg");
+    background-image: url("https://marketingai.mediacdn.vn/603488451643117568/2024/11/8/content-sale-tet-1731053234642282879682.jpg");
     min-width: 580px;
     height: 50vh;
     background-size: cover;
@@ -307,7 +307,7 @@ button.normal {
 }
 
 #sm-banner .banner-box2 {
-    background-image: url("../img/banner/b10.jpg");
+    background-image: url("https://lavenderstudio.com.vn/wp-content/uploads/2023/12/concept-chup-hinh-tet-dep-nam-20243.jpg");
 }
 
 #sm-banner h4 {
@@ -369,6 +369,34 @@ button.white {
     padding: 20px;
     margin-bottom: 20px;
 }
+
+.modal-body-heprl {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* Căn giữa nội dung trong modal */
+    background-image: url("../img/banner/Chọn\ Size\ Quần\ Áo.png");
+    background-size: contain; /* Đảm bảo hình ảnh không bị vỡ hoặc cắt */
+    background-position: center;
+    background-repeat: no-repeat; /* Không lặp lại hình ảnh */
+    min-width: 80%; /* Đặt chiều rộng của modal lớn hơn */
+    height: 70vh; /* Làm cho chiều cao của modal lớn hơn */
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.modal-dialog {
+    width: 90%;  /* Hoặc bất kỳ chiều rộng nào bạn mong muốn */
+    max-width: none;  /* Hủy bỏ giới hạn max-width mặc định */
+    height: auto; /* Đảm bảo chiều cao của modal có thể thay đổi tùy thuộc vào nội dung */
+}
+
+.modal-header {
+    background: linear-gradient(to right, #ff8c66, #ffd54f);
+    color: #000; /* Màu chữ trong header */
+    padding: 15px;
+}
+
 
 #l-banner .banner-box2 {
     background-image: url("../img/banner/b4.jpg");
@@ -520,7 +548,7 @@ footer a:hover {
 
 /* Shop */
 #page-header {
-    background-image: url("../img/banner/b1.jpg");
+    background-image: url("https://png.pngtree.com/background/20221211/original/pngtree-happy-chinese-new-year-paper-style-banner-background-picture-image_1985572.jpg");
     width: 100%;
     height: 40vh;
     background-size: cover;
@@ -530,6 +558,37 @@ footer a:hover {
     flex-direction: column;
     padding: 14px;
 }
+
+/* #page-header {
+    background-image: url("../img/banner/b22.png");
+    width: 100%;
+    height: 40vh; 
+    background-size: cover; 
+    background-repeat: no-repeat;
+    background-position: center; 
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    padding: 14px;
+} */
+
+
+
+/* Shop */
+#page-header-thanhtoan {
+    background-image: url("https://png.pngtree.com/background/20221211/original/pngtree-happy-chinese-new-year-paper-style-banner-background-picture-image_1985572.jpg");
+    width: 100%;
+    height: 40vh;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Ensures content is vertically centered */
+    text-align: center;
+    flex-direction: column;
+    padding: 14px;
+}
+
 
 #page-header h2,
 #page-header p {
@@ -691,8 +750,13 @@ footer a:hover {
 /* About */
 
 #page-header.about-header {
-    background-image: url("../img/about/banner.png");
+    background-image: url("https://hoyang.vn/wp-content/uploads/2023/01/banner-bai-viet.jpg");
+    background-size: contain; /* Hiển thị toàn bộ hình ảnh */
+    background-position: center; /* Căn giữa hình ảnh */
+ 
+
 }
+
 
 #about .about-details {
     width: 90%;
@@ -938,30 +1002,87 @@ footer a:hover {
 }
 
 /* User */
+/* #wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url("https://file.hstatic.net/200000722513/file/background-tet-56_0c4e7084e7284a4daf013ab4787b96b7_1024x1024.jpg");
+    background-size: cover;
+    background-position: center;
+} */
+
+/* User */
 #wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: url("../img/banner/b19.jpg");
-    background-size: cover;
+    background-image: url("../img/banner/b21.png");
+    background-size: cover; /* Đảm bảo ảnh phủ hết thẻ header */
     background-position: center;
+    background-repeat: no-repeat;
 }
 
-#wrapper .form-box {
-    width: 420px;
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, .2);
-    backdrop-filter: blur(4px);
-    color: #fff;
-    border-radius: 12px;
-    padding: 30px 40px;
+
+
+.form-box.login {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
+    border-radius: 10px;
+    background-color: #fafafa;
+    box-shadow: none;
 }
+
+.form-box.forgot-password {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
+    border-radius: 10px;
+    background-color: #fafafa;
+    box-shadow: none;
+}
+
+.form-box.verify-code {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
+    border-radius: 10px;
+    background-color: #fafafa;
+    box-shadow: none;
+}
+
+.form-box.reset-password {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
+    border-radius: 10px;
+    background-color: #fafafa;
+    box-shadow: none;
+}
+
+.form-box.register {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
+    border-radius: 10px;
+    background-color: #fafafa;
+    box-shadow: none;
+}
+
+
+
 
 .form-box h1 {
     font-size: 36px;
     text-align: center;
-    color: #fff;
+    color: #000000;
 }
 
 .form-box .input-box {
@@ -977,7 +1098,7 @@ footer a:hover {
     background: transparent;
     border: none;
     outline: none;
-    border: 2px solid rgba(255, 255, 255, .2);
+    border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 40px;
     font-size: 16px;
     color: fff;
@@ -985,7 +1106,7 @@ footer a:hover {
 }
 
 .input-box input::placeholder {
-    color: #fff;
+    color: #060606;
 }
 
 .input-box i {
@@ -1008,7 +1129,7 @@ footer a:hover {
 }
 
 .remember-forgot a {
-    color: #fff;
+    color: #000000;
     text-decoration: none;
 }
 
@@ -1035,11 +1156,11 @@ footer a:hover {
 }
 
 .register-link p {
-    color: #fff;
+    color: #050505;
 }
 
 .register-link a {
-    color: #fff;
+    color: #050505;
     text-decoration: none;
     font-weight: 600;
 }
@@ -1049,10 +1170,10 @@ footer a:hover {
 }
 
 .is-form {
-    background-color: #f9f9f9;
+    background-color: #060606;
     height: 25px;
     width: 25px;
-    border: 1px solid #ddd;
+    border: 1px solid #060606;
     cursor: pointer;
     line-height: 20px;
 }

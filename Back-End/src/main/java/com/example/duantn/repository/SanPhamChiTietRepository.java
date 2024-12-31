@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -28,8 +29,10 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
 
     @Query(value = SanPhamChiTietQuery.GET_SAN_PHAM_CT_BY_ID_SAN_PHAM, nativeQuery = true)
     List<Object[]> getAllSanPhamByIdSanPham(@Param("idSanPham") Integer idSanPham);
+
     @Query(value = SanPhamChiTietQuery.GET_SAN_PHAM_CT_BY_ID_SAN_PHAM_AND_SL_LON_HON_0, nativeQuery = true)
     List<Object[]> getSanPhamCTByIdSanPhamLonHon0(@Param("idSanPhamCT") Integer idSanPhamCT);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM SanPhamChiTiet s WHERE s.idSanPhamChiTiet IN :idSanPhamCTs")
@@ -65,4 +68,9 @@ public interface SanPhamChiTietRepository extends JpaRepository<SanPhamChiTiet, 
             @Param("idMauSac") Integer idMauSac,
             @Param("idKichThuoc") Integer idKichThuoc
     );
+
+
+    boolean existsBySanPham_IdSanPhamAndMauSacChiTiet_IdMauSacChiTietAndChatLieuChiTiet_IdChatLieuChiTietAndKichThuocChiTiet_IdKichThuocChiTiet(
+            Integer idSanPham, Integer idMauSacChiTiet, Integer idChatLieuChiTiet, Integer idKichThuocChiTiet);
+
 }

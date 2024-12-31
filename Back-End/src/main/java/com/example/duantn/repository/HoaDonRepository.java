@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,6 +67,24 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     @Query(value = HoaDonQuery.GET_MA_HOA_DON, nativeQuery = true)
     String findLatestHoaDon();
+
+    @Query(value = HoaDonQuery.GET_PHI_SHIP, nativeQuery = true)
+    BigDecimal findtestphiship();
+
+    @Query(value = HoaDonQuery.GET_Voucher, nativeQuery = true)
+    BigDecimal hoadonvoucher();
+
+
+
+
+    @Query("SELECT sp.tenSanPham " +
+            "FROM HoaDon hd " +
+            "JOIN hd.hoaDonChiTiets hdct " +
+            "JOIN hdct.sanPhamChiTiet spct " +
+            "JOIN spct.sanPham sp " +
+            "WHERE hd.maHoaDon = :maHoaDon " +
+            "ORDER BY hd.idHoaDon DESC")
+    String findTenSanPhamTheoMaHoaDon(@Param("maHoaDon") String maHoaDon);
 
 
 }

@@ -138,29 +138,47 @@ window.GiohangController = function ($scope, $http, $window) {
     $scope.checkout = function () {
         // Kiểm tra tính hợp lệ của giỏ hàng trước khi thanh toán
         const invalidItems = $scope.cart.filter(item => item.soLuongGioHang < 1 || item.soLuongGioHang > 20);
-
+    
         if (invalidItems.length > 0) {
-            // Nếu có sản phẩm có số lượng không hợp lệ, hiển thị thông báo lỗi bằng Swal.fire
+            // Nếu có sản phẩm có số lượng không hợp lệ, hiển thị thông báo lỗi cho từng sản phẩm
             $scope.isValidCart = false;
-            Swal.fire({
-                icon: 'error', // Loại thông báo (error, success, info, warning)
-                title: 'Giỏ hàng không hợp lệ!',
-                text: 'Giỏ hàng của bạn có sản phẩm có số lượng vượt quá 20. Vui lòng kiểm tra lại.',
-                confirmButtonText: 'Đồng ý'
-            }).then((result) => {
-                // Nếu người dùng nhấn "Đồng ý" sau khi thông báo
-                if (result.isConfirmed) {
-                    console.log("User acknowledged the message.");
-                }
+            invalidItems.forEach(item => {
+                item.errorMessage = `Số lượng sản phẩm "${item.tenSanPham}" trong giỏ hàng phải từ 1 đến 20. Vui lòng kiểm tra lại.`;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Giỏ hàng không hợp lệ!',
+                    text: item.errorMessage,
+                    confirmButtonText: 'Đồng ý'
+                });
             });
-            return; // Dừng lại nếu giỏ hàng không hợp lệ, không tiếp tục thanh toán
-        } else {
-            // Nếu tất cả số lượng đều hợp lệ, tiếp tục thanh toán
-            $scope.isValidCart = true;
-            // Thực hiện chuyển hướng sang trang thanh toán
-            $window.location.href = "/#!thanh_toan"; // Chuyển hướng sang trang thanh toán
+            return; // Dừng lại nếu giỏ hàng không hợp lệ
         }
+    
+        // Kiểm tra số lượng giỏ hàng với số lượng tồn kho
+        const outOfStockItems = $scope.cart.filter(item => item.soLuongGioHang > item.soLuong);
+    
+        if (outOfStockItems.length > 0) {
+            // Nếu có sản phẩm có số lượng vượt quá tồn kho, hiển thị thông báo cho từng sản phẩm
+            $scope.isValidCart = false;
+            outOfStockItems.forEach(item => {
+                item.errorMessage = `Sản phẩm "${item.tenSanPham}" chỉ còn lại ${item.soLuong} trong kho.`;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sản phẩm không đủ số lượng!',
+                    text: item.errorMessage,
+                    confirmButtonText: 'Đồng ý'
+                });
+            });
+            return; // Dừng lại nếu có sản phẩm vượt quá tồn kho
+        }
+    
+        // Nếu tất cả số lượng đều hợp lệ, tiếp tục thanh toán
+        $scope.isValidCart = true;
+        $window.location.href = "/#!thanh_toan"; // Chuyển hướng sang trang thanh toán
     };
+    
+
+    
 
 
 
@@ -202,36 +220,55 @@ window.GiohangController = function ($scope, $http, $window) {
     $scope.checkQuantity = function (item) {
         // Đảm bảo item.soLuongGioHang là một chuỗi
         item.soLuongGioHang = String(item.soLuongGioHang);
-
+    
         // Chỉ giữ lại các ký tự số hợp lệ, xóa tất cả ký tự không phải là số
         let validQuantity = item.soLuongGioHang.replace(/[^0-9]/g, '');
-
+    
         // Nếu validQuantity không phải một chuỗi rỗng, chuyển nó thành số
         if (validQuantity !== '') {
             item.soLuongGioHang = parseInt(validQuantity, 10);
         }
-
+    
         // Kiểm tra nếu số lượng nhỏ hơn 1 hoặc lớn hơn 20
         if (item.soLuongGioHang < 1) {
             item.soLuongGioHang = 1; // Đảm bảo số lượng không nhỏ hơn 1
-            item.errorMessage = "Số lượng sản phẩm không thể nhỏ hơn 1.";
+            item.errorMessage = "Số lượng sản phẩm không thể nhỏ hơn 1!";
+            Swal.fire({
+                icon: 'error',
+                title: 'Số lượng sản phẩm không thể nhỏ hơn 1!',
+                text: item.errorMessage,
+                confirmButtonText: 'Đồng ý'
+            });
         } else if (item.soLuongGioHang > 20) {
             item.soLuongGioHang = 20; // Đảm bảo số lượng không lớn hơn 20
             item.errorMessage = "Số lượng sản phẩm không được vượt quá 20.";
+            Swal.fire({
+                icon: 'error',
+                title: 'Số lượng sản phẩm không được vượt quá 20!',
+                text: item.errorMessage,
+                confirmButtonText: 'Đồng ý'
+            });
         } else if (item.soLuongGioHang > item.soLuong) {
             // Kiểm tra nếu số lượng giỏ hàng lớn hơn số lượng tồn kho
             item.soLuongGioHang = item.soLuong; // Điều chỉnh lại số lượng giỏ hàng về số lượng tồn kho
             item.errorMessage = `Chỉ còn ${item.soLuong} sản phẩm trong kho.`;
+            Swal.fire({
+                icon: 'error',
+                title: 'Sản phẩm trong giỏ hàng vượt quá số lượng có sẵn!',
+                text: item.errorMessage,
+                confirmButtonText: 'Đồng ý'
+            });
         } else {
             item.errorMessage = ''; // Xóa thông báo lỗi nếu số lượng hợp lệ
         }
-
+    
         // Cập nhật giỏ hàng sau khi chỉnh sửa
         $scope.updateCart(item);
-
+    
         // Kiểm tra tổng số lượng sản phẩm trong giỏ hàng
         $scope.validateTotalQuantity();
     };
+        
 
 
     // Phương thức validate tổng số lượng giỏ hàng

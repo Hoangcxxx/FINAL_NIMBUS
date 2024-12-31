@@ -11,6 +11,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
     $scope.paymentStatus = '';
     $scope.selectedPaymentMethod = "cod";
     $scope.selectedVNPay = "vnpay";
+    $scope.selectedMBBANK = "mbbank";
     $scope.shippingInfo = {};
 
     var user = JSON.parse(localStorage.getItem("user"));
@@ -116,60 +117,67 @@ window.ThanhToanController = function ($scope, $http, $window) {
         }
     };
 
-    $scope.applyVoucher = function () {
-        if ($scope.selectedVoucher) {
-            // Kiểm tra giá trị tối thiểu và tối đa của voucher
-            const minValue = $scope.selectedVoucher.soTienToiThieu;
-            const maxValue = $scope.selectedVoucher.giaTriToiDa;
+$scope.applyVoucher = function () {
+    if ($scope.selectedVoucher) {
+        // Kiểm tra giá trị tối thiểu và tối đa của voucher
+        const minValue = $scope.selectedVoucher.soTienToiThieu;
+        const maxValue = $scope.selectedVoucher.giaTriToiDa;
 
-            // In ra giá trị tối thiểu và tối đa
-            console.log("Giá trị tối thiểu voucher: ", minValue);
-            console.log("Giá trị tối đa voucher: ", maxValue);
+        // In ra giá trị tối thiểu và tối đa
+        console.log("Giá trị tối thiểu voucher: ", minValue);
+        console.log("Giá trị tối đa voucher: ", maxValue);
 
-            // Kiểm tra nếu tổng tiền nhỏ hơn giá trị tối thiểu của voucher, không áp dụng giảm giá
-            if ($scope.totalAmount < minValue) {
-                $scope.voucherError = 'Tổng tiền không đủ điều kiện áp dụng voucher.';
-                return; // Không thực hiện giảm giá nếu tổng tiền nhỏ hơn giá trị tối thiểu
-            }
-
-            if (isNaN($scope.selectedVoucher.giaTriGiamGia) || $scope.selectedVoucher.giaTriGiamGia < 0) {
-                console.error('Giá trị giảm giá không hợp lệ:', $scope.selectedVoucher.giaTriGiamGia);
-                $scope.selectedVoucher.giaTriGiamGia = 0;
-            }
-
-            // Áp dụng giảm giá theo loại voucher
-            let discount = 0;
-            if ($scope.selectedVoucher.kieuGiamGia === false) {
-                // Giảm theo phần trăm
-                discount = $scope.totalAmount * ($scope.selectedVoucher.giaTriGiamGia / 100);
-            } else if ($scope.selectedVoucher.kieuGiamGia === true) {
-                // Giảm theo giá trị cố định
-                discount = $scope.selectedVoucher.giaTriGiamGia;
-            }
-
-            // Trừ giảm giá vào tổng tiền
-            $scope.totalAmount -= discount;
-            $scope.totalAmount = Math.max($scope.totalAmount, 0); // Đảm bảo tổng tiền không âm
-
-            console.log("Giảm giá: ", discount);
-            console.log("Tổng tiền sau giảm: ", $scope.totalAmount);
-
-            // Hiển thị thông báo thành công
+        // Kiểm tra nếu tổng tiền nhỏ hơn giá trị tối thiểu của voucher, không áp dụng giảm giá
+        if ($scope.totalAmount < minValue) {
+            $scope.voucherError = 'Tổng tiền không đủ điều kiện áp dụng voucher.';  // Cập nhật thông báo lỗi
             Swal.fire({
-                icon: 'success',
-                title: 'Voucher đã được áp dụng!',
-                text: 'Mã voucher: ' + $scope.selectedVoucher.maVoucher + ' đã thành công.',
+                icon: 'error',
+                title: 'Voucher không hợp lệ',
+                text: $scope.voucherError,  // Hiển thị thông báo lỗi
                 confirmButtonText: 'OK'
             });
-
-            // Tính lại tổng tiền sau khi áp dụng voucher
-            $scope.calculateTotal(); // Tính lại tổng tiền sau khi áp dụng voucher
-
-            // Lưu voucher và tổng tiền vào localStorage
-            localStorage.setItem('selectedVoucher', JSON.stringify($scope.selectedVoucher));
-            localStorage.setItem('totalAmount', $scope.totalAmount);
+            return; // Không thực hiện giảm giá nếu tổng tiền nhỏ hơn giá trị tối thiểu
         }
-    };
+
+        if (isNaN($scope.selectedVoucher.giaTriGiamGia) || $scope.selectedVoucher.giaTriGiamGia < 0) {
+            console.error('Giá trị giảm giá không hợp lệ:', $scope.selectedVoucher.giaTriGiamGia);
+            $scope.selectedVoucher.giaTriGiamGia = 0;
+        }
+
+        // Áp dụng giảm giá theo loại voucher
+        let discount = 0;
+        if ($scope.selectedVoucher.kieuGiamGia === false) {
+            // Giảm theo phần trăm
+            discount = $scope.totalAmount * ($scope.selectedVoucher.giaTriGiamGia / 100);
+        } else if ($scope.selectedVoucher.kieuGiamGia === true) {
+            // Giảm theo giá trị cố định
+            discount = $scope.selectedVoucher.giaTriGiamGia;
+        }
+
+        // Trừ giảm giá vào tổng tiền
+        $scope.totalAmount -= discount;
+        $scope.totalAmount = Math.max($scope.totalAmount, 0); // Đảm bảo tổng tiền không âm
+
+        console.log("Giảm giá: ", discount);
+        console.log("Tổng tiền sau giảm: ", $scope.totalAmount);
+
+        // Hiển thị thông báo thành công
+        Swal.fire({
+            icon: 'success',
+            title: 'Voucher đã được áp dụng!',
+            text: 'Mã voucher: ' + $scope.selectedVoucher.maVoucher + ' đã thành công.',
+            confirmButtonText: 'OK'
+        });
+
+        // Tính lại tổng tiền sau khi áp dụng voucher
+        $scope.calculateTotal(); // Tính lại tổng tiền sau khi áp dụng voucher
+
+        // Lưu voucher và tổng tiền vào localStorage
+        localStorage.setItem('selectedVoucher', JSON.stringify($scope.selectedVoucher));
+        localStorage.setItem('totalAmount', $scope.totalAmount);
+    }
+};
+
 
     $scope.dsvoucher = function () {
         // Calculate the total amount from the cart
@@ -263,7 +271,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
             });
             return false;
         }
-        
+
         if (!$scope.userInfo.email || $scope.userInfo.email.trim() === "") {
             Swal.fire({
                 title: 'Lỗi!',
@@ -275,10 +283,10 @@ window.ThanhToanController = function ($scope, $http, $window) {
         } else {
             // Loại bỏ dấu cách thừa trước và sau email trước khi kiểm tra
             var email = $scope.userInfo.email.trim();
-        
+
             // Kiểm tra định dạng email
             var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        
+
             if (!emailPattern.test(email)) {
                 Swal.fire({
                     title: 'Lỗi!',
@@ -289,7 +297,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 return false;
             }
         }
-        
+
         if (!$scope.userInfo.sdt || $scope.userInfo.sdt.trim() === "") {
             Swal.fire({
                 title: 'Lỗi!',
@@ -298,15 +306,33 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 confirmButtonText: 'OK'
             });
             return false;
-        } else if (!/^\d{10,11}$/.test($scope.userInfo.sdt)) {
-            Swal.fire({
-                title: 'Lỗi!',
-                text: 'Số điện thoại phải chứa từ 10 đến 11 chữ số!',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return false;
+        } else {
+            // Loại bỏ khoảng trắng trước và sau số điện thoại
+            let phoneNumber = $scope.userInfo.sdt.trim();
+            
+            // Kiểm tra nếu số điện thoại chỉ chứa số và có độ dài 10 hoặc 11 chữ số
+            if (!/^\d{10,11}$/.test(phoneNumber)) {
+                // Kiểm tra nếu có bất kỳ ký tự chữ nào trong số điện thoại
+                if (/[a-zA-Z]/.test(phoneNumber)) {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Số điện thoại chỉ được phép chứa các chữ số!',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
+                }
+        
+                Swal.fire({
+                    title: 'Lỗi!',
+                    text: 'Số điện thoại phải chứa từ 10 đến 11 chữ số!',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
         }
+        
         if (!$scope.userInfo.diaChi || $scope.userInfo.diaChi.trim() === "") {
             Swal.fire({
                 title: 'Không Được Bỏ Trống Địa Chỉ',
@@ -356,6 +382,53 @@ window.ThanhToanController = function ($scope, $http, $window) {
             return false;
         }
         return true;
+    };
+
+    $scope.TEST = async function () {
+
+        const paymentMethod = 'PayOS';
+        const amount = $scope.totalAmount;
+        const description = 'Thanh toán cho hóa đơn';
+        const returnUrl = 'http://127.0.0.1:5502/#!/thanhcong';
+        const cancelUrl = 'http://127.0.0.1:5502/index.html#!/thanh_toan';
+
+        try {
+            const response = await $http.post('http://localhost:8080/api/admin/payos/create-payment-link', {
+                description: description,
+                returnUrl: returnUrl,
+                cancelUrl: cancelUrl,
+                price: amount
+            });
+
+            console.log('Dữ liệu trả về từ PayOS:', response.data);
+            if (response.data.error === 0 && response.data.data && response.data.data.checkoutUrl) {
+                const paymentUrl = response.data.data.checkoutUrl; // Lấy URL thanh toán từ PayOS
+                console.log('Điều hướng đến URL thanh toán PayOS:', paymentUrl);
+                window.location.href = paymentUrl;
+
+                // Chờ người dùng hoàn thành thanh toán, sau đó kiểm tra URL hiện tại
+                const checkUrl = async () => {
+                    if (window.location.href === returnUrl) {
+                        console.log('Thanh toán thành công, bắt đầu tạo hóa đơn chi tiết.');
+                        await $scope.createHoaDonChiTiet();
+                    } else {
+                        console.log('Chưa hoàn thành thanh toán hoặc URL không khớp.');
+                    }
+                };
+
+                // Liên tục kiểm tra URL mỗi 2 giây
+                const interval = setInterval(async () => {
+                    await checkUrl();
+                }, 2000);
+                setTimeout(() => clearInterval(interval), 60000);
+            } else {
+                alert('Không thể tạo liên kết thanh toán PayOS. Vui lòng thử lại.');
+            }
+        } catch (error) {
+            console.error('Lỗi trong quá trình gọi PayOS:', error);
+            alert('Có lỗi xảy ra khi tạo liên kết thanh toán PayOS.');
+        }
+
     };
 
     $scope.placeOrder = function () {
@@ -420,8 +493,17 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
                     if (paymentUrlMatch && paymentUrlMatch[1]) {
                         const paymentRedirectUrl = paymentUrlMatch[1];
-                        console.error("orderData:", orderData);
+                        console.log("orderData:", orderData); // Kiểm tra orderData
+
+                        // Chuyển hướng đến trang thanh toán của VNPay
                         window.location.href = paymentRedirectUrl;
+
+                        // Sau khi chuyển hướng, bạn có thể gửi email xác nhận sau khi đặt hàng thành công
+                        // Đảm bảo rằng việc gửi email được thực hiện sau khi thanh toán thành công
+                        $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
+                            .then(response => console.log("Email đã được gửi thành công"))
+                            .catch(error => console.error("Lỗi khi gửi email:", error));
+
                     } else {
                         alert('Không thể tạo thanh toán VNPAY. Vui lòng thử lại.');
                     }
@@ -433,6 +515,16 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
             return;
         }
+
+
+        if ($scope.selectedPaymentMethod === "mbbank") {
+
+            $scope.TEST();
+            return;
+        }
+
+
+
 
         // Khi API trả về thành công
         $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData)
@@ -461,7 +553,12 @@ window.ThanhToanController = function ($scope, $http, $window) {
             })
             .catch(error => {
                 console.error("Lỗi khi đặt hàng:", error);
-                alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
+                Swal.fire({
+                    icon: 'error', // Loại thông báo (error, success, info, warning)
+                    title: 'Thanh Toán Thất Bại!',
+                    text: item.errorMessage,  // Hiển thị thông báo lỗi về số lượng sản phẩm
+                    confirmButtonText: 'Đồng ý'
+                });
             });
     };
 

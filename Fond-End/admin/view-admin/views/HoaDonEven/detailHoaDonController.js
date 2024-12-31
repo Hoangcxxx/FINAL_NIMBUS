@@ -37,8 +37,10 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 $scope.totalAmount = $scope.hoaDon.thanhTien;  // Gán giá trị thanhTien vào totalAmount
                 // Tính tổng tiền trước khi giảm giá
                 $scope.totalBeforeDiscount = $scope.sanPhamCT.reduce(function (accumulator, product) {
-                    return accumulator + (product.giaBan * product.soLuong);  // Cộng giá sản phẩm nhân với số lượng
+                    return accumulator + (product.tongTien || 0);  // Cộng giá sản phẩm nhân với số lượng
                 }, 0);
+                console.log('Tổng tiền trước khi giảm giá:', $scope.totalBeforeDiscount);
+
                 // Kiểm tra vai trò khách hàng để quyết định ẩn/hiển thị email và địa chỉ
                 if ($scope.hoaDon.vaiTro.idVaiTro === 3) {
                     // Nếu vai trò là 3 (không phải khách hàng), ẩn email và địa chỉ
@@ -344,7 +346,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     $scope.updatePaymentHistory = function () {
         var amountGiven = document.getElementById("amountGiven").value;
         var notes = document.getElementById("notes").value;
-    
+
         if (amountGiven && notes) {
             // Tạo đối tượng dữ liệu thanh toán
             var paymentData = {
@@ -354,26 +356,26 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 moTa: notes,  // Lấy ghi chú
                 trangThaiThanhToan: true  // Trạng thái thanh toán
             };
-    
+
             // Gửi yêu cầu API để cập nhật lịch sử thanh toán
             $http.put('http://localhost:8080/api/admin/lich_su_thanh_toan/update/' + idHoaDon, paymentData)
                 .then(function (response) {
                     // Kiểm tra nếu có thông báo thành công
                     if (response.data.message) {
                         console.log(response.data.message);  // Log thông báo thành công
-    
+
                         // Hiển thị thông báo thành công với Swal
                         Swal.fire({
                             icon: 'success',
                             title: 'Cập nhật thành công!',
                             text: response.data.message
-                        }).then(function() {
+                        }).then(function () {
                             // Đóng modal sau khi hiển thị thông báo
                             $('#xacNhanModal').modal('hide'); // Đóng modal bằng jQuery
                         });
                     } else {
                         console.error('Lỗi khi cập nhật thanh toán:', response.data.message);
-    
+
                         // Hiển thị lỗi với Swal
                         Swal.fire({
                             icon: 'error',
@@ -381,7 +383,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                             text: response.data.message
                         });
                     }
-    
+
                     // Gọi lại API để tải lại dữ liệu lịch sử thanh toán sau khi cập nhật
                     $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
                         .then(function (response) {
@@ -393,7 +395,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 })
                 .catch(function (error) {
                     console.error('Lỗi khi gọi API cập nhật lịch sử thanh toán:', error);
-    
+
                     // Hiển thị lỗi khi gặp sự cố gọi API với Swal
                     Swal.fire({
                         icon: 'error',
@@ -410,7 +412,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             });
         }
     };
-    
+
 
     // Khi người dùng mở modal, tự động điền thông tin vào modal
     $('#xacNhanModal').on('show.bs.modal', function () {
