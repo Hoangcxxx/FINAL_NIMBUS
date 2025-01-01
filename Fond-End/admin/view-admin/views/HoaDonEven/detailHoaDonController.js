@@ -224,11 +224,32 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         localStorage.removeItem("userInfo");
     }
 
+
+
+
+
+
+
     // Hàm cập nhật trạng thái hóa đơn
     $scope.updateTrangThaiHoaDon = function () {
         console.log("Trang thái ID:", $scope.ghiChu.trangThaiId);  // Kiểm tra giá trị
 
         if ($scope.ghiChu.trangThaiId && idHoaDon) {
+            if ($scope.ghiChu.trangThaiId == 7) {
+                // Kiểm tra nếu tồn tại lichSuThanhToan có tên nhân viên là "N/A"
+                const hasIncompletePayment = $scope.lichSuThanhToan.some(function (paymentHistory) {
+                    return paymentHistory.tenNhanVien === "N/A";
+                });
+
+                if (hasIncompletePayment) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Không thể cập nhật trạng thái',
+                        text: 'Vui lòng xác nhận thanh toán trước khi hoàn thành hóa đơn!'
+                    });
+                    return; // Kết thúc hàm nếu có thanh toán chưa được xác nhận
+                }
+            }
             // Thực hiện API update
             $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai?idHoaDon=' + idHoaDon + '&idLoaiTrangThai=' + $scope.ghiChu.trangThaiId + '&idNhanVien=' + $scope.userId)
                 .then(function (response) {
