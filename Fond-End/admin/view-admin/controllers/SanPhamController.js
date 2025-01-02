@@ -46,6 +46,85 @@ window.SanPhamController = function ($scope, $http) {
     initializeData();
 
 
+    $scope.loadProduct = function (idSanPham) {
+        if (!idSanPham) {
+            console.error('Invalid product ID:', idSanPham);
+            return;
+        }
+
+        $http.get(`http://localhost:8080/api/admin/san_pham/findSanPham/${idSanPham}`)
+            .then(function (response) {
+                const product = response.data;
+                $scope.SanPham = {
+                    idSanPham: product.idSanPham,
+                    maSanPham: product.maSanPham,
+                    tenSanPham: product.tenSanPham,
+                    giaBan: product.giaBan,
+                    moTa: product.moTa,
+                    trangThai: product.trangThai,
+                    ngayTao: product.ngayTao,
+                    ngayCapNhat: product.ngayCapNhat,
+                    // Gán giá trị idDanhMuc từ product.danhMuc.idDanhMuc
+                    idDanhMuc: product.danhMuc.idDanhMuc, // Đây là phần cần sửa
+                };
+
+                // Lưu danh mục vào một biến riêng để sử dụng trong dropdown
+                $scope.selectedCategory = product.danhMuc;
+
+                // Xử lý URL hình ảnh và lưu vào SanPham.hinhAnh
+                $scope.SanPham.hinhAnh = product.allUrlAnh.split(',').map(url => url.trim());
+                console.log('Product loaded:', $scope.SanPham);
+            })
+            .catch(function (error) {
+                console.error('Error fetching product:', error);
+            });
+    };
+    $scope.onUpdate = function () {
+        // Tạo đối tượng dữ liệu cập nhật từ form
+        let updatedProduct = {
+            idSanPham: $scope.SanPham.idSanPham,
+            maSanPham: $scope.SanPham.maSanPham,
+            tenSanPham: $scope.SanPham.tenSanPham,
+            giaBan: $scope.SanPham.giaBan,
+            moTa: $scope.SanPham.moTa,
+            trangThai: $scope.SanPham.trangThai,
+            ngayTao: $scope.SanPham.ngayTao,
+            ngayCapNhat: new Date(), // Cập nhật ngày giờ mới
+            danhMuc: {
+                idDanhMuc: $scope.SanPham.idDanhMuc,
+                tenDanhMuc: $scope.selectedCategory.tenDanhMuc,
+                moTa: $scope.selectedCategory.moTa,
+                ngayTao: $scope.selectedCategory.ngayTao,
+                ngayCapNhat: $scope.selectedCategory.ngayCapNhat
+            },
+            allUrlAnh: $scope.SanPham.hinhAnh.join(', ') // Cập nhật tất cả các URL hình ảnh
+        };
+
+        // Log giá trị để kiểm tra
+        console.log("Dữ liệu cập nhật sản phẩm:", updatedProduct);
+
+        // Gửi PUT request để cập nhật sản phẩm
+        $http.put(`http://localhost:8080/api/admin/san_pham/${$scope.SanPham.idSanPham}`, updatedProduct)
+            .then(function (response) {
+                // Nếu cập nhật thành công, bạn có thể thông báo cho người dùng
+                alert("Cập nhật sản phẩm thành công!");
+
+                // Cập nhật lại dữ liệu đã chọn (dùng để so sánh trong lần sau)
+                $scope.selectedProduct = angular.copy($scope.SanPham);
+
+                // Đóng modal sau khi cập nhật thành công
+                $('#updateProductModal').modal('hide');
+                // Tải lại danh sách sản phẩm
+                $scope.fetchData('http://localhost:8080/api/admin/san_pham', 'dsSanPham', 'Fetched products:');
+            }, function (error) {
+                // Nếu có lỗi, thông báo cho người dùng
+                alert("Đã xảy ra lỗi khi cập nhật sản phẩm.");
+                console.error(error);
+            });
+    };
+
+
+
 
     // Function to edit a product
     $scope.chinhSuaSanPham = function (item) {
@@ -76,6 +155,7 @@ window.SanPhamController = function ($scope, $http) {
         };
         $scope.isEditing = false; // Reset editing state
         $('#addProductModal').modal('hide'); // Hide the modal
+        $('#updateProductModal').modal('hide'); // Hide the modal
     };
 
 
@@ -143,6 +223,7 @@ window.SanPhamController = function ($scope, $http) {
 
         // Đóng modal
         $scope.hideModal('addProductModal');  // Đóng modal addProductModal
+        $scope.hideModal('updateProductModal');  // Đóng modal addProductModal
     };
     // Handle product creation
     $scope.onCreate = function () {
@@ -235,5 +316,9 @@ window.SanPhamController = function ($scope, $http) {
             reader.readAsDataURL(file);
         });
     };
-   
+
+
+
+
+
 };
