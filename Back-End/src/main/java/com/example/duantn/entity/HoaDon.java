@@ -67,21 +67,11 @@ public class HoaDon {
     @Column(name = "loai")
     private int loai;
 
-
     @ManyToOne
     @JoinColumn(name = "id_pt_thanh_toan_hoa_don")
     private PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon;
     @OneToMany(mappedBy = "hoaDon")
     @JsonIgnore // Bỏ qua danh sách trạng thái hóa đơn khi serialize
     private List<TrangThaiHoaDon> trangThaiHoaDons;
-
-    @OneToMany(mappedBy = "hoaDon")
-    @JsonIgnore // Bỏ qua danh sách chi tiết hóa đơn khi serialize
-    private List<HoaDonChiTiet> hoaDonChiTietList;
-    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<HoaDonChiTiet> hoaDonChiTiets;
-
-    @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL)
-    private List<PhuongThucThanhToanHoaDon> phuongThucThanhToanHoaDons;
 
 }

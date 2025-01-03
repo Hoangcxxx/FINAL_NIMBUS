@@ -166,14 +166,12 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 console.error('Lỗi khi lấy danh sách hóa đơn chưa thanh toán:', error);
             });
     };
-
     $scope.createInvoice = function () {
-        console.log("Selected User:", $scope.selectedUser);
         var user = JSON.parse(localStorage.getItem("user"));
         console.log(user.idNguoiDung);  // 123
         console.log(user.tenNguoiDung); // "Nguyễn Văn A"
         // Kiểm tra xem đã chọn người dùng chưa
-        if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung) {
+        if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung || !$scope.selectedUser.tenNguoiDung) {
             Swal.fire({
                 title: 'Lỗi!',
                 text: 'Vui lòng chọn người dùng trước khi tạo hóa đơn.',
@@ -182,9 +180,16 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
             return;
         }
-
-
-        // Nếu không c  ó hóa đơn chưa thanh toán, tiếp tục tạo hóa đơn
+        if (!$scope.searchTerm || $scope.searchTerm.trim() === "") {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng chọn người dùng trước khi tạo hóa đơn.',
+                icon: 'error',
+                confirmButtonText: 'Đóng'
+            });
+            return;
+        }
+        // Nếu không c ó hóa đơn chưa thanh toán, tiếp tục tạo hóa đơn
         let newInvoice = {
             tenNguoiNhan: $scope.selectedUser.tenNguoiDung,
             nguoiDung: { idNguoiDung: $scope.selectedUser.idNguoiDung },
@@ -816,6 +821,7 @@ $scope.calculateTotalPrice = function () {
                     },
                     buttonsStyling: false
                 });
+                $scope.removeVoucher();
                 return; // Dừng thực thi nếu không hợp lệ
             }       
             // Kiểm tra nếu kiểu giảm giá là `false` và giá trị đơn hàng vượt quá giá trị tối đa
@@ -828,8 +834,9 @@ $scope.calculateTotalPrice = function () {
                     customClass: {
                         confirmButton: 'btn btn-danger'
                     },
-                    buttonsStyling: false
+                    buttonsStyling: false     
                 });
+                $scope.removeVoucher();
                 return; // Dừng thực thi nếu không hợp lệ
             }
     
@@ -1112,8 +1119,8 @@ $scope.calculateTotalPrice = function () {
             const amount = $scope.totalPrice;
             const invoice = $scope.selectedInvoice;
             const description = 'Thanh toán cho hóa đơn';
-            const returnUrl = 'http://127.0.0.1:5501/admin.html#!/ban_hang';
-            const cancelUrl = 'http://127.0.0.1:5501/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai';
+            const returnUrl = 'http://127.0.0.1:5502/admin.html#!/ban_hang';
+            const cancelUrl = 'http://127.0.0.1:5502/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai';
 
             try {
                 const response = await $http.post('http://localhost:8080/api/admin/payos/create-payment-link', {
@@ -1240,8 +1247,6 @@ $scope.calculateTotalPrice = function () {
 
                 const userId = userFromStorage.idNguoiDung;
 
-                // Cập nhật trạng thái hóa đơn
-                await $scope.updateInvoiceStatus();
                 await $scope.createPaymentHistory();
                 // Chạy các tác vụ không phụ thuộc đồng thời
                 await Promise.all([
@@ -1536,14 +1541,7 @@ $scope.calculateTotalPrice = function () {
                     <p><strong>Tổng Cộng:</strong> ${$scope.formatCurrency(totalPriceInfo.totalPrice || 0)}</p>
                 </div>
     
-                <!-- Thông tin thanh toán -->
-
-    
-                <!-- Mã vạch -->
-                <div style="text-align: center; margin-top: 30px;">
-                    <img src="https://example.com/barcode/${selectedInvoice.maHoaDon}" alt="Mã vạch" style="width: 180px;">
-                </div>
-    
+                <!-- Thông tin thanh toán -->    
                 <!-- Lời cảm ơn -->
                 <div style="text-align: center; margin-top: 40px; font-size: 16px; font-style: italic; color: #333;">
                     <p>Cảm ơn bạn đã mua sắm tại NB Fashion. Chúc bạn có một ngày tốt lành!</p>
@@ -1616,6 +1614,7 @@ $scope.calculateTotalPrice = function () {
         console.log('Đóng modal');
         $scope.isGiaoHang = false;
     };
+    $scope.selectedInvoice = { maHoaDon: 0 };
     $scope.customerPaid = null;
     $scope.getProductDetails();
     $scope.getUnpaidInvoices();
