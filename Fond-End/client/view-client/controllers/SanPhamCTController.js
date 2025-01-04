@@ -257,25 +257,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
                         }
                         // Log số lượng tồn kho
                         console.log("Số lượng tồn kho của sản phẩm:", $scope.soLuongTon);
-
-                        // Kiểm tra số lượng trong giỏ hàng và số lượng tồn kho
-                        if (existingProduct) {
-                            let totalQuantityInCart = existingProduct.soLuongGioHang + $scope.soluong;
-
-                            console.log("Tổng số lượng trong giỏ hàng sau khi thêm:", totalQuantityInCart);
-
-                            if (totalQuantityInCart > $scope.soLuongTon) {
-                                // Nếu số lượng trong giỏ hàng + số lượng người dùng muốn thêm vượt quá số lượng tồn kho
-                                Swal.fire({
-                                    title: 'Lỗi',
-                                    text: `Số lượng tồn của sản phẩm trong kho không đủ(số lượng còn lại là: ${$scope.soLuongTon}).`,
-                                    icon: 'error',
-                                    confirmButtonText: 'OK'
-                                });
-                                return;
-                            }
-                        }
-
+                        
                         // Nếu không có sản phẩm trong giỏ hàng hoặc có thể thêm, tiếp tục thêm sản phẩm vào giỏ hàng
                         let cartItem = {
                             idSanPham: $scope.sanPhamChiTiet[0].idSanPham,

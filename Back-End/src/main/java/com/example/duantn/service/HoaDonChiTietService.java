@@ -86,7 +86,7 @@ public class HoaDonChiTietService {
             hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
             HoaDon hoaDon = hoaDonRepository.findById(dto.getIdHoaDon())
                     .orElseThrow(() -> new ExpressionException("Hóa đơn không tìm thấy"));
-            hoaDon.setTrangThai(true);
+
             GiamGiaSanPham giamGiaSanPham = giamGiaSanPhamRepository.findBySanPham(sanPhamChiTiet.getSanPham())
                     .orElse(null);
 
