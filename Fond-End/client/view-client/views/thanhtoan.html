@@ -183,11 +183,11 @@
                         <span ng-if="selectedVoucher">
                             <!-- Kiểm tra kiểu giảm giá -->
                             <span ng-if="!selectedVoucher.kieuGiamGia">
-                                Giảm giá: {{ selectedVoucher.giaTriGiamGia }}% {{
+                                {{ selectedVoucher.giaTriGiamGia }}% {{
                                 calculateDiscountAmount(selectedVoucher) | currency: '' : 0 }}
                             </span>
                             <span ng-if="selectedVoucher.kieuGiamGia">
-                                Giảm giá: {{ selectedVoucher.giaTriGiamGia | currency: '' : 0 }} VND
+                                {{ selectedVoucher.giaTriGiamGia | currency: '' : 0 }} VND
                             </span>
                         </span>
                         <span ng-if="!selectedVoucher">Chưa chọn voucher</span>

@@ -560,13 +560,15 @@ INSERT INTO [trang_thai_giam_gia] (ten_trang_thai_giam_gia, mo_ta) VALUES
 (N'Bị xóa', N'Giảm giá đã bị xóa và không còn hiệu lực.'),
 (N'Số lượng voucher đã hết', N'Số lượng giảm giá đã hết vui lòng thử lại vào dịp sau .');
 go
--- Insert data for voucher
-INSERT INTO voucher (ma_voucher,ten_voucher,kieu_giam_gia, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc,id_trang_thai_giam_gia) VALUES
-(N'KM10',N'Giảm giá cho đơn hàng', 0,10, 100, 500000,2000000, N'Giảm 10% cho đơn hàng từ 50k', '2024-01-01', '2024-01-31', 3),
-(N'KM20K',N'Giảm giá cho đơn hàng',1, 20000, 50,500000,2000000, N'Giảm 20.000đ cho đơn hàng từ 100k', '2024-02-01', '2024-02-28', 3),
-(N'FREE_SHIP',N'Miễn phí vận chuyển cho đơn hàng',1, 0, 200,500000,2000000, N'Miễn phí vận chuyển cho đơn hàng từ 150k', '2024-03-01', '2024-03-31', 3),
-(N'KM30', N'Giảm giá cho đơn hàng', 0, 30, 80, 500000, 1500000, N'Giảm 30% cho đơn hàng từ 100k', '2024-04-01', '2024-04-30', 3),
-(N'BONUS50K', N'Giảm giá cho đơn hàng', 1, 50000, 60, 1000000, 3000000, N'Giảm 50.000đ cho đơn hàng từ 200k', '2024-05-01', '2024-05-31', 3);
+-- Insert data for voucher (Updated)
+INSERT INTO voucher (ma_voucher, ten_voucher, kieu_giam_gia, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc, id_trang_thai_giam_gia) 
+VALUES
+(N'KM10', N'Giảm 10% cho đơn hàng', 0, 10, 100, 300000, 500000, N'Giảm 10% cho đơn hàng từ 500.000đ, tối đa giảm 300.000đ', '2024-01-01', '2024-01-31', 3),
+(N'KM20K', N'Giảm 20.000đ cho đơn hàng', 1, 20000, 50, NULL, 100000, N'Giảm 20.000đ cho đơn hàng từ 100.000đ', '2024-02-01', '2024-02-28', 3),
+(N'FREE_SHIP', N'Miễn phí vận chuyển', 1, 0, 200, NULL, 150000, N'Miễn phí vận chuyển cho đơn hàng từ 150.000đ', '2024-03-01', '2024-03-31', 3),
+(N'KM30', N'Giảm 30% cho đơn hàng', 0, 30, 80, 400000, 1000000, N'Giảm 30% cho đơn hàng từ 1.000.000đ, tối đa giảm 400.000đ', '2024-04-01', '2024-04-30', 3),
+(N'BONUS50K', N'Giảm 50.000đ cho đơn hàng', 1, 50000, 60, NULL, 200000, N'Giảm 50.000đ cho đơn hàng từ 200.000đ', '2024-05-01', '2024-05-31', 3);
+
 
 
 go

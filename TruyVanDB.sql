@@ -10,7 +10,9 @@ select * from giam_gia_san_pham
 select * from dia_chi_van_chuyen
 select * from phi_van_chuyen
 select * from voucher 
-select * from hoa_don 
+select * from hoa_don where id_hoa_don = 36
+select * from hoa_don_chi_tiet where id_hoa_don = 55
+select * from lich_su_thanh_toan
 select * from vai_tro
 select * from dot_giam_gia
 select * from nguoi_dung 
@@ -2542,5 +2544,386 @@ LEFT JOIN hinh_anh_san_pham ha
 WHERE 
     ha.thu_tu = 1 
     AND ggs.id_dot_giam_gia = :idDotGiamGia;
+
+select * from hoa_don
+SELECT 
+    SUM(hdct.so_luong) AS tong_so_luong_san_pham_da_ban  -- Tổng số lượng sản phẩm đã bán
+FROM 
+    hoa_don_chi_tiet hdct
+JOIN 
+    hoa_don hd ON hdct.id_hoa_don = hd.Id_hoa_don
+JOIN
+    trang_thai_hoa_don tthd ON hd.id_hoa_don = tthd.id_hoa_don
+JOIN
+    loai_trang_thai ltt ON tthd.id_loai_trang_thai = ltt.Id_loai_trang_thai
+WHERE 
+    ltt.ten_loai_trang_thai = 'Hoàn thành'  -- Trạng thái 'Hoàn thành'
+    AND CAST(hd.ngay_tao AS DATE) BETWEEN CAST(DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AS DATE) 
+                                        AND CAST(GETDATE() AS DATE)  -- Lọc trong tháng này
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta,
+    dm.ten_danh_muc,
+    dgg.ten_dot_giam_gia,
+    ggsp.gia_khuyen_mai,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc,
+    ha.url_anh,
+    ha.thu_tu
+FROM 
+    san_pham sp
+LEFT JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+LEFT JOIN 
+    giam_gia_san_pham ggsp ON sp.Id_san_pham = ggsp.id_san_pham
+LEFT JOIN 
+    dot_giam_gia dgg ON ggsp.id_dot_giam_gia = dgg.Id_dot_giam_gia
+LEFT JOIN 
+    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    sp.trang_thai = 1 
+    AND ha.thu_tu = 1
+    AND (dgg.ngay_ket_thuc >= GETDATE() OR dgg.ngay_ket_thuc IS NULL)
+ORDER BY 
+    CASE 
+        WHEN ggsp.id_san_pham IS NOT NULL THEN 0 -- Sản phẩm có khuyến mãi sẽ xuất hiện đầu tiên
+        ELSE 1
+    END,
+    sp.ngay_cap_nhat DESC, -- Sắp xếp theo ngày cập nhật mới nhất
+    sp.gia_ban ASC; -- Sắp xếp theo giá (tăng dần)
+
+	
+
+
+
+
+
+
+	SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta,
+    dm.ten_danh_muc,
+    dgg.ten_dot_giam_gia,
+    ggsp.gia_khuyen_mai,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc,
+    ha.url_anh,
+    ha.thu_tu
+FROM 
+    san_pham sp
+LEFT JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+LEFT JOIN 
+    giam_gia_san_pham ggsp ON sp.Id_san_pham = ggsp.id_san_pham
+LEFT JOIN 
+    dot_giam_gia dgg ON ggsp.id_dot_giam_gia = dgg.Id_dot_giam_gia
+LEFT JOIN 
+    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    sp.trang_thai = 1 
+    AND ha.thu_tu = 1
+    AND COALESCE(dgg.ngay_ket_thuc, '9999-12-31') >= GETDATE()
+ORDER BY 
+    CASE 
+        WHEN ggsp.id_san_pham IS NOT NULL THEN 0
+        ELSE 1
+    END,
+    sp.ngay_cap_nhat DESC,
+    sp.gia_ban ASC;
+
+
+
+
+
+
+
+
+
+
+	SELECT 
+    sp.Id_san_pham,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    sp.mo_ta,
+    dm.ten_danh_muc,
+    dgg.ten_dot_giam_gia,
+    ggsp.gia_khuyen_mai,
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ngay_bat_dau,
+    dgg.ngay_ket_thuc,
+    ha.url_anh,
+    ha.thu_tu,
+    CASE 
+        WHEN dgg.ngay_ket_thuc < GETDATE() THEN 3
+        ELSE dgg.id_trang_thai_giam_gia
+    END AS trang_thai_giam_gia
+FROM 
+    san_pham sp
+LEFT JOIN 
+    danh_muc dm ON sp.id_danh_muc = dm.Id_danh_muc
+LEFT JOIN 
+    giam_gia_san_pham ggsp ON sp.Id_san_pham = ggsp.id_san_pham
+LEFT JOIN 
+    dot_giam_gia dgg ON ggsp.id_dot_giam_gia = dgg.Id_dot_giam_gia
+LEFT JOIN 
+    hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham
+WHERE 
+    sp.trang_thai = 1 
+    AND ha.thu_tu = 1
+    AND (dgg.ngay_ket_thuc >= GETDATE() OR dgg.ngay_ket_thuc IS NULL OR dgg.ngay_ket_thuc < GETDATE())
+ORDER BY 
+    CASE 
+        WHEN ggsp.id_san_pham IS NOT NULL THEN 0 -- Sản phẩm có khuyến mãi sẽ xuất hiện đầu tiên
+        ELSE 1
+    END,
+    sp.ngay_cap_nhat DESC, -- Sắp xếp theo ngày cập nhật mới nhất
+    sp.gia_ban ASC; -- Sắp xếp theo giá (tăng dần)
+
+
+
+
+	
+
+
+
+	SELECT 
+    spct.Id_san_pham_chi_tiet,
+    ghct.so_luong,
+    spct.trang_thai,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    cl.ten_chat_lieu,
+    ms.ten_mau_sac,
+    kt.ten_kich_thuoc,
+    ggs.gia_khuyen_mai,           -- Điều chỉnh tên bảng và trường gia_khuyen_mai
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ten_dot_giam_gia,
+    ghct.tong_tien,
+    spct.ma_san_pham_chi_tiet,
+    sp.Id_san_pham
+FROM 
+    hoa_don h
+INNER JOIN 
+    hoa_don_chi_tiet ghct ON h.Id_hoa_don = ghct.Id_hoa_don
+INNER JOIN 
+    san_pham_chi_tiet spct ON ghct.id_san_pham_chi_tiet = spct.Id_san_pham_chi_tiet
+INNER JOIN 
+    san_pham sp ON spct.id_san_pham = sp.Id_san_pham
+LEFT JOIN 
+    mau_sac_chi_tiet msc ON spct.id_mau_sac_chi_tiet = msc.Id_mau_sac_chi_tiet
+LEFT JOIN 
+    mau_sac ms ON ms.Id_mau_sac = msc.id_mau_sac
+LEFT JOIN 
+    kich_thuoc_chi_tiet ktc ON spct.id_kich_thuoc_chi_tiet = ktc.Id_kich_thuoc_chi_tiet
+LEFT JOIN 
+    kich_thuoc kt ON kt.Id_kich_thuoc = ktc.id_kich_thuoc
+LEFT JOIN 
+    chat_lieu_chi_tiet clc ON spct.id_chat_lieu_chi_tiet = clc.Id_chat_lieu_chi_tiet
+LEFT JOIN 
+    chat_lieu cl ON cl.Id_chat_lieu = clc.id_chat_lieu
+LEFT JOIN 
+    giam_gia_san_pham ggs ON spct.Id_san_pham_chi_tiet = ggs.Id_giam_gia_san_pham  -- Liên kết với bảng khuyến mãi (gia_khuyen_mai)
+LEFT JOIN 
+    dot_giam_gia dgg ON ggs.id_dot_giam_gia = dgg.id_dot_giam_gia  -- Liên kết với bảng dot_giam_gia
+WHERE 
+    h.Id_hoa_don = 19;  -- Thay :idHoaDon bằng ID của hóa đơn bạn muốn truy vấn
+
+select * from giam_gia_san_pham
+select * from dot_giam_gia
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SELECT 
+    spct.Id_san_pham_chi_tiet,
+    ghct.so_luong,
+    spct.trang_thai,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    cl.ten_chat_lieu,
+    ms.ten_mau_sac,
+    kt.ten_kich_thuoc,
+    ggs.gia_khuyen_mai,           -- Điều chỉnh tên bảng và trường gia_khuyen_mai
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ten_dot_giam_gia,
+    ghct.tong_tien,
+    spct.ma_san_pham_chi_tiet
+FROM 
+    hoa_don h
+INNER JOIN 
+    hoa_don_chi_tiet ghct ON h.Id_hoa_don = ghct.Id_hoa_don
+INNER JOIN 
+    san_pham_chi_tiet spct ON ghct.id_san_pham_chi_tiet = spct.Id_san_pham_chi_tiet
+INNER JOIN 
+    san_pham sp ON spct.id_san_pham = sp.Id_san_pham
+LEFT JOIN 
+    mau_sac_chi_tiet msc ON spct.id_mau_sac_chi_tiet = msc.Id_mau_sac_chi_tiet
+LEFT JOIN 
+    mau_sac ms ON ms.Id_mau_sac = msc.id_mau_sac
+LEFT JOIN 
+    kich_thuoc_chi_tiet ktc ON spct.id_kich_thuoc_chi_tiet = ktc.Id_kich_thuoc_chi_tiet
+LEFT JOIN 
+    kich_thuoc kt ON kt.Id_kich_thuoc = ktc.id_kich_thuoc
+LEFT JOIN 
+    chat_lieu_chi_tiet clc ON spct.id_chat_lieu_chi_tiet = clc.Id_chat_lieu_chi_tiet
+LEFT JOIN 
+    chat_lieu cl ON cl.Id_chat_lieu = clc.id_chat_lieu
+LEFT JOIN 
+    giam_gia_san_pham ggs ON spct.Id_san_pham_chi_tiet = ggs.Id_giam_gia_san_pham  -- Liên kết với bảng khuyến mãi (gia_khuyen_mai)
+LEFT JOIN 
+    dot_giam_gia dgg ON ggs.id_dot_giam_gia = dgg.id_dot_giam_gia  -- Liên kết với bảng dot_giam_gia
+WHERE 
+    h.Id_hoa_don = 19  -- Thay :idHoaDon bằng ID của hóa đơn bạn muốn truy vấn
+    ;  -- Điều kiện để lọc các sản phẩm có khuyến mãi
+
+
+
+
+	SELECT 
+    spct.Id_san_pham_chi_tiet,
+    ghct.so_luong,
+    spct.trang_thai,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    cl.ten_chat_lieu,
+    ms.ten_mau_sac,
+    kt.ten_kich_thuoc,
+    ggs.gia_khuyen_mai,           -- Điều chỉnh tên bảng và trường gia_khuyen_mai
+    dgg.gia_tri_giam_gia,
+    dgg.kieu_giam_gia,
+    dgg.ten_dot_giam_gia,
+    ghct.tong_tien,
+    spct.ma_san_pham_chi_tiet
+FROM 
+    hoa_don h
+INNER JOIN 
+    hoa_don_chi_tiet ghct ON h.Id_hoa_don = ghct.Id_hoa_don
+INNER JOIN 
+    san_pham_chi_tiet spct ON ghct.id_san_pham_chi_tiet = spct.Id_san_pham_chi_tiet
+INNER JOIN 
+    san_pham sp ON spct.id_san_pham = sp.Id_san_pham
+LEFT JOIN 
+    mau_sac_chi_tiet msc ON spct.id_mau_sac_chi_tiet = msc.Id_mau_sac_chi_tiet
+LEFT JOIN 
+    mau_sac ms ON ms.Id_mau_sac = msc.id_mau_sac
+LEFT JOIN 
+    kich_thuoc_chi_tiet ktc ON spct.id_kich_thuoc_chi_tiet = ktc.Id_kich_thuoc_chi_tiet
+LEFT JOIN 
+    kich_thuoc kt ON kt.Id_kich_thuoc = ktc.id_kich_thuoc
+LEFT JOIN 
+    chat_lieu_chi_tiet clc ON spct.id_chat_lieu_chi_tiet = clc.Id_chat_lieu_chi_tiet
+LEFT JOIN 
+    chat_lieu cl ON cl.Id_chat_lieu = clc.id_chat_lieu
+LEFT JOIN 
+    giam_gia_san_pham ggs ON spct.Id_san_pham_chi_tiet = ggs.Id_giam_gia_san_pham  -- Liên kết với bảng khuyến mãi (gia_khuyen_mai)
+LEFT JOIN 
+    dot_giam_gia dgg ON ggs.id_dot_giam_gia = dgg.id_dot_giam_gia  -- Liên kết với bảng dot_giam_gia
+WHERE 
+    h.Id_hoa_don = 19  -- Thay :idHoaDon bằng ID của hóa đơn bạn muốn truy vấn
+    AND (ggs.gia_khuyen_mai IS NOT NULL OR dgg.id_dot_giam_gia IS NOT NULL);  -- Thêm điều kiện kiểm tra sản phẩm có khuyến mãi
+
+
+
+
+
+
+
+	SELECT 
+    spct.Id_san_pham_chi_tiet,
+    ghct.so_luong,
+    spct.trang_thai,
+    sp.ma_san_pham,
+    sp.ten_san_pham,
+    sp.gia_ban,
+    cl.ten_chat_lieu,
+    ms.ten_mau_sac,
+    kt.ten_kich_thuoc,
+    ggs.gia_khuyen_mai,           -- Hiển thị giá trị khuyến mãi
+    dgg.gia_tri_giam_gia,         -- Hiển thị giá trị giảm giá
+    dgg.kieu_giam_gia,            -- Loại giảm giá (theo % hay giá trị cố định)
+    dgg.ten_dot_giam_gia,         -- Tên đợt giảm giá
+    ghct.tong_tien,
+    spct.ma_san_pham_chi_tiet,
+    sp.Id_san_pham
+FROM 
+    hoa_don h
+INNER JOIN 
+    hoa_don_chi_tiet ghct ON h.Id_hoa_don = ghct.Id_hoa_don
+INNER JOIN 
+    san_pham_chi_tiet spct ON ghct.id_san_pham_chi_tiet = spct.Id_san_pham_chi_tiet
+INNER JOIN 
+    san_pham sp ON spct.id_san_pham = sp.Id_san_pham
+LEFT JOIN 
+    mau_sac_chi_tiet msc ON spct.id_mau_sac_chi_tiet = msc.Id_mau_sac_chi_tiet
+LEFT JOIN 
+    mau_sac ms ON ms.Id_mau_sac = msc.id_mau_sac
+LEFT JOIN 
+    kich_thuoc_chi_tiet ktc ON spct.id_kich_thuoc_chi_tiet = ktc.Id_kich_thuoc_chi_tiet
+LEFT JOIN 
+    kich_thuoc kt ON kt.Id_kich_thuoc = ktc.id_kich_thuoc
+LEFT JOIN 
+    chat_lieu_chi_tiet clc ON spct.id_chat_lieu_chi_tiet = clc.Id_chat_lieu_chi_tiet
+LEFT JOIN 
+    chat_lieu cl ON cl.Id_chat_lieu = clc.id_chat_lieu
+LEFT JOIN 
+    giam_gia_san_pham ggs ON spct.Id_san_pham_chi_tiet = ggs.Id_giam_gia_san_pham  -- Liên kết với bảng khuyến mãi
+LEFT JOIN 
+    dot_giam_gia dgg ON ggs.id_dot_giam_gia = dgg.id_dot_giam_gia  -- Liên kết với bảng dot_giam_gia
+WHERE 
+    h.Id_hoa_don = 19 ;  -- Thay :idHoaDon bằng ID của hóa đơn bạn muốn truy vấn
+
+	
+
+
+
+
+
+
+
+
+
+
 
 
