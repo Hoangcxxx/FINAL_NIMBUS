@@ -725,6 +725,7 @@ public class HoaDonService {
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
                 .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
 
+        hoaDon.setTrangThai(true);
         hoaDon.setPhiShip(updateHoaDonDTO.getPhiShip());
         hoaDon.setNgayThanhToan(updateHoaDonDTO.getNgayThanhToan());
         hoaDon.setThanhTien(updateHoaDonDTO.getThanhTien());
