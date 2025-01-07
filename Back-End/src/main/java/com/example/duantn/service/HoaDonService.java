@@ -563,51 +563,68 @@ public class HoaDonService {
         hoaDonDTO.setIdHoaDon(hoaDon.getIdHoaDon());
         return hoaDon;
     }
-
     // Lấy thông tin Tỉnh từ API
     private Tinh fetchCityInfo(String cityCode) {
-        String url = "https://provinces.open-api.vn/api/p/" + cityCode;
-        Map<String, Object> cityData = restTemplate.getForObject(url, Map.class);
+        String url = "https://esgoo.net/api-tinhthanh/1/0.htm";  // API lấy thông tin tỉnh
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        if (cityData != null && cityData.containsKey("code") && cityData.containsKey("name")) {
-            Tinh tinh = new Tinh();
-            tinh.setIdTinh(Integer.parseInt(cityData.get("code").toString()));
-            tinh.setTenTinh(cityData.get("name").toString());
-            tinh.setNgayTao(new Date());
-            tinh.setNgayCapNhat(new Date());
-            return tinh;
+        if (response != null && response.containsKey("error") && (int) response.get("error") == 0) {
+            List<Map<String, Object>> cities = (List<Map<String, Object>>) response.get("data");
+            for (Map<String, Object> city : cities) {
+                String id = city.get("id").toString();
+                if (id.equals(cityCode)) {
+                    Tinh tinh = new Tinh();
+                    tinh.setIdTinh(Integer.parseInt(id));
+                    tinh.setTenTinh(city.get("name").toString());
+                    tinh.setNgayTao(new Date());
+                    tinh.setNgayCapNhat(new Date());
+                    return tinh;
+                }
+            }
         }
         throw new RuntimeException("Không thể lấy dữ liệu tỉnh từ API");
     }
 
     // Lấy thông tin Huyện từ API
     private Huyen fetchDistrictInfo(String districtCode) {
-        String url = "https://provinces.open-api.vn/api/d/" + districtCode;
-        Map<String, Object> districtData = restTemplate.getForObject(url, Map.class);
+        String url = "https://esgoo.net/api-tinhthanh/2/" + districtCode + ".htm"; // API lấy thông tin huyện
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        if (districtData != null && districtData.containsKey("code") && districtData.containsKey("name")) {
-            Huyen huyen = new Huyen();
-            huyen.setIdHuyen(Integer.parseInt(districtData.get("code").toString()));
-            huyen.setTenHuyen(districtData.get("name").toString());
-            huyen.setNgayTao(new Date());
-            huyen.setNgayCapNhat(new Date());
-            return huyen;
+        if (response != null && response.containsKey("error") && (int) response.get("error") == 0) {
+            List<Map<String, Object>> districts = (List<Map<String, Object>>) response.get("data");
+            for (Map<String, Object> district : districts) {
+                String id = district.get("id").toString();
+                if (id.equals(districtCode)) {
+                    Huyen huyen = new Huyen();
+                    huyen.setIdHuyen(Integer.parseInt(id));
+                    huyen.setTenHuyen(district.get("name").toString());
+                    huyen.setNgayTao(new Date());
+                    huyen.setNgayCapNhat(new Date());
+                    return huyen;
+                }
+            }
         }
         throw new RuntimeException("Không thể lấy dữ liệu huyện từ API");
     }
 
     // Lấy thông tin Xã từ API
     private Xa fetchWardInfo(String wardCode) {
-        String url = "https://provinces.open-api.vn/api/w/" + wardCode;
-        Map<String, Object> wardData = restTemplate.getForObject(url, Map.class);
+        String url = "https://esgoo.net/api-tinhthanh/3/" + wardCode + ".htm"; // API lấy thông tin xã
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        if (wardData != null && wardData.containsKey("code") && wardData.containsKey("name")) {
-            Xa xa = new Xa();
-            xa.setIdXa(Integer.parseInt(wardData.get("code").toString()));
-            xa.setTenXa(wardData.get("name").toString());
-            xa.setNgayTao(new Date());
-            xa.setNgayCapNhat(new Date());
-            return xa;
+        if (response != null && response.containsKey("error") && (int) response.get("error") == 0) {
+            List<Map<String, Object>> wards = (List<Map<String, Object>>) response.get("data");
+            for (Map<String, Object> ward : wards) {
+                String id = ward.get("id").toString();
+                if (id.equals(wardCode)) {
+                    Xa xa = new Xa();
+                    xa.setIdXa(Integer.parseInt(id));
+                    xa.setTenXa(ward.get("name").toString());
+                    xa.setNgayTao(new Date());
+                    xa.setNgayCapNhat(new Date());
+                    return xa;
+                }
+            }
         }
         throw new RuntimeException("Không thể lấy dữ liệu xã từ API");
     }

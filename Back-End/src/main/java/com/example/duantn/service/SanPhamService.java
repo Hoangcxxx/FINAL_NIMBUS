@@ -1,6 +1,8 @@
 package com.example.duantn.service;
 import com.example.duantn.entity.SanPham;
+import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.repository.DotGiamGiaRepository;
+import com.example.duantn.repository.SanPhamChiTietRepository;
 import com.example.duantn.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import java.util.*;
 public class SanPhamService {
     @Autowired
     private static SanPhamRepository sanPhamRepository;
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
     @Autowired
     private static DotGiamGiaRepository dotGiamGiaRepository;
 
@@ -123,5 +127,21 @@ public class SanPhamService {
     }
     public List<SanPham> timSanPhamTheoTen(String tenSanPham) {
         return sanPhamRepository.findByTenSanPham(tenSanPham);
+    }
+
+
+
+    public boolean checkTrangThaiSanPhamByChiTiet(int idSanPhamChiTiet) {
+        Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findById(idSanPhamChiTiet);
+
+        if (sanPhamChiTiet.isPresent()) {
+            int idSanPham = sanPhamChiTiet.get().getSanPham().getIdSanPham();  // Lấy id_san_pham từ bảng san_pham_chi_tiet
+            Optional<SanPham> sanPham = sanPhamRepository.findById(idSanPham);
+
+            if (sanPham.isPresent()) {
+                return sanPham.get().getTrangThai() == true;  // Kiểm tra trạng thái của sản phẩm
+            }
+        }
+        return false; // Nếu không tìm thấy hoặc trạng thái không hợp lệ
     }
 }

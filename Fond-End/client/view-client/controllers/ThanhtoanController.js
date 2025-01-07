@@ -363,7 +363,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
         console.log("Tổng tiền sản phẩm (theo giá bán cơ bản): ", totalProductPrice);
         console.log("Tổng tiền sau khi áp dụng voucher và phí ship: ", totalDiscountedPrice);
     };
-    
+
     $scope.validateUserInfo = function () {
         if (!$scope.userInfo.tenNguoiDung || $scope.userInfo.tenNguoiDung.trim() === "") {
             Swal.fire({
@@ -567,9 +567,9 @@ window.ThanhToanController = function ($scope, $http, $window) {
         const orderData = {
             cartId: iduser,
             idNguoiDung: $scope.userInfo.idNguoiDung,
-            tinh: $scope.selectedCity.code,
-            huyen: $scope.selectedDistrict.code,
-            xa: $scope.selectedWard.code,
+            tinh: $scope.selectedCity.id,
+            huyen: $scope.selectedDistrict.id,
+            xa: $scope.selectedWard.id,
             email: $scope.userInfo.email,
             tenNguoiNhan: $scope.userInfo.tenNguoiDung,
             diaChi: $scope.userInfo.diaChi,
@@ -688,77 +688,100 @@ window.ThanhToanController = function ($scope, $http, $window) {
     $scope.cart = [];
     $scope.shippingFee = 0;
     $scope.totalAmount = 0;
+    var selectedCityFromStorage = localStorage.getItem("idTinh");
+    if (selectedCityFromStorage) {
+        $scope.selectedCity = $scope.cities.find(city => city.id === JSON.parse(selectedCityFromStorage));
+        console.log("Đã khôi phục tỉnh thành từ localStorage:", $scope.selectedCity);
+    }
+
+    var selectedDistrictFromStorage = localStorage.getItem("idHuyen");
+    if (selectedDistrictFromStorage) {
+        // Khôi phục huyện
+        $scope.selectedDistrict = $scope.districts.find(district => district.id === JSON.parse(selectedDistrictFromStorage));
+        console.log("Đã khôi phục huyện từ localStorage:", $scope.selectedDistrict);
+    }
+
+
+    var selectedWardFromStorage = localStorage.getItem("idXa");
+    if (selectedWardFromStorage) {
+        $scope.selectedWard = $scope.wards.find(ward => ward.code === JSON.parse(selectedWardFromStorage));
+        console.log("Đã khôi phục xã từ localStorage:", $scope.selectedWard);
+    }
+
 
     // Hàm gọi API lấy danh sách tỉnh thành
     function getCities() {
-        if ($scope.selectedCity && $scope.selectedCity.code) {
-            console.log('Province ID:', $scope.selectedCity.code);
-        } else {
-            console.warn('Chưa chọn tỉnh thành.');
-        }
-
         $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/cities")
             .then(function (response) {
                 if (response.data && Array.isArray(response.data)) {
                     $scope.cities = response.data;
-
-
+                    console.log("Danh sách tỉnh/thành phố:", $scope.cities);
                 } else {
-                    console.error('Không có dữ liệu tỉnh thành trả về.');
+                    console.error("Không có dữ liệu tỉnh thành trả về.");
                 }
             })
             .catch(function (error) {
-                console.error('Có lỗi xảy ra khi lấy tỉnh thành:', error);
+                console.error("Có lỗi xảy ra khi lấy tỉnh thành:", error);
             });
     }
 
+
+
     // Hàm gọi API lấy danh sách huyện theo mã tỉnh
     $scope.onCityChange = function () {
-        $scope.districts = [];
-        $scope.wards = [];
-        $scope.shippingInfo.district = null;
-        $scope.shippingInfo.ward = null;
+        console.log("Tỉnh/thành phố được chọn:", $scope.selectedCity);
 
-        if ($scope.selectedCity && $scope.selectedCity.code) {
-            console.log('ID tỉnh vừa chọn:', $scope.selectedCity.code);
-            localStorage.setItem("idTinh", JSON.stringify($scope.selectedCity.code));
-            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/districts/" + $scope.selectedCity.code)
+        if ($scope.selectedCity && $scope.selectedCity.id) {
+            console.log("ID tỉnh vừa chọn:", $scope.selectedCity.id);
+            localStorage.setItem("idTinh", JSON.stringify($scope.selectedCity.id));
+
+            // Gọi API lấy huyện theo tỉnh
+            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/districts/" + $scope.selectedCity.id)
                 .then(function (response) {
                     if (response.data && Array.isArray(response.data)) {
                         $scope.districts = response.data;
-
+                        console.log("Danh sách huyện trả về:", $scope.districts);
                     } else {
-                        console.error('Không có dữ liệu huyện trả về.');
+                        console.error("Không có dữ liệu huyện trả về.");
+                        $scope.districts = [];
                     }
                 })
                 .catch(function (error) {
-                    console.error('Có lỗi xảy ra khi lấy huyện:', error);
+                    console.error("Có lỗi xảy ra khi lấy huyện:", error);
+                    $scope.districts = [];
                 });
         } else {
-            console.warn('Chưa chọn tỉnh thành.');
+            console.warn("Chưa chọn tỉnh thành.");
         }
     };
 
+
+
+
+
     // Hàm gọi API lấy danh sách xã theo mã huyện
     $scope.onDistrictChange = function () {
-        $scope.wards = [];
+        $scope.wards = []; // Reset danh sách xã
         $scope.shippingInfo.ward = null;
 
-        if ($scope.selectedDistrict && $scope.selectedDistrict.code) {
-            console.log('ID huyện vừa chọn:', $scope.selectedDistrict.code);
-            localStorage.setItem("idHuyen", JSON.stringify($scope.selectedDistrict.code));
-            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/wards/" + $scope.selectedDistrict.code)
+        if ($scope.selectedDistrict && $scope.selectedDistrict.id) {
+            console.log("ID huyện vừa chọn:", $scope.selectedDistrict.id);
+            localStorage.setItem("idHuyen", JSON.stringify($scope.selectedDistrict.id));
+
+            // Gọi API lấy xã theo huyện
+            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/wards/" + $scope.selectedDistrict.id)
                 .then(function (response) {
                     if (response.data && Array.isArray(response.data)) {
                         $scope.wards = response.data;
-
-
+                        console.log("Danh sách xã trả về:", $scope.wards);
                     } else {
                         console.error('Không có dữ liệu xã trả về.');
+                        $scope.wards = [];
                     }
                 })
                 .catch(function (error) {
                     console.error('Có lỗi xảy ra khi lấy xã:', error);
+                    $scope.wards = [];
                 });
         } else {
             console.warn('Chưa chọn huyện.');
@@ -766,17 +789,34 @@ window.ThanhToanController = function ($scope, $http, $window) {
     };
 
 
+
+
+    // Hàm gọi API tính phí vận chuyển và log thông tin khi chọn xã/phường
+    // Hàm gọi API tính phí vận chuyển và log thông tin khi chọn xã/phường
     $scope.calculateShipping = function () {
         // Kiểm tra nếu chưa chọn đủ thông tin quận/huyện và phường/xã
-        if (!$scope.selectedDistrict || !$scope.selectedWard) {
-            alert("Vui lòng chọn đầy đủ thông tin quận/huyện và phường/xã!");
+        if (!$scope.selectedDistrict || !$scope.selectedWard || !$scope.selectedCity) {
+            alert("Vui lòng chọn đầy đủ thông tin tỉnh thành, quận/huyện và phường/xã!");
             return;
         }
+
         localStorage.setItem("idXa", JSON.stringify($scope.selectedWard.code));
-        // Lấy thông tin cần thiết
-        const cityCode = $scope.selectedCity.code;      // Mã tỉnh/thành phố
-        const districtCode = $scope.selectedDistrict.code; // Mã quận/huyện
-        const wardCode = $scope.selectedWard.code;      // Mã phường/xã
+
+        // Log dữ liệu khi chọn xã/phường
+        console.log("Thông tin đã chọn:");
+        console.log("Tỉnh:", $scope.selectedCity);
+        console.log("Huyện:", $scope.selectedDistrict);
+        console.log("Xã/Phường:", $scope.selectedWard);
+
+        // Lấy thông tin cần thiết từ các đối tượng đã chọn
+        const cityCode = $scope.selectedCity.id;      // ID tỉnh/thành phố
+        const districtCode = $scope.selectedDistrict.id; // ID quận/huyện
+        const wardCode = $scope.selectedWard.id;      // ID phường/xã
+
+        // Kiểm tra và log lại thông tin mã đã lấy
+        console.log("Mã tỉnh:", cityCode);
+        console.log("Mã huyện:", districtCode);
+        console.log("Mã xã/phường:", wardCode);
 
         // Gửi yêu cầu HTTP đến backend để lấy phí vận chuyển
         $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/shipping-fee/"

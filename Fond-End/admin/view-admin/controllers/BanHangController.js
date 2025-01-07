@@ -150,17 +150,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             .then(function (response) {
                 console.log('Danh sách hóa đơn chưa thanh toán:', response.data);
                 $scope.unpaidInvoices = response.data;
-                // if ($scope.unpaidInvoices.length > 0) {
-                //     $scope.selectInvoice($scope.unpaidInvoices[0]);
-                // }
-                if ($scope.unpaidInvoices.length >= 5) {
-                    Swal.fire({
-                        title: 'Thông báo!',
-                        text: 'Bạn đã có 5 hóa đơn chưa thanh toán. Không thể tạo thêm hóa đơn!',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    });
-                }
             })
             .catch(function (error) {
                 console.error('Lỗi khi lấy danh sách hóa đơn chưa thanh toán:', error);
@@ -715,7 +704,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
         // Lưu riêng originalTotalPrice vào localStorage
         localStorage.setItem('originalTotalPrice', $scope.originalTotalPrice);
-
+        localStorage.setItem('discount', $scope.discount);
         console.log('Thông tin tổng tiền đã lưu vào localStorage:', totalPriceInfo);
     };
 
@@ -816,14 +805,10 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
 
     $scope.confirmVoucher = function () {
-        if ($scope.selectedVoucher) {
-            // Lấy giá trị voucher và tổng tiền hiện tại
-            const voucher = $scope.selectedVoucher;
-            console.log('Selected Voucher:', $scope.selectedVoucher);
-            console.log('Total Amount:', $scope.totalPrice);
-            if (!voucher.kieuGiamGia && $scope.totalPrice > voucher.giaTriToiDa) {
-                console.log('Validation failed: totalAmount > giaTriToiDa');
-            }
+        if ($scope.tempVoucher) {
+            const voucher = $scope.tempVoucher;
+
+            // Kiểm tra giá trị tối thiểu
             if ($scope.totalPrice < voucher.soTienToiThieu) {
                 Swal.fire({
                     icon: 'error',
@@ -835,10 +820,10 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                     },
                     buttonsStyling: false
                 });
-                $scope.removeVoucher();
-                return; // Dừng thực thi nếu không hợp lệ
+                return;
             }
-            // Kiểm tra nếu kiểu giảm giá là `false` và giá trị đơn hàng vượt quá giá trị tối đa
+
+            // Kiểm tra giá trị tối đa nếu giảm giá là phần trăm
             if (!voucher.kieuGiamGia && $scope.totalPrice > voucher.giaTriToiDa) {
                 Swal.fire({
                     icon: 'error',
@@ -850,11 +835,15 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                     },
                     buttonsStyling: false
                 });
-                $scope.removeVoucher();
-                return; // Dừng thực thi nếu không hợp lệ
+                return;
             }
 
-            // Nếu điều kiện hợp lệ, hiển thị thông báo thành công
+            // Áp dụng voucher thành công
+            $scope.selectedVoucher = $scope.tempVoucher; // Gán voucher chính thức
+            $scope.tempVoucher = null; // Reset voucher tạm
+            console.log("Confirmed Voucher:", $scope.selectedVoucher);
+
+            // Thông báo thành công
             Swal.fire({
                 icon: 'success',
                 title: 'Thành công!',
@@ -866,12 +855,14 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Đóng modal
-                    $('#voucherModal').modal('hide'); // Đóng modal bằng jQuery
+                    // Đóng modal nếu cần
+                    $('#voucherModal').modal('hide');
                 }
             });
+
+            // Cập nhật tổng giá trị đơn hàng
+            $scope.calculateTotalPrice();
         } else {
-            // Hiển thị lỗi nếu chưa chọn voucher
             Swal.fire({
                 icon: 'error',
                 title: 'Lỗi!',
@@ -883,8 +874,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 buttonsStyling: false
             });
         }
-
-        $scope.calculateTotalPrice(); // Cập nhật tổng giá
     };
 
     $scope.removeVoucher = function () {
@@ -910,13 +899,15 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         console.log('Voucher đã bị xóa và giao diện đã được cập nhật.');
     };
 
+    $scope.tempVoucher = null; // Biến tạm để lưu voucher trước khi xác nhận
+    $scope.selectedVoucher = null; // Voucher chính thức sau khi xác nhận
     $scope.selectVoucher = function (voucher) {
         if (voucher.isUsable) {
-            $scope.selectedVoucher = voucher;
+            $scope.tempVoucher = voucher;
+
             $scope.voucherCode = voucher.maVoucher;  // Gán mã voucher vào input (nếu cần)
             $scope.voucherError = '';  // Reset lỗi
             console.log("Selected Voucher:", $scope.selectedVoucher);
-
             // Lưu voucher vào localStorage
             localStorage.setItem('selectedVoucher', JSON.stringify($scope.selectedVoucher)); // Lưu đối tượng voucher vào localStorage
             localStorage.setItem('voucherCode', $scope.voucherCode); // Lưu mã voucher vào localStorage nếu cần
@@ -924,7 +915,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             $scope.voucherError = 'Voucher này không thể sử dụng.';
         }
     };
-
 
 
 
@@ -1260,6 +1250,30 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 }
 
                 const userId = userFromStorage.idNguoiDung;
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+                for (const item of cartItems) {
+                    const idSanPhamChiTiet = item.idSanPhamChiTiet;
+
+                    // Gọi API kiểm tra trạng thái sản phẩm
+                    try {
+                        const response = await $http.get(`http://localhost:8080/api/admin/ban_hang/check-trang-thai/${idSanPhamChiTiet}`);
+
+                        // Kiểm tra mã trạng thái HTTP
+                        if (response.status === 200) {
+                            // Sản phẩm đang hoạt động, tiếp tục xử lý
+                            console.log(`Sản phẩm ID ${idSanPhamChiTiet} đang hoạt động.`);
+                        }
+                    } catch (error) {
+                        // Nếu có lỗi khi gọi API
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Sản phẩm ngừng bán',
+                            text: 'Sản phẩm đã ngừng bán.Vui lòng xóa sản phẩm khỏi giỏ hàng để tiếp tục thanh toán!',
+                        });
+                        return;
+                    }
+                }
 
                 await $scope.createPaymentHistory();
                 // Chạy các tác vụ không phụ thuộc đồng thời
@@ -1490,82 +1504,92 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         const user = JSON.parse(localStorage.getItem('user')) || {};
         const selectedPaymentMethod = JSON.parse(localStorage.getItem('selectedPaymentMethod')) || {};
         const paymentInfo = JSON.parse(localStorage.getItem('paymentInfo')) || {};
-
+        const discount = localStorage.getItem('discount') || 0;
+        const voucherCode = localStorage.getItem('voucherCode') || 'N/A';
+        let formattedDate = 'N/A'; // Mặc định là 'N/A'
+        if (selectedInvoice.ngayTao) {
+            const dateObj = new Date(selectedInvoice.ngayTao);
+            formattedDate = dateObj.getDate().toString().padStart(2, '0') + '/' +
+                (dateObj.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                dateObj.getFullYear();
+        }
         // Tạo HTML hóa đơn từ dữ liệu
         const invoiceHtml = `
-            <div style="font-family: 'Roboto', sans-serif; padding: 20px; color: #333; background-color: #fff; width: 100%; max-width: 800px; margin: 0 auto; border: 1px solid #ddd; border-radius: 10px;">
-                <!-- Thông tin cửa hàng -->
-                <div style="text-align: center; margin-bottom: 30px; color: #333;">
-                    <img src="/view-admin/assets/image/favicon1.png" alt="Logo" style="max-width: 150px; margin-bottom: 10px;">
-                    <h2 style="font-size: 28px; font-weight: bold; color: #1E3D58;">NB Fashion</h2>
-                    <p style="font-size: 16px; margin: 5px 0;">Địa Chỉ: 32 Cổ Nhuế 2 - Bắc Từ Liêm - Hà Nội</p>
-                    <p style="font-size: 16px; margin: 5px 0;">Số Điện Thoại: 0989899999</p>
-                </div>
-              
-                <hr style="border: 1px solid #1E3D58; margin-bottom: 30px;">
-                <!-- Thông tin khách hàng -->
-                <div style="font-size: 16px; margin-bottom: 20px;">
-                    <p><strong style="color: #1E3D58;">Tên Nhân Viên:</strong> ${user.tenNguoiDung || 'N/A'}</p>
-                </div>
-                <div style="font-size: 16px; margin-bottom: 20px;">
-                    <p><strong style="color: #1E3D58;">Tên Khách Hàng:</strong> ${selectedUser.tenNguoiDung || 'N/A'}</p>
-                    <p><strong style="color: #1E3D58;">Số Điện Thoại:</strong> ${selectedUser.sdt || 'N/A'}</p>
-                </div>
+       <div style="font-family: 'Roboto', sans-serif; padding: 20px; color: #333; background-color: #fff; width: 100%; max-width: 800px; margin: 0 auto; border: 1px solid #ddd; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+    <!-- Thông tin cửa hàng -->
+    <div style="text-align: center; margin-bottom: 30px; color: #333;">
+        <img src="/view-admin/assets/image/favicon1.png" alt="Logo" style="max-width: 150px; margin-bottom: 10px;">
+        <h2 style="font-size: 32px; font-weight: bold; color: #1E3D58; margin-bottom: 5px;">NB Fashion</h2>
+        <p style="font-size: 16px; margin: 5px 0; color: #555;">Địa Chỉ: 32 Cổ Nhuế 2 - Bắc Từ Liêm - Hà Nội</p>
+        <p style="font-size: 16px; margin: 5px 0; color: #555;">Số Điện Thoại: 0989899999</p>
+    </div>
     
-                <!-- Thông tin hóa đơn -->
-                <div style="font-size: 16px; margin-bottom: 20px;">
-                    <p><strong style="color: #1E3D58;">Mã Hóa Đơn:</strong> ${selectedInvoice.maHoaDon || 'N/A'}</p>
-                    <p><strong style="color: #1E3D58;">Ngày Tạo:</strong> ${selectedInvoice.ngayTao || 'N/A'}</p>
-                    <div style="font-size: 14px; margin-top: 10px;">
-                        <p><strong style="color: #1E3D58;">Hình thức thanh toán:</strong> ${selectedPaymentMethod.tenPhuongThuc || 'Chưa rõ'}</p>
-                    </div>
-                </div>
+    <hr style="border: 1px solid #1E3D58; margin-bottom: 30px;">
     
-                <!-- Chi tiết sản phẩm -->
-                <p style="font-size: 18px; font-weight: bold; color: #1E3D58; margin-top: 30px; text-align: center;">Chi Tiết Sản Phẩm</p>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #1E3D58;">
-                    <thead style="background-color: #1E3D58; color: #fff;">
-                        <tr>
-                            <th style="padding: 12px; text-align: center; font-size: 14px;">#</th>
-                            <th style="padding: 12px; text-align: left; font-size: 14px;">Sản Phẩm</th>
-                            <th style="padding: 12px; text-align: left; font-size: 14px;">Chất liệu</th>
-                            <th style="padding: 12px; text-align: left; font-size: 14px;">Màu sắc</th>
-                            <th style="padding: 12px; text-align: left; font-size: 14px;">Kích thước</th>
-                            <th style="padding: 12px; text-align: center; font-size: 14px;">Số Lượng</th>
-                            <th style="padding: 12px; text-align: right; font-size: 14px;">Đơn Giá</th>
-                            <th style="padding: 12px; text-align: right; font-size: 14px;">Tổng Tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${cartItems.map((item, index) => `
-                            <tr style="border-bottom: 1px solid #ddd;">
-                                <td style="padding: 10px; text-align: center; font-size: 14px;">${index + 1}</td>
-                                <td style="padding: 10px; font-size: 14px;">${item.tenSanPham || 'N/A'}</td>
-                                <td style="padding: 10px; font-size: 14px;">${item.chatLieu || 'N/A'}</td>
-                                <td style="padding: 10px; font-size: 14px;">${item.mauSac || 'N/A'}</td>
-                                <td style="padding: 10px; font-size: 14px;">${item.kichThuoc || 'N/A'}</td>
-                                <td style="padding: 10px; text-align: center; font-size: 14px;">${item.soLuong || 0}</td>
-                                <td style="padding: 10px; text-align: right; font-size: 14px;">${$scope.formatCurrency(item.giaBan)}</td>
-                                <td style="padding: 10px; text-align: right; font-size: 14px;">${$scope.formatCurrency(item.soLuong * item.giaBan)}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+    <!-- Thông tin khách hàng và nhân viên -->
+    <div style="display: flex; justify-content: space-between; font-size: 16px; color: #444; margin-bottom: 20px;">
+    <!-- Thông tin khách hàng và nhân viên bên trái -->
+    <div style="width: 48%; padding-right: 20px;">
+        <p><strong style="color: #1E3D58;">Tên Nhân Viên:</strong> ${user.tenNguoiDung || 'N/A'}</p>
+        <p><strong style="color: #1E3D58;">Tên Khách Hàng:</strong> ${selectedUser.tenNguoiDung || 'N/A'}</p>
+        <p><strong style="color: #1E3D58;">Số Điện Thoại:</strong> ${selectedUser.sdt || 'N/A'}</p>
+        <p><strong style="color: #1E3D58;">Mã Voucher:</strong> ${voucherCode}</p>
+    </div>
     
-                <!-- Tổng tiền và các khoản phí -->
-                <div style="text-align: right; font-weight: bold; margin-top: 30px; font-size: 18px; color: #1E3D58;">
-                    <p><strong>Thuế VAT (10%):</strong> ${$scope.formatCurrency(totalPriceInfo.vat || 0)} VND</p>
-                    <p><strong>Phí Vận Chuyển:</strong> ${$scope.formatCurrency(totalPriceInfo.shippingFee | 0)} VND</p>
-                    <p><strong>Tổng Cộng:</strong> ${$scope.formatCurrency(totalPriceInfo.totalPrice || 0)} VND</p>
-                </div>
-    
-                <!-- Thông tin thanh toán -->    
-                <!-- Lời cảm ơn -->
-                <div style="text-align: center; margin-top: 40px; font-size: 16px; font-style: italic; color: #333;">
-                    <p>Cảm ơn bạn đã mua sắm tại NB Fashion. Chúc bạn có một ngày tốt lành!</p>
-                </div>
-            </div>
-        `;
+    <!-- Thông tin hóa đơn bên phải -->
+    <div style="width: 48%; padding-left: 20px;">
+        <p><strong style="color: #1E3D58;">Mã Hóa Đơn:</strong> ${selectedInvoice.maHoaDon || 'N/A'}</p>
+        <p><strong style="color: #1E3D58;">Ngày Tạo:</strong> ${formattedDate}</p>
+        <p><strong style="color: #1E3D58;">Hình thức thanh toán:</strong> ${selectedPaymentMethod.tenPhuongThuc || 'Chưa rõ'}</p>
+       
+    </div>
+</div>
+
+
+    <!-- Chi tiết sản phẩm -->
+    <h3 style="font-size: 20px; font-weight: bold; color: #1E3D58; text-align: center; margin-top: 30px;">Chi Tiết Sản Phẩm</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #f9f9f9; border-radius: 8px; overflow: hidden;">
+        <thead style="background-color: #1E3D58; color: #fff;">
+            <tr>
+                <th style="padding: 12px; text-align: center; font-size: 14px;">#</th>
+                <th style="padding: 12px; text-align: left; font-size: 14px;">Sản Phẩm</th>
+                <th style="padding: 12px; text-align: left; font-size: 14px;">Chất Liệu</th>
+                <th style="padding: 12px; text-align: left; font-size: 14px;">Màu Sắc</th>
+<th style="padding: 12px; text-align: left; font-size: 14px;">Kích Thước</th>
+                <th style="padding: 12px; text-align: center; font-size: 14px;">Số Lượng</th>
+                <th style="padding: 12px; text-align: right; font-size: 14px;">Đơn Giá</th>
+                <th style="padding: 12px; text-align: right; font-size: 14px;">Tổng Tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${cartItems.map((item, index) => `
+                <tr style="border-bottom: 1px solid #ddd; text-align: center;">
+                    <td style="padding: 10px; font-size: 14px;">${index + 1}</td>
+                    <td style="padding: 10px; font-size: 14px;">${item.tenSanPham || 'N/A'}</td>
+                    <td style="padding: 10px; font-size: 14px;">${item.chatLieu || 'N/A'}</td>
+                    <td style="padding: 10px; font-size: 14px;">${item.mauSac || 'N/A'}</td>
+                    <td style="padding: 10px; font-size: 14px;">${item.kichThuoc || 'N/A'}</td>
+                    <td style="padding: 10px; text-align: center; font-size: 14px;">${item.soLuong || 0}</td>
+                    <td style="padding: 10px; text-align: right; font-size: 14px;">${$scope.formatCurrency(item.giaBan)}</td>
+                    <td style="padding: 10px; text-align: right; font-size: 14px;">${$scope.formatCurrency(item.soLuong * item.giaBan)}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    </table>
+
+    <!-- Tổng tiền và các khoản phí -->
+    <div style="text-align: right; font-weight: bold; margin-top: 30px; font-size: 18px; color: #1E3D58;">
+        <p><strong>Giảm Giá:</strong> ${$scope.formatCurrency(discount)}</p>
+        <p><strong>Tổng Cộng:</strong> ${$scope.formatCurrency(totalPriceInfo.totalPrice || 0)}</p>
+    </div>
+
+    <!-- Lời cảm ơn -->
+    <div style="text-align: center; margin-top: 40px; font-size: 16px; font-style: italic; color: #333;">
+        <p>Cảm ơn bạn đã mua sắm tại NB Fashion. Chúc bạn có một ngày tuyệt vời!</p>
+    </div>
+</div>
+
+    `;
 
         // Tạo iframe tạm thời để in
         const iframe = document.createElement('iframe');
@@ -1610,7 +1634,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             text: 'Cảm ơn bạn đã mua sắm tại NB Fashion.',
             confirmButtonText: 'Đóng'
         });
-
+        localStorage.removeItem('voucherCode');
         // Xóa giỏ hàng trong sessionStorage sau khi in
         sessionStorage.removeItem('giohang');
 

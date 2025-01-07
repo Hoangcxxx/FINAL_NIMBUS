@@ -43,7 +43,7 @@
                 <div class="col-md-4 mb-3">
                     <label class="form-label" for="city">Chọn Tỉnh/Thành phố <span class="text-danger">*</span>:</label>
                     <select class="form-select" ng-model="selectedCity"
-                        ng-options="city.name for city in cities track by city.code" ng-change="onCityChange()"
+                        ng-options="city as city.name for city in cities track by city.id" ng-change="onCityChange()"
                         required>
                         <option value="">--Chọn Tỉnh/Thành phố--</option>
                     </select>
@@ -52,7 +52,7 @@
                 <div class="col-md-4 mb-3">
                     <label class="form-label" for="district">Chọn Huyện <span class="text-danger">*</span>:</label>
                     <select class="form-select" ng-model="selectedDistrict"
-                        ng-options="district.name for district in districts track by district.code"
+                        ng-options="district.name for district in districts track by district.id"
                         ng-change="onDistrictChange()" ng-disabled="!selectedCity" required>
                         <option value="">--Chọn Huyện--</option>
                     </select>
@@ -61,12 +61,13 @@
                 <div class="col-md-4 mb-3">
                     <label class="form-label" for="ward">Chọn Xã/Phường <span class="text-danger">*</span>:</label>
                     <select class="form-select" ng-model="selectedWard"
-                        ng-options="ward.name for ward in wards track by ward.code" ng-disabled="!selectedDistrict"
+                        ng-options="ward.name for ward in wards track by ward.id" ng-disabled="!selectedDistrict"
                         ng-change="calculateShippingFee()" required>
                         <option value="">--Chọn Xã/Phường--</option>
                     </select>
                 </div>
             </div>
+
             <div class="mb-3">
                 <label for="note" class="form-label">Ghi chú</label>
                 <textarea class="form-control" id="note" ng-model="shippingInfo.note" rows="2"
