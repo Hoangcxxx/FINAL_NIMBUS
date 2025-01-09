@@ -26,14 +26,17 @@ window.GiohangController = function ($scope, $http, $window) {
             .then(function (response) {
                 $scope.cart = response.data;
                 $scope.cartItemCount = $scope.cart.length; // Cập nhật số lượng sản phẩm trong giỏ hàng
-
-                // Đảm bảo mỗi item có soLuongGioHang mặc định là 1 nếu chưa có
+    
+                // Kiểm tra số lượng sản phẩm và tự động tải lại trang nếu số lượng bằng 0
                 $scope.cart.forEach(item => {
                     if (item.soLuongGioHang === undefined || item.soLuongGioHang === null) {
                         item.soLuongGioHang = 1; // Mặc định là 1 nếu không có giá trị
                     }
+                    if (item.soLuongGioHang === 0) {
+                        location.reload(); // Tải lại trang nếu số lượng sản phẩm là 0
+                    }
                 });
-
+    
                 // Lấy hình ảnh cho từng sản phẩm
                 $scope.cart.forEach((element) => {
                     $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${element.idSanPham}`)
@@ -44,7 +47,7 @@ window.GiohangController = function ($scope, $http, $window) {
                             console.error("Lỗi khi lấy hình ảnh sản phẩm:", error);
                         });
                 });
-
+    
                 // Kiểm tra xem có sản phẩm mới nào trong localStorage không
                 const newCartItem = localStorage.getItem("cartItem");
                 if (newCartItem) {
@@ -59,6 +62,7 @@ window.GiohangController = function ($scope, $http, $window) {
                 console.error("Error fetching cart items:", error);
             });
     };
+    
 
 
     $scope.removeFromCart = function (idSanPhamChiTiet) {
@@ -100,7 +104,7 @@ window.GiohangController = function ($scope, $http, $window) {
 
         $http({
             method: "PUT",
-            url: `http://localhost:8080/api/nguoi_dung/gio_hang/update?idGioHang=${$scope.userId}`,
+            url: `http://localhost:8080/api/nguoi_dung/gio_hang/update?idNguoiDung=${$scope.userId}`,
             data: value,
             headers: {
                 "Content-Type": "application/json",

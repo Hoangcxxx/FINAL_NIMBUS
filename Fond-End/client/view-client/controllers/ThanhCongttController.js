@@ -117,9 +117,6 @@ window.ThanhCongttController = function ($scope, $http, $window) {
         return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
     };
     
-    
-
-
     // Gọi API để lấy chi tiết đơn hàng
     getOrderDetails(maHoaDon);
 }

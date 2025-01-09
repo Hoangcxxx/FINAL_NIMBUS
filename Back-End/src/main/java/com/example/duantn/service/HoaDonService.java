@@ -9,6 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -130,6 +133,9 @@ public class HoaDonService {
         dto.setDiaChi(hoaDon.getDiaChi());
         dto.setThanhTien(hoaDon.getThanhTien());
         dto.setGhiChu(hoaDon.getMoTa());
+
+
+
         if (hoaDon.getVoucher() != null) {
             dto.setGiaTriMavoucher(hoaDon.getVoucher().getGiaTriGiamGia());
             dto.setMavoucher(hoaDon.getVoucher().getMaVoucher());
@@ -157,7 +163,7 @@ public class HoaDonService {
                 dto.setTenHuyen(diaChiVanChuyen.getHuyen().getTenHuyen());
             }
             if (diaChiVanChuyen.getXa() != null) {
-                dto.setXa(diaChiVanChuyen.getXa().getIdXa());
+                dto.setXa(String.valueOf(diaChiVanChuyen.getXa().getIdXa()));
                 dto.setTenXa(diaChiVanChuyen.getXa().getTenXa());
             }
         }
@@ -204,6 +210,29 @@ public class HoaDonService {
             dto.setTenLoaiTrangThai(loaiTrangThai.getTenLoaiTrangThai());
             dto.setIdTrangThaiHoaDon(trangThai.getIdTrangThaiHoaDon());
             dto.setTenTrangThai(trangThai.getLoaiTrangThai().getTenLoaiTrangThai());
+
+            if (loaiTrangThai.getIdLoaiTrangThai() == 5 || loaiTrangThai.getIdLoaiTrangThai() == 6 || loaiTrangThai.getIdLoaiTrangThai() == 7) {
+                // Điều kiện kiểm tra loại trạng thái (5, 6, hoặc 7)
+
+                // Tính toán ngày giao dự kiến
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(hoaDon.getNgayTao());  // Lấy ngày tạo
+                int daysToAdd = 5;  // Thêm 5 ngày vào ngày tạo
+                calendar.add(Calendar.DAY_OF_MONTH, daysToAdd);  // Cộng thêm số ngày vào ngày tạo
+                Date ngayGiaoDuKien = calendar.getTime();  // Đặt ngày giao dự kiến
+
+                // Tính toán ngày kết thúc giao dự kiến (ví dụ 2 ngày sau ngày giao dự kiến)
+                calendar.add(Calendar.DAY_OF_MONTH, 2);  // Thêm 2 ngày vào ngày giao dự kiến
+                Date ngayKetThucGiaoDuKien = calendar.getTime();  // Đặt ngày kết thúc giao dự kiến
+
+                // Gán giá trị vào DTO
+                dto.setNgayGiaoDuKien(ngayGiaoDuKien);
+                dto.setNgayKetThucGiaoDuKien(ngayKetThucGiaoDuKien);
+            }
+
+
+
+
         }
 
         return dto;
@@ -211,17 +240,26 @@ public class HoaDonService {
 
 
     private void saveCODPayment(HoaDon hoaDon, String generatedMaHoaDon, HoaDonDTO hoaDonDTO) {
-        hoaDonRepository.save(hoaDon);
+        // Tạo mã hóa đơn duy nhất
+        generatedMaHoaDon = generateMaHoaDon();
+        hoaDon.setMaHoaDon(generatedMaHoaDon); // Gán mã hóa đơn cho đối tượng hoaDon
+
+        hoaDonRepository.save(hoaDon); // Lưu hóa đơn vào cơ sở dữ liệu
+
+        // Tạo thông tin phương thức thanh toán COD cho hóa đơn
         PhuongThucThanhToanHoaDon phuongThucThanhToanHoaDon = new PhuongThucThanhToanHoaDon();
         phuongThucThanhToanHoaDon.setPhuongThucThanhToan(phuongThucThanhToanRepository.findById(4).get()); // COD
         phuongThucThanhToanHoaDon.setNgayGiaoDich(new Date());
         phuongThucThanhToanHoaDon.setMoTa("Thanh toán COD cho đơn hàng " + generatedMaHoaDon);
         phuongThucThanhToanHoaDon.setHoaDon(hoaDon);
         phuongThucThanhToanHoaDonRepository.save(phuongThucThanhToanHoaDon);
+
         hoaDon.setPhuongThucThanhToanHoaDon(phuongThucThanhToanHoaDon);
         hoaDonRepository.save(hoaDon);
+
         // Kiểm tra và lấy thông tin người dùng
-        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
+        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
         hoaDon.setNguoiDung(nguoiDung);
 
         // Tạo và lưu lịch sử thanh toán
@@ -234,12 +272,16 @@ public class HoaDonService {
         lichSuThanhToan.setHoaDon(hoaDon);
         lichSuThanhToan.setNguoiDung(nguoiDung);  // Liên kết với người dùng
 
-        // Thêm trạng thái "Tạo đơn hàng" - Trạng thái mới của hóa đơn sau khi tạo
+        // Lưu lịch sử thanh toán
+        lichSuThanhToanRepository.save(lichSuThanhToan);
+
+        // Tạo trạng thái cho hóa đơn
         TrangThaiHoaDon trangThaiHoaDonTaoDon = new TrangThaiHoaDon();
         TrangThaiHoaDon trangThaiHoaDonChoXuLy = new TrangThaiHoaDon();
 
-// Trạng thái "Tạo đơn hàng"
-        LoaiTrangThai trangThaiTaoDon = loaiTrangThaiRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+        // Trạng thái "Tạo đơn hàng"
+        LoaiTrangThai trangThaiTaoDon = loaiTrangThaiRepository.findById(1)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
         trangThaiHoaDonTaoDon.setMoTa("Tạo đơn hàng");
         trangThaiHoaDonTaoDon.setNgayTao(new Date());
         trangThaiHoaDonTaoDon.setIdNhanVien(1);
@@ -248,8 +290,9 @@ public class HoaDonService {
         trangThaiHoaDonTaoDon.setHoaDon(hoaDon);
         trangThaiHoaDonRepository.save(trangThaiHoaDonTaoDon);
 
-// Trạng thái "Chờ xử lý" sau khi thanh toán được chọn
-        LoaiTrangThai trangThaiChoXuLy = loaiTrangThaiRepository.findById(2).orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+        // Trạng thái "Chờ xử lý" sau khi thanh toán được chọn
+        LoaiTrangThai trangThaiChoXuLy = loaiTrangThaiRepository.findById(2)
+                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
         trangThaiHoaDonChoXuLy.setMoTa("Chờ xác nhận");
         trangThaiHoaDonChoXuLy.setNgayTao(new Date());
         trangThaiHoaDonChoXuLy.setIdNhanVien(1);
@@ -258,33 +301,57 @@ public class HoaDonService {
         trangThaiHoaDonChoXuLy.setHoaDon(hoaDon);
         trangThaiHoaDonRepository.save(trangThaiHoaDonChoXuLy);
 
-        lichSuThanhToanRepository.save(lichSuThanhToan);
-        // Lấy hoặc lưu thông tin Tỉnh, Huyện, Xã
+        // Kiểm tra và lấy thông tin Tỉnh, Huyện, Xã
         if (hoaDonDTO.getTinh() == null || hoaDonDTO.getHuyen() == null || hoaDonDTO.getXa() == null) {
             throw new RuntimeException("Thông tin Tỉnh, Huyện, hoặc Xã không hợp lệ");
         }
-        Tinh tinh = tinhRepository.findById(hoaDonDTO.getTinh()).orElseGet(() -> tinhRepository.save(fetchCityInfo(hoaDonDTO.getTinh().toString())));
-        Huyen huyen = huyenRepository.findById(hoaDonDTO.getHuyen()).orElseGet(() -> huyenRepository.save(fetchDistrictInfo(hoaDonDTO.getHuyen().toString())));
-        Xa xa = xaRepository.findById(hoaDonDTO.getXa()).orElseGet(() -> xaRepository.save(fetchWardInfo(hoaDonDTO.getXa().toString())));
+
+
+        // Lấy hoặc lưu Tỉnh theo mã
+        String cityCode = hoaDonDTO.getTinh().toString();  // Lấy mã Tỉnh từ hoaDonDTO
+        Tinh selectedCity = tinhRepository.findByMaTinh(cityCode)
+                .orElseGet(() -> {
+                    Tinh city = fetchCityInfoFromGHN(cityCode); // Gọi API GHN nếu không có trong DB
+                    return tinhRepository.save(city);          // Lưu vào DB
+                });
+
+        // Lấy hoặc lưu Huyện theo mã
+        String districtCode = hoaDonDTO.getHuyen().toString();  // Lấy mã Huyện từ hoaDonDTO
+        Huyen selectedDistrict = huyenRepository.findByMaHuyen(districtCode)
+                .orElseGet(() -> {
+                    Huyen district = fetchDistrictInfoFromGHN(districtCode); // Gọi API GHN nếu không có trong DB
+                    district.setTinh(selectedCity);                         // Gán tỉnh liên quan
+                    return huyenRepository.save(district);                  // Lưu vào DB
+                });
+
+        // Lấy hoặc lưu Xã theo mã
+        String wardCode = hoaDonDTO.getXa().toString();  // Lấy mã Xã từ hoaDonDTO
+        Xa selectedWard = xaRepository.findByMaXa(wardCode)
+                .orElseGet(() -> {
+                    // Gọi API GHN để lấy thông tin xã
+                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode); // Truyền mã huyện và mã xã
+                    ward.setHuyen(selectedDistrict);                       // Gán huyện liên quan
+                    return xaRepository.save(ward);                        // Lưu vào DB
+                });
 
         // Tạo và lưu đối tượng DiaChiVanChuyen
         DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
-        diaChiVanChuyen.setTinh(tinh);
+        diaChiVanChuyen.setTinh(selectedCity);
         diaChiVanChuyen.setNguoiDung(nguoiDung);
         diaChiVanChuyen.setDiaChiCuThe(hoaDonDTO.getDiaChiCuThe());
-        diaChiVanChuyen.setHuyen(huyen);
-        diaChiVanChuyen.setXa(xa);
+        diaChiVanChuyen.setHuyen(selectedDistrict);
+        diaChiVanChuyen.setXa(selectedWard);
         diaChiVanChuyen.setTrangThai(true);
         diaChiVanChuyen.setNgayTao(new Date());
         diaChiVanChuyen.setNgayCapNhat(new Date());
-        diaChiVanChuyen.setMoTa(String.format("Địa chỉ: %s, %s, %s", xa.getTenXa(), huyen.getTenHuyen(), tinh.getTenTinh()));
+        diaChiVanChuyen.setMoTa(String.format("Địa chỉ: %s, %s, %s", selectedWard.getTenXa(), selectedDistrict.getTenHuyen(), selectedCity.getTenTinh()));
 
         diaChiVanChuyen = diaChiVanChuyenRepository.save(diaChiVanChuyen);
 
         // Gán địa chỉ vận chuyển đã lưu cho hóa đơn
         hoaDon.setDiaChiVanChuyen(diaChiVanChuyen);
-        // Khởi tạo đối tượng Phí vận chuyển
 
+        // Khởi tạo đối tượng Phí vận chuyển
         PhiVanChuyen phiVanChuyen = new PhiVanChuyen();
         phiVanChuyen.setHoaDon(hoaDon);  // Liên kết với hóa đơn đã lưu
         phiVanChuyen.setDiaChiVanChuyen(diaChiVanChuyen);
@@ -298,9 +365,10 @@ public class HoaDonService {
         // Gán phí vận chuyển vào hóa đơn
         hoaDon.setPhiShip(phiVanChuyen.getSoTienVanChuyen());
 
-
+        // Xử lý các sản phẩm trong giỏ hàng
         processCartItems(hoaDonDTO, hoaDon);
     }
+
 
     private void saveVNPayPayment(HoaDon hoaDon, String generatedMaHoaDon, HoaDonDTO hoaDonDTO, HttpServletRequest req) {
         try {
@@ -463,21 +531,44 @@ public class HoaDonService {
         if (hoaDonDTO.getTinh() == null || hoaDonDTO.getHuyen() == null || hoaDonDTO.getXa() == null) {
             throw new RuntimeException("Thông tin Tỉnh, Huyện, hoặc Xã không hợp lệ");
         }
-        Tinh tinh = tinhRepository.findById(hoaDonDTO.getTinh()).orElseGet(() -> tinhRepository.save(fetchCityInfo(hoaDonDTO.getTinh().toString())));
-        Huyen huyen = huyenRepository.findById(hoaDonDTO.getHuyen()).orElseGet(() -> huyenRepository.save(fetchDistrictInfo(hoaDonDTO.getHuyen().toString())));
-        Xa xa = xaRepository.findById(hoaDonDTO.getXa()).orElseGet(() -> xaRepository.save(fetchWardInfo(hoaDonDTO.getXa().toString())));
+        // Lấy hoặc lưu Tỉnh theo mã
+        String cityCode = hoaDonDTO.getTinh().toString();  // Lấy mã Tỉnh từ hoaDonDTO
+        Tinh selectedCity = tinhRepository.findByMaTinh(cityCode)
+                .orElseGet(() -> {
+                    Tinh city = fetchCityInfoFromGHN(cityCode); // Gọi API GHN nếu không có trong DB
+                    return tinhRepository.save(city);          // Lưu vào DB
+                });
+
+        // Lấy hoặc lưu Huyện theo mã
+        String districtCode = hoaDonDTO.getHuyen().toString();  // Lấy mã Huyện từ hoaDonDTO
+        Huyen selectedDistrict = huyenRepository.findByMaHuyen(districtCode)
+                .orElseGet(() -> {
+                    Huyen district = fetchDistrictInfoFromGHN(districtCode); // Gọi API GHN nếu không có trong DB
+                    district.setTinh(selectedCity);                         // Gán tỉnh liên quan
+                    return huyenRepository.save(district);                  // Lưu vào DB
+                });
+
+        // Lấy hoặc lưu Xã theo mã
+        String wardCode = hoaDonDTO.getXa().toString();  // Lấy mã Xã từ hoaDonDTO
+        Xa selectedWard = xaRepository.findByMaXa(wardCode)
+                .orElseGet(() -> {
+                    // Gọi API GHN để lấy thông tin xã
+                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode); // Truyền mã huyện và mã xã
+                    ward.setHuyen(selectedDistrict);                       // Gán huyện liên quan
+                    return xaRepository.save(ward);                        // Lưu vào DB
+                });
 
         // Tạo và lưu đối tượng DiaChiVanChuyen
         DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
-        diaChiVanChuyen.setTinh(tinh);
+        diaChiVanChuyen.setTinh(selectedCity);
         diaChiVanChuyen.setNguoiDung(nguoiDung);
         diaChiVanChuyen.setDiaChiCuThe(hoaDonDTO.getDiaChiCuThe());
-        diaChiVanChuyen.setHuyen(huyen);
-        diaChiVanChuyen.setXa(xa);
+        diaChiVanChuyen.setHuyen(selectedDistrict);
+        diaChiVanChuyen.setXa(selectedWard);
         diaChiVanChuyen.setTrangThai(true);
         diaChiVanChuyen.setNgayTao(new Date());
         diaChiVanChuyen.setNgayCapNhat(new Date());
-        diaChiVanChuyen.setMoTa(String.format("Địa chỉ: %s, %s, %s", xa.getTenXa(), huyen.getTenHuyen(), tinh.getTenTinh()));
+        diaChiVanChuyen.setMoTa(String.format("Địa chỉ: %s, %s, %s", selectedWard.getTenXa(), selectedDistrict.getTenHuyen(), selectedCity.getTenTinh()));
 
         diaChiVanChuyen = diaChiVanChuyenRepository.save(diaChiVanChuyen);
 
@@ -563,71 +654,150 @@ public class HoaDonService {
         hoaDonDTO.setIdHoaDon(hoaDon.getIdHoaDon());
         return hoaDon;
     }
-    // Lấy thông tin Tỉnh từ API
-    private Tinh fetchCityInfo(String cityCode) {
-        String url = "https://esgoo.net/api-tinhthanh/1/0.htm";  // API lấy thông tin tỉnh
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        if (response != null && response.containsKey("error") && (int) response.get("error") == 0) {
-            List<Map<String, Object>> cities = (List<Map<String, Object>>) response.get("data");
-            for (Map<String, Object> city : cities) {
-                String id = city.get("id").toString();
-                if (id.equals(cityCode)) {
+    // Lấy thông tin Tỉnh từ GHN API
+    private Tinh fetchCityInfoFromGHN(String cityCode) {
+        String url = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Token", "347f8e0e-981c-11ef-a905-420459bb4727"); // Thay bằng token của bạn
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Gửi yêu cầu và nhận phản hồi từ API
+        Map<String, Object> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class).getBody();
+
+        if (response != null && response.get("code").equals(200)) {
+            // Lấy danh sách tỉnh từ phản hồi
+            List<Map<String, Object>> provinces = (List<Map<String, Object>>) response.get("data");
+
+            for (Map<String, Object> province : provinces) {
+                // Kiểm tra nếu `ProvinceID` trùng với `cityCode`
+                if (province.get("ProvinceID").toString().equals(cityCode)) {
+                    // Tạo đối tượng Tinh từ dữ liệu JSON
                     Tinh tinh = new Tinh();
-                    tinh.setIdTinh(Integer.parseInt(id));
-                    tinh.setTenTinh(city.get("name").toString());
+
+                    // Lấy và gán `maTinh` (Mã Tỉnh)
+                    String maTinhString = province.get("ProvinceID").toString();
+                    try {
+                        tinh.setMaTinh(String.valueOf(Integer.parseInt(maTinhString))); // Chuyển đổi sang chuỗi nếu cần
+                    } catch (NumberFormatException e) {
+                        System.out.println("Lỗi khi chuyển đổi mã tỉnh: " + maTinhString);
+                        tinh.setMaTinh("0"); // Gán giá trị mặc định nếu lỗi
+                    }
+
+                    // Gán `tenTinh` (Tên Tỉnh)
+                    tinh.setTenTinh(province.get("ProvinceName").toString());
+
+                    // Gán thông tin ngày tạo và cập nhật
                     tinh.setNgayTao(new Date());
                     tinh.setNgayCapNhat(new Date());
+
                     return tinh;
                 }
             }
         }
-        throw new RuntimeException("Không thể lấy dữ liệu tỉnh từ API");
+
+        // Nếu không tìm thấy mã tỉnh, ném ngoại lệ
+        throw new RuntimeException("Không thể lấy dữ liệu tỉnh từ GHN API");
     }
 
-    // Lấy thông tin Huyện từ API
-    private Huyen fetchDistrictInfo(String districtCode) {
-        String url = "https://esgoo.net/api-tinhthanh/2/" + districtCode + ".htm"; // API lấy thông tin huyện
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        if (response != null && response.containsKey("error") && (int) response.get("error") == 0) {
+    // Lấy thông tin Huyện từ GHN API
+    private Huyen fetchDistrictInfoFromGHN(String districtCode) {
+        String url = "https://online-gateway.ghn.vn/shiip/public-api/master-data/district";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Token", "347f8e0e-981c-11ef-a905-420459bb4727"); // Thay bằng token của bạn
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Gửi yêu cầu và nhận phản hồi từ API
+        Map<String, Object> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class).getBody();
+
+        // Kiểm tra nếu phản hồi hợp lệ và mã trạng thái là 200
+        if (response != null && response.get("code").equals(200)) {
+            // Lấy danh sách huyện từ phản hồi
             List<Map<String, Object>> districts = (List<Map<String, Object>>) response.get("data");
+
+            // Duyệt qua danh sách huyện
             for (Map<String, Object> district : districts) {
-                String id = district.get("id").toString();
-                if (id.equals(districtCode)) {
+                // Kiểm tra nếu `DistrictID` trùng với `districtCode`
+                if (district.get("DistrictID").toString().equals(districtCode)) {
+                    // Tạo đối tượng Huyen từ dữ liệu JSON
                     Huyen huyen = new Huyen();
-                    huyen.setIdHuyen(Integer.parseInt(id));
-                    huyen.setTenHuyen(district.get("name").toString());
+
+                    // Lấy mã huyện và chuyển đổi
+                    String maHuyenString = district.get("DistrictID").toString();
+                    try {
+                        // Chuyển đổi mã huyện từ String sang Integer
+                        huyen.setMaHuyen(String.valueOf(Integer.parseInt(maHuyenString)));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Lỗi khi chuyển đổi mã huyện: " + maHuyenString);
+                        huyen.setMaHuyen(String.valueOf(0));  // Gán giá trị mặc định nếu không chuyển đổi được
+                    }
+
+                    // Gán tên huyện
+                    huyen.setTenHuyen(district.get("DistrictName").toString());
+
+                    // Gán thông tin ngày tạo và cập nhật
                     huyen.setNgayTao(new Date());
                     huyen.setNgayCapNhat(new Date());
-                    return huyen;
+
+                    return huyen;  // Trả về đối tượng Huyen sau khi đã gán thông tin
                 }
             }
         }
-        throw new RuntimeException("Không thể lấy dữ liệu huyện từ API");
+
+        // Nếu không tìm thấy huyện theo mã `districtCode`, ném ngoại lệ
+        throw new RuntimeException("Không thể lấy dữ liệu huyện từ GHN API");
     }
 
-    // Lấy thông tin Xã từ API
-    private Xa fetchWardInfo(String wardCode) {
-        String url = "https://esgoo.net/api-tinhthanh/3/" + wardCode + ".htm"; // API lấy thông tin xã
-        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        if (response != null && response.containsKey("error") && (int) response.get("error") == 0) {
+
+    // Lấy thông tin Xã từ GHN API
+    private Xa fetchWardInfoFromGHN(String districtCode, String wardCode) {
+        String url = "https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=" + districtCode;
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Token", "347f8e0e-981c-11ef-a905-420459bb4727"); // Thay bằng token của bạn
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Gọi API
+        Map<String, Object> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class).getBody();
+
+        // Kiểm tra dữ liệu trả về
+        if (response != null && response.get("code").equals(200)) {
+            // Lấy danh sách xã từ phản hồi
             List<Map<String, Object>> wards = (List<Map<String, Object>>) response.get("data");
+
+            // Duyệt qua danh sách xã để tìm xã theo mã `wardCode`
             for (Map<String, Object> ward : wards) {
-                String id = ward.get("id").toString();
-                if (id.equals(wardCode)) {
+                // Kiểm tra nếu `WardCode` trùng với `wardCode`
+                if (ward.get("WardCode").toString().equals(wardCode)) {
                     Xa xa = new Xa();
-                    xa.setIdXa(Integer.parseInt(id));
-                    xa.setTenXa(ward.get("name").toString());
+
+                    // Lấy mã xã và chuyển đổi
+                    String maXaString = ward.get("WardCode").toString();
+                    try {
+                        // Chuyển đổi mã xã từ String sang Integer
+                        xa.setMaXa(String.valueOf(Integer.parseInt(maXaString)));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Lỗi khi chuyển đổi mã xã: " + maXaString);
+                        xa.setMaXa(String.valueOf(0));  // Gán giá trị mặc định nếu không chuyển đổi được
+                    }
+
+                    // Gán tên xã
+                    xa.setTenXa(ward.get("WardName").toString());
+
+                    // Gán ngày tạo và ngày cập nhật cho xã
                     xa.setNgayTao(new Date());
                     xa.setNgayCapNhat(new Date());
-                    return xa;
+
+                    return xa;  // Trả về đối tượng Xa sau khi đã gán giá trị
                 }
             }
         }
-        throw new RuntimeException("Không thể lấy dữ liệu xã từ API");
+
+        // Nếu không tìm thấy xã hoặc có lỗi, ném ngoại lệ
+        throw new RuntimeException("Không thể lấy dữ liệu xã từ GHN API");
     }
+
 
 
     public List<HoaDon> getHoaDonChuaThanhToan() {
@@ -826,7 +996,7 @@ public class HoaDonService {
                     dto.setTenHuyen(diaChiVanChuyen.getHuyen().getTenHuyen());
                 }
                 if (diaChiVanChuyen.getXa() != null) {
-                    dto.setXa(diaChiVanChuyen.getXa().getIdXa());
+                    dto.setXa(String.valueOf(diaChiVanChuyen.getXa().getIdXa()));
                     dto.setTenXa(diaChiVanChuyen.getXa().getTenXa());
                 }
             }

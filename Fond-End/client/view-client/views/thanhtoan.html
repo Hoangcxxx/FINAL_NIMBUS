@@ -43,7 +43,7 @@
                 <div class="col-md-4 mb-3">
                     <label class="form-label" for="city">Chọn Tỉnh/Thành phố <span class="text-danger">*</span>:</label>
                     <select class="form-select" ng-model="selectedCity"
-                        ng-options="city as city.name for city in cities track by city.id" ng-change="onCityChange()"
+                        ng-options="city.name for city in cities track by city.id" ng-change="onCityChange()"
                         required>
                         <option value="">--Chọn Tỉnh/Thành phố--</option>
                     </select>

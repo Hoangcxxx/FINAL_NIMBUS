@@ -25,7 +25,7 @@ public class HoaDonDTO {
 	private String ghiChu;
 	private Integer tinh;
 	private Integer huyen;
-	private Integer xa;
+	private String xa;
 	private String tenTinh; // Thêm trường tên Tỉnh
 	private String tenHuyen; // Thêm trường tên Huyện
 	private String tenXa;    // Thêm trường tên Xã
@@ -47,4 +47,11 @@ public class HoaDonDTO {
 	private BigDecimal GiaTriMavoucher;
 	private BigDecimal giaTriGiamGia;
 	private Boolean kieuGiamGia;
+
+	// Thêm trường ngày giao dự kiến
+	private Date ngayGiaoDuKien;
+
+	private Date ngayKetThucGiaoDuKien;
+
+
 }
