@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,38 +41,6 @@ public class TestDemoService {
         return headers;
     }
 
-    // 1. Lấy danh sách các phương thức vận chuyển khả dụng
-    public List<Map<String, Object>> getShippingServices() {
-        String url = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services";
-        HttpHeaders headers = prepareHeaders();
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
-        return response.getBody();
-    }
-
-
-    // Tính phí vận chuyển
-    public Map<String, Object> calculateShippingFee(Integer service_id, Integer districtId, Integer wardId, Integer weight) {
-        String url = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
-
-        // Tạo đối tượng request body
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("service_id", service_id);  // Mã dịch vụ
-        requestBody.put("from_district", 1001);  // Mã quận, huyện nơi gửi (tùy chỉnh)
-        requestBody.put("to_district", districtId);  // Mã quận, huyện nơi nhận, trường này cần phải có
-        requestBody.put("to_ward", wardId);  // Mã xã, phường nơi nhận
-        requestBody.put("weight", weight);  // Trọng lượng sản phẩm (gram)
-        requestBody.put("length", 10);  // Chiều dài (cm)
-        requestBody.put("width", 10);  // Chiều rộng (cm)
-        requestBody.put("height", 10);  // Chiều cao (cm)
-
-
-        HttpHeaders headers = prepareHeaders();
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
-        return response.getBody();
-    }
 
 
     // 1. Hiển thị danh sách Tỉnh
@@ -141,10 +110,13 @@ public class TestDemoService {
             Tinh tinh = new Tinh();
             tinh.setIdTinh(Integer.parseInt(cityData.get("code").toString()));
             tinh.setTenTinh(cityData.get("name").toString());
+            tinh.setNgayTao(new Date());
+            tinh.setNgayCapNhat(new Date());
             return tinh;
         }
         throw new RuntimeException("Không thể lấy dữ liệu tỉnh từ API");
     }
+
 
     // Lấy thông tin Huyện từ API
     private Huyen fetchDistrictInfo(String districtCode) {

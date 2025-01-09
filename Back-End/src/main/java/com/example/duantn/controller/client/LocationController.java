@@ -1,7 +1,6 @@
 package com.example.duantn.controller.client;
 
 import com.example.duantn.service.TestDemoService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,49 +10,54 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/test")
-@CrossOrigin(origins = "http://127.0.0.1:5502") // Đảm bảo frontend có thể gọi được API từ domain này
+@CrossOrigin(origins = "http://127.0.0.1:5502") // CORS configuration for frontend
 public class LocationController {
-    @Autowired
-    private final TestDemoService testDemoSevice;
 
-    public LocationController(TestDemoService testDemoSevice) {
-        this.testDemoSevice = testDemoSevice;
+    private final TestDemoService testDemoService;
+
+    @Autowired
+    public LocationController(TestDemoService testDemoService) {
+        this.testDemoService = testDemoService;
     }
 
-    // API để lấy danh sách tỉnh thành
+
+    // API to get list of cities
     @GetMapping("/cities")
     public ResponseEntity<?> getCities() {
         try {
-            return ResponseEntity.ok(testDemoSevice.getCities());  // Trả về danh sách tỉnh/thành phố
+            List<Map<String, Object>> cities = testDemoService.getCities();
+            return ResponseEntity.ok(cities);  // Return cities
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Có lỗi khi lấy tỉnh thành");
+            return ResponseEntity.status(500).body("Error fetching cities");
         }
     }
 
-
-    // API để lấy danh sách huyện theo mã tỉnh
+    // API to get list of districts by city code
     @GetMapping("/districts/{cityCode}")
     public ResponseEntity<?> getDistricts(@PathVariable String cityCode) {
         try {
-            return ResponseEntity.ok(testDemoSevice.getDistricts(cityCode)); // Trả về danh sách huyện của tỉnh
+            List<Map<String, Object>> districts = testDemoService.getDistricts(cityCode);
+            return ResponseEntity.ok(districts);  // Return districts based on city
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Có lỗi khi lấy huyện");
+            return ResponseEntity.status(500).body("Error fetching districts");
         }
     }
 
-    // API để lấy danh sách xã theo mã huyện
+    // API to get list of wards by district code
     @GetMapping("/wards/{districtCode}")
     public ResponseEntity<?> getWards(@PathVariable String districtCode) {
         try {
-            return ResponseEntity.ok(testDemoSevice.getWards(districtCode)); // Trả về danh sách xã của huyện
+            List<Map<String, Object>> wards = testDemoService.getWards(districtCode);
+            return ResponseEntity.ok(wards);  // Return wards based on district
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Có lỗi khi lấy xã");
+            return ResponseEntity.status(500).body("Error fetching wards");
         }
     }
 
+    // API to save city, district, and ward information to the database
     @PostMapping("/save-location")
     public ResponseEntity<String> saveLocationToDB(
             @RequestParam Integer userId,
@@ -61,45 +65,12 @@ public class LocationController {
             @RequestParam String districtCode,
             @RequestParam String wardCode) {
         try {
-            // Gọi service để lưu tỉnh, huyện, xã vào DB
-            testDemoSevice.saveCityDistrictWardToDB(userId, cityCode, districtCode, wardCode);
-            return ResponseEntity.ok("Lưu địa chỉ thành công");
+            // Save the location information to the database
+            testDemoService.saveCityDistrictWardToDB(userId, cityCode, districtCode, wardCode);
+            return ResponseEntity.ok("Location saved successfully");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Có lỗi khi lưu địa chỉ");
+            return ResponseEntity.status(500).body("Error saving location");
         }
     }
-
-
-    // API lấy danh sách các phương thức vận chuyển khả dụng
-    @GetMapping("/available-services")
-    public ResponseEntity<List<Map<String, Object>>> getShippingServices() {
-        try {
-            List<Map<String, Object>> services = testDemoSevice.getShippingServices();
-            return ResponseEntity.ok(services);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
-        }
-    }
-
-    // API tính phí vận chuyển
-    @PostMapping("/fee")
-    public ResponseEntity<Map<String, Object>> calculateShippingFee(
-            @RequestParam Integer service_id,
-            @RequestParam Integer districtId,  // Truyền mã quận huyện
-            @RequestParam Integer wardId,
-            @RequestParam Integer weight) {
-
-        try {
-            Map<String, Object> feeDetails = testDemoSevice.calculateShippingFee(service_id, districtId, wardId, weight);
-            return ResponseEntity.ok(feeDetails);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
-        }
-    }
-
-
-
 }

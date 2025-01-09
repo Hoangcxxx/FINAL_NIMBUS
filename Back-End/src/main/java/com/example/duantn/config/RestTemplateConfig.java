@@ -11,11 +11,12 @@ public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(5000); // Timeout kết nối
-        factory.setReadTimeout(5000);    // Timeout đọc
-        return new RestTemplate(factory);
+        factory.setConnectTimeout(10000); // Timeout kết nối (tăng lên 10 giây)
+        factory.setReadTimeout(10000);    // Timeout đọc (tăng lên 10 giây)
+        RestTemplate restTemplate = new RestTemplate(factory);
+
+        // Logging request và response
+        restTemplate.setRequestFactory(factory);
+        return restTemplate;
     }
-
-
-
 }

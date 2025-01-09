@@ -464,9 +464,9 @@ window.ThanhToanController = function ($scope, $http, $window) {
         const orderData = {
             cartId: iduser,
             idNguoiDung: $scope.userInfo.idNguoiDung,
-            tinh: $scope.selectedCity.code,
-            huyen: $scope.selectedDistrict.code,
-            xa: $scope.selectedWard.code,
+            tinh: $scope.selectedCity.id,
+            huyen: $scope.selectedDistrict.id,
+            xa: $scope.selectedWard.id,
             email: $scope.userInfo.email,
             tenNguoiNhan: $scope.userInfo.tenNguoiDung,
             diaChi: $scope.userInfo.diaChi,
@@ -497,13 +497,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
                         // Chuyển hướng đến trang thanh toán của VNPay
                         window.location.href = paymentRedirectUrl;
-
-                        // Sau khi chuyển hướng, bạn có thể gửi email xác nhận sau khi đặt hàng thành công
-                        // Đảm bảo rằng việc gửi email được thực hiện sau khi thanh toán thành công
-                        $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
-                            .then(response => console.log("Email đã được gửi thành công"))
-                            .catch(error => console.error("Lỗi khi gửi email:", error));
-
                     } else {
                         Swal.fire({
                             icon: 'error', // Loại thông báo (error, success, info, warning)
@@ -555,7 +548,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                     text: 'Cảm ơn bạn đã tin tưởng và đặt hàng. Mã hóa đơn của bạn là: ' + response.data.maHoaDon + '. Chúng tôi sẽ nhanh chóng xử lý đơn hàng của bạn!',
                     confirmButtonText: 'OK'
                 });
-                
+
                 // Điều hướng đến trang thành công
                 $window.location.href = "/#!Thanhcong?";
 
@@ -575,105 +568,92 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
     };
 
-    // Lấy thông tin tỉnh thành, quận huyện và phường xã
-    $scope.getProvinces = function () {
-        $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/cities")
-            .then(response => $scope.provinces = response.data)
-            .catch(error => console.error("Lỗi khi lấy tỉnh thành:", error));
-    };
 
+// Khởi tạo dữ liệu ban đầu
+$scope.cities = [];
+$scope.districts = [];
+$scope.wards = [];
+$scope.shippingInfo = {
+    province: null,
+    district: null,
+    ward: null,
+    address: ''
+};
+$scope.cart = [];
+$scope.shippingFee = 0;
+$scope.totalAmount = 0;
 
-    $scope.getProvinces(); if (user) $scope.getUserInfo(iduser); $scope.getCartItems();
+// Hàm gọi API lấy danh sách tỉnh thành
+function getCities() {
+    if ($scope.selectedCity && $scope.selectedCity.id) {
+        console.log('Province ID:', $scope.selectedCity.id);
+    } else {
+        console.warn('Chưa chọn tỉnh thành.');
+    }
 
-    // Khởi tạo dữ liệu ban đầu
-    $scope.cities = [];
+    $http.get("http://127.0.0.1:8080/api/nguoi_dung/address/provinces")
+        .then(function (response) {
+            if (response.data && Array.isArray(response.data)) {
+                $scope.cities = response.data;
+            } else {
+                console.error('Không có dữ liệu tỉnh thành trả về.');
+            }
+        })
+        .catch(function (error) {
+            console.error('Có lỗi xảy ra khi lấy tỉnh thành:', error);
+        });
+}
+
+// Hàm gọi API lấy danh sách huyện theo mã tỉnh
+$scope.onCityChange = function () {
     $scope.districts = [];
     $scope.wards = [];
-    $scope.shippingInfo = {
-        province: null,
-        district: null,
-        ward: null,
-        address: ''
-    };
-    $scope.cart = [];
-    $scope.shippingFee = 0;
-    $scope.totalAmount = 0;
+    $scope.shippingInfo.district = null;
+    $scope.shippingInfo.ward = null;
 
-    // Hàm gọi API lấy danh sách tỉnh thành
-    function getCities() {
-        if ($scope.selectedCity && $scope.selectedCity.code) {
-            console.log('Province ID:', $scope.selectedCity.code);
-        } else {
-            console.warn('Chưa chọn tỉnh thành.');
-        }
-
-        $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/cities")
+    if ($scope.selectedCity && $scope.selectedCity.id) {
+        console.log('ID tỉnh vừa chọn:', $scope.selectedCity.id);
+        localStorage.setItem("idTinh", JSON.stringify($scope.selectedCity.id));
+        $http.get("http://127.0.0.1:8080/api/nguoi_dung/address/districts/" + $scope.selectedCity.id)
             .then(function (response) {
                 if (response.data && Array.isArray(response.data)) {
-                    $scope.cities = response.data;
-
-
+                    $scope.districts = response.data;
                 } else {
-                    console.error('Không có dữ liệu tỉnh thành trả về.');
+                    console.error('Không có dữ liệu huyện trả về.');
                 }
             })
             .catch(function (error) {
-                console.error('Có lỗi xảy ra khi lấy tỉnh thành:', error);
+                console.error('Có lỗi xảy ra khi lấy huyện:', error);
             });
+    } else {
+        console.warn('Chưa chọn tỉnh thành.');
     }
+};
 
-    // Hàm gọi API lấy danh sách huyện theo mã tỉnh
-    $scope.onCityChange = function () {
-        $scope.districts = [];
-        $scope.wards = [];
-        $scope.shippingInfo.district = null;
-        $scope.shippingInfo.ward = null;
+// Hàm gọi API lấy danh sách xã theo mã huyện
+$scope.onDistrictChange = function () {
+    $scope.wards = [];
+    $scope.shippingInfo.ward = null;
 
-        if ($scope.selectedCity && $scope.selectedCity.code) {
-            console.log('ID tỉnh vừa chọn:', $scope.selectedCity.code);
-            localStorage.setItem("idTinh", JSON.stringify($scope.selectedCity.code));
-            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/districts/" + $scope.selectedCity.code)
-                .then(function (response) {
-                    if (response.data && Array.isArray(response.data)) {
-                        $scope.districts = response.data;
+    if ($scope.selectedDistrict && $scope.selectedDistrict.id) {
+        console.log('ID huyện vừa chọn:', $scope.selectedDistrict.id);
+        localStorage.setItem("idHuyen", JSON.stringify($scope.selectedDistrict.id));
+        $http.get("http://127.0.0.1:8080/api/nguoi_dung/address/wards/" + $scope.selectedDistrict.id)
+            .then(function (response) {
+                if (response.data && Array.isArray(response.data)) {
+                    $scope.wards = response.data;
+                } else {
+                    console.error('Không có dữ liệu xã trả về.');
+                }
+            })
+            .catch(function (error) {
+                console.error('Có lỗi xảy ra khi lấy xã:', error);
+            });
+    } else {
+        console.warn('Chưa chọn huyện.');
+    }
+};
 
-                    } else {
-                        console.error('Không có dữ liệu huyện trả về.');
-                    }
-                })
-                .catch(function (error) {
-                    console.error('Có lỗi xảy ra khi lấy huyện:', error);
-                });
-        } else {
-            console.warn('Chưa chọn tỉnh thành.');
-        }
-    };
-
-    // Hàm gọi API lấy danh sách xã theo mã huyện
-    $scope.onDistrictChange = function () {
-        $scope.wards = [];
-        $scope.shippingInfo.ward = null;
-
-        if ($scope.selectedDistrict && $scope.selectedDistrict.code) {
-            console.log('ID huyện vừa chọn:', $scope.selectedDistrict.code);
-            localStorage.setItem("idHuyen", JSON.stringify($scope.selectedDistrict.code));
-            $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/wards/" + $scope.selectedDistrict.code)
-                .then(function (response) {
-                    if (response.data && Array.isArray(response.data)) {
-                        $scope.wards = response.data;
-
-
-                    } else {
-                        console.error('Không có dữ liệu xã trả về.');
-                    }
-                })
-                .catch(function (error) {
-                    console.error('Có lỗi xảy ra khi lấy xã:', error);
-                });
-        } else {
-            console.warn('Chưa chọn huyện.');
-        }
-    };
 
 
     $scope.calculateShipping = function () {
@@ -682,11 +662,11 @@ window.ThanhToanController = function ($scope, $http, $window) {
             alert("Vui lòng chọn đầy đủ thông tin quận/huyện và phường/xã!");
             return;
         }
-        localStorage.setItem("idXa", JSON.stringify($scope.selectedWard.code));
+        localStorage.setItem("idXa", JSON.stringify($scope.selectedWard.id));
         // Lấy thông tin cần thiết
-        const cityCode = $scope.selectedCity.code;      // Mã tỉnh/thành phố
-        const districtCode = $scope.selectedDistrict.code; // Mã quận/huyện
-        const wardCode = $scope.selectedWard.code;      // Mã phường/xã
+        const cityCode = $scope.selectedCity.id;      // Mã tỉnh/thành phố
+        const districtCode = $scope.selectedDistrict.id; // Mã quận/huyện
+        const wardCode = $scope.selectedWard.id;      // Mã phường/xã
 
         // Gửi yêu cầu HTTP đến backend để lấy phí vận chuyển
         $http.get("http://127.0.0.1:8080/api/nguoi_dung/test/shipping-fee/"
@@ -721,36 +701,13 @@ window.ThanhToanController = function ($scope, $http, $window) {
             $scope.calculateShipping();
         }
     });
-
-
-    // Hàm lưu địa chỉ vào cơ sở dữ liệu
-    $scope.submitForm = function () {
-        if ($scope.selectedCity && $scope.selectedDistrict && $scope.selectedWard) {
-            const userId = $scope.userId;
-            const cityCode = $scope.selectedCity.code;
-            const districtCode = $scope.selectedDistrict.code;
-            const wardCode = $scope.selectedWard.code;
-            console.log("1231313312331313212123" + userId + cityCode + districtCode + wardCode);
-            const url = `http://127.0.0.1:8080/api/nguoi_dung/test/save-location?userId=${userId}&cityCode=${cityCode}&districtCode=${districtCode}&wardCode=${wardCode}`;
-            console.log("1231313312331313212123" + url);
-            $http.post(url)
-                .then(function (response) {
-                    $scope.isSuccess = true;
-                })
-                .catch(function (error) {
-                    console.error('Có lỗi xảy ra khi lưu địa chỉ:', error);
-                });
-        } else {
-            alert("Vui lòng chọn đầy đủ địa chỉ.");
-        }
-    };
+    // Hàm lưu tự động
     $scope.autoSave = function () {
         const shippingData = {
             email: $scope.userInfo.email || '',
             name: $scope.userInfo.tenNguoiDung || '',
             phone: $scope.userInfo.sdt || '',
             address: $scope.userInfo.diaChi || '',
-
         };
 
         // Lưu dữ liệu vào localStorage
@@ -758,9 +715,36 @@ window.ThanhToanController = function ($scope, $http, $window) {
         console.log("Đã lưu thông tin tự động:", shippingData);
     };
 
+    // Tự động tải dữ liệu từ localStorage khi trang load
+    $scope.loadShippingData = function () {
+        const storedData = JSON.parse(localStorage.getItem("shippingData"));
+        if (storedData) {
+            $scope.userInfo = {
+                email: storedData.email || '',
+                tenNguoiDung: storedData.name || '',
+                sdt: storedData.phone || '',
+                diaChi: storedData.address || '',
+            };
+            console.log("Đã tải thông tin từ localStorage:", $scope.userInfo);
+        }
+    };
+
+    // Gọi hàm load dữ liệu ngay khi trang load
+    $scope.loadShippingData();
+
+    // Theo dõi mọi thay đổi trong userInfo và tự động lưu
+    $scope.$watch('userInfo', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
+            $scope.autoSave();
+        }
+    }, true);
+
+
     // Gọi API lấy danh sách tỉnh thành khi trang được tải
     getCities();
     $scope.dsvoucher();
     $scope.getVoucher();
+    
+    if (user) $scope.getUserInfo(iduser); $scope.getCartItems();
 
 };

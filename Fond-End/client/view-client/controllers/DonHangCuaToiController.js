@@ -64,20 +64,27 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                 const orderStatus = hoaDon.tenTrangThai || "Chưa có trạng thái";
                 document.getElementById("infoOrderStatus").textContent = orderStatus;
 
-                // Kiểm tra loại trạng thái và tính toán ngày giao dự kiến nếu loại trạng thái là 4
-                if (hoaDon.idLoaiTrangThai === 4 && hoaDon.ngayTao) {
+                // Kiểm tra loại trạng thái và tính toán ngày giao dự kiến nếu loại trạng thái là 5, 6 hoặc 7
+                if ((hoaDon.idLoaiTrangThai === 5 || hoaDon.idLoaiTrangThai === 6 || hoaDon.idLoaiTrangThai === 7) && hoaDon.ngayTao) {
                     const ngayTao = new Date(hoaDon.ngayTao);
+
                     // Thêm 5 ngày cố định vào ngày tạo
                     const daysToAdd = 5;
                     ngayTao.setDate(ngayTao.getDate() + daysToAdd);
                     const ngayGiaoDuKien = ngayTao.toLocaleDateString("vi-VN");
-                    
-                    // Hiển thị ngày giao dự kiến
-                    document.getElementById("infoDeliveryDate").textContent = ngayGiaoDuKien || "N/A";
+
+                    // Tính toán ngày kết thúc giao dự kiến (thêm 2 ngày nữa)
+                    const ngayKetThucGiaoDuKien = new Date(ngayTao);
+                    ngayKetThucGiaoDuKien.setDate(ngayTao.getDate() + 2);  // Cộng thêm 2 ngày
+
+                    // Hiển thị ngày giao dự kiến và ngày kết thúc giao dự kiến theo dải ngày
+                    const dateRange = `${ngayGiaoDuKien} - ${ngayKetThucGiaoDuKien.toLocaleDateString("vi-VN")}`;
+                    document.getElementById("infoDeliveryDateRange").textContent = dateRange || "N/A";
                 } else {
-                    document.getElementById("infoDeliveryDate").textContent = "Đang chờ xác nhận từ shipper";
+                    document.getElementById("infoDeliveryDateRange").textContent = "Đang chờ xác nhận từ shipper";
                 }
-                
+
+
                 // Hiển thị thông tin đơn hàng nếu có
                 orderInfoDiv.style.display = "block";
             })
