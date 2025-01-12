@@ -2,8 +2,6 @@
     <div class="section active">
         <div class="container-fluid">
             <h1 class="page-title">Quản Lý Người Dùng</h1>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">Thêm Người Dùng Mới
-                +</button>
 
             <!-- Tab navigation for different sections -->
             <ul class="nav nav-tabs mt-3" id="userManagementTabs" role="tablist">
@@ -26,10 +24,16 @@
             <div class="tab-content mt-3">
                 <!-- Quản Lý Người Dùng -->
                 <div class="tab-pane fade show active" id="userManagement" role="tabpanel" aria-labelledby="userTab">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" placeholder="Tìm kiếm người dùng..."
-                                ng-model="searchUser" />
+                    <div class="row mb-4">
+                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Tìm kiếm người dùng..."
+                                    ng-model="searchUser" />
+                                <button class="btn btn-primary ms-2" data-bs-toggle="modal"
+                                    data-bs-target="#addUserModal">
+                                    <i class="bi bi-person-plus"></i> Thêm Người Dùng Mới +
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <table class="table table-striped mt-3">
@@ -77,11 +81,16 @@
 
                 <!-- Quản Lý Nhân Viên -->
                 <div class="tab-pane fade" id="employeeManagement" role="tabpanel" aria-labelledby="employeeTab">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <!-- Ô tìm kiếm nhân viên -->
-                            <input type="text" class="form-control" placeholder="Tìm kiếm nhân viên.."
-                                ng-model="searchnhanvien" />
+                    <div class="row mb-4">
+                        <div class="col-md-6 d-flex justify-content-between align-items-center">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Tìm kiếm người dùng..."
+                                    ng-model="searchUser" />
+                                <button class="btn btn-primary ms-2" data-bs-toggle="modal"
+                                    data-bs-target="#addEmployeeModal">
+                                    <i class="bi bi-person-plus"></i> Thêm Nhân Viên Mới +
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -165,46 +174,33 @@
                         <!-- Tên người dùng -->
                         <div class="mb-3">
                             <label for="username" class="form-label">Tên Người Dùng</label>
-                            <input type="text" class="form-control" id="username" placeholder="Nhập tên người dùng"
-                                >
+                            <input type="text" class="form-control" id="username" placeholder="Nhập tên người dùng">
                         </div>
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Nhập email" ng-model="email" >
-                        </div>                        
+                            <input type="email" class="form-control" id="email" placeholder="Nhập email"
+                                ng-model="email">
+                        </div>
                         <!-- Số điện thoại -->
                         <div class="mb-3">
                             <label for="phone" class="form-label">Số Điện Thoại</label>
-                            <input type="text" class="form-control" id="phone" placeholder="Nhập số điện thoại"
-                                >
+                            <input type="text" class="form-control" id="phone" placeholder="Nhập số điện thoại">
                         </div>
 
                         <!-- Giới tính -->
                         <div class="mb-3">
                             <label for="gender" class="form-label">Giới Tính</label>
-                            <select class="form-select" id="gender" >
+                            <select class="form-select" id="gender">
                                 <option value="" disabled selected>Chọn Giới Tính</option>
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
-                                <option value="Khác">Khác</option>
                             </select>
                         </div>
-
-                        <!-- Vai trò -->
-                        <div class="mb-3">
-                            <label for="role" class="form-label">Vai Trò</label>
-                            <select class="form-select" id="role" >
-                                <option value="" disabled selected>Chọn Vai Trò</option>
-                                <option value="2">Khách hàng</option>
-                                <option value="4">Nhân viên bán hàng</option>
-                            </select>
-                        </div>
-
                         <!-- Mật khẩu -->
                         <div class="mb-3">
                             <label for="password" class="form-label">Mật khẩu</label>
-                            <input type="password" class="form-control" id="password" placeholder="Mật khẩu" >
+                            <input type="password" class="form-control" id="password" placeholder="Mật khẩu">
                         </div>
                         <!-- Nút submit -->
                         <button type="submit" class="btn btn-primary">Thêm Người Dùng</button>
@@ -213,6 +209,68 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEmployeeModalLabel">Thêm Nhân Viên Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addEmployeeForm">
+                        <!-- Tên nhân viên -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Tên Nhân Viên</label>
+                            <!-- Tên nhân viên -->
+                            <input type="text" class="form-control" id="usernameEmployee" placeholder="Nhập tên nhân viên">
+                        </div>
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Nhập email"
+                                ng-model="email">
+                        </div>
+                        <!-- Số điện thoại -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Số Điện Thoại</label>
+                            <input type="text" class="form-control" id="phoneEmployee" placeholder="Nhập số điện thoại">
+                        </div>
+
+                        <!-- Giới tính -->
+                        <div class="mb-3">
+                            <label for="gender" class="form-label">Giới Tính</label>
+                            <select class="form-select" id="genderEmployee">
+                                <option value="" disabled selected>Chọn Giới Tính</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </select>
+                        </div>
+
+                        <!-- Vai trò -->
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Vai Trò</label>
+                            <select class="form-select" id="roleEmployee">
+                                <option value="" disabled selected>Chọn Vai Trò</option>
+                                <option value="4">Nhân viên bán hàng</option>
+                                <option value="5">Nhân viên giao hàng</option>
+                                <option value="6">Quản lý kho</option>
+                            </select>
+                        </div>
+
+                        <!-- Mật khẩu -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="passwordEmployee" placeholder="Mật khẩu">
+                        </div>
+                        <!-- Nút submit -->
+                        <button type="submit" class="btn btn-primary">Thêm Nhân Viên</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Cập Nhật Thông Tin Người Dùng -->
     <div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserModalLabel"
         aria-hidden="true">
@@ -227,7 +285,7 @@
                         <div class="mb-3">
                             <label for="updateUsername" class="form-label">Tên Người Dùng</label>
                             <input type="text" class="form-control" id="updateUsername"
-                                ng-model="selectedUser.tenNguoiDung" placeholder="Nhập tên người dùng" >
+                                ng-model="selectedUser.tenNguoiDung" placeholder="Nhập tên người dùng">
                         </div>
                         <div class="mb-3">
                             <label for="updateEmail" class="form-label">Email</label>
@@ -237,14 +295,13 @@
                         <div class="mb-3">
                             <label for="updatePhone" class="form-label">Số Điện Thoại</label>
                             <input type="text" class="form-control" id="updatePhone" ng-model="selectedUser.sdt"
-                                placeholder="Nhập số điện thoại" >
+                                placeholder="Nhập số điện thoại">
                         </div>
                         <div class="mb-3">
                             <label for="updateGender" class="form-label">Giới Tính</label>
-                            <select class="form-select" id="updateGender" ng-model="selectedUser.gioiTinh" >
+                            <select class="form-select" id="updateGender" ng-model="selectedUser.gioiTinh">
                                 <option value="Nam">Nam</option>
                                 <option value="Nữ">Nữ</option>
-                                <option value="Khác">Khác</option>
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Cập Nhật Người Dùng</button>
@@ -252,7 +309,45 @@
                 </div>
             </div>
         </div>
-
-
+    </div>
+    <!-- Modal Cập Nhật Thông Tin Nhân Viên -->
+    <div class="modal fade" id="updateEmployeeModal" tabindex="-1" aria-labelledby="updateEmployeeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateEmployeeModalLabel">Cập Nhật Thông Tin Nhân Viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form name="updateEmployeeForm" ng-submit="updateEmployee()" novalidate>
+                        <div class="mb-3">
+                            <label for="updateEmployeeName" class="form-label">Tên Nhân Viên</label>
+                            <input type="text" class="form-control" id="updateEmployeeName"
+                                ng-model="selectedEmployee.tenNhanVien" placeholder="Nhập tên nhân viên">
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="updateEmail" ng-model="selectedEmployee.email"
+                                placeholder="Nhập email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="updatePhone" class="form-label">Số Điện Thoại</label>
+                            <input type="text" class="form-control" id="updatePhone" ng-model="selectedEmployee.sdt"
+                                placeholder="Nhập số điện thoại">
+                        </div>
+                        <div class="mb-3">
+                            <label for="updateGender" class="form-label">Giới Tính</label>
+                            <select class="form-select" id="updateGender" ng-model="selectedEmployee.gioiTinh">
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cập Nhật Nhân Viên</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </main>

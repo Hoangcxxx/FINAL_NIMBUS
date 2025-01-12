@@ -1,55 +1,181 @@
-<script src="https://esgoo.net/scripts/jquery.js"></script>
-<style type="text/css">
-    .css_select_div{ text-align: center;}
-    .css_select{ display: inline-table; width: 25%; padding: 5px; margin: 5px 2%; border: solid 1px #686868; border-radius: 5px;}
-</style>
-<script>
-    $(document).ready(function() {
-        //Lấy tỉnh thành
-        $.getJSON('https://esgoo.net/api-tinhthanh/1/0.htm',function(data_tinh){	       
-            if(data_tinh.error==0){
-               $.each(data_tinh.data, function (key_tinh,val_tinh) {
-                  $("#tinh").append('<option value="'+val_tinh.id+'">'+val_tinh.full_name+'</option>');
-               });
-               $("#tinh").change(function(e){
-                    var idtinh=$(this).val();
-                    //Lấy quận huyện
-                    $.getJSON('https://esgoo.net/api-tinhthanh/2/'+idtinh+'.htm',function(data_quan){	       
-                        if(data_quan.error==0){
-                           $("#quan").html('<option value="0">Quận Huyện</option>');  
-                           $("#phuong").html('<option value="0">Phường Xã</option>');   
-                           $.each(data_quan.data, function (key_quan,val_quan) {
-                              $("#quan").append('<option value="'+val_quan.id+'">'+val_quan.full_name+'</option>');
-                           });
-                           //Lấy phường xã  
-                           $("#quan").change(function(e){
-                                var idquan=$(this).val();
-                                $.getJSON('https://esgoo.net/api-tinhthanh/3/'+idquan+'.htm',function(data_phuong){	       
-                                    if(data_phuong.error==0){
-                                       $("#phuong").html('<option value="0">Phường Xã</option>');   
-                                       $.each(data_phuong.data, function (key_phuong,val_phuong) {
-                                          $("#phuong").append('<option value="'+val_phuong.id+'">'+val_phuong.full_name+'</option>');
-                                       });
-                                    }
-                                });
-                           });
-                            
-                        }
-                    });
-               });   
-                
-            }
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/view-client/assets/css/style.css">
+    <link rel="stylesheet" href="lib/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href='assets/image/favicon1.png' rel='icon' type='image/x-icon' />
+    <!-- Bootstrap CSS -->
+    <!-- Font Awesome -->
+    <script src="lib/angular.js"></script>
+    <script src="lib/angular-route.js"></script>
+    <script src="view-client/controllers/SanPhamController.js"></script>
+    <script src="view-client/controllers/ThanhToanController.js"></script>
+    <script src="view-client/controllers/TrangchuController.js"></script>
+    <script src="view-client/controllers/SanPhamCTController.js"></script>
+    <script src="view-client/controllers/AboutController.js"></script>
+    <script src="view-client/controllers/BlogController.js"></script>
+    <script src="view-client/controllers/ContactController.js"></script>
+    <script src="view-client/controllers/GiohangController.js"></script>
+    <script src="view-client/controllers/UserController.js"></script>
+    <script src="view-client/controllers/ThongTinNguoiDungController.js"></script>
+    <script src="view-client/controllers/ThanhCongController.js"></script>
+    <script src="view-client/controllers/DonhangController.js"></script>
+    <script src="view-client/controllers/QuenMatKhauController.js"></script>
+    <script src="view-client/controllers/DonHangCuaToiController.js"></script>
+    <script src="view-client/controllers/ThanhCongttController.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <section id="product1" class="section-p1">
+        <h2>Sản Phẩm Đang Giảm Giá</h2>
+        <p>Bộ sưu tập những sản phẩm đang được giảm giá</p>
+
+        <!-- Button to toggle the filter section -->
+        <button class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#filterSection">
+            Lọc Sản Phẩm
+            <i class="fa-solid fa-filter"></i>
+        </button>
+
+        <!-- Filter Section -->
+        <div id="filterSection" class="collapse mt-3">
+            <div class="alert alert-info" role="alert">
+                <div class="container">
+                    <h5>Lọc Theo</h5>
+                    <!-- Category Filter -->
+                    <div class="mb-3">
+                        <label for="categoryFilter" class="form-label">Danh Mục</label>
+                        <select id="categoryFilter" class="form-select">
+                            <option value="">Tất Cả</option>
+                            <option value="ao">Áo</option>
+                            <option value="quan">Quần</option>
+                            <option value="giay">Giày</option>
+                            <option value="phu_kien">Phụ Kiện</option>
+                        </select>
+                    </div>
+
+                    <!-- Size Filter -->
+                    <div class="mb-3">
+                        <label for="sizeFilter" class="form-label">Kích Cỡ</label>
+                        <select id="sizeFilter" class="form-select">
+                            <option value="">Tất Cả</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                        </select>
+                    </div>
+
+                    <!-- Color Filter -->
+                    <div class="mb-3">
+                        <label for="colorFilter" class="form-label">Màu Sắc</label>
+                        <select id="colorFilter" class="form-select">
+                            <option value="">Tất Cả</option>
+                            <option value="red">Đỏ</option>
+                            <option value="blue">Xanh</option>
+                            <option value="black">Đen</option>
+                            <option value="white">Trắng</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Range Filter -->
+                    <div class="mb-3">
+                        <label for="priceRange" class="form-label">Khoảng Giá</label>
+                        <input type="range" class="form-range" min="0" max="1000000" step="50000" id="priceRange">
+                        <div class="d-flex justify-content-between">
+                            <span>0 VND</span>
+                            <span>1,000,000 VND</span>
+                        </div>
+                    </div>
+
+                    <!-- Apply Button -->
+                    <button class="btn btn-primary">Áp Dụng Lọc</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product List -->
+        <div class="prod-cont">
+            <div class="prod" ng-repeat="item in dsSanPham">
+                <a href="#!san_pham_ct/{{item.idSanPham}}" class="text-decoration-none text-dark">
+                    <img ng-src="{{item.urlAnh}}" alt="">
+                    <div class="des">
+                        <b>{{item.tenSanPham}}</b>
+                        <h5>{{item.moTa}}</h5>
+                        <div class="d-flex align-items-center">
+                            <span ng-if="item.kieuGiamGia !== null" class="badge bg-danger me-2 text-light text-center">
+                                <i class="fa-solid fa-tag text-light d-flex align-items-center">
+                                    <div class="ms-1">
+                                        {{item.kieuGiamGia ? (item.giaTriKhuyenMai | number) + ' VND' :
+                                        item.giaTriKhuyenMai
+                                        + ' %'}}
+                                    </div>
+                                </i>
+                            </span>
+
+                            <div class="star">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <span ng-if="item.giaKhuyenMai" class="text-danger me-3"
+                                style="font-weight: bold; font-size: 20px;">
+                                {{ item.giaKhuyenMai | currency: '': 0}} VND
+                            </span>
+                            <span ng-if="item.giaKhuyenMai" style="font-size: 13px;">
+                                <del>{{ item.giaBan | currency: '': 0}}</del> VND
+                            </span>
+                            <h4 ng-if="!item.giaKhuyenMai" style="font-size: 18px;">
+                                <span>{{ item.giaBan | currency: '': 0}} VND</span>
+                            </h4>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="#!san_pham_ct/{{item.idSanPham}}"><i class="fa-solid fa-cart-shopping cart"></i></a>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="pagination" class="section-p1">
+        <a href="#">1</a>
+        <a href="#">2</a>
+        <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+    </section>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <!-- Thêm SweetAlert CDN vào trong phần head của file HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="lib/bootstrap.js"></script>
+    <script src="view-client/assets/javascript/script.js"></script>
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <script
+        src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.1.0-beta.0/libs/oversea/index.js"></script>
+    <script src="https://esgoo.net/scripts/jquery.js"></script>
+    <script>
+        new CozeWebSDK.WebChatClient({
+            config: {
+                bot_id: '7448329403023245313',
+            },
+            componentProps: {
+                title: 'Coze',
+            },
         });
-     });	    
- </script>
- <div class="css_select_div">
-     <select class="css_select" id="tinh" name="tinh" title="Chọn Tỉnh Thành">
-         <option value="0">Tỉnh Thành</option>
-     </select> 
-     <select class="css_select" id="quan" name="quan" title="Chọn Quận Huyện">
-         <option value="0">Quận Huyện</option>
-     </select> 
-     <select class="css_select" id="phuong" name="phuong" title="Chọn Phường Xã">
-         <option value="0">Phường Xã</option>
-     </select>
- </div>
+    </script>
+</body>
+
+</html>

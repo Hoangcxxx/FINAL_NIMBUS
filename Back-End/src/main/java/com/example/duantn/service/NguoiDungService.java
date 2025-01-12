@@ -3,12 +3,16 @@ package com.example.duantn.service;
 import com.example.duantn.dto.NguoiDungDTO;
 import com.example.duantn.dto.TimKiemNguoiDungDTO;
 import com.example.duantn.entity.NguoiDung;
+import com.example.duantn.entity.VaiTro;
 import com.example.duantn.repository.NguoiDungRepository;
+import com.example.duantn.repository.VaiTroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,8 +22,14 @@ public class NguoiDungService {
 
     @Autowired
     private NguoiDungRepository nguoiDungRepository;
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private VaiTroRepository vaiTroRepository;
     // Lấy tất cả người dùng có vai trò id = 2 (ví dụ)
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int CODE_LENGTH = 5;
+    private static final SecureRandom RANDOM = new SecureRandom();
     public List<NguoiDung> getAllNguoiDungsByRoleId() {
         return nguoiDungRepository.getSanPhamById();
     }
@@ -31,6 +41,20 @@ public class NguoiDungService {
     public List<NguoiDung> getAllNhanVienBanHang() {
         return nguoiDungRepository.findByVaiTro_IdVaiTro(3);
     }
+    private String generateUniqueCode() {
+        String code;
+        do {
+            code = generateRandomCode();
+        } while (nguoiDungRepository.existsByMaNguoiDung(code)); // Kiểm tra tính duy nhất
+        return code;
+    }
+    private String generateRandomCode() {
+        StringBuilder code = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            code.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
+        }
+        return code.toString();
+    }
     // Thêm mới người dùng
     public ResponseEntity<?> addNguoiDung(NguoiDung nguoiDung) {
         // Kiểm tra nếu email hoặc số điện thoại đã tồn tại trong cơ sở dữ liệu
@@ -41,8 +65,26 @@ public class NguoiDungService {
             return new ResponseEntity<>("Số điện thoại đã tồn tại!", HttpStatus.BAD_REQUEST);
         }
 
+        // Mã hóa mật khẩu và tạo mã khách hàng
+        nguoiDung.setMatKhau(passwordEncoder.encode(nguoiDung.getMatKhau()));
+        nguoiDung.setMaNguoiDung(nguoiDung.getMaNguoiDung() == null ? generateUniqueCode() : nguoiDung.getMaNguoiDung());
+
+        // Kiểm tra và gán vai trò từ ID
+        if (nguoiDung.getVaiTro() == null || nguoiDung.getVaiTro().getIdVaiTro() == null) {
+            return new ResponseEntity<>("Vai trò không hợp lệ!", HttpStatus.BAD_REQUEST);
+        }
+
+        // Tìm vai trò trong cơ sở dữ liệu theo ID
+        VaiTro vaiTro = vaiTroRepository.findById(nguoiDung.getVaiTro().getIdVaiTro())
+                .orElseThrow(() -> new RuntimeException("Vai trò không tồn tại!"));
+
+        // Gán vai trò cho người dùng
+        nguoiDung.setVaiTro(vaiTro);
+
+        // Gán thời gian tạo và cập nhật
         nguoiDung.setNgayTao(new Date());
         nguoiDung.setNgayCapNhat(new Date());
+        nguoiDung.setTrangThai(true);
 
         // Tạo mã người dùng (ma_nguoi_dung) nếu chưa có
         if (nguoiDung.getMaNguoiDung() == null || nguoiDung.getMaNguoiDung().isEmpty()) {
@@ -50,9 +92,12 @@ public class NguoiDungService {
             nguoiDung.setMaNguoiDung(generatedMaNguoiDung);
         }
 
+        // Lưu người dùng vào cơ sở dữ liệu
         NguoiDung createdNguoiDung = nguoiDungRepository.save(nguoiDung);
         return new ResponseEntity<>(createdNguoiDung, HttpStatus.CREATED);
     }
+
+
 
     // Kiểm tra xem email đã tồn tại hay chưa
     private boolean isEmailExist(String email) {

@@ -1,9 +1,7 @@
 package com.example.duantn.service;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
-import com.example.duantn.repository.DotGiamGiaRepository;
-import com.example.duantn.repository.SanPhamChiTietRepository;
-import com.example.duantn.repository.SanPhamRepository;
+import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +15,13 @@ public class SanPhamService {
     @Autowired
     private static SanPhamRepository sanPhamRepository;
     @Autowired
+    private static GioHangChiTietRepository gioHangChiTietRepository;
+    @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
     @Autowired
     private static DotGiamGiaRepository dotGiamGiaRepository;
-
+    @Autowired
+    private DanhGiaRepository danhGiaRepository;
     @Autowired
     public SanPhamService(SanPhamRepository sanPhamRepository) {
         this.sanPhamRepository = sanPhamRepository;
@@ -52,6 +53,13 @@ public class SanPhamService {
     }
 
     public void deleteSanPham(Integer idSanPham) {
+        // Xóa các đánh giá liên quan
+        danhGiaRepository.deleteBySanPhamIdSanPham(idSanPham);
+        // Xóa các chi tiết sản phẩm có trong giỏ hàng chi tiết
+        sanPhamRepository.deleteGioHangChiTietBySanPhamId(idSanPham);
+        // Xóa các giảm giá sản phẩm có liên quan
+        sanPhamRepository.deleteBySanPhamId(idSanPham);  // Thêm phương thức xóa giảm giá
+
         // Xóa các hình ảnh liên quan
         sanPhamRepository.deleteHinhAnhBySanPhamId(idSanPham);
 
@@ -61,6 +69,8 @@ public class SanPhamService {
         // Xóa sản phẩm chính
         sanPhamRepository.deleteSanPhamByIdSanPham(idSanPham);
     }
+
+
 
 
 
@@ -143,5 +153,14 @@ public class SanPhamService {
             }
         }
         return false; // Nếu không tìm thấy hoặc trạng thái không hợp lệ
+    }
+
+    // Phương thức kiểm tra trạng thái sản phẩm
+    public Boolean checkTrangThaiSanPham(Integer id) {
+        SanPham sanPham = sanPhamRepository.findById(id).orElse(null);
+        if (sanPham != null) {
+            return sanPham.getTrangThai();  // Trả về trạng thái sản phẩm
+        }
+        return null;  // Nếu không tìm thấy sản phẩm, trả về null hoặc có thể ném ngoại lệ
     }
 }

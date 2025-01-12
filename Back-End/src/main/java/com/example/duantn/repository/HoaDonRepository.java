@@ -82,5 +82,35 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "WHERE hd.maHoaDon = :maHoaDon " +
             "ORDER BY hd.idHoaDon DESC")
     String findTenSanPhamTheoMaHoaDon(@Param("maHoaDon") String maHoaDon);
-
+    // Tìm kiếm hóa đơn theo mã hóa đơn
+    @Query(value = "WITH LatestStatus AS ( " +
+            "SELECT " +
+            "h.Id_hoa_don, " +
+            "h.ma_hoa_don, " +
+            "u.ten_nguoi_dung, " +
+            "h.sdt_nguoi_nhan, " +
+            "h.thanh_tien, " +
+            "h.loai, " +
+            "t.ngay_tao, " +
+            "l.ten_loai_trang_thai, " +
+            "ROW_NUMBER() OVER (PARTITION BY h.Id_hoa_don ORDER BY t.id_loai_trang_thai DESC) AS rn " +
+            "FROM hoa_don h " +
+            "JOIN trang_thai_hoa_don t ON h.Id_hoa_don = t.id_hoa_don " +
+            "JOIN loai_trang_thai l ON l.id_loai_trang_thai = t.id_loai_trang_thai " +
+            "JOIN nguoi_dung u ON h.id_nguoi_dung = u.id_nguoi_dung " +
+            ") " +
+            "SELECT " +
+            "ls.Id_hoa_don, " +
+            "ls.ma_hoa_don, " +
+            "ls.ten_nguoi_dung, " +
+            "ls.sdt_nguoi_nhan, " +
+            "ls.thanh_tien, " +
+            "ls.loai, " +
+            "ls.ngay_tao, " +
+            "ls.ten_loai_trang_thai " +
+            "FROM LatestStatus ls " +
+            "WHERE ls.rn = 1 " +
+            "AND ls.ma_hoa_don LIKE %:maHoaDon% " +
+            "ORDER BY ls.ngay_tao DESC, ls.Id_hoa_don", nativeQuery = true)
+    List<Object[]> searchHoaDonByMaHoaDon(String maHoaDon);
 }

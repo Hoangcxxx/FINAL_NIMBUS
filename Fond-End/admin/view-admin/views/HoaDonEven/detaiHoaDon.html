@@ -129,12 +129,12 @@
         <!-- Action Buttons -->
         <div class="d-flex justify-content-between mt-4">
             <div>
-                <!-- Chỉ hiển thị nút khi có trạng thái hợp lệ -->
-                <button class="btn btn-secondary" data-toggle="modal" data-target="#ghiChuModal" ng-click="openModal()"
-                    ng-if="modalButtonText">
+                <!-- Nút chuyển trạng thái trực tiếp -->
+                <button class="btn btn-secondary" ng-click="updateTrangThaiHoaDon()" ng-if="modalButtonText">
                     {{modalButtonText}}
                 </button>
             </div>
+
             <div>
                 <button class="btn btn-primary" data-toggle="modal" data-target="#chiTietModal">Chi tiết</button>
             </div>
@@ -205,7 +205,8 @@
                             <li ng-if="showEmailAndAddress"><strong>Số điện thoại:</strong> {{hoaDon.sdtNguoiNhan}}</li>
 
                             <!-- Chỉ hiển thị địa chỉ nếu showEmailAndAddress là true -->
-                            <li ng-if="showEmailAndAddress"><strong>Địa chỉ:</strong> {{hoaDon.diaChi}}</li>
+                            <li ng-if="showEmailAndAddress"><strong>Địa chỉ:</strong> {{hoaDon.diaChi}}, {{hoaDon.xa}},
+                                {{hoaDon.huyen}}, {{hoaDon.tinh}}</li>
                         </ul>
                     </section>
 
@@ -279,8 +280,11 @@
                         <ul class="list-unstyled">
                             <li><strong>Tổng Tiền Sản Phẩm:</strong> {{totalBeforeDiscount | currency: '': 0}} VND
                             </li>
-                            <li ng-if="discountAmount > 0"><strong>Giảm giá:</strong> {{discountAmount | currency:
-                                '': 0}} VND</li>
+                            <li ng-if="discountAmount > 0">
+                                <strong>Số Tiền Sau Giảm Giá:</strong>
+                                {{finalAmount | currency:'':0}} VND
+                                (<span class="discount-amount">-{{discountAmount | currency:'':0}} VND</span>)
+                            </li>
                             <li><strong>Phí vận chuyển:</strong> {{hoaDon.phiShip | currency: '': 0}} VND</li>
                             <li class="h4 mt-5">
                                 <strong>Tổng thanh toán:</strong>
@@ -293,65 +297,6 @@
         </div>
     </div>
 </main>
-
-
-<!-- Modal Ghi Chú -->
-<div class="modal fade" id="ghiChuModal" tabindex="-1" role="dialog" aria-labelledby="ghiChuModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="ghiChuModalLabel">Nhập ghi chú</h5>
-                <button class="modal-close" data-dismiss="modal" ng-click="resetModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="noteForm" ng-submit="updateTrangThaiHoaDon()">
-                    <div class="form-group">
-                        <label>Chọn trạng thái hóa đơn:</label>
-                        <div ng-repeat="item in filteredTrangThaiList" class="form-check">
-                            <input class="form-check-input" type="radio" ng-model="ghiChu.trangThaiId"
-                                value="{{item.idLoaiTrangThai}}" id="status-{{item.idLoaiTrangThai}}" name="trangThai">
-                            <label class="form-check-label" for="status-{{item.idLoaiTrangThai}}">
-                                {{item.tenLoaiTrangThai}}: {{item.moTa}}
-                            </label>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">{{modalButtonText}}</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Chi tiết -->
-<div class="modal fade" id="chiTietModal" tabindex="-1" role="dialog" aria-labelledby="chiTietModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content container ">
-            <h4 class="mt-4">Lịch sử chi tiết</h4>
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Trạng thái</th>
-                        <th>Thời gian</th>
-                        <th>Nhân viên xác nhận</th>
-                        <th>Ghi chú</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="item in filteredStatuses track by $index">
-                        <td>{{item.tenLoaiTrangThaiHoaDon}}</td>
-                        <td>{{item.ngayTao | date:'dd/MM/yyyy hh:mm:ss a'}}</td>
-                        <td>{{item.tenNhanVien}}</td>
-                        <td>{{item.moTa}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 
 
 
@@ -396,6 +341,35 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Chi tiết -->
+<div class="modal fade" id="chiTietModal" tabindex="-1" role="dialog" aria-labelledby="chiTietModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content container ">
+            <h4 class="mt-4">Lịch sử chi tiết</h4>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Trạng thái</th>
+                        <th>Thời gian</th>
+                        <th>Nhân viên xác nhận</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in filteredStatuses track by $index">
+                        <td>{{item.tenLoaiTrangThaiHoaDon}}</td>
+                        <td>{{item.ngayTao | date:'dd/MM/yyyy hh:mm:ss a'}}</td>
+                        <td>{{item.tenNhanVien}}</td>
+                        <td>{{item.moTa}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class SanPhamChiTietService {
@@ -133,7 +131,25 @@ public class SanPhamChiTietService {
         return sanPhamChiTietRepository.saveAll(savedSanPhamChiTietList);
     }
 
+    public Map<String, String> checkSoLuong(Integer idSanPhamChiTiet) {
+        Optional<SanPhamChiTiet> sanPhamChiTietOpt = sanPhamChiTietRepository.findById(idSanPhamChiTiet);
 
+        Map<String, String> response = new HashMap<>();
+
+        if (sanPhamChiTietOpt.isPresent()) {
+            SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietOpt.get();
+
+            if (sanPhamChiTiet.getSoLuong() == 0) {
+                response.put("message", "Sản phẩm đã hết hàng!");
+            } else {
+                response.put("message", "Sản phẩm còn " + sanPhamChiTiet.getSoLuong() + " sản phẩm.");
+            }
+        } else {
+            response.put("message", "Sản phẩm không tồn tại!");
+        }
+
+        return response;
+    }
     public SanPhamChiTiet getSanPhamChiTietById(Integer idSanPhamChiTiet) {
         return sanPhamChiTietRepository.findById(idSanPhamChiTiet).orElse(null);
     }

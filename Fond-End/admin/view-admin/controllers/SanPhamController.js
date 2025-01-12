@@ -106,8 +106,13 @@ window.SanPhamController = function ($scope, $http) {
         // Gửi PUT request để cập nhật sản phẩm
         $http.put(`http://localhost:8080/api/admin/san_pham/${$scope.SanPham.idSanPham}`, updatedProduct)
             .then(function (response) {
-                // Nếu cập nhật thành công, bạn có thể thông báo cho người dùng
-                alert("Cập nhật sản phẩm thành công!");
+                // Thông báo thành công
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cập nhật sản phẩm thành công!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
 
                 // Cập nhật lại dữ liệu đã chọn (dùng để so sánh trong lần sau)
                 $scope.selectedProduct = angular.copy($scope.SanPham);
@@ -117,8 +122,14 @@ window.SanPhamController = function ($scope, $http) {
                 // Tải lại danh sách sản phẩm
                 $scope.fetchData('http://localhost:8080/api/admin/san_pham', 'dsSanPham', 'Fetched products:');
             }, function (error) {
-                // Nếu có lỗi, thông báo cho người dùng
-                alert("Đã xảy ra lỗi khi cập nhật sản phẩm.");
+                // Thông báo lỗi
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Đã xảy ra lỗi khi cập nhật sản phẩm!',
+                    text: error.data ? error.data.message : 'Vui lòng thử lại.',
+                    showConfirmButton: true
+                });
+
                 console.error(error);
             });
     };
@@ -126,19 +137,69 @@ window.SanPhamController = function ($scope, $http) {
 
 
 
+    $scope.confirmDelete = function (idSanPham) {
+        // Hiển thị hộp thoại xác nhận xóa sản phẩm
+        Swal.fire({
+            icon: 'warning',
+            title: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+            text: 'Hành động này không thể hoàn tác!',
+            showCancelButton: true, // Hiển thị nút Hủy
+            confirmButtonText: 'Có, xóa sản phẩm!',
+            cancelButtonText: 'Hủy',
+            reverseButtons: true // Đảo ngược vị trí các nút
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng xác nhận xóa, thực hiện gọi API để xóa sản phẩm
+                $http.delete('http://localhost:8080/api/admin/san_pham/' + idSanPham)
+                    .then(function (response) {
+                        // Hiển thị thông báo thành công
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Xóa sản phẩm thành công!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        // Tải lại danh sách sản phẩm
+                        initializeData(); // Hàm này sẽ tái tải danh sách sản phẩm
+                    })
+                    .catch(function (error) {
+                        // Hiển thị thông báo lỗi khi xóa không thành công
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Đã xảy ra lỗi khi xóa sản phẩm!',
+                            text: error.data ? error.data.message : 'Vui lòng thử lại.',
+                            showConfirmButton: true
+                        });
+                    });
+            }
+        });
+    };
+
     // Function to edit a product
     $scope.chinhSuaSanPham = function (item) {
         $scope.selectedProduct = angular.copy(item);
         $('#addProductModal').modal('show');
     };
 
-    // Function to delete a product
     $scope.xoaSanPham = function (id) {
         if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
             $http.delete('http://localhost:8080/api/admin/san_pham/' + id).then(function (response) {
-                alert("Xóa sản phẩm thành công!");
+                // Thông báo thành công khi xóa
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Xóa sản phẩm thành công!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
                 initializeData(); // Re-fetch products
             }, function (error) {
+                // Thông báo lỗi khi xóa
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Đã xảy ra lỗi khi xóa sản phẩm!',
+                    text: error.data ? error.data.message : 'Vui lòng thử lại.',
+                    showConfirmButton: true
+                });
                 console.error('Error deleting product:', error);
             });
         }

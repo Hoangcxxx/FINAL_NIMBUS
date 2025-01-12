@@ -1039,5 +1039,8 @@ public class HoaDonService {
         }).collect(Collectors.toList());
     }
 
-
+    // Tìm kiếm hóa đơn theo mã hóa đơn
+    public List<Object[]> searchHoaDonByMaHoaDon(String maHoaDon) {
+        return hoaDonRepository.searchHoaDonByMaHoaDon(maHoaDon);
+    }
 }
