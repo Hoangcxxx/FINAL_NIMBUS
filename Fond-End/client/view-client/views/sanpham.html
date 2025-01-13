@@ -12,7 +12,8 @@
                 <!-- Selected Filters -->
                 <div>
                     <h5>Bạn đã chọn</h5>
-                    <div class="mb-3 " ng-if="selectDanhMuc || selectedMauSac || selectedChatLieu || selectedKichThuoc">
+                    <div class="mb-3"
+                        ng-if="selectedDanhMuc || selectedMauSac || selectedChatLieu || selectedKichThuoc">
                         <span ng-if="selectedDanhMuc" class="badge bg-danger me-2 text-light">
                             {{selectedDanhMuc}} <i class="fa-solid fa-xmark" ng-click="removeFilter('DanhMuc')"></i>
                         </span>
@@ -26,24 +27,29 @@
                             {{selectedKichThuoc}} <i class="fa-solid fa-xmark" ng-click="removeFilter('KichThuoc')"></i>
                         </span>
                     </div>
-                    <div ng-if="!selectedMauSac && !selectedChatLieu && !selectedKichThuoc">
+                    <div ng-if="!selectedMauSac && !selectedChatLieu && !selectedKichThuoc && !selectedDanhMuc">
                         <p class="text-muted">Chưa có bộ lọc nào được chọn</p>
                     </div>
                 </div>
                 <hr>
                 <!-- Price Range Filter -->
+                <!-- Price Range Filter -->
                 <div class="mb-3">
                     <label for="priceRange" class="form-label" style="font-weight: bold;">Sắp xếp khoảng giá</label>
-                    <input type="range" class="form-range" min="0" max="1000000" step="50000" id="priceRange">
                     <div class="d-flex justify-content-between">
-                        <span>0 VND</span>
-                        <span>1,000,000 VND</span>
+                        <!-- Hiển thị giá min và max với định dạng tiền tệ -->
+                        <span>{{ priceRange.min | number:0 }} VND</span>
+                        <span>{{ priceRange.max | number:0 }} VND</span>
                     </div>
+                    <input type="range" class="form-range" id="priceRange" min="0" max="1000000" step="1000"
+                        ng-model="priceRange.min" ng-change="updatePriceRange()">
                 </div>
+
+
                 <hr>
                 <!-- Category Filter -->
                 <div>
-                    <button class="btn  w-100 d-flex justify-content-between align-items-center"
+                    <button class="btn w-100 d-flex justify-content-between align-items-center"
                         data-bs-toggle="collapse" data-bs-target="#demo1">
                         Danh Mục
                         <i class="fa-solid fa-plus"></i>
@@ -51,11 +57,10 @@
 
                     <div id="demo1" class="collapse">
                         <div class="list-group">
-                            <div class="form-check" ng-repeat="item in dsDanhMuc"
-                                ng-click="selectDanhMuc(item.tenDanhMuc)">
+                            <div class="form-check" ng-repeat="item in dsDanhMuc" ng-click="selectDanhMuc(item)">
                                 <input class="form-check-input" type="radio" name="DanhMuc"
                                     id="DanhMuc{{item.idDanhMuc}}" value="{{item.tenDanhMuc}}"
-                                    ng-checked="selectedDanhMuc === item.tenDanhMuc">
+                                    ng-checked="selectedCategoryId === item.idDanhMuc">
                                 <label class="form-check-label" for="DanhMuc{{item.idDanhMuc}}">
                                     <a href="" class="menu-link text-dark text-decoration-none me-5">
                                         {{item.tenDanhMuc}}
@@ -65,25 +70,24 @@
                         </div>
                     </div>
                 </div>
+
                 <hr>
                 <!-- Category Filter -->
+                <!-- Chất Liệu Filter -->
                 <div>
-                    <button class="btn  w-100 d-flex justify-content-between align-items-center"
+                    <button class="btn w-100 d-flex justify-content-between align-items-center"
                         data-bs-toggle="collapse" data-bs-target="#demo2">
                         Chất Liệu
                         <i class="fa-solid fa-plus"></i>
                     </button>
-
                     <div id="demo2" class="collapse">
                         <div class="list-group">
-                            <div class="form-check" ng-repeat="item in dsChatLieu"
-                                ng-click="selectChatLieu(item.tenChatLieu)">
+                            <div class="form-check" ng-repeat="item in dsChatLieu" ng-click="selectChatLieu(item)">
                                 <input class="form-check-input" type="radio" name="ChatLieu" id="ChatLieu{{item.id}}"
                                     value="{{item.tenChatLieu}}" ng-checked="selectedChatLieu === item.tenChatLieu">
                                 <label class="form-check-label" for="ChatLieu{{item.id}}">
-                                    <a href="" class="menu-link text-dark text-decoration-none me-5">
-                                        {{item.tenChatLieu}}
-                                    </a>
+                                    <a href=""
+                                        class="menu-link text-dark text-decoration-none me-5">{{item.tenChatLieu}}</a>
                                 </label>
                             </div>
                         </div>
@@ -92,48 +96,41 @@
                 <hr>
                 <!-- Category Filter -->
                 <div>
-                    <button class="btn  w-100 d-flex justify-content-between align-items-center"
+                    <button class="btn w-100 d-flex justify-content-between align-items-center"
                         data-bs-toggle="collapse" data-bs-target="#demo3">
                         Màu Sắc
                         <i class="fa-solid fa-plus"></i>
                     </button>
-
                     <div id="demo3" class="collapse">
                         <div class="list-group">
-                            <div class="form-check" ng-repeat="item in dsMauSac"
-                                ng-click="selectMauSac(item.tenMauSac)">
+                            <div class="form-check" ng-repeat="item in dsMauSac" ng-click="selectMauSac(item)">
                                 <input class="form-check-input" type="radio" name="MauSac" id="MauSac{{item.id}}"
                                     value="{{item.tenMauSac}}" ng-checked="selectedMauSac === item.tenMauSac">
                                 <label class="form-check-label" for="MauSac{{item.id}}">
-                                    <a href="" class="menu-link text-dark text-decoration-none me-5">
-                                        {{item.tenMauSac}}
-                                    </a>
+                                    <a href=""
+                                        class="menu-link text-dark text-decoration-none me-5">{{item.tenMauSac}}</a>
                                 </label>
                             </div>
-
                         </div>
                     </div>
                 </div>
                 <hr>
 
-                <!-- Category Filter -->
+                <!-- Kích Thước Filter -->
                 <div>
-                    <button class="btn  w-100 d-flex justify-content-between align-items-center"
+                    <button class="btn w-100 d-flex justify-content-between align-items-center"
                         data-bs-toggle="collapse" data-bs-target="#demo4">
                         Kích Thước
                         <i class="fa-solid fa-plus"></i>
                     </button>
-
                     <div id="demo4" class="collapse">
                         <div class="list-group">
-                            <div class="form-check" ng-repeat="item in dsKichThuoc"
-                                ng-click="selectKichThuoc(item.tenKichThuoc)">
+                            <div class="form-check" ng-repeat="item in dsKichThuoc" ng-click="selectKichThuoc(item)">
                                 <input class="form-check-input" type="radio" name="KichThuoc" id="KichThuoc{{item.id}}"
                                     value="{{item.tenKichThuoc}}" ng-checked="selectedKichThuoc === item.tenKichThuoc">
                                 <label class="form-check-label" for="KichThuoc{{item.id}}">
-                                    <a href="" class="menu-link text-dark text-decoration-none me-5">
-                                        {{item.tenKichThuoc}}
-                                    </a>
+                                    <a href=""
+                                        class="menu-link text-dark text-decoration-none me-5">{{item.tenKichThuoc}}</a>
                                 </label>
                             </div>
                         </div>
@@ -211,3 +208,10 @@
     <a href="#">2</a>
     <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
 </section>
+<style>
+    /* Khi hover vào các biểu tượng xóa bộ lọc, hiển thị con trỏ bàn tay */
+    .badge .fa-xmark {
+        cursor: pointer;
+        /* Chuyển con trỏ thành hình bàn tay khi hover vào */
+    }
+</style>

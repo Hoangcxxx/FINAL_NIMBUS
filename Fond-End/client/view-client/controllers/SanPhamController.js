@@ -5,34 +5,137 @@ window.SanPhamController = function ($scope, $http) {
     $scope.dsMauSac = [];
     $scope.dsKichThuoc = [];
     $scope.selectedCategoryId = null;
+    $scope.selectedChatLieuId = null;
+    $scope.selectedMauSacId = null;
+    $scope.selectedKichThuocId = null;
     $scope.selectedProduct = null;
     $scope.selectedDanhMuc = null;
     $scope.selectedChatLieu = null;
     $scope.selectedMauSac = null;
     $scope.selectedKichThuoc = null;
 
-    // Hàm để lưu giá trị đã chọn
+    // Khởi tạo khoảng giá với giá trị mặc định min = 0 và max = 1000000
+    $scope.priceRange = {
+        min: 0, // Giá trị mặc định của min
+        max: 1000000 // Giá trị mặc định của max
+    };
+
+    // Biến lưu trữ timeout để debounce
+    let priceRangeTimeout;
+
+    // Biến để xác định khi nào thay đổi khoảng giá
+    let isPriceRangeChanged = false;
+
+    // Function to fetch filtered products
+    function fetchFilteredProducts() {
+        const minPrice = $scope.priceRange.min || 0; // Lấy giá trị min từ priceRange hoặc mặc định là 0
+        const maxPrice = $scope.priceRange.max || 1000000; // Lấy giá trị max từ priceRange hoặc mặc định là 1000000
+
+        // Construct the filter URL
+        let filterUrl = `http://localhost:8080/api/nguoi_dung/san_pham/search?minPrice=${minPrice}&maxPrice=${maxPrice}`;
+        if ($scope.selectedCategoryId) {
+            filterUrl += `&danhMucId=${$scope.selectedCategoryId}`;
+        }
+        if ($scope.selectedChatLieu) {
+            filterUrl += `&chatLieuId=${$scope.selectedChatLieuId}`;
+        }
+        if ($scope.selectedMauSac) {
+            filterUrl += `&mauSacId=${$scope.selectedMauSacId}`;
+        }
+        if ($scope.selectedKichThuoc) {
+            filterUrl += `&kichThuocId=${$scope.selectedKichThuocId}`;
+        }
+
+        // Fetch products from the API
+        $http.get(filterUrl).then(function (response) {
+            $scope.dsSanPham = response.data;
+            console.log("Filtered products:", response.data);
+        }, function (error) {
+            console.error('Error fetching filtered products:', error);
+        });
+    }
+
+    // Cập nhật hàm để thay đổi khoảng giá khi người dùng thay đổi giá trị trên slider
+    $scope.updatePriceRange = function () {
+        // Đảm bảo min và max là hợp lệ
+        $scope.priceRange = {
+            min: $scope.priceRange.min || 0,
+            max: $scope.priceRange.max || 1000000
+        };
+
+        // Hủy bỏ timeout cũ nếu có
+        if (priceRangeTimeout) {
+            clearTimeout(priceRangeTimeout);
+        }
+
+        // Đặt flag là true khi khoảng giá thay đổi
+        isPriceRangeChanged = true;
+
+        // Tạo độ trễ 1 giây trước khi gọi lại hàm fetchFilteredProducts cho khoảng giá
+        priceRangeTimeout = setTimeout(function () {
+            if (isPriceRangeChanged) {
+                fetchFilteredProducts();
+                isPriceRangeChanged = false;  // Reset flag sau khi đã xử lý
+            }
+        }, 500);  // 500ms = 0.5 giây
+    };
+
+    // Hàm xóa bộ lọc
+    $scope.removeFilter = function (filterType) {
+        switch (filterType) {
+            case 'DanhMuc':
+                $scope.selectedDanhMuc = null;
+                $scope.selectedCategoryId = null;
+                break;
+            case 'ChatLieu':
+                $scope.selectedChatLieu = null;
+                $scope.selectedChatLieuId = null;
+                break;
+            case 'MauSac':
+                $scope.selectedMauSac = null;
+                $scope.selectedMauSacId = null;
+                break;
+            case 'KichThuoc':
+                $scope.selectedKichThuoc = null;
+                $scope.selectedKichThuocId = null;
+                break;
+        }
+
+        // Gọi lại hàm fetchFilteredProducts để cập nhật danh sách sản phẩm sau khi xóa bộ lọc
+        fetchFilteredProducts();
+    };
+
+    // Category selection
+    $scope.selectDanhMuc = function (category) {
+        $scope.selectedDanhMuc = category.tenDanhMuc;
+        $scope.selectedCategoryId = category.idDanhMuc;
+        console.log("Category selected:", category);
+        fetchFilteredProducts();
+    };
+
+    // Material selection
     $scope.selectChatLieu = function (chatLieu) {
-        $scope.selectedChatLieu = chatLieu;
-        console.log("Chất liệu được chọn:", chatLieu);
+        $scope.selectedChatLieu = chatLieu.tenChatLieu;
+        $scope.selectedChatLieuId = chatLieu.id;
+        console.log("Material selected:", chatLieu);
+        fetchFilteredProducts();
     };
 
+    // Color selection
     $scope.selectMauSac = function (mauSac) {
-        $scope.selectedMauSac = mauSac;
-        console.log("Màu sắc được chọn:", mauSac);
+        $scope.selectedMauSac = mauSac.tenMauSac;
+        $scope.selectedMauSacId = mauSac.id;
+        console.log("Color selected:", mauSac);
+        fetchFilteredProducts();
     };
 
+    // Size selection
     $scope.selectKichThuoc = function (kichThuoc) {
-        $scope.selectedKichThuoc = kichThuoc;
-        console.log("Kích thước được chọn:", kichThuoc);
+        $scope.selectedKichThuoc = kichThuoc.tenKichThuoc;
+        $scope.selectedKichThuocId = kichThuoc.id;
+        console.log("Size selected:", kichThuoc);
+        fetchFilteredProducts();
     };
-
-    // Hàm để theo dõi danh mục được chọn
-    $scope.selectDanhMuc = function (danhMuc) {
-        $scope.selectedDanhMuc = danhMuc;
-        console.log("Danh mục được chọn:", danhMuc);
-    };
-
 
     // Hàm lấy dữ liệu từ API
     $scope.fetchData = function (url, target, logMessage) {
@@ -41,32 +144,6 @@ window.SanPhamController = function ($scope, $http) {
             console.log(logMessage, response.data);
         }, function (error) {
             console.error('Error fetching data:', error);
-        });
-    };
-
-    // Hàm click vào danh mục
-    $scope.onclickDanhMuc = function (idDanhMuc) {
-        console.log("Danh mục được click: " + idDanhMuc);
-        if (idDanhMuc === "null") {
-            // Nếu chọn "Tất cả", lấy tất cả sản phẩm
-            $scope.fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'dsSanPham', "Dữ liệu API trả về:");
-        } else {
-            $scope.selectedCategoryId = idDanhMuc;
-            // Lấy danh sách sản phẩm theo danh mục đã chọn
-            $scope.fetchData('http://localhost:8080/api/nguoi_dung/san_pham/findDanhMuc/' + idDanhMuc, 'dsSanPham', "Dữ liệu API trả về:");
-        }
-    };
-
-    // Hàm click vào sản phẩm
-    $scope.onclickSanPham = function (idSanPham) {
-        console.log('ID sản phẩm:', idSanPham);
-        // Lấy chi tiết sản phẩm đã chọn
-        $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/' + idSanPham).then(function (response) {
-            $scope.dsSanPham = response.data; // Gán dữ liệu sản phẩm chi tiết vào biến selectedProduct
-            console.log("Dữ liệu sản phẩm chi tiết:", response.data);
-            window.location.href = '#!/san_pham_ct/' + idSanPham;
-        }, function (error) {
-            console.error('Error fetching product details:', error);
         });
     };
 

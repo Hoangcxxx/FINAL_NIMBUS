@@ -10,7 +10,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +22,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 @Repository
-public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
+public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaSpecificationExecutor<SanPham> {
     @Query(value = SanPhamQuery.BASE_QUERY, nativeQuery = true)
     List<Object[]> getAllSanPham();
 
@@ -112,5 +114,21 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
     @Query("select s FROM SanPham s WHERE s.tenSanPham LIKE :tenSanPham%")
     List<SanPham> findByTenSanPham(@Param("tenSanPham") String tenSanPham);
+
+
+
+    // Phương thức tìm kiếm sản phẩm với các tiêu chí
+    default List<SanPham> searchProducts(BigDecimal minPrice, BigDecimal maxPrice, Integer danhMucId, Integer chatLieuId, Integer mauSacId, Integer kichThuocId) {
+        // Sử dụng Specification để tạo các điều kiện tìm kiếm
+        Specification<SanPham> specification = Specification.where(SanPhamSpecification.withPriceRange(minPrice, maxPrice))
+                .and(SanPhamSpecification.withDanhMuc(danhMucId))
+                .and(SanPhamSpecification.withChatLieu(chatLieuId))
+                .and(SanPhamSpecification.withMauSac(mauSacId))
+                .and(SanPhamSpecification.withKichThuoc(kichThuocId))
+                .and(SanPhamSpecification.withSanPhamChiTiet());
+
+        // Trả về kết quả tìm kiếm
+        return findAll(specification);
+    }
 
 }
