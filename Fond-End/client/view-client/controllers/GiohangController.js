@@ -145,13 +145,14 @@ window.GiohangController = function ($scope, $http, $window) {
             }
             return true; // Giỏ hàng hợp lệ
         }
-    
-        // Hàm kiểm tra số lượng tồn kho
+
         function checkStockAvailability() {
             const promises = $scope.cart.map(item => {
-                return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/check-so-luong/${item.idSanPhamCT}`)
+                return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/check-so-luong/${item.idSanPhamCT}?soLuongGioHang=${item.soLuongGioHang}`)
                     .then(response => {
-                        if (response.data.message === 'Sản phẩm đã hết hàng!') {
+                        const message = response.data.message;
+
+                        if (message.includes('hết hàng')) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Sản phẩm hết hàng!',
@@ -159,6 +160,16 @@ window.GiohangController = function ($scope, $http, $window) {
                                 confirmButtonText: 'Đồng ý'
                             });
                             throw new Error(`Sản phẩm "${item.tenSanPham}" hết hàng.`);
+                        } else if (message.includes('không khớp')) {
+                            const [systemQuantity] = message.match(/Hệ thống: (\d+)/).slice(1);
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Số lượng không đủ!',
+                                text: `Sản phẩm "${item.tenSanPham}" hiện không đủ số lượng trong kho. Chúng tôi chỉ có ${systemQuantity} sản phẩm, nhưng bạn muốn mua ${item.soLuongGioHang} sản phẩm.`,
+                                confirmButtonText: 'Đồng ý'
+                            });
+                            
+                            throw new Error(`Sản phẩm "${item.tenSanPham}" không đủ số lượng trong kho.`);
                         }
                     })
                     .catch(error => {
@@ -166,10 +177,10 @@ window.GiohangController = function ($scope, $http, $window) {
                         throw error;
                     });
             });
-    
+
             return Promise.all(promises);
         }
-    
+
         // Kiểm tra trạng thái sản phẩm
         function checkProductStatuses() {
             const promises = $scope.cart.map(item => {
@@ -190,10 +201,10 @@ window.GiohangController = function ($scope, $http, $window) {
                         throw error;
                     });
             });
-    
+
             return Promise.all(promises);
         }
-    
+
         // Kiểm tra trạng thái người dùng
         function checkUserStatus() {
             return $http.get(`http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/${$scope.idNguoiDung}`)
@@ -220,24 +231,24 @@ window.GiohangController = function ($scope, $http, $window) {
                     throw error;
                 });
         }
-    
+
         // Bắt đầu quá trình kiểm tra giỏ hàng
         if (!validateCartItems()) {
             $scope.isValidCart = false;
             return;
         }
-    
+
         // Thực hiện kiểm tra tồn kho, trạng thái sản phẩm và trạng thái người dùng
         Promise.allSettled([checkStockAvailability(), checkProductStatuses(), checkUserStatus()])
             .then(results => {
                 const hasError = results.some(result => result.status === 'rejected');
                 const userStatusValid = results[2].status === 'fulfilled' && results[2].value === true;
-    
+
                 if (hasError || !userStatusValid) {
                     $scope.isValidCart = false;
                     return;
                 }
-    
+
                 // Nếu tất cả kiểm tra thành công
                 $scope.isValidCart = true;
                 $window.location.href = '/#!thanh_toan';
@@ -246,7 +257,7 @@ window.GiohangController = function ($scope, $http, $window) {
                 console.error('Lỗi xảy ra trong quá trình kiểm tra:', error);
             });
     };
-    
+
 
 
 

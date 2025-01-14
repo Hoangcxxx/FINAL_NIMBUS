@@ -131,7 +131,7 @@ public class SanPhamChiTietService {
         return sanPhamChiTietRepository.saveAll(savedSanPhamChiTietList);
     }
 
-    public Map<String, String> checkSoLuong(Integer idSanPhamChiTiet) {
+    public Map<String, String> checkSoLuong(Integer idSanPhamChiTiet, Integer soLuongGioHang) {
         Optional<SanPhamChiTiet> sanPhamChiTietOpt = sanPhamChiTietRepository.findById(idSanPhamChiTiet);
 
         Map<String, String> response = new HashMap<>();
@@ -141,8 +141,11 @@ public class SanPhamChiTietService {
 
             if (sanPhamChiTiet.getSoLuong() == 0) {
                 response.put("message", "Sản phẩm đã hết hàng!");
+            } else if (sanPhamChiTiet.getSoLuong() < soLuongGioHang) {
+                response.put("message", "Số lượng sản phẩm không khớp! Hệ thống: "
+                        + sanPhamChiTiet.getSoLuong() + ", bạn gửi: " + soLuongGioHang);
             } else {
-                response.put("message", "Sản phẩm còn " + sanPhamChiTiet.getSoLuong() + " sản phẩm.");
+                response.put("message", "Sản phẩm còn đủ số lượng trong kho.");
             }
         } else {
             response.put("message", "Sản phẩm không tồn tại!");
@@ -150,6 +153,7 @@ public class SanPhamChiTietService {
 
         return response;
     }
+
     public SanPhamChiTiet getSanPhamChiTietById(Integer idSanPhamChiTiet) {
         return sanPhamChiTietRepository.findById(idSanPhamChiTiet).orElse(null);
     }
