@@ -66,5 +66,9 @@ public class SanPham {
         }
         return null; // Trả về null nếu không có hình ảnh
     }
+    // Đây là thuộc tính cần thiết cho việc join với SanPhamChiTiet
+    @OneToMany(mappedBy = "sanPham")
+    @JsonIgnore
+    private List<SanPhamChiTiet> sanPhamChiTiet;
 
 }

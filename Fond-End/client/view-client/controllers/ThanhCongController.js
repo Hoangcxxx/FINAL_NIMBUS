@@ -125,6 +125,12 @@ window.ThanhCongController = function ($scope, $http) {
     
         // Kiểm tra các ID có hợp lệ không
         if (!idTinh || !idHuyen || !idXa) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Thông tin địa chỉ không hợp lệ hoặc thiếu.',
+                confirmButtonText: 'Đồng ý'
+            });
             return;
         }
     

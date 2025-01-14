@@ -3,19 +3,15 @@ package com.example.duantn.service;
 import com.example.duantn.dto.ApiResponse;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AddressService {
@@ -336,9 +332,6 @@ public class AddressService {
         // Nếu không tìm thấy xã hoặc có lỗi, ném ngoại lệ
         throw new RuntimeException("Không thể lấy dữ liệu xã từ GHN API");
     }
-
-
-
 
 
 

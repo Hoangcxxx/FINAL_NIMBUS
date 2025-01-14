@@ -40,7 +40,14 @@ public class ADHoaDonController {
         return results.stream().map(this::mapHoaDon).collect(Collectors.toList());
     }
 
-
+    // API tìm kiếm hóa đơn theo mã hóa đơn
+    // API tìm kiếm hóa đơn theo mã hóa đơn
+    @GetMapping("/search")
+    public ResponseEntity<List<Map<String, Object>>> searchHoaDon(@RequestParam("maHoaDon") String maHoaDon) {
+        List<Object[]> hoaDons = hoaDonService.searchHoaDonByMaHoaDon(maHoaDon);
+        List<Map<String, Object>> filteredProducts = mapHoaDons(hoaDons);
+        return ResponseEntity.ok(filteredProducts); // Trả về ResponseEntity
+    }
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllThongKe() {
         List<Object[]> hoaDons = hoaDonService.getAllHoaDon();
@@ -166,7 +173,13 @@ public class ADHoaDonController {
             } else {
                 result.put("trangThaiHoaDon", "Chưa có trạng thái");
             }
-
+// Thêm thông tin về tỉnh, huyện, xã
+            DiaChiVanChuyen diaChiVanChuyen = hoaDon.getDiaChiVanChuyen();
+            if (diaChiVanChuyen != null) {
+                result.put("tinh", diaChiVanChuyen.getTinh() != null ? diaChiVanChuyen.getTinh().getTenTinh() : null);
+                result.put("huyen", diaChiVanChuyen.getHuyen() != null ? diaChiVanChuyen.getHuyen().getTenHuyen() : null);
+                result.put("xa", diaChiVanChuyen.getXa() != null ? diaChiVanChuyen.getXa().getTenXa() : null);
+            }
             return ResponseEntity.ok(result);
         } else {
             // Trả về lỗi nếu không tìm thấy hóa đơn

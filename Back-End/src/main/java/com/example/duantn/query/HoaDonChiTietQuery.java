@@ -32,7 +32,12 @@ public class HoaDonChiTietQuery {
             "    so_luong_ban_ra DESC;";
 
     public static final String GET_TONG_SO_LUONG_BAN_RA ="SELECT \n" +
-            "    SUM(hd.thanh_tien) AS tong_doanh_thu\n" +
+            "    SUM(\n" +
+            "        CASE \n" +
+            "            WHEN hd.loai = 1 THEN hd.thanh_tien - 22000  -- Nếu loại hóa đơn là 1 thì trừ 22000\n" +
+            "            ELSE hd.thanh_tien  -- Nếu loại hóa đơn là 0 thì không trừ gì\n" +
+            "        END\n" +
+            "    ) AS tong_doanh_thu  -- Tính tổng doanh thu sau khi trừ hoặc không trừ\n" +
             "FROM \n" +
             "    hoa_don_chi_tiet hdct\n" +
             "JOIN \n" +
@@ -46,7 +51,12 @@ public class HoaDonChiTietQuery {
             "    AND CAST(hd.ngay_tao AS DATE) BETWEEN CAST(DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AS DATE) \n" +
             "                                        AND CAST(GETDATE() AS DATE)  -- Lọc trong tháng này";
     public static final String GET_TONG_SO_LUONG_BAN_RA_HOM_NAY ="SELECT \n" +
-            "    SUM(hd.thanh_tien) AS tong_doanh_thu_hom_nay\n" +
+            "    SUM(\n" +
+            "        CASE \n" +
+            "            WHEN hd.loai = 1 THEN hd.thanh_tien - 22000  -- Trừ 22000 nếu loại hóa đơn = 1\n" +
+            "            ELSE hd.thanh_tien  -- Không trừ nếu loại hóa đơn = 0\n" +
+            "        END\n" +
+            "    ) AS tong_doanh_thu_hom_nay\n" +
             "FROM \n" +
             "    hoa_don_chi_tiet hdct\n" +
             "JOIN \n" +
@@ -57,7 +67,7 @@ public class HoaDonChiTietQuery {
             "    loai_trang_thai ltt ON tthd.id_loai_trang_thai = ltt.Id_loai_trang_thai\n" +
             "WHERE \n" +
             "    ltt.ten_loai_trang_thai = 'Hoàn thành'  -- Trạng thái 'Hoàn thành'\n" +
-            "    AND CAST(hd.ngay_tao AS DATE) = CAST(GETDATE() AS DATE)  -- Lọc hóa đơn tạo hôm nay";
+            "    AND CAST(hd.ngay_tao AS DATE) = CAST(GETDATE() AS DATE)  -- Lọc hóa đơn tạo trong ngày hôm nay";
     public static final String GET_TONG_HOA_DON_THANG_NAY ="SELECT \n" +
             "    COUNT(DISTINCT hd.Id_hoa_don) AS so_hoa_don_hoan_thanh  -- Số lượng hóa đơn hoàn thành\n" +
             "FROM \n" +

@@ -1,18 +1,28 @@
 package com.example.duantn.repository;
 
+import com.example.duantn.dto.ProductSearchCriteria;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.query.SanPhamQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-
-public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
+@Repository
+public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaSpecificationExecutor<SanPham> {
     @Query(value = SanPhamQuery.BASE_QUERY, nativeQuery = true)
     List<Object[]> getAllSanPham();
 
@@ -66,7 +76,14 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     @Transactional
     @Query(value = "DELETE FROM SanPham s WHERE s.idSanPham = :idSanPham")
     void deleteSanPhamByIdSanPham(@Param("idSanPham") Integer idSanPham);
-
+    @Modifying
+    @org.springframework.transaction.annotation.Transactional
+    @Query("DELETE FROM GioHangChiTiet g WHERE g.sanPhamChiTiet.sanPham.idSanPham = :idSanPham")
+    void deleteGioHangChiTietBySanPhamId(@Param("idSanPham") Integer idSanPham);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM GiamGiaSanPham g WHERE g.sanPham.idSanPham = :idSanPham")
+    void deleteBySanPhamId(@Param("idSanPham") Integer idSanPham);
     @Modifying
     @Query(value = "UPDATE san_pham " +
             "SET Trang_thai = CASE WHEN Trang_thai = 1 THEN 0 ELSE 1 END, " +
@@ -97,5 +114,21 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
     @Query("select s FROM SanPham s WHERE s.tenSanPham LIKE :tenSanPham%")
     List<SanPham> findByTenSanPham(@Param("tenSanPham") String tenSanPham);
+
+
+
+    // Phương thức tìm kiếm sản phẩm với các tiêu chí
+    default List<SanPham> searchProducts(BigDecimal minPrice, BigDecimal maxPrice, Integer danhMucId, Integer chatLieuId, Integer mauSacId, Integer kichThuocId) {
+        // Sử dụng Specification để tạo các điều kiện tìm kiếm
+        Specification<SanPham> specification = Specification.where(SanPhamSpecification.withPriceRange(minPrice, maxPrice))
+                .and(SanPhamSpecification.withDanhMuc(danhMucId))
+                .and(SanPhamSpecification.withChatLieu(chatLieuId))
+                .and(SanPhamSpecification.withMauSac(mauSacId))
+                .and(SanPhamSpecification.withKichThuoc(kichThuocId))
+                .and(SanPhamSpecification.withSanPhamChiTiet());
+
+        // Trả về kết quả tìm kiếm
+        return findAll(specification);
+    }
 
 }

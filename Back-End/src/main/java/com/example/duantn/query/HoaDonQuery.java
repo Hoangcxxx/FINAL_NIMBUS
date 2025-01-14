@@ -38,6 +38,7 @@ public class HoaDonQuery {
             "ORDER BY \n" +
             "    ls.ngay_tao DESC,   \n" +
             "    ls.Id_hoa_don;";
+
     public static final String GET_TRANG_THAI_HOA_DON_BY_ID_HOA_DON = "SELECT \n" +
             "    h.ma_hoa_don, \n" +
             "    tthd.mo_ta,\n" +

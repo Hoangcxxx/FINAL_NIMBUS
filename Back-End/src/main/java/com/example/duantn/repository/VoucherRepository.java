@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
     // Phương thức tìm kiếm theo trạng thái giảm giá
@@ -35,7 +34,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
     // Tìm kiếm theo trạng thái và kiểu giảm giá
     List<Voucher> findByTrangThaiGiamGiaAndKieuGiamGia(
             TrangThaiGiamGia trangThaiGiamGia, Boolean kieuGiamGia);
-
 
 
 }

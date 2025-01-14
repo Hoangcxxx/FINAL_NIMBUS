@@ -131,11 +131,6 @@ public class SanPhamChiTietService {
         return sanPhamChiTietRepository.saveAll(savedSanPhamChiTietList);
     }
 
-
-    public SanPhamChiTiet getSanPhamChiTietById(Integer idSanPhamChiTiet) {
-        return sanPhamChiTietRepository.findById(idSanPhamChiTiet).orElse(null);
-    }
-
     public Map<String, String> checkSoLuong(Integer idSanPhamChiTiet) {
         Optional<SanPhamChiTiet> sanPhamChiTietOpt = sanPhamChiTietRepository.findById(idSanPhamChiTiet);
 
@@ -155,6 +150,7 @@ public class SanPhamChiTietService {
 
         return response;
     }
-
-
+    public SanPhamChiTiet getSanPhamChiTietById(Integer idSanPhamChiTiet) {
+        return sanPhamChiTietRepository.findById(idSanPhamChiTiet).orElse(null);
+    }
 }

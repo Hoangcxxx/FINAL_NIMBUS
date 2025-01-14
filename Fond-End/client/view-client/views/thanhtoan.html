@@ -43,7 +43,8 @@
                 <div class="col-md-4 mb-3">
                     <label class="form-label" for="city">Chọn Tỉnh/Thành phố <span class="text-danger">*</span>:</label>
                     <select class="form-select" ng-model="selectedCity"
-                        ng-options="city.name for city in cities track by city.id" ng-change="onCityChange()" required>
+                        ng-options="city.name for city in cities track by city.id" ng-change="onCityChange()"
+                        required>
                         <option value="">--Chọn Tỉnh/Thành phố--</option>
                     </select>
                 </div>
@@ -172,50 +173,59 @@
                 </div>
 
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="font-weight-bold">Tạm tính:</span>
+                <div class="d-flex justify-content-between">
+                    <span>Tạm tính:</span>
                     <!-- Hiển thị tổng tiền sản phẩm theo giá bán cơ bản -->
-                    <span>{{ totalProductPrice | currency: '' : 0 }} VND</span>
+                    <span>{{ totalProductPrice | currency: '' : 0 }} VND </span>
                 </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <label class="font-weight-bold">Số tiền giảm giá:</label>
-                    <div class="d-flex flex-column text-truncate" style="max-width: 300px;">
+                <div class="d-flex justify-content-between">
+                    <label>Số tiền giảm giá:</label>
+                    <div>
                         <span ng-if="selectedVoucher">
-
-                            {{ discountAmount | currency: '' : 0 }} VND
+                            <!-- Kiểm tra kiểu giảm giá -->
+                            <span ng-if="!selectedVoucher.kieuGiamGia">
+                                {{ selectedVoucher.giaTriGiamGia }}% {{
+                                calculateDiscountAmount(selectedVoucher) | currency: '' : 0 }}
+                            </span>
+                            <span ng-if="selectedVoucher.kieuGiamGia">
+                                {{ selectedVoucher.giaTriGiamGia | currency: '' : 0 }} VND
+                            </span>
                         </span>
                         <span ng-if="!selectedVoucher">Chưa chọn voucher</span>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="font-weight-bold">Phí vận chuyển:</div>
-                    <div>
-                        <!-- Hiển thị phí vận chuyển nếu có -->
-                        <span ng-if="shippingFee && shippingFee > 0">
-                            {{ shippingFee | currency: '' : 0 }} VND
-                        </span>
-                        <!-- Nếu không có phí vận chuyển -->
-                        <span ng-if="!shippingFee || shippingFee <= 0">
-                            0 VND
-                        </span>
+                <!-- Hiển thị lỗi nếu có -->
+                <!-- <div ng-if="voucherError" class="text-danger">{{ voucherError }}</div> -->
+
+                <div class="d-flex justify-content-between">
+                    <div>Phí vận chuyển:</div>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <!-- Kiểm tra và hiển thị phí vận chuyển nếu có giá trị và lớn hơn 0 -->
+                            <span ng-if="shippingFee && shippingFee > 0">
+                                {{ shippingFee | currency:'' : 0 }} VND <!-- Hiển thị phí vận chuyển với ký hiệu VND -->
+                            </span>
+
+                            <!-- Thông báo lỗi nếu không có phí vận chuyển hoặc phí vận chuyển <= 0 -->
+                            <span ng-if="!shippingFee || shippingFee <= 0">
+                                0
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-4">
-                    <strong class="font-weight-bold" style="font-size: 1.25rem;">Tổng tiền:</strong>
-                    <!-- Hiển thị tổng tiền sau giảm giá + phí ship -->
-                    <strong style="font-size: 1.25rem;">{{ totalDiscountedPrice | currency: '' : 0 }} VND</strong>
+
+
+                <div class="d-flex justify-content-between mt-2 align-items-center" style="font-size: 25px;">
+                    <strong>Tổng tiền:</strong>
+                    <!-- Hiển thị tổng tiền sau khuyến mãi cộng với phí ship -->
+                    <strong>{{ totalDiscountedPrice | currency: '' : 0 }} VND</strong>
                 </div>
-
-
 
                 <p class="mt-4 text-muted small">
                     Sau khi "Đặt hàng" thành công, Nimbus sẽ liên hệ xác nhận đơn hàng theo số Hotline 02836220632.
                 </p>
-                <!-- Phần overlay -->
-                <div class="modal-overlay"></div>
 
                 <button ng-click="placeOrder()" class="btn btn-success w-100" ng-disabled="isProcessing">Đặt
                     hàng</button>
@@ -224,6 +234,17 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
 <!-- Modal chọn voucher -->
 <div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -248,9 +269,9 @@
                             style="background: linear-gradient(90deg, #28a745, #218838); color: white; border: none; transition: background 0.3s ease;"
                             ng-click="applyVoucher()">Áp dụng mã</button>
                     </div>
-                    <div class="text-danger mt-2" ng-if="voucherError" style="font-size: 0.875rem; color: #e74c3c;">{{
+                    <!-- <div class="text-danger mt-2" ng-if="voucherError" style="font-size: 0.875rem; color: #e74c3c;">{{
                         voucherError }}
-                    </div>
+                    </div> -->
                 </div>
 
                 <hr class="my-4" style="border-top: 1px solid #ddd;" />
@@ -328,16 +349,17 @@
         </div>
     </div>
 </div>
-<style>
-/* Vô hiệu hóa toàn bộ giao diện ngoài phần thông báo */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
-    display: none; /* Ẩn mặc định */
-}
 
-</style>
+<style>
+    /* Vô hiệu hóa toàn bộ giao diện ngoài phần thông báo */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        display: none; /* Ẩn mặc định */
+    }
+    
+    </style>

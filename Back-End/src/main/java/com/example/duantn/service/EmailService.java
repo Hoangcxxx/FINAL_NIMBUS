@@ -159,7 +159,7 @@ public class EmailService {
                         .append("<span><strong>Sản phẩm:</strong> " + tenSanPham + "</span>")
                         .append("<span><strong>Số lượng:</strong> " + sanPham.getSoLuong() + "</span>")
                         .append(voucherDisplay)
-                        .append("<span><strong>Tổng Giá Trị Sản Phẩm:</strong> " + formatter.format(tongTienSanPham) + " VND</span>")
+                        .append("<span><strong>Tổng tiền Sản Phẩm:</strong> " + formatter.format(tongTienSanPham) + " VND</span>")
                         .append("<span><strong>Số tiền giảm giá:</strong> " + formatter.format(giamGia) + " VND</span>")
                         .append("<span><strong>Tổng tiền sau giảm giá:</strong> " + formatter.format(tongTienSauGiamGia) + " VND</span>")
                         .append("<span><strong>Phi Vận Chuyển:</strong> " + formatter.format(phiship) + " VND</span>")

@@ -1,6 +1,8 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.dto.SanPhamDTO;
 import com.example.duantn.entity.DotGiamGia;
+import com.example.duantn.entity.SanPham;
 import com.example.duantn.repository.DotGiamGiaRepository;
 import com.example.duantn.service.DotGiamGiaService;
 import com.example.duantn.service.SanPhamService;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -115,13 +118,19 @@ public class SanPhamController {
                 .sorted(Comparator.comparing(DotGiamGia::getNgayCapNhat).reversed()) // Sắp xếp giảm dần
                 .collect(Collectors.toList());
     }
-
-
     // API kiểm tra trạng thái của sản phẩm
     @GetMapping("/{id}/trang-thai")
     public Boolean checkSanPhamTrangThai(@PathVariable Integer id) {
         return sanPhamService.checkTrangThaiSanPham(id);
     }
 
-
+    @GetMapping("/search")
+    public List<SanPhamDTO> searchProducts(@RequestParam(required = false) BigDecimal minPrice,
+                                           @RequestParam(required = false) BigDecimal maxPrice,
+                                           @RequestParam(required = false) Integer danhMucId,
+                                           @RequestParam(required = false) Integer chatLieuId,
+                                           @RequestParam(required = false) Integer mauSacId,
+                                           @RequestParam(required = false) Integer kichThuocId) {
+        return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId);
+    }
 }

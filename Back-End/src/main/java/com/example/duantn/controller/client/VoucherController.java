@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/vouchers")
@@ -45,11 +44,9 @@ public class VoucherController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra: " + e.getMessage());
         }
     }
-
     // Định nghĩa một API để lấy Voucher theo idVoucher
     @GetMapping("/vouchers/{idVoucher}")
     public VoucherDTO getVoucherById(@PathVariable("idVoucher") Integer idVoucher) {
         return voucherService.getVoucherByIdhaha(idVoucher);
     }
-
 }

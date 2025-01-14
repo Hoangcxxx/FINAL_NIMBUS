@@ -445,9 +445,10 @@ public class HoaDonService {
         if (hoaDonDTO.getIdNguoiDung() == null) {
             throw new RuntimeException("ID Người dùng không được null");
         }
-        // Tạo mã hóa đơn duy nhất
-        generatedMaHoaDon = generateMaHoaDon();
-        hoaDon.setMaHoaDon(generatedMaHoaDon); // Gán mã hóa đơn cho đối tượng hoaDon
+        long currentCount = hoaDonRepository.count();
+        generatedMaHoaDon = "HD00" + (currentCount + 1);
+
+        hoaDon.setMaHoaDon(generatedMaHoaDon);
 
         // Kiểm tra và lấy thông tin người dùng
         NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
@@ -607,13 +608,10 @@ public class HoaDonService {
         hoaDon.setMaHoaDon(generatedMaHoaDon);
 
 
-        // Lấy thông tin người dùng
-        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
-        if (!nguoiDung.getTrangThai()) {
-            throw new RuntimeException("Tài khoản của bạn đã bị khóa, không thể tạo đơn hàng.");
-        }
+        // Kiểm tra và lấy thông tin người dùng
+        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
         hoaDon.setNguoiDung(nguoiDung);
+
 
         // Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
         if (hoaDonDTO.getIdvoucher() != null) {
@@ -1041,5 +1039,8 @@ public class HoaDonService {
         }).collect(Collectors.toList());
     }
 
-
+    // Tìm kiếm hóa đơn theo mã hóa đơn
+    public List<Object[]> searchHoaDonByMaHoaDon(String maHoaDon) {
+        return hoaDonRepository.searchHoaDonByMaHoaDon(maHoaDon);
+    }
 }

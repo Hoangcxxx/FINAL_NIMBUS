@@ -110,101 +110,132 @@ window.addDotKhuyenMaiController = function ($scope, $http, $location, $routePar
         console.log("Kiểu giảm giá: ", $scope.dotGiamGia.kieuGiamGia);
         console.log("Giá trị giảm: ", $scope.dotGiamGia.giaTriGiamGia);
 
-        if ($scope.dotGiamGia.kieuGiamGia === true) { // Kiểu giảm giá là tiền mặt
-            console.log("Kiểu giảm giá là tiền mặt.");
-            const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
-            const invalidPrice = selectedSanPham.some(item => $scope.dotGiamGia.giaTriGiamGia > item.giaBan);
-            if (invalidPrice) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Giá trị giảm không hợp lệ',
-                    text: 'Giá trị giảm không thể lớn hơn giá bán của sản phẩm.'
-                });
-                return;
-            }
-        } else if ($scope.dotGiamGia.kieuGiamGia === false || $scope.dotGiamGia.kieuGiamGia === 'false') {
-            console.log("Kiểu giảm giá là phần trăm.");
-            if ($scope.dotGiamGia.giaTriGiamGia > 100) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Phần trăm giảm không hợp lệ',
-                    text: 'Phần trăm giảm không được vượt quá 100%.'
-                });
-                return;
-            }
-        }
+        // Kiểm tra nếu ngày kết thúc đã qua
+        const currentDate = new Date();
+        const endDate = new Date($scope.dotGiamGia.ngayKetThuc);
 
-        // Kiểm tra thông tin đợt giảm giá
-        if (!$scope.dotGiamGia.tenDotGiamGia || !$scope.dotGiamGia.giaTriGiamGia || !$scope.dotGiamGia.ngayBatDau || !$scope.dotGiamGia.ngayKetThuc) {
+        if (endDate < currentDate) {
+            // Nếu ngày kết thúc đã qua, hiển thị thông báo yêu cầu xác nhận
             Swal.fire({
                 icon: 'warning',
-                title: 'Thông tin chưa đầy đủ',
-                text: 'Vui lòng điền đầy đủ thông tin.'
+                title: 'Đợt giảm giá đã hết hạn',
+                text: 'Ngày kết thúc của đợt giảm giá đã qua. Bạn có muốn tiếp tục và lưu lại đợt giảm giá này không?',
+                showCancelButton: true,
+                confirmButtonText: 'Tiếp tục lưu',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Nếu nhấn "Tiếp tục lưu", thực hiện chức năng lưu đợt giảm giá
+                    saveDiscountBatch();
+                } else {
+                    // Nếu nhấn "Hủy bỏ", không làm gì cả
+                    console.log('Người dùng đã hủy thao tác.');
+                }
             });
-            return;
+        } else {
+            // Nếu ngày kết thúc chưa qua, lưu đợt giảm giá ngay
+            saveDiscountBatch();
         }
 
-        // Kiểm tra ngày bắt đầu và ngày kết thúc hợp lệ
-        if (new Date($scope.dotGiamGia.ngayBatDau) >= new Date($scope.dotGiamGia.ngayKetThuc)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Ngày không hợp lệ',
-                text: 'Ngày kết thúc phải sau ngày bắt đầu.'
-            });
-            return;
-        }
+        // Hàm thực hiện lưu đợt giảm giá
+        function saveDiscountBatch() {
+            // Kiểm tra kiểu giảm giá và giá trị giảm
+            if ($scope.dotGiamGia.kieuGiamGia === true) { // Kiểu giảm giá là tiền mặt
+                const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
+                const invalidPrice = selectedSanPham.some(item => $scope.dotGiamGia.giaTriGiamGia > item.giaBan);
+                if (invalidPrice) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Giá trị giảm không hợp lệ',
+                        text: 'Giá trị giảm không thể lớn hơn giá bán của sản phẩm.'
+                    });
+                    return;
+                }
+            } else if ($scope.dotGiamGia.kieuGiamGia === false || $scope.dotGiamGia.kieuGiamGia === 'false') {
+                if ($scope.dotGiamGia.giaTriGiamGia > 100) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Phần trăm giảm không hợp lệ',
+                        text: 'Phần trăm giảm không được vượt quá 100%.'
+                    });
+                    return;
+                }
+            }
 
-        // Nếu không phải là thao tác cập nhật, kiểm tra ít nhất một sản phẩm được chọn
-        if (!$routeParams.id) {
-            const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
-            if (selectedSanPham.length === 0) {
+            // Kiểm tra thông tin đợt giảm giá
+            if (!$scope.dotGiamGia.tenDotGiamGia || !$scope.dotGiamGia.giaTriGiamGia || !$scope.dotGiamGia.ngayBatDau || !$scope.dotGiamGia.ngayKetThuc) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Chưa chọn sản phẩm',
-                    text: 'Vui lòng chọn ít nhất một sản phẩm cho đợt giảm giá.'
+                    title: 'Thông tin chưa đầy đủ',
+                    text: 'Vui lòng điền đầy đủ thông tin để tạo đợt giảm giá.'
                 });
                 return;
             }
-            $scope.dotGiamGia.sanPhamList = selectedSanPham.map(item => ({
-                sanPham: { idSanPham: item.idSanPham }
-            }));
-        } else {
-            const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
-            const selectedSanPhamIds = selectedSanPham.map(item => item.idSanPham);
-            const currentSanPhamIds = $scope.dsDaSanPham.map(item => item.idSanPham);
 
-            if (angular.equals(selectedSanPhamIds.sort(), currentSanPhamIds.sort())) {
-                $scope.dotGiamGia.sanPhamList = $scope.dsDaSanPham.map(item => ({
+            // Kiểm tra ngày bắt đầu và ngày kết thúc hợp lệ
+            if (new Date($scope.dotGiamGia.ngayBatDau) >= new Date($scope.dotGiamGia.ngayKetThuc)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ngày không hợp lệ',
+                    text: 'Ngày kết thúc phải sau ngày bắt đầu.'
+                });
+                return;
+            }
+
+            // Nếu không phải là thao tác cập nhật, kiểm tra ít nhất một sản phẩm được chọn
+            if (!$routeParams.id) {
+                const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
+                if (selectedSanPham.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Chưa chọn sản phẩm',
+                        text: 'Vui lòng chọn ít nhất một sản phẩm cho đợt giảm giá.'
+                    });
+                    return;
+                }
+                $scope.dotGiamGia.sanPhamList = selectedSanPham.map(item => ({
                     sanPham: { idSanPham: item.idSanPham }
                 }));
             } else {
-                const allSelectedSanPhamIds = [...selectedSanPhamIds, ...currentSanPhamIds];
-                $scope.dotGiamGia.sanPhamList = allSelectedSanPhamIds.map(id => ({
-                    sanPham: { idSanPham: id }
-                }));
+                const selectedSanPham = $scope.dsSanPham.filter(item => item.selected);
+                const selectedSanPhamIds = selectedSanPham.map(item => item.idSanPham);
+                const currentSanPhamIds = $scope.dsDaSanPham.map(item => item.idSanPham);
+
+                if (angular.equals(selectedSanPhamIds.sort(), currentSanPhamIds.sort())) {
+                    $scope.dotGiamGia.sanPhamList = $scope.dsDaSanPham.map(item => ({
+                        sanPham: { idSanPham: item.idSanPham }
+                    }));
+                } else {
+                    const allSelectedSanPhamIds = [...selectedSanPhamIds, ...currentSanPhamIds];
+                    $scope.dotGiamGia.sanPhamList = allSelectedSanPhamIds.map(id => ({
+                        sanPham: { idSanPham: id }
+                    }));
+                }
             }
+
+            const request = $routeParams.id
+                ? $http.put(`http://localhost:8080/api/admin/dot_giam_gia/${$routeParams.id}`, $scope.dotGiamGia)
+                : $http.post('http://localhost:8080/api/admin/dot_giam_gia/create_with_san_pham', $scope.dotGiamGia);
+
+            request.then(function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: 'Đợt giảm giá đã được lưu thành công!'
+                });
+                $location.path('/dot_giam_gia');
+            }).catch(function (error) {
+                console.error('Lỗi khi lưu đợt giảm giá:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra',
+                    text: error.data.message || 'Vui lòng thử lại.'
+                });
+            });
         }
-
-        const request = $routeParams.id
-            ? $http.put(`http://localhost:8080/api/admin/dot_giam_gia/${$routeParams.id}`, $scope.dotGiamGia)
-            : $http.post('http://localhost:8080/api/admin/dot_giam_gia/create_with_san_pham', $scope.dotGiamGia);
-
-        request.then(function (response) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Thành công',
-                text: 'Đợt giảm giá đã được lưu thành công!'
-            });
-            $location.path('/dot_giam_gia');
-        }).catch(function (error) {
-            console.error('Lỗi khi lưu đợt giảm giá:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Có lỗi xảy ra',
-                text: error.data.message || 'Vui lòng thử lại.'
-            });
-        });
     };
+
+
 
     $scope.selectAll = false;
 

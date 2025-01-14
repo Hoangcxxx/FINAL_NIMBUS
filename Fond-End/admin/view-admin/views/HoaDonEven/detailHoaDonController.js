@@ -29,13 +29,15 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             .catch(function (error) {
                 console.error('Error fetching status data:', error);
             });
+
         $scope.totalBeforeDiscount = 0; // Khởi tạo biến tổng tiền trước khi giảm giá
         $http.get('http://localhost:8080/api/admin/hoa_don/findHoaDonCT/' + idHoaDon)
             .then(function (response) {
                 console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
                 $scope.hoaDon = response.data;
                 $scope.totalAmount = $scope.hoaDon.thanhTien;  // Gán giá trị thanhTien vào totalAmount
-                // Tính tổng tiền trước khi giảm giá
+
+                // Tính tổng tiền trước khi giảm giá từ sanPhamCT
                 $scope.totalBeforeDiscount = $scope.sanPhamCT.reduce(function (accumulator, product) {
                     return accumulator + (product.tongTien || 0);  // Cộng giá sản phẩm nhân với số lượng
                 }, 0);
@@ -43,19 +45,15 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
                 // Kiểm tra vai trò khách hàng để quyết định ẩn/hiển thị email và địa chỉ
                 if ($scope.hoaDon.vaiTro.idVaiTro === 3) {
-                    // Nếu vai trò là 3 (không phải khách hàng), ẩn email và địa chỉ
-                    $scope.showEmailAndAddress = false;
+                    $scope.showEmailAndAddress = false;  // Nếu vai trò là 3 (không phải khách hàng), ẩn email và địa chỉ
                 } else {
-                    // Nếu vai trò là 2 (Khách hàng), hiển thị đầy đủ thông tin
-                    $scope.showEmailAndAddress = true;
+                    $scope.showEmailAndAddress = true;  // Nếu vai trò là 2 (Khách hàng), hiển thị đầy đủ thông tin
                 }
 
                 // Kiểm tra voucher
                 if ($scope.hoaDon.idVoucher === null) {
                     $scope.voucherInfo = 'Không sử dụng voucher';
                 } else {
-                    // Lấy thông tin voucher từ API nếu có
-                    // Lấy thông tin voucher từ API nếu có
                     $http.get('http://localhost:8080/api/admin/hoa_don/findVoucherHoaDon/' + idHoaDon)
                         .then(function (voucherResponse) {
                             $scope.voucher = voucherResponse.data;
@@ -74,11 +72,12 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                                     $scope.discountAmount = voucher.giaTriGiamGia;
                                 } else {
                                     // Giảm giá theo phần trăm (kieuGiamGia = false)
-                                    $scope.discountAmount = ($scope.totalAmount * voucher.giaTriGiamGia) / 100;
+                                    // Tính giảm giá cho từng sản phẩm hoặc tổng tiền
+                                    $scope.discountAmount = ($scope.totalBeforeDiscount * voucher.giaTriGiamGia) / 100;
                                 }
 
                                 // Cập nhật lại tổng thanh toán sau giảm giá
-                                $scope.finalAmount = $scope.totalAmount - $scope.discountAmount;
+                                $scope.finalAmount = $scope.totalBeforeDiscount - $scope.discountAmount;
                             }
                         })
                         .catch(function (error) {
@@ -89,6 +88,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             .catch(function (error) {
                 console.error('Lỗi khi lấy dữ liệu hóa đơn:', error);
             });
+
         $http.get('http://localhost:8080/api/admin/hoa_don/findSanPhamCTHoaDon/' + idHoaDon)
             .then(function (response) {
                 console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
@@ -97,21 +97,8 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             .catch(function (error) {
                 console.error('Lỗi khi lấy dữ liệu hóa đơn:', error);
             });
-        $http.get('http://localhost:8080/api/admin/hoa_don/findVoucherHoaDon/' + idHoaDon)
-            .then(function (response) {
-                console.log('Dữ liệu trả về từ API voucher:', response.data);
-                $scope.voucher = response.data;
-                calculateDiscount();
-            })
-            .catch(function (error) {
-                console.error('Lỗi khi lấy dữ liệu hóa đơn:', error);
-            });
-
     }
-    // Hàm tính toán tổng giảm giá
-    function calculateDiscount() {
-
-    }
+    fetchStatusAndInvoiceData();
 
 
 
@@ -151,9 +138,6 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 $scope.modalButtonText = ''; // Nếu không có trạng thái nào hợp lệ
         }
     }
-
-    // Gọi API để lấy trạng thái của hóa đơn và thông tin hóa đơn
-    fetchStatusAndInvoiceData();
 
     // Lấy danh sách các loại trạng thái hợp lệ
     $http.get('http://localhost:8080/api/admin/hoa_don/loai_trang_thai')
@@ -226,70 +210,82 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
 
 
-
-
-
-
-    // Hàm cập nhật trạng thái hóa đơn
     $scope.updateTrangThaiHoaDon = function () {
-        console.log("Trang thái ID:", $scope.ghiChu.trangThaiId);  // Kiểm tra giá trị
+        console.log("Trang thái hiện tại:", $scope.ghiChu.trangThaiId);  // Kiểm tra giá trị
 
-        if ($scope.ghiChu.trangThaiId && idHoaDon) {
-            if ($scope.ghiChu.trangThaiId == 7) {
-                // Kiểm tra nếu tồn tại lichSuThanhToan có tên nhân viên là "N/A"
-                const hasIncompletePayment = $scope.lichSuThanhToan.some(function (paymentHistory) {
-                    return paymentHistory.tenNhanVien === "N/A";
-                });
+        if ($scope.ghiChu.trangThaiId && idHoaDon) {  // Kiểm tra nếu có idHoaDon
+            let nextStatusId;
 
-                if (hasIncompletePayment) {
+            // Kiểm tra trạng thái hiện tại và xác định trạng thái tiếp theo
+            switch ($scope.ghiChu.trangThaiId) {
+                case 2:  // Chờ xác nhận -> Chuyển sang Chờ giao hàng (3)
+                    nextStatusId = 3;
+                    break;
+                case 3:  // Chờ giao hàng -> Chuyển sang Chờ thanh toán (4)
+                    nextStatusId = 4;
+                    break;
+                case 4:  // Chờ thanh toán -> Chuyển sang Chờ thanh toán (5)
+                    nextStatusId = 5;
+                    break;
+                case 5:  // Chờ thanh toán -> Chuyển sang Đang vận chuyển (6)
+                    nextStatusId = 6;
+                    break;
+                case 6:  // Chờ thanh toán -> Chuyển sang Đang vận chuyển (7)
+                    nextStatusId = 7;
+
+                    // Kiểm tra nếu đang chuyển từ trạng thái "Chờ thanh toán" (6) sang "Xác nhận thanh toán"
+                    // Kiểm tra xem đã có lịch sử thanh toán với nhân viên xác nhận chưa
+                    $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
+                        .then(function (response) {
+                            // Kiểm tra nếu có lịch sử thanh toán và xem có nhân viên xác nhận không
+                            const hasPaymentHistory = response.data.some(function (payment) {
+                                // Kiểm tra nếu `tenNhanVien` khác "N/A" và không phải `null`
+                                return payment.tenNhanVien !== "N/A" && payment.tenNhanVien !== null;
+                            });
+
+                            if (!hasPaymentHistory) {
+                                // Nếu không có nhân viên xác nhận thanh toán
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Không thể cập nhật trạng thái',
+                                    text: 'Vui lòng xác nhận thanh toán trước khi chuyển trạng thái!'
+                                });
+                                return; // Dừng cập nhật trạng thái nếu không có xác nhận thanh toán
+                            } else {
+                                // Nếu đã có nhân viên xác nhận thanh toán, tiếp tục cập nhật trạng thái
+                                updateStatusInBackend(nextStatusId);
+                            }
+                        })
+                        .catch(function (error) {
+                            // Xử lý lỗi trong quá trình lấy lịch sử thanh toán
+                            console.error('Lỗi khi kiểm tra lịch sử thanh toán:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi khi kiểm tra thanh toán',
+                                text: "Đã xảy ra lỗi khi kiểm tra lịch sử thanh toán."
+                            });
+                        });
+
+                    return;  // Dừng việc chuyển trạng thái nếu phải kiểm tra lịch sử thanh toán
+
+                case 7:  // Đang vận chuyển -> Hoàn thành
+                    nextStatusId = 8;  // Trạng thái hoàn thành (có thể là trạng thái 8)
+                    break;
+                default:
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Không thể cập nhật trạng thái',
-                        text: 'Vui lòng xác nhận thanh toán trước khi hoàn thành hóa đơn!'
+                        title: 'Không thể chuyển trạng thái',
+                        text: 'Trạng thái hiện tại không hỗ trợ việc chuyển trạng thái tiếp theo.'
                     });
-                    return; // Kết thúc hàm nếu có thanh toán chưa được xác nhận
-                }
+                    return;  // Nếu không phải trạng thái hợp lệ, thoát khỏi hàm
             }
-            // Thực hiện API update
-            $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai?idHoaDon=' + idHoaDon + '&idLoaiTrangThai=' + $scope.ghiChu.trangThaiId + '&idNhanVien=' + $scope.userId)
-                .then(function (response) {
-                    // Kiểm tra nếu backend trả về thành công
-                    if (response.data.success) {
-                        console.log("Cập nhật thành công");
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Cập nhật thành công',
-                            text: 'Trạng thái hóa đơn đã được cập nhật thành công!'
-                        });
 
-                        // Tải lại dữ liệu trạng thái hóa đơn sau khi cập nhật
-                        fetchStatusAndInvoiceData();  // Gọi lại hàm fetchStatusAndInvoiceData để tải lại dữ liệu
+            // Kiểm tra trạng thái cần được cập nhật có hợp lệ hay không
+            if (nextStatusId) {
+                // Gọi API cập nhật trạng thái nếu không phải trạng thái "Chờ thanh toán"
+                updateStatusInBackend(nextStatusId);
+            }
 
-                        // Đóng modal sau khi cập nhật
-                        $('#ghiChuModal').modal('hide'); // Đóng modal
-                        $scope.resetModal();  // Reset modal
-
-                    } else {
-                        // Nếu không thành công, hiển thị thông báo lỗi từ backend
-                        console.error('Lỗi khi cập nhật trạng thái:', response.data.message);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Cập nhật thất bại',
-                            text: response.data.message || "Không rõ lỗi từ server"
-                        });
-                    }
-                })
-                .catch(function (error) {
-                    // Nếu có lỗi khi gọi API
-                    console.error('Error calling API:', error);
-                    // Xử lý lỗi đúng với thông báo từ backend
-                    let errorMessage = error.data && error.data.message ? error.data.message : "Đã xảy ra lỗi trong quá trình cập nhật trạng thái.";
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi khi chuyển trạng thái',
-                        text: errorMessage
-                    });
-                });
         } else {
             // Nếu chưa chọn trạng thái hoặc chưa có idHoaDon
             Swal.fire({
@@ -300,21 +296,48 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         }
     };
 
+    // Hàm cập nhật trạng thái trong backend
+    function updateStatusInBackend(nextStatusId) {
+        $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai', null, {
+            params: {
+                idHoaDon: idHoaDon,  // Truyền tham số idHoaDon
+                idLoaiTrangThai: nextStatusId,  // Truyền tham số trạng thái
+                idNhanVien: $scope.userId  // Truyền ID người dùng
+            }
+        })
+            .then(function (response) {
+                // Kiểm tra nếu backend trả về thành công
+                if (response.data.success) {
+                    console.log("Cập nhật thành công");
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cập nhật thành công',
+                        text: 'Trạng thái hóa đơn đã được cập nhật thành công!'
+                    });
 
-
-
-
-
-
-    // Reset modal trạng thái
-    $scope.resetModal = function () {
-        $scope.ghiChu = { trangThaiId: null, moTa: "" };
-    };
-
-    // Khi người dùng mở modal, hiển thị trạng thái hiện tại
-    $scope.openModal = function () {
-        console.log('Trạng thái hiện tại: ', $scope.ghiChu.trangThaiId);
-    };
+                    // Tải lại dữ liệu trạng thái hóa đơn sau khi cập nhật
+                    fetchStatusAndInvoiceData();  // Gọi lại hàm fetchStatusAndInvoiceData để tải lại dữ liệu
+                } else {
+                    // Nếu không thành công, hiển thị thông báo lỗi từ backend
+                    console.error('Lỗi khi cập nhật trạng thái:', response.data.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Cập nhật thất bại',
+                        text: response.data.message || "Không rõ lỗi từ server"
+                    });
+                }
+            })
+            .catch(function (error) {
+                // Nếu có lỗi khi gọi API
+                console.error('Error calling API:', error);
+                let errorMessage = error.data && error.data.message ? error.data.message : "Đã xảy ra lỗi trong quá trình cập nhật trạng thái.";
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi khi chuyển trạng thái',
+                    text: errorMessage
+                });
+            });
+    }
 
     // Lấy dữ liệu từ API
     $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
