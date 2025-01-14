@@ -1,5 +1,6 @@
 package com.example.duantn.service;
 
+import com.example.duantn.dto.VoucherDTO;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -350,5 +351,15 @@ public class VoucherService {
                                 voucher.getTrangThaiGiamGia().getIdTrangThaiGiamGia() == 1 // Đang phát hành
                 )
                 .collect(Collectors.toList());
+    }
+
+    public VoucherDTO getVoucherByIdhaha(Integer id) {
+        Optional<Voucher> voucher = voucherRepository.findById(id);
+        if (voucher.isPresent()) {
+            Voucher v = voucher.get();
+            // Trả về đối tượng DTO với idVoucher và idTrangThaiGiamGia
+            return new VoucherDTO(v.getIdVoucher(), v.getTrangThaiGiamGia().getIdTrangThaiGiamGia(),v.getSoLuong());
+        }
+        return null; // Hoặc có thể ném Exception tùy thuộc vào yêu cầu
     }
 }

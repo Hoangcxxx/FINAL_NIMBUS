@@ -55,8 +55,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "WHERE h.nguoiDung.idNguoiDung = :idNguoiDung AND " +
             "tthd.idTrangThaiHoaDon = (SELECT MAX(t.idTrangThaiHoaDon) FROM TrangThaiHoaDon t WHERE t.hoaDon.idHoaDon = h.idHoaDon)")
     List<Object[]> findHoaDonWithTrangThaiAndLoai(@Param("idNguoiDung") Integer idNguoiDung);
-
-
     @Query("SELECT h, tthd, ttLoai FROM HoaDon h " +
             "JOIN TrangThaiHoaDon tthd ON tthd.hoaDon.idHoaDon = h.idHoaDon " +
             "JOIN LoaiTrangThai ttLoai ON tthd.loaiTrangThai.idLoaiTrangThai = ttLoai.idLoaiTrangThai " +
@@ -85,6 +83,5 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "WHERE hd.maHoaDon = :maHoaDon " +
             "ORDER BY hd.idHoaDon DESC")
     String findTenSanPhamTheoMaHoaDon(@Param("maHoaDon") String maHoaDon);
-
 
 }

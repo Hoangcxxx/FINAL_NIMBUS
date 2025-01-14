@@ -39,7 +39,7 @@ public class LichSuThanhToanService {
         // Tìm người dùng từ ID
         NguoiDung nguoiDung = nguoiDungRepository.findById(idNguoiDung)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy người dùng với ID: " + idNguoiDung));
-
+        hoaDon.setTrangThai(true);
         // Tạo mới Lịch sử thanh toán
         LichSuThanhToan lichSuThanhToan = new LichSuThanhToan();
         lichSuThanhToan.setHoaDon(hoaDon);

@@ -107,9 +107,8 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     });
 
     $scope.xoaNhieuSanPham = function () {
-        // Tạo danh sách các idSanPhamCT được chọn
         let idSanPhamCTs = [];
-        // Duyệt qua tất cả các sản phẩm và kiểm tra sản phẩm nào được chọn
+
         angular.forEach($scope.filteredProducts, function (materialGroup) {
             angular.forEach(materialGroup.colors, function (colorGroup) {
                 angular.forEach(colorGroup.products[0].items, function (item) {
@@ -120,32 +119,57 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             });
         });
 
-        // Nếu không có sản phẩm nào được chọn, thông báo cho người dùng
         if (idSanPhamCTs.length === 0) {
-            alert("Vui lòng chọn ít nhất một sản phẩm chi tiết để xóa.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Lỗi',
+                text: 'Vui lòng chọn ít nhất một sản phẩm chi tiết để xóa.',
+            });
             return;
         }
 
-        // Xác nhận với người dùng trước khi xóa
-        if (confirm("Bạn có chắc chắn muốn xóa các sản phẩm chi tiết đã chọn?")) {
-            console.log('Đang xóa các sản phẩm chi tiết với các id:', idSanPhamCTs);
+        // Thay thế confirm bằng Swal.fire
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa các sản phẩm chi tiết đã chọn?',
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true, // Hiển thị nút hủy
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+            reverseButtons: true // Đảo ngược vị trí nút (Xóa bên trái, Hủy bên phải)
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log('Đang xóa các sản phẩm chi tiết với các id:', idSanPhamCTs);
 
-            // Gọi API xóa sản phẩm chi tiết
-            $http.delete('http://localhost:8080/api/admin/san_pham_chi_tiet', { data: idSanPhamCTs, headers: { 'Content-Type': 'application/json' } })
-                .then(function (response) {
-                    alert("Xóa sản phẩm chi tiết thành công!");
-
-                    // Cập nhật lại danh sách sản phẩm sau khi xóa
-                    if ($scope.productData.idSanPham) {
-                        $scope.fetchProductDetails($scope.productData.idSanPham);
-                    }
-                })
-                .catch(function (error) {
-                    console.error('Lỗi khi xóa sản phẩm chi tiết:', error);
-                    alert("Xóa sản phẩm chi tiết thất bại!");
+                $http.delete('http://localhost:8080/api/admin/san_pham_chi_tiet', { data: idSanPhamCTs, headers: { 'Content-Type': 'application/json' } })
+                    .then(function (response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: 'Xóa sản phẩm chi tiết thành công!',
+                        });
+                        if ($scope.productData.idSanPham) {
+                            $scope.fetchProductDetails($scope.productData.idSanPham);
+                        }
+                    })
+                    .catch(function (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Xóa sản phẩm chi tiết thất bại!',
+                        });
+                        console.error('Lỗi khi xóa sản phẩm chi tiết:', error);
+                    });
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Đã hủy',
+                    text: 'Không có sản phẩm nào bị xóa.',
                 });
-        }
+            }
+        });
     };
+
 
 
 
@@ -188,24 +212,42 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     // Save or edit a product
     $scope.saveProduct = function () {
         if (!$scope.productData.idSanPham) {
-            alert("Vui lòng chọn sản phẩm!");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Vui lòng chọn sản phẩm!',
+            });
             return;
         }
+
         // Kiểm tra nếu chưa chọn chất liệu, màu sắc hoặc kích thước
         if ($scope.selectedMaterials.length === 0) {
-            alert("Vui lòng chọn ít nhất một chất liệu.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Vui lòng chọn ít nhất một chất liệu.',
+            });
             return;
         }
 
         if ($scope.selectedColors.length === 0) {
-            alert("Vui lòng chọn ít nhất một màu sắc.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Vui lòng chọn ít nhất một màu sắc.',
+            });
             return;
         }
 
         if ($scope.selectedSizes.length === 0) {
-            alert("Vui lòng chọn ít nhất một kích thước.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Vui lòng chọn ít nhất một kích thước.',
+            });
             return;
         }
+
         const idSanPham = parseInt($scope.productData.idSanPham, 10);
         $scope.sanPhamChiTietList = [];
 
@@ -224,21 +266,51 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
         );
 
         console.log("Payload to send:", JSON.stringify($scope.sanPhamChiTietList, null, 2));
+
         $http.post('http://localhost:8080/api/admin/san_pham/multiple', $scope.sanPhamChiTietList)
             .then(response => {
-                alert("Thêm sản phẩm chi tiết thành công!");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: 'Thêm sản phẩm chi tiết thành công!',
+                });
                 console.log(response.data);
                 $scope.resetSelections();
                 $scope.resetForm();
+
+                // Reset all checkboxes in the material modal after success
+                $scope.dsChatLieu.forEach(chatLieu => {
+                    chatLieu.selected = false;  // Uncheck all checkboxes
+                });
+                $scope.dsMauSac.forEach(mauSac => {
+                    mauSac.selected = false;  // Uncheck all checkboxes
+                });
+                $scope.dsKichThuoc.forEach(kichThuoc => {
+                    kichThuoc.selected = false;  // Uncheck all checkboxes
+                });
 
                 // Reload the product details to refresh the table
                 $scope.fetchProductDetails(idSanPham); // Reload the table with the latest data
             })
             .catch(error => {
-                alert("Có lỗi xảy ra khi thêm sản phẩm chi tiết.");
+                if (error.status === 409 && error.data && error.data.message) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: error.data.message, // Hiển thị lỗi trả về từ server
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi thêm sản phẩm chi tiết.',
+                    });
+                }
                 console.error("Error details:", error);
             });
     };
+
+
 
 
 
@@ -269,14 +341,46 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
 
     // Delete a product
     $scope.xoaSanPham = function (id) {
-        if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
-            console.log('Sản phẩm được xóa thành công:', id);
-            $http.delete(`http://localhost:8080/api/admin/san_pham_chi_tiet/findSanPhamCT/${id}`).then(response => {
-                console.log('Sản phẩm được xóa thành công:', response.data);
-                $scope.fetchProductDetails($scope.productData.idSanPham);
-            }).catch(error => console.error('Error deleting product:', error));
-        }
+        // Sử dụng Swal.fire cho xác nhận
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true, // Hiển thị nút hủy
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+            reverseButtons: true // Đảo ngược vị trí nút (Xóa ở bên trái, Hủy ở bên phải)
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng xác nhận xóa
+                $http.delete(`http://localhost:8080/api/admin/san_pham_chi_tiet/findSanPhamCT/${id}`)
+                    .then(response => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: 'Sản phẩm đã được xóa thành công!',
+                        });
+                        $scope.fetchProductDetails($scope.productData.idSanPham);
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Lỗi khi xóa sản phẩm!',
+                        });
+                        console.error('Error deleting product:', error);
+                    });
+            } else {
+                // Nếu người dùng chọn hủy
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Đã hủy',
+                    text: 'Sản phẩm không bị xóa.',
+                });
+            }
+        });
     };
+
 
     // Reset selections
     $scope.resetSelections = function () {
@@ -423,11 +527,10 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     $scope.saveQuantities = function () {
         let updatedProducts = [];
 
-        // Lọc qua các sản phẩm đã chọn và lưu lại thông tin
         $scope.filteredProducts.forEach(function (materialGroup) {
             materialGroup.colors.forEach(function (colorGroup) {
                 colorGroup.products[0].items.forEach(function (item) {
-                    if (item.soLuong !== undefined && item.selected) {  // Kiểm tra nếu số lượng thay đổi và sản phẩm được chọn
+                    if (item.soLuong !== undefined && item.selected) {
                         updatedProducts.push({
                             idSanPhamCT: item.idSanPhamCT,
                             newQuantity: item.soLuong
@@ -440,17 +543,29 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
         if (updatedProducts.length > 0) {
             $http.put('http://localhost:8080/api/admin/san_pham_chi_tiet/updateQuantities', updatedProducts)
                 .then(function (response) {
-                    console.log('Cập nhật số lượng thành công');
-                    alert('Cập nhật số lượng thành công!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Cập nhật số lượng thành công!',
+                    });
                     $scope.fetchProductDetails($scope.productData.idSanPham);
                 }, function (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Cập nhật số lượng thất bại!',
+                    });
                     console.error('Cập nhật số lượng thất bại');
-                    alert('Cập nhật số lượng thất bại!');
                 });
         } else {
-            alert('Không có thay đổi nào để lưu.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Chú ý',
+                text: 'Vui lòng chọn sản phẩm ít nhất một sản phẩm để lưu!',
+            });
         }
     };
+
 
 
 
@@ -475,15 +590,25 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             url: "http://localhost:8080/api/admin/chat_lieu",
             data: $scope.ChatLieu
         }).then(function (response) {
-            alert('Chúc mừng bạn tạo mới thành công');
-            $scope.onRefresh(); // Refresh the data
-            $scope.resetModal(); // Reset the modal
-
-            // Hide the "Add Material" modal and show the "Select Material" modal
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Chúc mừng bạn tạo mới chất liệu thành công!',
+            });
+            $scope.onRefresh();
+            $scope.resetModal();
             $('#addChatLieuModal').modal('hide');
             $('#materialModal').modal('show');
+        }).catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra khi tạo mới chất liệu!',
+            });
+            console.error(error);
         });
     };
+
 
     // Hàm để lấy danh sách chất liệu
     $scope.MauSac = {
@@ -496,15 +621,25 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             url: "http://localhost:8080/api/admin/mau_sac",
             data: $scope.MauSac
         }).then(function (response) {
-            alert('Chúc mừng bạn tạo mới thành công');
-            $scope.onRefresh(); // Refresh the data
-            $scope.resetModal(); // Reset the modal
-
-            // Hide the "Add Color" modal and show the "Select Color" modal
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Chúc mừng bạn tạo mới màu sắc thành công!',
+            });
+            $scope.onRefresh();
+            $scope.resetModal();
             $('#addMauSacModal').modal('hide');
             $('#colorModal').modal('show');
+        }).catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra khi tạo mới màu sắc!',
+            });
+            console.error(error);
         });
     };
+
 
     $scope.KichThuoc = {
         tenKichThuoc: "",
@@ -516,15 +651,25 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             url: "http://localhost:8080/api/admin/kich_thuoc",
             data: $scope.KichThuoc
         }).then(function (response) {
-            alert('Chúc mừng bạn tạo mới thành công');
-            $scope.onRefresh(); // Refresh the data
-            $scope.resetModal(); // Reset the modal
-
-            // Hide the "Add Size" modal and show the "Select Size" modal
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Chúc mừng bạn tạo mới kích thước thành công!',
+            });
+            $scope.onRefresh();
+            $scope.resetModal();
             $('#addKichThuocModal').modal('hide');
             $('#sizeModal').modal('show');
+        }).catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra khi tạo mới kích thước!',
+            });
+            console.error(error);
         });
     };
+
     $scope.onRefresh = function () {
         // Refresh Chat Lieu
         $scope.onRefreshChatLieu();

@@ -102,5 +102,25 @@ public class HoaDonChiTietQuery {
             "    ltt.ten_loai_trang_thai = 'Hoàn thành'  -- Trạng thái 'Hoàn thành'\n" +
             "    AND CAST(hd.ngay_tao AS DATE) BETWEEN CAST(DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AS DATE) \n" +
             "                                        AND CAST(GETDATE() AS DATE)  -- Lọc trong tháng này";
+    public static final String GET_ALL_SO_LUONG_LOAI_TRANG_THAI_HOA_DON = "SELECT \n" +
+            "    lt.id_loai_trang_thai,\n" +
+            "    lt.ten_loai_trang_thai,\n" +
+            "    COUNT(DISTINCT hd.Id_hoa_don) AS so_hoa_don\n" +
+            "FROM \n" +
+            "    loai_trang_thai lt\n" +
+            "LEFT JOIN \n" +
+            "    trang_thai_hoa_don tshd ON lt.Id_loai_trang_thai = tshd.id_loai_trang_thai\n" +
+            "LEFT JOIN \n" +
+            "    hoa_don hd ON tshd.id_hoa_don = hd.Id_hoa_don AND tshd.ngay_tao = (\n" +
+            "        SELECT MAX(ngay_tao)\n" +
+            "        FROM trang_thai_hoa_don\n" +
+            "        WHERE id_hoa_don = hd.Id_hoa_don\n" +
+            "    )\n" +
+            "WHERE \n" +
+            "    lt.id_loai_trang_thai BETWEEN 2 AND 8 AND lt.id_loai_trang_thai != 3 \n" +
+            "GROUP BY \n" +
+            "    lt.id_loai_trang_thai, lt.ten_loai_trang_thai\n" +
+            "ORDER BY \n" +
+            "    lt.id_loai_trang_thai;";
 
 }

@@ -153,6 +153,15 @@ public class ADBanHangController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    @GetMapping("/check-trang-thai/{idSanPhamChiTiet}")
+    public ResponseEntity<Void> checkTrangThai(@PathVariable("idSanPhamChiTiet") int idSanPhamChiTiet) {
+        boolean isAvailable = sanPhamService.checkTrangThaiSanPhamByChiTiet(idSanPhamChiTiet);
 
+        if (isAvailable) {
+            return ResponseEntity.ok().build(); // Trả về 200 nếu sản phẩm đang hoạt động
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
 }

@@ -147,22 +147,7 @@ public class GioHangService {
         return gioHangRepository.getAllGioHang(idNguoiDung);
     }
 
-//    public GioHang deleteGioHangChiTiet(Integer idGioHang, Integer idSanPhamChiTiet) {
-//        // Kiểm tra xem giỏ hàng có tồn tại không
-//        GioHang gioHang = gioHangRepository.findById(idGioHang)
-//                .orElseThrow(() -> new RuntimeException("Giỏ hàng không tồn tại"));
-//
-//        // Tìm chi tiết sản phẩm trong giỏ hàng
-//        GioHangChiTiet chiTiet = gioHangChiTietRepository
-//                .findByGioHang_IdGioHangAndSanPhamChiTiet_IdSanPhamChiTiet(idGioHang, idSanPhamChiTiet)
-//                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm này trong giỏ hàng"));
-//
-//        // Xóa chi tiết sản phẩm
-//        gioHangChiTietRepository.delete(chiTiet);
-//
-//        // Trả về giỏ hàng sau khi xóa sản phẩm
-//        return gioHang;
-//    }
+
 
 
     public GioHang deleteGioHangChiTiet(Integer idNguoiDung, Integer idSanPhamChiTiet) {
@@ -376,6 +361,25 @@ public class GioHangService {
 
         // Xóa tất cả sản phẩm trong giỏ hàng
         gioHangChiTietRepository.deleteAll(gioHangChiTietList);
+    }
+
+    public boolean checkSanPhamTrongGioHang(Integer idGioHang, Integer idSanPhamChiTiet) {
+        // Lấy sản phẩm trong giỏ hàng theo gioHangId và sanPhamChiTietId
+        Optional<GioHangChiTiet> gioHangChiTiet = gioHangChiTietRepository.findByGioHang_IdGioHangAndSanPhamChiTiet_IdSanPhamChiTiet(idGioHang, idSanPhamChiTiet);
+
+        if (gioHangChiTiet != null) {
+            // Lấy số lượng sản phẩm hiện tại trong kho
+            SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(idSanPhamChiTiet)
+                    .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+            int soLuongConLai = sanPhamChiTiet.getSoLuong();
+
+            // Kiểm tra số lượng trong giỏ hàng và trong kho
+            if (gioHangChiTiet.get().getSoLuong() > soLuongConLai) {
+                return false; // Nếu số lượng trong giỏ hàng lớn hơn số lượng còn lại trong kho, trả về false
+            }
+        }
+
+        return true; // Sản phẩm đủ số lượng trong giỏ hàng
     }
 
 }

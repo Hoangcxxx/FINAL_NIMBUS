@@ -126,4 +126,16 @@ public class GioHangController {
     private List<Map<String, Object>> mapGioHangs(List<Object[]> results) {
         return results.stream().map(this::mapGioHangDetail).collect(Collectors.toList());
     }
+
+
+    @GetMapping("/checkQuantity")
+    public ResponseEntity<String> checkQuantity(@RequestParam Integer idGioHang, @RequestParam Integer idSanPhamChiTiet) {
+        boolean isAvailable = gioHangService.checkSanPhamTrongGioHang(idGioHang, idSanPhamChiTiet);
+        if (isAvailable) {
+            return ResponseEntity.ok("Sản phẩm đủ số lượng trong giỏ hàng.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Sản phẩm đã hết hàng trong giỏ hàng.");
+        }
+    }
 }

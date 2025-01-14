@@ -4,11 +4,24 @@ window.ThanhCongttController = function ($scope, $http, $window) {
 
     // Nếu không có mã hóa đơn thì thông báo lỗi
     if (!maHoaDon) {
-        alert("Mã hóa đơn không hợp lệ!");
+        // Nếu không có mã hóa đơn, hiển thị thông báo lỗi thay vì thông báo thành công
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Không tìm thấy mã hóa đơn. Vui lòng thử lại!',
+            confirmButtonText: 'OK'
+        });
         return;
     }
+    
 
-
+    // Nếu có mã hóa đơn, hiển thị thông báo thanh toán thành công
+    Swal.fire({
+        icon: 'success',
+        title: 'Thanh toán thành công!',
+        text: 'Cảm ơn bạn đã tin tưởng và đặt hàng. Mã hóa đơn của bạn là: ' + maHoaDon + '. Chúng tôi sẽ nhanh chóng xử lý đơn hàng của bạn!',
+        confirmButtonText: 'OK'
+    });
 
     // Lấy chi tiết hóa đơn từ API
     function getOrderDetails(maHoaDon) {
@@ -34,22 +47,17 @@ window.ThanhCongttController = function ($scope, $http, $window) {
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
                         xa: hoaDon.tenXa,
-                        giaTriMavoucher: hoaDon.giaTriMavoucher,  
+                        giaTriMavoucher: hoaDon.giaTriMavoucher,
                         kieuGiamGia: hoaDon.kieuGiamGia,
                         idlichsuhoadon: hoaDon.idlichsuhoadon || []
-
-
                     };
 
                     console.log("Giá trị mã voucher:", $scope.orderData.giaTriMavoucher);
-
-                    console.log("Kieeur Giam Gia :", $scope.orderData.kieuGiamGia);
-                    // Tính toán giảm giá
+                    console.log("Kiểu Giảm Giá:", $scope.orderData.kieuGiamGia);
 
                     // Cập nhật chi tiết sản phẩm
                     if (hoaDon.listSanPhamChiTiet && hoaDon.listSanPhamChiTiet.length > 0) {
                         $scope.orderDetails = {
-
                             listSanPhamChiTiet: hoaDon.listSanPhamChiTiet,
                             thanhTien: hoaDon.thanhTien,
                             giaTien: hoaDon.giaTien,
@@ -82,6 +90,7 @@ window.ThanhCongttController = function ($scope, $http, $window) {
             });
     }
 
+    // Tính tổng giá trị sản phẩm trong đơn hàng
     $scope.getTotalProductPrice = function () {
         let total = 0;
 
@@ -97,6 +106,7 @@ window.ThanhCongttController = function ($scope, $http, $window) {
         return total;
     };
 
+    // Tính toán giảm giá
     $scope.calculateDiscount = function () {
         let discount = 0;
         if ($scope.orderData) {
@@ -110,16 +120,14 @@ window.ThanhCongttController = function ($scope, $http, $window) {
         }
         return discount;
     };
-    
+
+    // Tính tổng giá trị sau khi trừ giảm giá
     $scope.calculateTotalAfterDiscount = function () {
         const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
         const discount = $scope.calculateDiscount(); // Số tiền giảm giá
         return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
     };
-    
-    
-
 
     // Gọi API để lấy chi tiết đơn hàng
     getOrderDetails(maHoaDon);
-}
+};

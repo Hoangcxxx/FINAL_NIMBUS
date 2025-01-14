@@ -165,7 +165,7 @@ public class EmailService {
                         .append("<span><strong>Phi Vận Chuyển:</strong> " + formatter.format(phiship) + " VND</span>")
                         .append("</div>");
             }
-    
+
             emailContent.append("</div>")
                     .append("<p><strong>Tổng giá trị đơn hàng:</strong> " + formatter.format(hoaDonDTO.getThanhTien()) + " VND</p>")
                     .append("<p>Chúng tôi rất vui mừng thông báo rằng đơn hàng của bạn đã được tiếp nhận và đang được xử lý. Đơn hàng của bạn sẽ được giao đến trong khoảng 3-5 ngày tới. Chúng tôi sẽ thông báo cho bạn ngay khi đơn hàng đã được gửi đi và trên đường đến tay bạn.</p>")

@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class SanPhamChiTietService {
@@ -97,13 +95,27 @@ public class SanPhamChiTietService {
         // Lấy tổng số lượng sản phẩm chi tiết hiện có trong DB để tăng mã đúng
         long currentCount = sanPhamChiTietRepository.count();
 
+        List<SanPhamChiTiet> savedSanPhamChiTietList = new ArrayList<>();
+
         for (int i = 0; i < sanPhamChiTietList.size(); i++) {
             SanPhamChiTiet spct = sanPhamChiTietList.get(i);
 
-            // Tạo mã sản phẩm chi tiết cho từng sản phẩm trong danh sách
+            // Kiểm tra trùng lặp sản phẩm chi tiết
+            boolean exists = sanPhamChiTietRepository.existsBySanPham_IdSanPhamAndMauSacChiTiet_IdMauSacChiTietAndChatLieuChiTiet_IdChatLieuChiTietAndKichThuocChiTiet_IdKichThuocChiTiet(
+                    idSanPham,
+                    spct.getMauSacChiTiet() != null ? spct.getMauSacChiTiet().getIdMauSacChiTiet() : null,
+                    spct.getChatLieuChiTiet() != null ? spct.getChatLieuChiTiet().getIdChatLieuChiTiet() : null,
+                    spct.getKichThuocChiTiet() != null ? spct.getKichThuocChiTiet().getIdKichThuocChiTiet() : null
+            );
+
+            if (exists) {
+                throw new IllegalArgumentException("Sản phẩm chi tiết với màu sắc, chất liệu và kích thước đã tồn tại.");
+            }
+
+            // Tạo mã sản phẩm chi tiết
             String generatedMaHoaDon = "SPCT" + String.format("%03d", currentCount + 1 + i);
 
-            // Kiểm tra và thiết lập sản phẩm
+            // Thiết lập các thuộc tính
             SanPham sanPham = new SanPham();
             sanPham.setIdSanPham(idSanPham); // Gán ID sản phẩm từ tham số
             spct.setMaSanPhamCT(generatedMaHoaDon); // Gán mã sản phẩm chi tiết đã tạo
@@ -113,35 +125,36 @@ public class SanPhamChiTietService {
             spct.setNgayTao(new Date()); // Ngày tạo là ngày hiện tại
             spct.setNgayCapNhat(new Date()); // Ngày cập nhật là ngày hiện tại
 
-            // Lưu chatLieuChiTiet nếu cần
-            ChatLieuChiTiet chatLieuChiTiet = spct.getChatLieuChiTiet();
-            if (chatLieuChiTiet != null && chatLieuChiTiet.getIdChatLieuChiTiet() != null) {
-                chatLieuChiTiet = chatLieuChiTietRepository.findById(chatLieuChiTiet.getIdChatLieuChiTiet())
-                        .orElseThrow(() -> new IllegalArgumentException("ChatLieuChiTiet không tồn tại"));
-            }
-            spct.setChatLieuChiTiet(chatLieuChiTiet);
-
-            // Lưu mauSacChiTiet nếu cần
-            MauSacChiTiet mauSacChiTiet = spct.getMauSacChiTiet();
-            if (mauSacChiTiet != null && mauSacChiTiet.getIdMauSacChiTiet() != null) {
-                mauSacChiTiet = mauSacChiTietRepository.findById(mauSacChiTiet.getIdMauSacChiTiet())
-                        .orElseThrow(() -> new IllegalArgumentException("MauSacChiTiet không tồn tại"));
-            }
-            spct.setMauSacChiTiet(mauSacChiTiet);
-
-            // Lưu kichThuocChiTiet nếu cần
-            KichThuocChiTiet kichThuocChiTiet = spct.getKichThuocChiTiet();
-            if (kichThuocChiTiet != null && kichThuocChiTiet.getIdKichThuocChiTiet() != null) {
-                kichThuocChiTiet = kichThuocChiTietRepository.findById(kichThuocChiTiet.getIdKichThuocChiTiet())
-                        .orElseThrow(() -> new IllegalArgumentException("KichThuocChiTiet không tồn tại"));
-            }
-            spct.setKichThuocChiTiet(kichThuocChiTiet);
+            savedSanPhamChiTietList.add(spct);
         }
 
-        return sanPhamChiTietRepository.saveAll(sanPhamChiTietList);
+        return sanPhamChiTietRepository.saveAll(savedSanPhamChiTietList);
     }
+
 
     public SanPhamChiTiet getSanPhamChiTietById(Integer idSanPhamChiTiet) {
         return sanPhamChiTietRepository.findById(idSanPhamChiTiet).orElse(null);
     }
+
+    public Map<String, String> checkSoLuong(Integer idSanPhamChiTiet) {
+        Optional<SanPhamChiTiet> sanPhamChiTietOpt = sanPhamChiTietRepository.findById(idSanPhamChiTiet);
+
+        Map<String, String> response = new HashMap<>();
+
+        if (sanPhamChiTietOpt.isPresent()) {
+            SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietOpt.get();
+
+            if (sanPhamChiTiet.getSoLuong() == 0) {
+                response.put("message", "Sản phẩm đã hết hàng!");
+            } else {
+                response.put("message", "Sản phẩm còn " + sanPhamChiTiet.getSoLuong() + " sản phẩm.");
+            }
+        } else {
+            response.put("message", "Sản phẩm không tồn tại!");
+        }
+
+        return response;
+    }
+
+
 }

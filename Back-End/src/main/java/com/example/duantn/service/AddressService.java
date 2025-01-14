@@ -3,18 +3,19 @@ package com.example.duantn.service;
 import com.example.duantn.dto.ApiResponse;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AddressService {
@@ -107,185 +108,38 @@ public class AddressService {
         }
     }
 
-        public List<Map<String, Object>> getWards ( int districtId){
-            String url = apiUrl + "/ward?district_id=" + districtId;
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("token", token); // Đảm bảo token đã được set đúng
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+    public List<Map<String, Object>> getWards ( int districtId){
+        String url = apiUrl + "/ward?district_id=" + districtId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("token", token); // Đảm bảo token đã được set đúng
+        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            // Kiểm tra token trước khi gửi yêu cầu
-            if (token == null || token.isEmpty()) {
-                throw new RuntimeException("Token không hợp lệ.");
-            }
-
-            // Gửi yêu cầu GET tới API và nhận kết quả trả về dạng ApiResponse
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-            // Kiểm tra mã phản hồi từ API
-            if (response.getStatusCode().is2xxSuccessful()) {
-                try {
-                    // Sử dụng ObjectMapper để chuyển đổi String thành ApiResponse
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    ApiResponse apiResponse = objectMapper.readValue(response.getBody(), ApiResponse.class);
-
-                    // Trả về danh sách tỉnh (data) từ ApiResponse
-                    return apiResponse.getData();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("Error parsing response data.");
-                }
-            } else {
-                throw new RuntimeException("Error fetching provinces: " + response.getStatusCode());
-            }
+        // Kiểm tra token trước khi gửi yêu cầu
+        if (token == null || token.isEmpty()) {
+            throw new RuntimeException("Token không hợp lệ.");
         }
 
+        // Gửi yêu cầu GET tới API và nhận kết quả trả về dạng ApiResponse
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
+        // Kiểm tra mã phản hồi từ API
+        if (response.getStatusCode().is2xxSuccessful()) {
+            try {
+                // Sử dụng ObjectMapper để chuyển đổi String thành ApiResponse
+                ObjectMapper objectMapper = new ObjectMapper();
+                ApiResponse apiResponse = objectMapper.readValue(response.getBody(), ApiResponse.class);
 
-//    public void saveProvinces() {
-//        // Gọi API lấy danh sách tỉnh thành
-//        ResponseEntity<String> response = getProvinces();
-//
-//        // Kiểm tra phản hồi từ API
-//        if (response.getStatusCode() == HttpStatus.OK) {
-//            try {
-//                // Parse JSON response
-//                ObjectMapper objectMapper = new ObjectMapper();
-//                JsonNode rootNode = objectMapper.readTree(response.getBody());
-//
-//                if (rootNode.get("code").asInt() == 200) { // Kiểm tra mã phản hồi từ GHN
-//                    JsonNode dataNode = rootNode.get("data");
-//
-//                    for (JsonNode provinceNode : dataNode) {
-//                        // Tạo đối tượng Tinh từ dữ liệu JSON
-//                        Tinh tinh = new Tinh();
-//                        tinh.setIdTinh(tinh.getIdTinh());
-//
-//                        // Lấy mã tỉnh là chuỗi và chuyển đổi sang Integer
-//                        String maTinhString = provinceNode.get("ProvinceID").asText();
-//                        try {
-//                            // Chuyển mã tỉnh từ String sang Integer
-//                            tinh.setMaTinh(String.valueOf(Integer.parseInt(maTinhString)));
-//                        } catch (NumberFormatException e) {
-//                            // Xử lý trường hợp nếu mã tỉnh không thể chuyển sang Integer
-//                            System.out.println("Lỗi khi chuyển đổi mã tỉnh: " + maTinhString);
-//                            tinh.setMaTinh(String.valueOf(0));  // Gán giá trị mặc định nếu không chuyển đổi được
-//                        }
-//
-//                        tinh.setTenTinh(provinceNode.get("ProvinceName").asText());
-//                        tinh.setNgayTao(new Date());
-//                        tinh.setNgayCapNhat(new Date());
-//
-//                        // Lưu vào cơ sở dữ liệu
-//                        tinhRepository.save(tinh);
-//                    }
-//                    System.out.println("Lưu danh sách tỉnh thành thành công.");
-//                } else {
-//                    System.err.println("Lỗi từ API GHN: " + rootNode.get("message").asText());
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new RuntimeException("Lỗi khi xử lý dữ liệu từ API GHN.");
-//            }
-//        } else {
-//            throw new RuntimeException("Không thể kết nối tới API GHN. Mã trạng thái: " + response.getStatusCode());
-//        }
-//    }
+                // Trả về danh sách tỉnh (data) từ ApiResponse
+                return apiResponse.getData();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Error parsing response data.");
+            }
+        } else {
+            throw new RuntimeException("Error fetching provinces: " + response.getStatusCode());
+        }
+    }
 
-//    public void saveDistricts(int provinceId) {
-//        // Gọi API lấy danh sách huyện theo mã tỉnh
-//        ResponseEntity<String> response = getDistricts(provinceId);
-//
-//        // Kiểm tra phản hồi từ API
-//        if (response.getStatusCode() == HttpStatus.OK) {
-//            try {
-//                // Parse JSON response
-//                ObjectMapper objectMapper = new ObjectMapper();
-//                JsonNode rootNode = objectMapper.readTree(response.getBody());
-//
-//                if (rootNode.get("code").asInt() == 200) { // Kiểm tra mã phản hồi từ GHN
-//                    JsonNode dataNode = rootNode.get("data");
-//
-//                    for (JsonNode districtNode : dataNode) {
-//                        // Tạo đối tượng Huyen từ dữ liệu JSON
-//                        Huyen huyen = new Huyen();
-//                        huyen.setIdHuyen(huyen.getIdHuyen()); // Set Id Huyện
-//
-//                        // Lấy mã huyện và chuyển đổi
-//                        String maHuyenString = districtNode.get("DistrictID").asText();
-//                        try {
-//                            huyen.setMaHuyen(String.valueOf(Integer.parseInt(maHuyenString)));
-//                        } catch (NumberFormatException e) {
-//                            System.out.println("Lỗi khi chuyển đổi mã huyện: " + maHuyenString);
-//                            huyen.setMaHuyen(String.valueOf(0));  // Gán giá trị mặc định nếu không chuyển đổi được
-//                        }
-//
-//                        huyen.setTenHuyen(districtNode.get("DistrictName").asText());
-//                        huyen.setNgayTao(new Date());
-//                        huyen.setNgayCapNhat(new Date());
-//
-//                        // Lưu vào cơ sở dữ liệu
-//                        huyenRepository.save(huyen);
-//                    }
-//                    System.out.println("Lưu danh sách huyện thành công.");
-//                } else {
-//                    System.err.println("Lỗi từ API GHN: " + rootNode.get("message").asText());
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new RuntimeException("Lỗi khi xử lý dữ liệu từ API GHN.");
-//            }
-//        } else {
-//            throw new RuntimeException("Không thể kết nối tới API GHN. Mã trạng thái: " + response.getStatusCode());
-//        }
-//    }
-//
-//    public void saveWards(int districtId) {
-//        // Gọi API lấy danh sách xã theo mã huyện
-//        ResponseEntity<String> response = getWards(districtId);
-//
-//        // Kiểm tra phản hồi từ API
-//        if (response.getStatusCode() == HttpStatus.OK) {
-//            try {
-//                // Parse JSON response
-//                ObjectMapper objectMapper = new ObjectMapper();
-//                JsonNode rootNode = objectMapper.readTree(response.getBody());
-//
-//                if (rootNode.get("code").asInt() == 200) { // Kiểm tra mã phản hồi từ GHN
-//                    JsonNode dataNode = rootNode.get("data");
-//
-//                    for (JsonNode wardNode : dataNode) {
-//                        // Tạo đối tượng Xa từ dữ liệu JSON
-//                        Xa xa = new Xa();
-//                        xa.setIdXa(xa.getIdXa()); // Set Id Xã
-//
-//                        // Lấy mã xã và chuyển đổi
-//                        String maXaString = wardNode.get("WardCode").asText();
-//                        try {
-//                            xa.setMaXa(String.valueOf(Integer.parseInt(maXaString)));
-//                        } catch (NumberFormatException e) {
-//                            System.out.println("Lỗi khi chuyển đổi mã xã: " + maXaString);
-//                            xa.setMaXa(String.valueOf(0));  // Gán giá trị mặc định nếu không chuyển đổi được
-//                        }
-//
-//                        xa.setTenXa(wardNode.get("WardName").asText());
-//                        xa.setNgayTao(new Date());
-//                        xa.setNgayCapNhat(new Date());
-//
-//                        // Lưu vào cơ sở dữ liệu
-//                        xaRepository.save(xa);
-//                    }
-//                    System.out.println("Lưu danh sách xã thành công.");
-//                } else {
-//                    System.err.println("Lỗi từ API GHN: " + rootNode.get("message").asText());
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new RuntimeException("Lỗi khi xử lý dữ liệu từ API GHN.");
-//            }
-//        } else {
-//            throw new RuntimeException("Không thể kết nối tới API GHN. Mã trạng thái: " + response.getStatusCode());
-//        }
-//    }
 
     // 4. Lưu dữ liệu vào DB
     public void saveCityDistrictWardToDB(Integer userId, String cityCode, String districtCode, String wardCode) {
@@ -482,6 +336,9 @@ public class AddressService {
         // Nếu không tìm thấy xã hoặc có lỗi, ném ngoại lệ
         throw new RuntimeException("Không thể lấy dữ liệu xã từ GHN API");
     }
+
+
+
 
 
 

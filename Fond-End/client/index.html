@@ -1,282 +1,297 @@
-    <!DOCTYPE html>
-    <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>NB Fasion</title>
-        <link rel="stylesheet" href="/view-client/assets/css/style.css">
-        <link rel="stylesheet" href="lib/bootstrap.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-            integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-            crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link href='assets/image/favicon1.png' rel='icon' type='image/x-icon' />
-        <!-- Bootstrap CSS -->
-        <!-- Font Awesome -->
-        <script src="lib/angular.js"></script>
-        <script src="lib/angular-route.js"></script>
-        <script src="view-client/controllers/SanPhamController.js"></script>
-        <script src="view-client/controllers/ThanhToanController.js"></script>
-        <script src="view-client/controllers/TrangchuController.js"></script>
-        <script src="view-client/controllers/SanPhamCTController.js"></script>
-        <script src="view-client/controllers/AboutController.js"></script>
-        <script src="view-client/controllers/BlogController.js"></script>
-        <script src="view-client/controllers/ContactController.js"></script>
-        <script src="view-client/controllers/GiohangController.js"></script>
-        <script src="view-client/controllers/UserController.js"></script>
-        <script src="view-client/controllers/ThongTinNguoiDungController.js"></script>
-        <script src="view-client/controllers/ThanhCongController.js"></script>
-        <script src="view-client/controllers/DonhangController.js"></script>
-        <script src="view-client/controllers/QuenMatKhauController.js"></script>
-        <script src="view-client/controllers/DonHangCuaToiController.js"></script>
-        <script src="view-client/controllers/ThanhCongttController.js"></script>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NB Fasion</title>
+    <link rel="stylesheet" href="/view-client/assets/css/style.css">
+    <link rel="stylesheet" href="lib/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href='assets/image/favicon1.png' rel='icon' type='image/x-icon' />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <body ng-app="myApp">
-        <div class="container-fluid" ng-controller="ngController">
-            <div ng-include="'view-client/layouts/_header.html'"></div>
-            <div ng-view></div>
-            <div ng-include="'view-client/layouts/_footer.html'"></div>
-        </div>
+    <!-- Bootstrap CSS -->
+    <!-- Font Awesome -->
+    <script src="lib/angular.js"></script>
+    <script src="lib/angular-route.js"></script>
+    <script src="view-client/controllers/SanPhamController.js"></script>
+    <script src="view-client/controllers/ThanhToanController.js"></script>
+    <script src="view-client/controllers/TrangchuController.js"></script>
+    <script src="view-client/controllers/SanPhamCTController.js"></script>
+    <script src="view-client/controllers/AboutController.js"></script>
+    <script src="view-client/controllers/BlogController.js"></script>
+    <script src="view-client/controllers/ContactController.js"></script>
+    <script src="view-client/controllers/GiohangController.js"></script>
+    <script src="view-client/controllers/UserController.js"></script>
+    <script src="view-client/controllers/ThongTinNguoiDungController.js"></script>
+    <script src="view-client/controllers/ThanhCongController.js"></script>
+    <script src="view-client/controllers/DonhangController.js"></script>
+    <script src="view-client/controllers/QuenMatKhauController.js"></script>
+    <script src="view-client/controllers/DonHangCuaToiController.js"></script>
+    <script src="view-client/controllers/ThanhCongttController.js"></script>
+    <style type="text/css">
+        .css_select_div {
+            text-align: center;
+        }
 
-        <script>
-            var app = angular.module("myApp", ["ngRoute"]);
-            app.config(function ($routeProvider) {
-                $routeProvider
-                    .when("/", {
-                        templateUrl: "view-client/views/trangchu.html",
-                        controller: TrangchuController
-                    })
-                    .when("/about", {
-                        templateUrl: "view-client/views/about.html",
-                        controller: AboutController
-                    })
-                    .when("/Thanhcong", {
-                        templateUrl: "view-client/views/thanhcongtructiep.html",
-                        controller: ThanhCongttController
-                    })
-                    .when("/register", {
-                        templateUrl: "view-client/views/register.html",
-                        controller: UserController
-                    })
-                    .when("/user", {
-                        templateUrl: "view-client/views/user.html",
-                        controller: UserController
-                    })
-                    .when("/blog", {
-                        templateUrl: "view-client/views/blog.html",
-                        controller: BlogController
-                    })
-                    .when("/contact", {
-                        templateUrl: "view-client/views/contact.html",
-                        controller: ContactController
-                    })
-                    .when("/san_pham", {
-                        templateUrl: "view-client/views/sanpham.html",
-                        controller: SanPhamController
-                    })
-                    .when("/san_pham_ct/:id", {
-                        templateUrl: "view-client/views/sanphamct.html",
-                        controller: SanPhamCTController
-                    })
-                    .when("/thong_tin_nguoi_dung", {
-                        templateUrl: "view-client/views/thongtintaikhoan.html",
-                        controller: ThongTinNguoiDungController
-                    })
-                    .when("/gio_hang", {
-                        templateUrl: "view-client/views/cart.html",
-                        controller: GiohangController
-                    })
-                    .when("/thanh_toan", {
-                        templateUrl: "view-client/views/thanhtoan.html",
-                        controller: ThanhToanController
-                    })
-                    .when("/thanhcong", {
-                        templateUrl: "view-client/views/thanhcong.html",
-                        controller: ThanhCongController
-                    })
-                    .when("/donhang", {
-                        templateUrl: "view-client/views/theodoidonhang.html",
-                        controller: DonHangController
-                    })
-                    .when("/quenmatkhau", {
-                        templateUrl: "view-client/views/quenmatkhau.html",
-                        controller: QuenMatKhauController
-                    })
-                    .when("/don_hang_cua_toi", {
-                        templateUrl: "view-client/views/donhangcuatoi.html",
-                        controller: DonHangCuaToiController
-                    })
-                    .otherwise({
-                        redirectTo: "/"
-                    });
-            });
-            app.controller("ngController", function ($scope, $http, $filter, $window) {
-                // Tải lại thông tin giỏ hàng mỗi khi giao diện được tải lại
-                loadCartInfo();
+        .css_select {
+            display: inline-table;
+            width: 25%;
+            padding: 5px;
+            margin: 5px 2%;
+            border: solid 1px #686868;
+            border-radius: 5px;
+        }
+    </style>
+</head>
 
-                $scope.checkTrangThaiNguoiDung = function () {
-                    $http.get('http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/' + $scope.idNguoiDung).then(
-                        function (response) {
-                            if (response.data.trangThai === true) {
-                                // Trạng thái hợp lệ, điều hướng tới trang cá nhân
-                                $window.location.href = '#!thong_tin_nguoi_dung';
-                            } else {
-                                // Trạng thái bị khóa, hiển thị thông báo
-                                Swal.fire({
-                                    title: 'Tài khoản của bạn đã bị khóa!',
-                                    text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
-                                    icon: 'error',
-                                    confirmButtonText: 'Liên hệ hỗ trợ',
-                                    footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
-                                });
+<body ng-app="myApp">
+    <div class="container-fluid" ng-controller="ngController">
+        <div ng-include="'view-client/layouts/_header.html'"></div>
+        <div ng-view></div>
+        <div ng-include="'view-client/layouts/_footer.html'"></div>
+    </div>
 
+    <script>
+        var app = angular.module("myApp", ["ngRoute"]);
+        app.config(function ($routeProvider) {
+            $routeProvider
+                .when("/", {
+                    templateUrl: "view-client/views/trangchu.html",
+                    controller: TrangchuController
+                })
+                .when("/about", {
+                    templateUrl: "view-client/views/about.html",
+                    controller: AboutController
+                })
+                .when("/Thanhcong", {
+                    templateUrl: "view-client/views/thanhcongtructiep.html",
+                    controller: ThanhCongttController
+                })
+                .when("/register", {
+                    templateUrl: "view-client/views/register.html",
+                    controller: UserController
+                })
+                .when("/user", {
+                    templateUrl: "view-client/views/user.html",
+                    controller: UserController
+                })
+                .when("/blog", {
+                    templateUrl: "view-client/views/blog.html",
+                    controller: BlogController
+                })
+                .when("/contact", {
+                    templateUrl: "view-client/views/contact.html",
+                    controller: ContactController
+                })
+                .when("/san_pham", {
+                    templateUrl: "view-client/views/sanpham.html",
+                    controller: SanPhamController
+                })
+                .when("/san_pham_ct/:id", {
+                    templateUrl: "view-client/views/sanphamct.html",
+                    controller: SanPhamCTController
+                })
+                .when("/thong_tin_nguoi_dung", {
+                    templateUrl: "view-client/views/thongtintaikhoan.html",
+                    controller: ThongTinNguoiDungController
+                })
+                .when("/gio_hang", {
+                    templateUrl: "view-client/views/cart.html",
+                    controller: GiohangController
+                })
+                .when("/thanh_toan", {
+                    templateUrl: "view-client/views/thanhtoan.html",
+                    controller: ThanhToanController
+                })
+                .when("/thanhcong", {
+                    templateUrl: "view-client/views/thanhcong.html",
+                    controller: ThanhCongController
+                })
+                .when("/donhang", {
+                    templateUrl: "view-client/views/theodoidonhang.html",
+                    controller: DonHangController
+                })
+                .when("/quenmatkhau", {
+                    templateUrl: "view-client/views/quenmatkhau.html",
+                    controller: QuenMatKhauController
+                })
+                .when("/don_hang_cua_toi", {
+                    templateUrl: "view-client/views/donhangcuatoi.html",
+                    controller: DonHangCuaToiController
+                })
+                .otherwise({
+                    redirectTo: "/"
+                });
+        });
+        app.controller("ngController", function ($scope, $http, $filter, $window) {
+            // Tải lại thông tin giỏ hàng mỗi khi giao diện được tải lại
+            loadCartInfo();
 
-                                return;
-                            }
-                        },
-                        function (error) {
-                            console.error('Không thể kiểm tra trạng thái người dùng:', error);
-                            alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
-                        }
-                    );
-                };
-
-                // Hàm load thông tin giỏ hàng
-                function loadCartInfo() {
-                    var idGioHang = localStorage.getItem('idGioHang');
-                    if (idGioHang) {
-                        $http.get('http://localhost:8080/api/nguoi_dung/gio_hang/' + idGioHang)
-                            .then(function (response) {
-                                $scope.cartInfo = response.data;
-                                $scope.cartQuantity = $scope.cartInfo.length;
-                                console.log("Thông tin giỏ hàng:", $scope.cartInfo);
-                            }, function (error) {
-                                console.error('Error fetching cart info:', error);
-                            });
-                    }
-                }
-                // Đăng xuất
-                $scope.dangXuat = function () {
-                    // Gửi yêu cầu đăng xuất đến API
-                    $http.post("http://localhost:8080/api/nguoi_dung/dang_xuat")
-                        .then(function (response) {
-                            // Xóa thông tin người dùng trong localStorage
-                            localStorage.removeItem("user");
-                            // Xóa giỏ hàng trong localStorage khi người dùng đăng xuất
-                            localStorage.removeItem("idGioHang");
-                            // Cập nhật lại giao diện
-                            $scope.infoUser = undefined;
-                            $scope.tenNguoiDung = undefined;
-
-                            // Thông báo đăng xuất thành công bằng SweetAlert2
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Đăng xuất thành công!',
-                                text: 'Bạn đã đăng xuất khỏi hệ thống.',
-                                confirmButtonText: 'OK'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // Chuyển hướng đến trang 'user' sau khi đăng xuất thành công
-                                    $window.location.href = "#/user";  // Điều hướng đến trang user
-                                    // Nếu bạn muốn dùng `$location` (AngularJS way) thay vì `$window.location.href`:
-                                    // $location.path("/user"); 
-                                }
-                            });
-                        }, function (error) {
-                            // Nếu có lỗi
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Đăng xuất thất bại',
-                                text: error.data ? error.data.message : "Lỗi không xác định",
-                                confirmButtonText: 'Thử lại'
-                            });
-                        });
-                };
-
-
-                $scope.formatTimeAgo = function (dateString) {
-                    var sentDate = new Date(dateString);  // Chuyển chuỗi ngày thành đối tượng Date
-                    var now = new Date();  // Lấy thời gian hiện tại
-                    var diffInMs = now - sentDate;  // Tính sự chênh lệch giữa thời gian hiện tại và thời gian gửi
-
-                    // Chuyển đổi chênh lệch thời gian thành các đơn vị
-                    var diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));  // Số giờ
-                    var diffInMinutes = Math.floor(diffInMs / (1000 * 60));  // Số phút
-                    var diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));  // Số ngày
-
-                    if (diffInHours < 24) {
-                        // Nếu trong vòng 24 giờ, hiển thị theo giờ
-                        if (diffInHours < 1) {
-                            return Math.floor(diffInMinutes) + " phút trước";  // Nếu dưới 1 giờ, hiển thị phút
+            $scope.checkTrangThaiNguoiDung = function () {
+                $http.get('http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/' + $scope.idNguoiDung).then(
+                    function (response) {
+                        if (response.data.trangThai === true) {
+                            // Trạng thái hợp lệ, điều hướng tới trang cá nhân
+                            $window.location.href = '#!thong_tin_nguoi_dung';
                         } else {
-                            return diffInHours + " giờ trước";  // Nếu trên 1 giờ, hiển thị giờ
+                            // Trạng thái bị khóa, hiển thị thông báo
+                            Swal.fire({
+                                title: 'Tài khoản của bạn đã bị khóa!',
+                                text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
+                                icon: 'error',
+                                confirmButtonText: 'Liên hệ hỗ trợ',
+                                footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
+                            });
+
+
+                            return;
                         }
-                    } else {
-                        // Nếu đã quá 24 giờ, hiển thị theo ngày
-                        return $filter('date')(sentDate, 'dd/MM/yyyy');  // Sử dụng Angular filter để format ngày
+                    },
+                    function (error) {
+                        console.error('Không thể kiểm tra trạng thái người dùng:', error);
+                        alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
                     }
-                };
-                // Kiểm tra người dùng đã đăng nhập chưa
-                var userInfo = localStorage.getItem("user");
-                if (userInfo) {
-                    $scope.infoUser = JSON.parse(userInfo);  // Lấy thông tin người dùng từ localStorage
-                    $scope.idNguoiDung = $scope.infoUser.idNguoiDung;  // Lấy tên người dùng
-                    $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
-                    $scope.vaiTro = $scope.infoUser.vaiTro;  // Lấy thông tin vai trò của người dùng
-                    // Kiểm tra vai trò của người dùng, nếu là Quản trị viên (idVaiTro = 1)
-                    if ($scope.vaiTro.idVaiTro === 1) {
-                        $scope.isAdmin = true;  // Cho phép hiển thị mục "Trang quản lý"
-                    } else {
-                        $scope.isAdmin = false;  // Ẩn mục "Trang quản lý"
-                    }
-                    // Lấy danh sách thông báo của người dùng nếu đã đăng nhập
-                    $http.get("http://localhost:8080/api/nguoi_dung/thong_bao/" + $scope.idNguoiDung)
+                );
+            };
+
+            // Hàm load thông tin giỏ hàng
+            function loadCartInfo() {
+                var idGioHang = localStorage.getItem('idGioHang');
+                if (idGioHang) {
+                    $http.get('http://localhost:8080/api/nguoi_dung/gio_hang/' + idGioHang)
                         .then(function (response) {
-                            // Lưu danh sách thông báo vào scope
-                            $scope.dsThongBao = response.data;
-                            // Đếm số lượng thông báo
-                            $scope.soLuongThongBao = $scope.dsThongBao.length;
-                            console.log('Dữ liệu thông báo người dùng: ', $scope.dsThongBao);
-                            console.log('Số lượng thông báo người dùng: ', $scope.soLuongThongBao);
+                            $scope.cartInfo = response.data;
+                            $scope.cartQuantity = $scope.cartInfo.length;
+                            console.log("Thông tin giỏ hàng:", $scope.cartInfo);
                         }, function (error) {
-                            // Nếu có lỗi khi gọi API
-                            alert("Không thể tải thông báo: " + (error.data ? error.data.message : "Lỗi không xác định"));
+                            console.error('Error fetching cart info:', error);
                         });
-                    // Hàm để tính thời gian đã qua kể từ ngày gửi
-
-                } else {
-                    $scope.infoUser = undefined;
-                    $scope.tenNguoiDung = undefined;
-                    $scope.isAdmin = false;  // Nếu chưa đăng nhập, ẩn mục "Trang quản lý"
                 }
-            });
+            }
+            // Đăng xuất
+            $scope.dangXuat = function () {
+                // Gửi yêu cầu đăng xuất đến API
+                $http.post("http://localhost:8080/api/nguoi_dung/dang_xuat")
+                    .then(function (response) {
+                        // Xóa thông tin người dùng trong localStorage
+                        localStorage.removeItem("user");
+                        // Xóa giỏ hàng trong localStorage khi người dùng đăng xuất
+                        localStorage.removeItem("idGioHang");
+                        // Cập nhật lại giao diện
+                        $scope.infoUser = undefined;
+                        $scope.tenNguoiDung = undefined;
+
+                        // Thông báo đăng xuất thành công bằng SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đăng xuất thành công!',
+                            text: 'Bạn đã đăng xuất khỏi hệ thống.',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Chuyển hướng đến trang 'user' sau khi đăng xuất thành công
+                                $window.location.href = "#/user";  // Điều hướng đến trang user
+                                // Nếu bạn muốn dùng `$location` (AngularJS way) thay vì `$window.location.href`:
+                                // $location.path("/user"); 
+                            }
+                        });
+                    }, function (error) {
+                        // Nếu có lỗi
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Đăng xuất thất bại',
+                            text: error.data ? error.data.message : "Lỗi không xác định",
+                            confirmButtonText: 'Thử lại'
+                        });
+                    });
+            };
 
 
-        </script>
-        <!-- Bootstrap JS and dependencies -->
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-        <!-- Thêm SweetAlert CDN vào trong phần head của file HTML -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="lib/bootstrap.js"></script>
-        <script src="view-client/assets/javascript/script.js"></script>
-        <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-      
-        <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.1.0-beta.0/libs/oversea/index.js"></script>
-        <script>
-            new CozeWebSDK.WebChatClient({
-              config: {
-                bot_id: '7456047039962021896',
-              },
-              componentProps: {
+            $scope.formatTimeAgo = function (dateString) {
+                var sentDate = new Date(dateString);  // Chuyển chuỗi ngày thành đối tượng Date
+                var now = new Date();  // Lấy thời gian hiện tại
+                var diffInMs = now - sentDate;  // Tính sự chênh lệch giữa thời gian hiện tại và thời gian gửi
+
+                // Chuyển đổi chênh lệch thời gian thành các đơn vị
+                var diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));  // Số giờ
+                var diffInMinutes = Math.floor(diffInMs / (1000 * 60));  // Số phút
+                var diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));  // Số ngày
+
+                if (diffInHours < 24) {
+                    // Nếu trong vòng 24 giờ, hiển thị theo giờ
+                    if (diffInHours < 1) {
+                        return Math.floor(diffInMinutes) + " phút trước";  // Nếu dưới 1 giờ, hiển thị phút
+                    } else {
+                        return diffInHours + " giờ trước";  // Nếu trên 1 giờ, hiển thị giờ
+                    }
+                } else {
+                    // Nếu đã quá 24 giờ, hiển thị theo ngày
+                    return $filter('date')(sentDate, 'dd/MM/yyyy');  // Sử dụng Angular filter để format ngày
+                }
+            };
+            // Kiểm tra người dùng đã đăng nhập chưa
+            var userInfo = localStorage.getItem("user");
+            if (userInfo) {
+                $scope.infoUser = JSON.parse(userInfo);  // Lấy thông tin người dùng từ localStorage
+                $scope.idNguoiDung = $scope.infoUser.idNguoiDung;  // Lấy tên người dùng
+                $scope.tenNguoiDung = $scope.infoUser.tenNguoiDung;  // Lấy tên người dùng
+                $scope.vaiTro = $scope.infoUser.vaiTro;  // Lấy thông tin vai trò của người dùng
+                // Kiểm tra vai trò của người dùng, nếu là Quản trị viên (idVaiTro = 1)
+                if ($scope.vaiTro.idVaiTro === 1) {
+                    $scope.isAdmin = true;  // Cho phép hiển thị mục "Trang quản lý"
+                } else {
+                    $scope.isAdmin = false;  // Ẩn mục "Trang quản lý"
+                }
+                // Lấy danh sách thông báo của người dùng nếu đã đăng nhập
+                $http.get("http://localhost:8080/api/nguoi_dung/thong_bao/" + $scope.idNguoiDung)
+                    .then(function (response) {
+                        // Lưu danh sách thông báo vào scope
+                        $scope.dsThongBao = response.data;
+                        // Đếm số lượng thông báo
+                        $scope.soLuongThongBao = $scope.dsThongBao.length;
+                        console.log('Dữ liệu thông báo người dùng: ', $scope.dsThongBao);
+                        console.log('Số lượng thông báo người dùng: ', $scope.soLuongThongBao);
+                    }, function (error) {
+                        // Nếu có lỗi khi gọi API
+                        alert("Không thể tải thông báo: " + (error.data ? error.data.message : "Lỗi không xác định"));
+                    });
+                // Hàm để tính thời gian đã qua kể từ ngày gửi
+
+            } else {
+                $scope.infoUser = undefined;
+                $scope.tenNguoiDung = undefined;
+                $scope.isAdmin = false;  // Nếu chưa đăng nhập, ẩn mục "Trang quản lý"
+            }
+        });
+
+
+    </script>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <!-- Thêm SweetAlert CDN vào trong phần head của file HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="lib/bootstrap.js"></script>
+    <script src="view-client/assets/javascript/script.js"></script>
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <script
+        src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.1.0-beta.0/libs/oversea/index.js"></script>
+    <script src="https://esgoo.net/scripts/jquery.js"></script>
+    <script>
+        new CozeWebSDK.WebChatClient({
+            config: {
+                bot_id: '7448329403023245313',
+            },
+            componentProps: {
                 title: 'Coze',
-              },
-            });
-        </script>
-      
-      
-    
-    </body>
+            },
+        });
+    </script>
+    <!-- Tùy chỉnh CSS cho Chatbot -->
+</body>
 
-    </html>
+</html>

@@ -115,4 +115,13 @@ public class SanPhamController {
                 .sorted(Comparator.comparing(DotGiamGia::getNgayCapNhat).reversed()) // Sắp xếp giảm dần
                 .collect(Collectors.toList());
     }
+
+
+    // API kiểm tra trạng thái của sản phẩm
+    @GetMapping("/{id}/trang-thai")
+    public Boolean checkSanPhamTrangThai(@PathVariable Integer id) {
+        return sanPhamService.checkTrangThaiSanPham(id);
+    }
+
+
 }

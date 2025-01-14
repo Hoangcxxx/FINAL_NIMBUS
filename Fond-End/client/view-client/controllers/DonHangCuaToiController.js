@@ -1,7 +1,7 @@
 window.DonHangCuaToiController = function ($scope, $http, $window) {
 
 
-
+    
     // Lấy thông tin người dùng từ localStorage
     var userInfo = localStorage.getItem('user');
     // Lắng nghe sự kiện click trên nút "Tra Cứu"
@@ -38,6 +38,7 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
         // Hiển thị trạng thái tải
         showLoadingState(true);
 
+        // Gửi yêu cầu API để tra cứu đơn hàng
         fetch(`http://127.0.0.1:8080/api/nguoi_dung/hoa_don/${orderCode}`)
             .then(response => {
                 if (!response.ok) {
@@ -64,27 +65,6 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                 const orderStatus = hoaDon.tenTrangThai || "Chưa có trạng thái";
                 document.getElementById("infoOrderStatus").textContent = orderStatus;
 
-                // Kiểm tra loại trạng thái và tính toán ngày giao dự kiến nếu loại trạng thái là 5, 6 hoặc 7
-                if ((hoaDon.idLoaiTrangThai === 5 || hoaDon.idLoaiTrangThai === 6 || hoaDon.idLoaiTrangThai === 7) && hoaDon.ngayTao) {
-                    const ngayTao = new Date(hoaDon.ngayTao);
-
-                    // Thêm 5 ngày cố định vào ngày tạo
-                    const daysToAdd = 5;
-                    ngayTao.setDate(ngayTao.getDate() + daysToAdd);
-                    const ngayGiaoDuKien = ngayTao.toLocaleDateString("vi-VN");
-
-                    // Tính toán ngày kết thúc giao dự kiến (thêm 2 ngày nữa)
-                    const ngayKetThucGiaoDuKien = new Date(ngayTao);
-                    ngayKetThucGiaoDuKien.setDate(ngayTao.getDate() + 2);  // Cộng thêm 2 ngày
-
-                    // Hiển thị ngày giao dự kiến và ngày kết thúc giao dự kiến theo dải ngày
-                    const dateRange = `${ngayGiaoDuKien} - ${ngayKetThucGiaoDuKien.toLocaleDateString("vi-VN")}`;
-                    document.getElementById("infoDeliveryDateRange").textContent = dateRange || "N/A";
-                } else {
-                    document.getElementById("infoDeliveryDateRange").textContent = "Đang chờ xác nhận từ shipper";
-                }
-
-
                 // Hiển thị thông tin đơn hàng nếu có
                 orderInfoDiv.style.display = "block";
             })
@@ -96,8 +76,6 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                 // Ẩn trạng thái tải
                 showLoadingState(false);
             });
-
-
     }
 
     // Hàm hiển thị trạng thái lỗi
@@ -150,7 +128,7 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
                         xa: hoaDon.tenXa,
-                        giaTriMavoucher: hoaDon.giaTriMavoucher, // Đảm bảo mã voucher được lấy chính xác
+                        giaTriMavoucher: hoaDon.giaTriMavoucher , // Đảm bảo mã voucher được lấy chính xác
                         kieuGiamGia: hoaDon.kieuGiamGia,
                     };
 
@@ -228,13 +206,13 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
         }
         return discount;
     };
-
+    
     $scope.calculateTotalAfterDiscount = function () {
         const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
         const discount = $scope.calculateDiscount(); // Số tiền giảm giá
         return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
     };
-
+    
 
 
     // Gọi API để lấy danh sách đơn hàng khi tải trang
@@ -265,5 +243,5 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
     $scope.getOrderDetails();
 
 
-
+    
 }

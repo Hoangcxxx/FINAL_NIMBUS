@@ -68,7 +68,14 @@ public class SanPhamCTController {
         return getResponse(service.getChatLieuById(idSanPhamCT), "idChatLieu", "tenChatLieu");
     }
 
+    @GetMapping("/check-so-luong/{idSanPhamCT}")
+    public ResponseEntity<Map<String, String>> checkSoLuong(@PathVariable("idSanPhamCT") Integer idSanPhamCT) {
+        // Get the response from the service method (which is a Map)
+        Map<String, String> response = service.checkSoLuong(idSanPhamCT);
 
+        // Return the response as a JSON object
+        return ResponseEntity.ok(response);
+    }
 
 
 

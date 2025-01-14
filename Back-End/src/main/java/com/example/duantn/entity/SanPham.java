@@ -7,6 +7,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -55,6 +56,15 @@ public class SanPham {
             return hinhAnhSanPham.get(0).getUrlAnh();
         }
         return null;  // Trả về null nếu không có hình ảnh
+    }
+    public String getAllUrlAnh() {
+        if (hinhAnhSanPham != null && !hinhAnhSanPham.isEmpty()) {
+            // Duyệt qua danh sách hinhAnhSanPham và ghép các URL lại thành một chuỗi, cách nhau bởi dấu phẩy
+            return hinhAnhSanPham.stream()
+                    .map(HinhAnhSanPham::getUrlAnh)
+                    .collect(Collectors.joining(", "));
+        }
+        return null; // Trả về null nếu không có hình ảnh
     }
 
 }

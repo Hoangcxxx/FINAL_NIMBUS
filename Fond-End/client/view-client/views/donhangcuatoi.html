@@ -165,8 +165,7 @@
                                             <strong class="text-muted">Voucher:</strong>
                                         </p>
                                         <!-- Kiểm tra nếu không có voucher -->
-                                        <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0"
-                                            class="text-secondary">
+                                        <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0" class="text-secondary">
                                             0 VND
                                         </span>
                                         <!-- Kiểm tra kiểu giảm giá nếu có voucher -->
@@ -179,7 +178,7 @@
                                             </span>
                                         </span>
                                     </div>
-
+                                
                                     <!-- Số tiền giảm giá -->
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <strong class="text-muted">Số tiền giảm giá:</strong>
@@ -192,7 +191,7 @@
                                             </span>
                                         </div>
                                     </div>
-
+                                
                                     <!-- Phí Ship -->
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <p class="mb-0"><strong class="text-muted">Phí Ship:</strong></p>
@@ -200,7 +199,7 @@
                                             {{ orderlist.phiShip | currency:"":0 }} VND
                                         </span>
                                     </div>
-
+                                
                                     <!-- Tổng Tiền -->
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <p class="mb-0"><strong class="text-muted">Tổng Tiền:</strong></p>
@@ -209,7 +208,7 @@
                                         </span>
                                     </div>
                                 </div>
-
+                                
 
                             </div>
                         </div>
@@ -237,14 +236,9 @@
                             <p><strong>Khách Hàng:</strong> <span id="infoCustomerName"></span></p>
                             <p><strong>Ngày Đặt Hàng:</strong> <span id="infoOrderDate"></span></p>
                             <p><strong>Trạng Thái:</strong> <span id="infoOrderStatus"></span></p>
-                            <p><strong>Ngày Giao Dự Kiến:</strong> <span id="infoDeliveryDateRange"></span></p>
                         </div>
-
                     </div>
                 </div>
-
-
-
 
             </div>
 

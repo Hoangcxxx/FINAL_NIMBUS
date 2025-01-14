@@ -26,17 +26,6 @@ window.GiohangController = function ($scope, $http, $window) {
             .then(function (response) {
                 $scope.cart = response.data;
                 $scope.cartItemCount = $scope.cart.length; // Cập nhật số lượng sản phẩm trong giỏ hàng
-    
-                // Kiểm tra số lượng sản phẩm và tự động tải lại trang nếu số lượng bằng 0
-                $scope.cart.forEach(item => {
-                    if (item.soLuongGioHang === undefined || item.soLuongGioHang === null) {
-                        item.soLuongGioHang = 1; // Mặc định là 1 nếu không có giá trị
-                    }
-                    if (item.soLuongGioHang === 0) {
-                        location.reload(); // Tải lại trang nếu số lượng sản phẩm là 0
-                    }
-                });
-    
                 // Lấy hình ảnh cho từng sản phẩm
                 $scope.cart.forEach((element) => {
                     $http.get(`http://localhost:8080/api/nguoi_dung/hinh_anh/${element.idSanPham}`)
@@ -47,7 +36,7 @@ window.GiohangController = function ($scope, $http, $window) {
                             console.error("Lỗi khi lấy hình ảnh sản phẩm:", error);
                         });
                 });
-    
+
                 // Kiểm tra xem có sản phẩm mới nào trong localStorage không
                 const newCartItem = localStorage.getItem("cartItem");
                 if (newCartItem) {
@@ -62,7 +51,9 @@ window.GiohangController = function ($scope, $http, $window) {
                 console.error("Error fetching cart items:", error);
             });
     };
-    
+
+
+
 
 
     $scope.removeFromCart = function (idSanPhamChiTiet) {
@@ -137,52 +128,129 @@ window.GiohangController = function ($scope, $http, $window) {
         }, 0);
     };
 
-
-
     $scope.checkout = function () {
-        // Kiểm tra tính hợp lệ của giỏ hàng trước khi thanh toán
-        const invalidItems = $scope.cart.filter(item => item.soLuongGioHang < 1 || item.soLuongGioHang > 20);
-    
-        if (invalidItems.length > 0) {
-            // Nếu có sản phẩm có số lượng không hợp lệ, hiển thị thông báo lỗi cho từng sản phẩm
-            $scope.isValidCart = false;
-            invalidItems.forEach(item => {
-                item.errorMessage = `Số lượng sản phẩm "${item.tenSanPham}" trong giỏ hàng phải từ 1 đến 20. Vui lòng kiểm tra lại.`;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Giỏ hàng không hợp lệ!',
-                    text: item.errorMessage,
-                    confirmButtonText: 'Đồng ý'
+        // Hàm kiểm tra tính hợp lệ của giỏ hàng
+        function validateCartItems() {
+            const invalidItems = $scope.cart.filter(item => item.soLuongGioHang < 1 || item.soLuongGioHang > 20);
+            if (invalidItems.length > 0) {
+                invalidItems.forEach(item => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Giỏ hàng không hợp lệ!',
+                        text: `Số lượng sản phẩm "${item.tenSanPham}" phải từ 1 đến 20. Vui lòng kiểm tra lại.`,
+                        confirmButtonText: 'Đồng ý'
+                    });
                 });
-            });
-            return; // Dừng lại nếu giỏ hàng không hợp lệ
+                return false; // Giỏ hàng không hợp lệ
+            }
+            return true; // Giỏ hàng hợp lệ
         }
     
-        // Kiểm tra số lượng giỏ hàng với số lượng tồn kho
-        const outOfStockItems = $scope.cart.filter(item => item.soLuongGioHang > item.soLuong);
-    
-        if (outOfStockItems.length > 0) {
-            // Nếu có sản phẩm có số lượng vượt quá tồn kho, hiển thị thông báo cho từng sản phẩm
-            $scope.isValidCart = false;
-            outOfStockItems.forEach(item => {
-                item.errorMessage = `Sản phẩm "${item.tenSanPham}" chỉ còn lại ${item.soLuong} trong kho.`;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Sản phẩm không đủ số lượng!',
-                    text: item.errorMessage,
-                    confirmButtonText: 'Đồng ý'
-                });
+        // Hàm kiểm tra số lượng tồn kho
+        function checkStockAvailability() {
+            const promises = $scope.cart.map(item => {
+                return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/check-so-luong/${item.idSanPhamCT}`)
+                    .then(response => {
+                        if (response.data.message === 'Sản phẩm đã hết hàng!') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Sản phẩm hết hàng!',
+                                text: `Sản phẩm "${item.tenSanPham}" đã hết hàng.`,
+                                confirmButtonText: 'Đồng ý'
+                            });
+                            throw new Error(`Sản phẩm "${item.tenSanPham}" hết hàng.`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Lỗi kiểm tra tồn kho cho sản phẩm "${item.tenSanPham}":`, error);
+                        throw error;
+                    });
             });
-            return; // Dừng lại nếu có sản phẩm vượt quá tồn kho
+    
+            return Promise.all(promises);
         }
     
-        // Nếu tất cả số lượng đều hợp lệ, tiếp tục thanh toán
-        $scope.isValidCart = true;
-        $window.location.href = "/#!thanh_toan"; // Chuyển hướng sang trang thanh toán
+        // Kiểm tra trạng thái sản phẩm
+        function checkProductStatuses() {
+            const promises = $scope.cart.map(item => {
+                return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham/${item.idSanPham}/trang-thai`)
+                    .then(response => {
+                        if (!response.data) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: "Sản phẩm đã ngừng bán!",
+                                text: `Sản phẩm "${item.tenSanPham}" đã ngừng bán.`,
+                                confirmButtonText: 'Đồng ý'
+                            });
+                            throw new Error(`Sản phẩm "${item.tenSanPham}" không hợp lệ.`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Lỗi kiểm tra trạng thái sản phẩm "${item.tenSanPham}":`, error);
+                        throw error;
+                    });
+            });
+    
+            return Promise.all(promises);
+        }
+    
+        // Kiểm tra trạng thái người dùng
+        function checkUserStatus() {
+            return $http.get(`http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/${$scope.idNguoiDung}`)
+                .then(response => {
+                    if (!response.data.trangThai) {
+                        Swal.fire({
+                            title: 'Tài khoản của bạn đã bị khóa!',
+                            text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng.',
+                            icon: 'error',
+                            confirmButtonText: 'Đồng ý'
+                        });
+                        return false;
+                    }
+                    return true;
+                })
+                .catch(error => {
+                    console.error('Lỗi khi kiểm tra trạng thái người dùng:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: 'Đã xảy ra lỗi khi kiểm tra trạng thái người dùng. Vui lòng thử lại sau.',
+                        confirmButtonText: 'Đồng ý'
+                    });
+                    throw error;
+                });
+        }
+    
+        // Bắt đầu quá trình kiểm tra giỏ hàng
+        if (!validateCartItems()) {
+            $scope.isValidCart = false;
+            return;
+        }
+    
+        // Thực hiện kiểm tra tồn kho, trạng thái sản phẩm và trạng thái người dùng
+        Promise.allSettled([checkStockAvailability(), checkProductStatuses(), checkUserStatus()])
+            .then(results => {
+                const hasError = results.some(result => result.status === 'rejected');
+                const userStatusValid = results[2].status === 'fulfilled' && results[2].value === true;
+    
+                if (hasError || !userStatusValid) {
+                    $scope.isValidCart = false;
+                    return;
+                }
+    
+                // Nếu tất cả kiểm tra thành công
+                $scope.isValidCart = true;
+                $window.location.href = '/#!thanh_toan';
+            })
+            .catch(error => {
+                console.error('Lỗi xảy ra trong quá trình kiểm tra:', error);
+            });
     };
     
 
-    
+
+
+
 
 
 
@@ -224,15 +292,15 @@ window.GiohangController = function ($scope, $http, $window) {
     $scope.checkQuantity = function (item) {
         // Đảm bảo item.soLuongGioHang là một chuỗi
         item.soLuongGioHang = String(item.soLuongGioHang);
-    
+
         // Chỉ giữ lại các ký tự số hợp lệ, xóa tất cả ký tự không phải là số
         let validQuantity = item.soLuongGioHang.replace(/[^0-9]/g, '');
-    
+
         // Nếu validQuantity không phải một chuỗi rỗng, chuyển nó thành số
         if (validQuantity !== '') {
             item.soLuongGioHang = parseInt(validQuantity, 10);
         }
-    
+
         // Kiểm tra nếu số lượng nhỏ hơn 1 hoặc lớn hơn 20
         if (item.soLuongGioHang < 1) {
             item.soLuongGioHang = 1; // Đảm bảo số lượng không nhỏ hơn 1
@@ -265,14 +333,14 @@ window.GiohangController = function ($scope, $http, $window) {
         } else {
             item.errorMessage = ''; // Xóa thông báo lỗi nếu số lượng hợp lệ
         }
-    
+
         // Cập nhật giỏ hàng sau khi chỉnh sửa
         $scope.updateCart(item);
-    
+
         // Kiểm tra tổng số lượng sản phẩm trong giỏ hàng
         $scope.validateTotalQuantity();
     };
-        
+
 
 
     // Phương thức validate tổng số lượng giỏ hàng

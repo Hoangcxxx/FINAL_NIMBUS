@@ -1,5 +1,6 @@
 package com.example.duantn.controller.client;
 
+import com.example.duantn.dto.VoucherDTO;
 import com.example.duantn.entity.Voucher;
 import com.example.duantn.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/vouchers")
@@ -42,6 +44,12 @@ public class VoucherController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Có lỗi xảy ra: " + e.getMessage());
         }
+    }
+
+    // Định nghĩa một API để lấy Voucher theo idVoucher
+    @GetMapping("/vouchers/{idVoucher}")
+    public VoucherDTO getVoucherById(@PathVariable("idVoucher") Integer idVoucher) {
+        return voucherService.getVoucherByIdhaha(idVoucher);
     }
 
 }

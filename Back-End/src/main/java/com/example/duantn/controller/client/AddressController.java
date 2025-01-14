@@ -1,7 +1,5 @@
 package com.example.duantn.controller.client;
 
-import com.example.duantn.entity.Huyen;
-import com.example.duantn.repository.HuyenRepository;
 import com.example.duantn.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,8 +19,6 @@ public class AddressController {
     @Autowired
     private AddressService addressService; // Đã sửa tên biến từ addressSerice thành addressService
 
-    @Autowired
-    private HuyenRepository huyenRepository; // Đã sửa tên biến từ addressSerice thành addressService
     // Lấy danh sách các tỉnh
     @GetMapping("/provinces")
     public ResponseEntity<?> getProvinces() {
@@ -102,41 +98,6 @@ public class AddressController {
         }
     }
 
-
-//    // Lưu danh sách tỉnh thành vào cơ sở dữ liệu
-//    @PostMapping("/save-provinces")
-//    public ResponseEntity<String> saveProvinces() {
-//        try {
-//            addressService.saveProvinces();
-//            return ResponseEntity.ok("Danh sách tỉnh thành đã được lưu thành công.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Lỗi khi lưu danh sách tỉnh thành: " + e.getMessage());
-//        }
-//    }
-
-//    // Lưu danh sách huyện vào cơ sở dữ liệu theo provinceId
-//    @PostMapping("/save-districts/{provinceId}")
-//    public ResponseEntity<String> saveDistricts(@PathVariable int provinceId) {
-//        try {
-//            addressService.saveDistricts(provinceId);
-//            return ResponseEntity.ok("Danh sách huyện của tỉnh " + provinceId + " đã được lưu thành công.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Lỗi khi lưu danh sách huyện: " + e.getMessage());
-//        }
-//    }
-//
-//    @PostMapping("/save-wards/{districtId}")
-//    public ResponseEntity<String> saveWards(@PathVariable int districtId) {
-//        try {
-//            addressService.saveWards(districtId);
-//
-//            return ResponseEntity.ok("Danh sách xã của huyện " + districtId + " đã được lưu thành công.");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Lỗi khi lưu danh sách xã: " + e.getMessage());
-//        }
-//    }
-//
-
     // Endpoint để lưu địa chỉ vận chuyển cho người dùng
     @PostMapping("/save/address")
     public ResponseEntity<String> saveAddress(@RequestParam Integer userId,
@@ -150,4 +111,8 @@ public class AddressController {
             return ResponseEntity.status(500).body("Lỗi khi lưu địa chỉ: " + e.getMessage());
         }
     }
+
+    
+
+
 }

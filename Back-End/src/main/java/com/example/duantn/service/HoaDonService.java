@@ -445,10 +445,9 @@ public class HoaDonService {
         if (hoaDonDTO.getIdNguoiDung() == null) {
             throw new RuntimeException("ID Người dùng không được null");
         }
-        long currentCount = hoaDonRepository.count();
-        generatedMaHoaDon = "HD00" + (currentCount + 1);
-
-        hoaDon.setMaHoaDon(generatedMaHoaDon);
+        // Tạo mã hóa đơn duy nhất
+        generatedMaHoaDon = generateMaHoaDon();
+        hoaDon.setMaHoaDon(generatedMaHoaDon); // Gán mã hóa đơn cho đối tượng hoaDon
 
         // Kiểm tra và lấy thông tin người dùng
         NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
@@ -608,10 +607,13 @@ public class HoaDonService {
         hoaDon.setMaHoaDon(generatedMaHoaDon);
 
 
-        // Kiểm tra và lấy thông tin người dùng
-        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung()).orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
+        // Lấy thông tin người dùng
+        NguoiDung nguoiDung = nguoiDungRepository.findById(hoaDonDTO.getIdNguoiDung())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng với ID: " + hoaDonDTO.getIdNguoiDung()));
+        if (!nguoiDung.getTrangThai()) {
+            throw new RuntimeException("Tài khoản của bạn đã bị khóa, không thể tạo đơn hàng.");
+        }
         hoaDon.setNguoiDung(nguoiDung);
-
 
         // Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
         if (hoaDonDTO.getIdvoucher() != null) {
@@ -895,6 +897,7 @@ public class HoaDonService {
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
                 .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
 
+        hoaDon.setTrangThai(true);
         hoaDon.setPhiShip(updateHoaDonDTO.getPhiShip());
         hoaDon.setNgayThanhToan(updateHoaDonDTO.getNgayThanhToan());
         hoaDon.setThanhTien(updateHoaDonDTO.getThanhTien());
