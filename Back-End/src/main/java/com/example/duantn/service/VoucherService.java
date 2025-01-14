@@ -360,7 +360,7 @@ public class VoucherService {
         if (voucher.isPresent()) {
             Voucher v = voucher.get();
             // Trả về đối tượng DTO với idVoucher và idTrangThaiGiamGia
-            return new VoucherDTO(v.getIdVoucher(), v.getTrangThaiGiamGia().getIdTrangThaiGiamGia());
+            return new VoucherDTO(v.getIdVoucher(), v.getTrangThaiGiamGia().getIdTrangThaiGiamGia(), v.getSoLuong());
         }
         return null; // Hoặc có thể ném Exception tùy thuộc vào yêu cầu
     }

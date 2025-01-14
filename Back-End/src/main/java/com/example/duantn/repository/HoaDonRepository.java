@@ -76,7 +76,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     @Query("SELECT sp.tenSanPham " +
             "FROM HoaDon hd " +
-            "JOIN HoaDonChiTiet hdct " +
+            "JOIN hd.hoaDonChiTiets hdct " +
             "JOIN hdct.sanPhamChiTiet spct " +
             "JOIN spct.sanPham sp " +
             "WHERE hd.maHoaDon = :maHoaDon " +

@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class VoucherDTO {
     private Integer idVoucher;
     private Integer trangThaiGiamGiaId;
+    private Integer soLuong;
 }
