@@ -129,8 +129,9 @@
         <!-- Action Buttons -->
         <div class="d-flex justify-content-between mt-4">
             <div>
-                <!-- Nút chuyển trạng thái trực tiếp -->
-                <button class="btn btn-secondary" ng-click="updateTrangThaiHoaDon()" ng-if="modalButtonText">
+                <!-- Nút chuyển trạng thái chỉ hiển thị khi không phải khách hàng lẽ -->
+                <button class="btn btn-secondary" ng-click="updateTrangThaiHoaDon()"
+                    ng-if="modalButtonText && !isKhachHangLe">
                     {{modalButtonText}}
                 </button>
             </div>

@@ -16,7 +16,9 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     console.log('idHoaDon:', idHoaDon);  // Log ra idHoaDon
 
     // Hàm gọi API chung cho việc lấy trạng thái và thông tin hóa đơn
+    // Hàm gọi API chung cho việc lấy trạng thái và thông tin hóa đơn
     function fetchStatusAndInvoiceData() {
+        // Lấy trạng thái hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
             .then(function (response) {
                 if (Array.isArray(response.data)) {
@@ -30,22 +32,34 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 console.error('Error fetching status data:', error);
             });
 
-        $scope.totalBeforeDiscount = 0; // Khởi tạo biến tổng tiền trước khi giảm giá
+        // Khởi tạo biến tổng tiền trước khi giảm giá
+        $scope.totalBeforeDiscount = 0;
+
+        // Lấy dữ liệu chi tiết hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findHoaDonCT/' + idHoaDon)
             .then(function (response) {
                 console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
                 $scope.hoaDon = response.data;
                 $scope.totalAmount = $scope.hoaDon.thanhTien;  // Gán giá trị thanhTien vào totalAmount
 
-                // Tính tổng tiền trước khi giảm giá từ sanPhamCT
-                $scope.totalBeforeDiscount = $scope.sanPhamCT.reduce(function (accumulator, product) {
-                    return accumulator + (product.tongTien || 0);  // Cộng giá sản phẩm nhân với số lượng
-                }, 0);
-                console.log('Tổng tiền trước khi giảm giá:', $scope.totalBeforeDiscount);
+                // Kiểm tra và tính tổng tiền trước khi giảm giá từ sanPhamCT (sản phẩm chi tiết hóa đơn)
+                if ($scope.sanPhamCT && Array.isArray($scope.sanPhamCT) && $scope.sanPhamCT.length > 0) {
+                    $scope.totalBeforeDiscount = $scope.sanPhamCT.reduce(function (accumulator, product) {
+                        // Kiểm tra nếu product.tongTien là hợp lệ
+                        if (product.tongTien && !isNaN(product.tongTien)) {
+                            return accumulator + product.tongTien;  // Cộng giá trị hợp lệ
+                        }
+                        return accumulator;  // Nếu không hợp lệ, không cộng vào tổng
+                    }, 0);
+                    console.log('Tổng tiền trước khi giảm giá:', $scope.totalBeforeDiscount);
+                } else {
+                    console.warn('Dữ liệu sản phẩm chi tiết hóa đơn không hợp lệ hoặc trống:', $scope.sanPhamCT);
+                }
 
                 // Kiểm tra vai trò khách hàng để quyết định ẩn/hiển thị email và địa chỉ
                 if ($scope.hoaDon.vaiTro.idVaiTro === 3) {
-                    $scope.showEmailAndAddress = false;  // Nếu vai trò là 3 (không phải khách hàng), ẩn email và địa chỉ
+                    $scope.showEmailAndAddress = false;  // Nếu vai trò là 3 (khách hàng lẽ), ẩn email và địa chỉ
+                    $scope.isKhachHangLe = true;
                 } else {
                     $scope.showEmailAndAddress = true;  // Nếu vai trò là 2 (Khách hàng), hiển thị đầy đủ thông tin
                 }
@@ -72,7 +86,6 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                                     $scope.discountAmount = voucher.giaTriGiamGia;
                                 } else {
                                     // Giảm giá theo phần trăm (kieuGiamGia = false)
-                                    // Tính giảm giá cho từng sản phẩm hoặc tổng tiền
                                     $scope.discountAmount = ($scope.totalBeforeDiscount * voucher.giaTriGiamGia) / 100;
                                 }
 
@@ -89,16 +102,35 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 console.error('Lỗi khi lấy dữ liệu hóa đơn:', error);
             });
 
+        // Lấy dữ liệu sản phẩm chi tiết hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findSanPhamCTHoaDon/' + idHoaDon)
             .then(function (response) {
-                console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
+                console.log('Dữ liệu trả về từ API sản phẩm chi tiết:', response.data);
+                // Cập nhật lại dữ liệu sản phẩm chi tiết
                 $scope.sanPhamCT = response.data;
+
+                // Sau khi dữ liệu sản phẩm đã được tải, tính toán lại tổng tiền
+                if ($scope.sanPhamCT && Array.isArray($scope.sanPhamCT) && $scope.sanPhamCT.length > 0) {
+                    $scope.totalBeforeDiscount = $scope.sanPhamCT.reduce(function (accumulator, product) {
+                        // Kiểm tra nếu product.tongTien là hợp lệ
+                        if (product.tongTien && !isNaN(product.tongTien)) {
+                            return accumulator + product.tongTien;  // Cộng giá trị hợp lệ
+                        }
+                        return accumulator;  // Nếu không hợp lệ, không cộng vào tổng
+                    }, 0);
+                    console.log('Tổng tiền trước khi giảm giá sau khi tải sản phẩm:', $scope.totalBeforeDiscount);
+                } else {
+                    console.warn('Sản phẩm chi tiết không hợp lệ hoặc trống:', $scope.sanPhamCT);
+                }
             })
             .catch(function (error) {
-                console.error('Lỗi khi lấy dữ liệu hóa đơn:', error);
+                console.error('Lỗi khi lấy dữ liệu sản phẩm chi tiết hóa đơn:', error);
             });
     }
+
+    // Gọi hàm để thực thi
     fetchStatusAndInvoiceData();
+
 
 
 

@@ -227,7 +227,9 @@
                     Sau khi "Đặt hàng" thành công, Nimbus sẽ liên hệ xác nhận đơn hàng theo số Hotline 02836220632.
                 </p>
 
-                <button ng-click="placeOrder()" class="btn btn-success w-100">Đặt hàng</button>
+                <button ng-click="placeOrder()" class="btn btn-success w-100" ng-disabled="isProcessing">Đặt
+                    hàng</button>
+
             </div>
         </div>
     </div>
@@ -347,3 +349,17 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Vô hiệu hóa toàn bộ giao diện ngoài phần thông báo */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        display: none; /* Ẩn mặc định */
+    }
+    
+    </style>
