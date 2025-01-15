@@ -842,7 +842,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             $scope.selectedVoucher = $scope.tempVoucher; // Gán voucher chính thức
             $scope.tempVoucher = null; // Reset voucher tạm
             console.log("Confirmed Voucher:", $scope.selectedVoucher);
-
+            localStorage.setItem('voucherdachon', JSON.stringify($scope.selectedVoucher));
             // Thông báo thành công
             Swal.fire({
                 icon: 'success',

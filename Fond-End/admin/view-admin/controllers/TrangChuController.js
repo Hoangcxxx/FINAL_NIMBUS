@@ -63,7 +63,7 @@ window.TrangChuController = function ($scope, $http) {
             .then(function (response) {
                 console.log("Phản hồi từ POST:", response.data);
                 if (response.data && response.data.idThanhToanHoaDon) {
-                    const selectedVoucher = JSON.parse(localStorage.getItem('selectedVoucher'));
+                    const selectedVoucher = JSON.parse(localStorage.getItem('voucherdachon'));
                     // Phương thức thanh toán đã được tạo thành công, tiếp tục cập nhật hóa đơn
                     var updatedInvoice = {
                         phiShip: 0,
@@ -144,19 +144,18 @@ window.TrangChuController = function ($scope, $http) {
         });
     };
     $scope.deductVoucherQuantity = async function () {
-        const selectedVoucher = JSON.parse(localStorage.getItem('selectedVoucher'));
-        const originalTotalPrice = JSON.parse(localStorage.getItem('originalTotalPrice'));
         try {
             // Gửi yêu cầu trừ số lượng voucher, sử dụng tổng tiền trước giảm giá
+            const selectedVoucher = JSON.parse(localStorage.getItem('voucherdachon'));
+            const totalPriceInfo = JSON.parse(localStorage.getItem('totalPriceInfo'));
             const response = await $http.post(
                 `http://localhost:8080/api/admin/ban_hang/use/${selectedVoucher.maVoucher}`,
-                originalTotalPrice
+                totalPriceInfo.originalTotalPrice
                 // Sử dụng tổng tiền chưa giảm giá
             );
             console.log("Số lượng voucher đã được trừ.");
 
-            // Cập nhật lại số lượng voucher trong giao diện người dùng
-            selectedVoucher.soLuong--;
+
         } catch (error) {
             console.error('Lỗi khi trừ số lượng voucher:', error);
         }
@@ -189,7 +188,8 @@ window.TrangChuController = function ($scope, $http) {
             await Promise.all([
                 $scope.deleteGioHangChiTietByUserId(),
                 $scope.createPaymentMethod(),
-                $scope.deleteCart()
+                $scope.deleteCart(),
+                $scope.deductVoucherQuantity()
             ]);
 
             await $scope.processCartItems();
@@ -201,11 +201,6 @@ window.TrangChuController = function ($scope, $http) {
                 { params: { userId: userId } }
             );
             console.log("Hóa đơn chi tiết:", response.data);
-            const selectedVoucher = JSON.parse(localStorage.getItem('selectedVoucher'));
-            // Trừ voucher nếu có
-            if (selectedVoucher) {
-                await $scope.deductVoucherQuantity();
-            }
 
 
             Swal.fire({
@@ -226,10 +221,8 @@ window.TrangChuController = function ($scope, $http) {
                     if (result.isConfirmed) {
                         // Nếu người dùng chọn "In Hóa Đơn", gọi hàm in hóa đơn
                         $scope.printInvoice();
-                        window.location.href = 'http://127.0.0.1:5501/admin.html#!/ban_hang';
                     }
                 });
-                // Điều hướng về trang admin sau khi thông báo kết thúc
             });
 
 
@@ -342,7 +335,6 @@ window.TrangChuController = function ($scope, $http) {
 
     <!-- Tổng tiền và các khoản phí -->
     <div style="text-align: right; font-weight: bold; margin-top: 30px; font-size: 18px; color: #1E3D58;">
-        <p><strong>Phí Vận Chuyển:</strong> ${$scope.formatCurrency(totalPriceInfo.shippingFee || 0)}</p>
 <p><strong>Giảm Giá:</strong> ${$scope.formatCurrency(discount)}</p>
         <p><strong>Tổng Cộng:</strong> ${$scope.formatCurrency(totalPriceInfo.totalPrice || 0)}</p>
     </div>
