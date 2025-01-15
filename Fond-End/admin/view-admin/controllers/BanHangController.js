@@ -1104,12 +1104,30 @@ window.BanHangController = function ($scope, $http, $window, $location) {
     $scope.createOrderStatus = function () {
         var hoaDonId = JSON.parse(localStorage.getItem('selectedInvoice')).idHoaDon;
         var user = JSON.parse(localStorage.getItem('user'));
+
+        // Lấy danh sách trạng thái đã tạo từ localStorage
+        var createdStatuses = JSON.parse(localStorage.getItem('createdOrderStatuses')) || [];
+
+        if (createdStatuses.includes(hoaDonId)) {
+            console.log("Trạng thái hóa đơn đã tồn tại!");
+            return; // Dừng lại, không gọi API
+        }
+
+        // Gửi yêu cầu tạo trạng thái hóa đơn
         $http.post('http://localhost:8080/api/admin/ban_hang/create-trang-thai/' + hoaDonId + '/' + user.idNguoiDung)
             .then(function (response) {
                 console.log("Trạng thái hóa đơn đã được tạo!");
+
+                // Lưu trạng thái hóa đơn vào danh sách và cập nhật localStorage
+                createdStatuses.push(hoaDonId);
+                localStorage.setItem('createdOrderStatuses', JSON.stringify(createdStatuses));
+
                 // Sau khi tạo trạng thái thành công, mở modal thanh toán
                 $('#paymentModal').modal('show');
             })
+            .catch(function (error) {
+                console.error("Lỗi khi tạo trạng thái hóa đơn:", error);
+            });
     };
 
     $scope.TEST = async function () {
@@ -1123,8 +1141,8 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             const amount = $scope.totalPrice;
             const invoice = $scope.selectedInvoice;
             const description = 'Thanh toán cho hóa đơn';
-            const returnUrl = 'http://127.0.0.1:5502/admin.html#!/ban_hang';
-            const cancelUrl = 'http://127.0.0.1:5502/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai';
+            const returnUrl = 'http://127.0.0.1:5501/admin.html#!/ban_hang';
+            const cancelUrl = 'http://127.0.0.1:5501/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai';
 
             try {
                 const response = await $http.post('http://localhost:8080/api/admin/payos/create-payment-link', {
@@ -1254,7 +1272,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
                 for (const item of cartItems) {
                     const idSanPhamChiTiet = item.idSanPhamChiTiet;
-
+                    const tenSanPham = item.tenSanPham;
                     // Gọi API kiểm tra trạng thái sản phẩm
                     try {
                         const response = await $http.get(`http://localhost:8080/api/admin/ban_hang/check-trang-thai/${idSanPhamChiTiet}`);
@@ -1269,7 +1287,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Sản phẩm ngừng bán',
-                            text: 'Sản phẩm đã ngừng bán.Vui lòng xóa sản phẩm khỏi giỏ hàng để tiếp tục thanh toán!',
+                            text: `Sản phẩm "${tenSanPham}" đã ngừng bán.!`,
                         });
                         return;
                     }

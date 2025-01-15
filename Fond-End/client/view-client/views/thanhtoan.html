@@ -43,8 +43,7 @@
                 <div class="col-md-4 mb-3">
                     <label class="form-label" for="city">Chọn Tỉnh/Thành phố <span class="text-danger">*</span>:</label>
                     <select class="form-select" ng-model="selectedCity"
-                        ng-options="city.name for city in cities track by city.id" ng-change="onCityChange()"
-                        required>
+                        ng-options="city.name for city in cities track by city.id" ng-change="onCityChange()" required>
                         <option value="">--Chọn Tỉnh/Thành phố--</option>
                     </select>
                 </div>
@@ -181,20 +180,43 @@
                 <div class="d-flex justify-content-between">
                     <label>Số tiền giảm giá:</label>
                     <div>
-                        <span ng-if="selectedVoucher">
+                        <span ng-if="selectedVoucher" class="text-danger">
                             <!-- Kiểm tra kiểu giảm giá -->
                             <span ng-if="!selectedVoucher.kieuGiamGia">
-                                {{ selectedVoucher.giaTriGiamGia }}% {{
-                                calculateDiscountAmount(selectedVoucher) | currency: '' : 0 }}
+                                <span>
+                                    - {{ calculateDiscountAmount(selectedVoucher) | currency: '' : 0 }} VND
+                                </span>
                             </span>
                             <span ng-if="selectedVoucher.kieuGiamGia">
-                                {{ selectedVoucher.giaTriGiamGia | currency: '' : 0 }} VND
+                                <span>
+                                    - {{ calculateDiscountAmount(selectedVoucher) | currency: '' : 0 }} VND
+                                </span>
                             </span>
                         </span>
                         <span ng-if="!selectedVoucher">Chưa chọn voucher</span>
                     </div>
                 </div>
-
+                <div class="d-flex justify-content-between">
+                    <label>Số tiền sau giảm giá:</label>
+                    <div>
+                        <span ng-if="selectedVoucher">
+                            <!-- Kiểm tra kiểu giảm giá -->
+                            <span ng-if="!selectedVoucher.kieuGiamGia">
+                                <span>
+                                    {{ totalProductPrice - calculateDiscountAmount(selectedVoucher) | currency: '' : 0
+                                    }} VND
+                                </span>
+                            </span>
+                            <span ng-if="selectedVoucher.kieuGiamGia">
+                                <span>
+                                    {{ totalProductPrice - calculateDiscountAmount(selectedVoucher) | currency: '' : 0
+                                    }} VND
+                                </span>
+                            </span>
+                        </span>
+                        <span ng-if="!selectedVoucher">Chưa chọn voucher</span>
+                    </div>
+                </div>
                 <!-- Hiển thị lỗi nếu có -->
                 <!-- <div ng-if="voucherError" class="text-danger">{{ voucherError }}</div> -->
 
@@ -359,7 +381,7 @@
         right: 0;
         bottom: 0;
         z-index: 9999;
-        display: none; /* Ẩn mặc định */
+        display: none;
+        /* Ẩn mặc định */
     }
-    
-    </style>
+</style>

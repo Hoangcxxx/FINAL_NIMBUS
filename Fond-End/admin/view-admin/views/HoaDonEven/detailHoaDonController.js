@@ -16,7 +16,6 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     console.log('idHoaDon:', idHoaDon);  // Log ra idHoaDon
 
     // Hàm gọi API chung cho việc lấy trạng thái và thông tin hóa đơn
-    // Hàm gọi API chung cho việc lấy trạng thái và thông tin hóa đơn
     function fetchStatusAndInvoiceData() {
         // Lấy trạng thái hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
@@ -31,7 +30,20 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             .catch(function (error) {
                 console.error('Error fetching status data:', error);
             });
+        // Lấy dữ liệu từ API
+        $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
+            .then(function (response) {
+                // Dữ liệu trả về từ API
+                $scope.statuses = response.data;
 
+                // Lọc ra các trạng thái cần thiết: 1, 3, 5, 6, 7, 8
+                $scope.filteredStatuses = $scope.statuses.filter(function (status) {
+                    return [1, 3, 5, 6, 7, 8].includes(status.idLoaiTrangThaiHoaDon);
+                });
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+            });
         // Khởi tạo biến tổng tiền trước khi giảm giá
         $scope.totalBeforeDiscount = 0;
 
@@ -327,6 +339,15 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             });
         }
     };
+    $scope.isPaymentButtonVisible = function () {
+        // Kiểm tra nếu trạng thái cuối cùng của hóa đơn là "Chờ thanh toán" (trạng thái 6)
+        if ($scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+            // Trả về true nếu trạng thái là 6 (Chờ thanh toán)
+            return currentStatus.idLoaiTrangThaiHoaDon === 6;
+        }
+        return false; // Nếu không có trạng thái hoặc trạng thái không phải là 6, ẩn nút
+    };
 
     // Hàm cập nhật trạng thái trong backend
     function updateStatusInBackend(nextStatusId) {
@@ -348,7 +369,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                     });
 
                     // Tải lại dữ liệu trạng thái hóa đơn sau khi cập nhật
-                    fetchStatusAndInvoiceData();  // Gọi lại hàm fetchStatusAndInvoiceData để tải lại dữ liệu
+                    fetchStatusAndInvoiceData();
                 } else {
                     // Nếu không thành công, hiển thị thông báo lỗi từ backend
                     console.error('Lỗi khi cập nhật trạng thái:', response.data.message);
@@ -418,7 +439,10 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         $scope.amountGiven = $scope.totalAmount;
         $scope.notes = '';  // Reset ghi chú
     };
-
+    // Khi người dùng mở modal, tự động điền thông tin vào modal
+    $('#xacNhanModal').on('show.bs.modal', function () {
+        $scope.openPaymentModal();
+    });
     $scope.updatePaymentHistory = function () {
         var amountGiven = document.getElementById("amountGiven").value;
         var notes = document.getElementById("notes").value;
@@ -490,10 +514,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     };
 
 
-    // Khi người dùng mở modal, tự động điền thông tin vào modal
-    $('#xacNhanModal').on('show.bs.modal', function () {
-        $scope.openPaymentModal();
-    });
+
 
 
 
