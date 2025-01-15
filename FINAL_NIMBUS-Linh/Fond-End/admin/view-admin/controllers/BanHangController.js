@@ -1240,99 +1240,61 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             .catch(function (error) {
                 console.error('Lỗi khi tạo lịch sử thanh toán:', error);
             });
-    };
-    $scope.checkVouchersValidity = async function(vouchers) {
-        // Mảng lưu Promise kiểm tra tính hợp lệ của các voucher
-        const promises = vouchers.map(async (voucher) => {
-            try {
-                // Gửi yêu cầu để kiểm tra voucher từ API
-                const response = await $http.get(`http://localhost:8080/api/admin/ban_hang/vouchers/${voucher.idVoucher}`);
-                const voucherData = response.data;
+    }; 
+    async function checkVoucher(idVoucher) {
+        try {
+            const response = await fetch(`http://localhost:8080/api/admin/ban_hang/vouchers/${idVoucher}`);
+            if (!response.ok) {
+                throw new Error('Không thể lấy thông tin voucher');
+            }
     
-                // Kiểm tra nếu voucher không hợp lệ
-                if (!voucherData.isUsable || voucherData.soLuong <= 0) {
-                    // Nếu voucher hết số lượng hoặc không hợp lệ
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Voucher không hợp lệ',
-                        text: 'Rất tiếc, voucher này đã hết số lượng và không thể sử dụng nữa.',
-                        confirmButtonText: 'OK'
-                    });
-                    return false; // Trả về false để dừng lại
-                }
+            const data = await response.json();
+            console.log('Thông tin Voucher:', data);
     
-                // Kiểm tra số lượng voucher là 1 hoặc lớn hơn
-                if (voucherData.soLuong > 1) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Voucher không hợp lệ',
-                        text: 'Số lượng voucher không hợp lệ, vui lòng kiểm tra lại.',
-                        confirmButtonText: 'OK'
-                    });
-                    return false; // Trả về false nếu số lượng không hợp lệ
-                }
-    
-                // Kiểm tra trạng thái giảm giá của voucher
-                if (voucherData.trangThaiGiamGia.idTrangThaiGiamGia === 2) { // Giả sử trạng thái 2 là "đã bị xóa"
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Voucher không hợp lệ',
-                        text: 'Voucher này đã bị xóa bởi người bán và không thể sử dụng để thanh toán.',
-                        confirmButtonText: 'OK'
-                    });
-                    return false; // Trả về false nếu voucher bị xóa
-                }
-    
-                // Nếu voucher hợp lệ
-                return true;
-            } catch (error) {
-                // Xử lý lỗi nếu có
+            // Kiểm tra số lượng
+            if (data.soLuong <= 0) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Lỗi khi kiểm tra voucher',
-                    text: 'Đã xảy ra lỗi khi kiểm tra tính hợp lệ của voucher. Vui lòng thử lại.',
+                    title: 'Voucher không hợp lệ',
+                    text: 'Rất tiếc, voucher này đã hết số lượng và không thể sử dụng nữa.',
                     confirmButtonText: 'OK'
                 });
-                return false; // Trả về false nếu có lỗi
+                return false; // Dừng xử lý
             }
-        });
-        
-        // Sử dụng Promise.allSettled để kiểm tra tất cả các voucher
-        const results = await Promise.allSettled(promises);
-        
-        // Kiểm tra nếu bất kỳ voucher nào không hợp lệ
-        const isValid = results.every(result => result.status === 'fulfilled' && result.value === true);
-        
-        if (!isValid) {
-            // Nếu có voucher không hợp lệ, dừng lại và trả về false
-            console.log('Một hoặc nhiều voucher không hợp lệ.');
-            return false;
-        }
-        
-        // Tất cả voucher hợp lệ
-        console.log('Tất cả voucher hợp lệ.');
-        return true;
-    };
-    
-    
-    
-    
-    
-    $scope.createHoaDonChiTiet = async function () {
-        // Kiểm tra xác nhận thanh toán
-        if ($scope.xacNhanThanhToan()) {
-            const voucher = JSON.parse(localStorage.getItem('voucherdachon'));
+            if (data.idTrangThaiGiamGia === 5) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Voucher không hợp lệ',
+                    text: 'Voucher này đã bị xóa bởi người bán và không thể sử dụng để thanh toán.',
+                    confirmButtonText: 'OK'
+                });
+                return false; // Dừng xử lý
+            }
 
-        // Kiểm tra nếu không có voucher hoặc voucher không hợp lệ
-        if (!voucher || voucher.soLuong <= 0) {
+            // Voucher hợp lệ
+            return true; // Tiếp tục xử lý
+        } catch (error) {
+            console.error('Lỗi khi kiểm tra voucher:', error);
             Swal.fire({
                 icon: 'error',
-                title: 'Voucher hết số lượng',
-                text: 'Voucher này đã hết số lượng và không thể sử dụng nữa.',
+                title: 'Lỗi hệ thống',
+                text: 'Không thể kiểm tra voucher, vui lòng thử lại sau.',
                 confirmButtonText: 'OK'
             });
-            return; // Dừng lại nếu không có voucher hoặc số lượng <= 0
+            return false; // Dừng xử lý do lỗi
         }
+    }
+       
+    $scope.createHoaDonChiTiet = async function () {
+        // Kiểm tra xác nhận thanh toán
+        if ($scope.xacNhanThanhToan()) {       
+            const voucher = JSON.parse(localStorage.getItem('voucherdachon'));
+            if (voucher && voucher.idVoucher) {
+                const isValidVoucher = await checkVoucher(voucher.idVoucher); // Kiểm tra voucher
+                if (!isValidVoucher) {
+                    return; // Dừng lại nếu voucher không hợp lệ
+                }
+            }    
             // Nếu phương thức thanh toán là PayOS (ví dụ, phương thức thanh toán 3)
             if ($scope.selectedPhuongThucThanhToan === 3) {
                 await $scope.TEST(); // Gọi hàm xử lý PayOS
