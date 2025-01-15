@@ -50,6 +50,13 @@
     text-decoration: none;
 }
 
+.discount-amount {
+    color: red;
+    /* Màu đỏ */
+    font-weight: bold;
+    /* Để chữ đậm */
+}
+
 :root {
     --red: #b5292f;
     --lightest-gray: rgb(249, 249, 249);

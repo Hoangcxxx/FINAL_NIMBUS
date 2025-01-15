@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,8 +55,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "WHERE h.nguoiDung.idNguoiDung = :idNguoiDung AND " +
             "tthd.idTrangThaiHoaDon = (SELECT MAX(t.idTrangThaiHoaDon) FROM TrangThaiHoaDon t WHERE t.hoaDon.idHoaDon = h.idHoaDon)")
     List<Object[]> findHoaDonWithTrangThaiAndLoai(@Param("idNguoiDung") Integer idNguoiDung);
-
-
     @Query("SELECT h, tthd, ttLoai FROM HoaDon h " +
             "JOIN TrangThaiHoaDon tthd ON tthd.hoaDon.idHoaDon = h.idHoaDon " +
             "JOIN LoaiTrangThai ttLoai ON tthd.loaiTrangThai.idLoaiTrangThai = ttLoai.idLoaiTrangThai " +
@@ -67,5 +66,51 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     @Query(value = HoaDonQuery.GET_MA_HOA_DON, nativeQuery = true)
     String findLatestHoaDon();
 
+    @Query(value = HoaDonQuery.GET_PHI_SHIP, nativeQuery = true)
+    BigDecimal findtestphiship();
 
+    @Query(value = HoaDonQuery.GET_Voucher, nativeQuery = true)
+    BigDecimal hoadonvoucher();
+
+
+
+    @Query("SELECT sp.tenSanPham " +
+            "FROM HoaDon hd " +
+            "JOIN hd.hoaDonChiTiets hdct " +
+            "JOIN hdct.sanPhamChiTiet spct " +
+            "JOIN spct.sanPham sp " +
+            "WHERE hd.maHoaDon = :maHoaDon " +
+            "ORDER BY hd.idHoaDon DESC")
+    String findTenSanPhamTheoMaHoaDon(@Param("maHoaDon") String maHoaDon);
+    // Tìm kiếm hóa đơn theo mã hóa đơn
+    @Query(value = "WITH LatestStatus AS ( " +
+            "SELECT " +
+            "h.Id_hoa_don, " +
+            "h.ma_hoa_don, " +
+            "u.ten_nguoi_dung, " +
+            "h.sdt_nguoi_nhan, " +
+            "h.thanh_tien, " +
+            "h.loai, " +
+            "t.ngay_tao, " +
+            "l.ten_loai_trang_thai, " +
+            "ROW_NUMBER() OVER (PARTITION BY h.Id_hoa_don ORDER BY t.id_loai_trang_thai DESC) AS rn " +
+            "FROM hoa_don h " +
+            "JOIN trang_thai_hoa_don t ON h.Id_hoa_don = t.id_hoa_don " +
+            "JOIN loai_trang_thai l ON l.id_loai_trang_thai = t.id_loai_trang_thai " +
+            "JOIN nguoi_dung u ON h.id_nguoi_dung = u.id_nguoi_dung " +
+            ") " +
+            "SELECT " +
+            "ls.Id_hoa_don, " +
+            "ls.ma_hoa_don, " +
+            "ls.ten_nguoi_dung, " +
+            "ls.sdt_nguoi_nhan, " +
+            "ls.thanh_tien, " +
+            "ls.loai, " +
+            "ls.ngay_tao, " +
+            "ls.ten_loai_trang_thai " +
+            "FROM LatestStatus ls " +
+            "WHERE ls.rn = 1 " +
+            "AND ls.ma_hoa_don LIKE %:maHoaDon% " +
+            "ORDER BY ls.ngay_tao DESC, ls.Id_hoa_don", nativeQuery = true)
+    List<Object[]> searchHoaDonByMaHoaDon(String maHoaDon);
 }

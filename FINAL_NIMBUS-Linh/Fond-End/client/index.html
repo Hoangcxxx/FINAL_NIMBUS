@@ -29,6 +29,21 @@
     <script src="view-client/controllers/DonhangController.js"></script>
     <script src="view-client/controllers/QuenMatKhauController.js"></script>
     <script src="view-client/controllers/DonHangCuaToiController.js"></script>
+    <script src="view-client/controllers/ThanhCongttController.js"></script>
+    <style type="text/css">
+        .css_select_div {
+            text-align: center;
+        }
+
+        .css_select {
+            display: inline-table;
+            width: 25%;
+            padding: 5px;
+            margin: 5px 2%;
+            border: solid 1px #686868;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <body ng-app="myApp">
@@ -49,6 +64,10 @@
                 .when("/about", {
                     templateUrl: "view-client/views/about.html",
                     controller: AboutController
+                })
+                .when("/Thanhcong", {
+                    templateUrl: "view-client/views/thanhcongtructiep.html",
+                    controller: ThanhCongttController
                 })
                 .when("/register", {
                     templateUrl: "view-client/views/register.html",
@@ -120,7 +139,7 @@
                             // Trạng thái bị khóa, hiển thị thông báo
                             Swal.fire({
                                 title: 'Tài khoản của bạn đã bị khóa!',
-                                text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: support@example.com.',
+                                text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
                                 icon: 'error',
                                 confirmButtonText: 'Liên hệ hỗ trợ',
                                 footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
@@ -257,7 +276,17 @@
     <script src="lib/bootstrap.js"></script>
     <script src="view-client/assets/javascript/script.js"></script>
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-
+    <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.1.0-beta.0/libs/oversea/index.js"></script>
+    <script>
+        new CozeWebSDK.WebChatClient({
+          config: {
+            bot_id: '7459675161169002504',
+          },
+          componentProps: {
+            title: 'Coze',
+          },
+        });
+    </script>
     <!-- Tùy chỉnh CSS cho Chatbot -->
 </body>
 

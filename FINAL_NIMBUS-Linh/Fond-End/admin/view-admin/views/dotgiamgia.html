@@ -26,7 +26,7 @@
             <div class="border border-3 rounded p-3 mb-5">
                 <!-- Form lọc khuyến mãi -->
                 <form class="row g-3 mb-4">
-                    <div class="col-md-4">
+                    <!-- <div class="col-md-4">
                         <label for="tenDotGiamGia" class="form-label">Tên đợt giảm giá</label>
                         <input type="text" class="form-control" id="tenDotGiamGia" ng-model="tenDotGiamGia">
                     </div>
@@ -34,13 +34,12 @@
                         <label for="trang-thai" class="form-label">Trạng thái</label>
                         <select class="form-select" id="trang-thai" ng-model="selectedTrangThaiGiamGia">
                             <option value="">Tất cả</option>
-                            <!-- Loop through dsTrangThaiGiamGia to display each option -->
                             <option ng-repeat="trangThai in dsTrangThaiGiamGia"
                                 value="{{trangThai.idTrangThaiGiamGia}}">
                                 {{trangThai.tenTrangThaiGiamGia}}
                             </option>
                         </select>
-                    </div>
+                    </div> -->
 
                     <div class="col-md-4">
                         <label for="kieuGiamGia" class="form-label">Kiểu giảm giá</label>
@@ -52,7 +51,7 @@
                         </select>
                     </div>
                     <div class="col-12">
-                        <button type="button" class="btn btn-danger" ng-click="searchData()">Tìm kiếm</button>
+                        <!-- <button type="button" class="btn btn-danger" ng-click="searchData()">Tìm kiếm</button> -->
                         <button type="button" class="btn btn-secondary"
                             ng-click="fetchData('http://localhost:8080/api/admin/dot_giam_gia', 'dsDotKhuyenMai', 'Fetched Voucher:')">Làm
                             mới</button>

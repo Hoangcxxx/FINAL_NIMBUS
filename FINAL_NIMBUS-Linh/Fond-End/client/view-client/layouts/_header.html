@@ -1,6 +1,14 @@
 <header id="header">
     <a href="#"><img src="/view-client/assets/img/logo.png" class="logo" alt=""></a>
     <ul id="navbar">
+        <!-- <li>
+            <form class="search-form d-flex align-items-center" ng-submit="timKiem(searchTerm)">
+                <input type="text" class="form-control me-2" placeholder="Search..." ng-model="searchTerm" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+        </li> -->
         <li><a class="active" href="#!/">Home</a></li>
         <li><a href="#!san_pham">Shop</a></li>
         <li><a href="#!blog">Blog</a></li>
@@ -14,6 +22,7 @@
                 <!-- Số lượng giỏ hàng sẽ được hiển thị ở đây -->
             </a>
         </li>
+
         <li class="nav-item dropdown" ng-if="infoUser" style="padding-right: 0px;padding-left: 0px;">
             <a class="" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
                 <div class="position-relative">
@@ -63,3 +72,215 @@
         <li ng-if="!infoUser"><a href="#!user"><i class="fa-solid fa-user"></i></a></li>
     </ul>
 </header>
+<style>
+    /* Đặt nền và căn chỉnh tổng thể cho header */
+    #header {
+        background: linear-gradient(to right, #ff8c66, #ffd54f);
+        /* Đỏ nhạt và vàng sáng */
+        color: #fff;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        /* Hiệu ứng đổ bóng nhẹ */
+        position: sticky;
+        top: 0;
+        z-index: 999;
+    }
+
+    /* Logo */
+    #header .logo {
+        max-height: 50px;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    #header .logo:hover {
+        transform: scale(1.05);
+        /* Phóng to nhẹ khi rê chuột */
+    }
+
+    /* Navbar */
+    #navbar {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #navbar li {
+        margin: 0 15px;
+        position: relative;
+    }
+
+    #navbar li a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease-in-out;
+    }
+
+    #navbar li a:hover,
+    #navbar li a.active {
+        color: #ffd54f;
+        /* Vàng sáng khi hover hoặc active */
+        border-bottom: 2px solid #ffd54f;
+        padding-bottom: 5px;
+    }
+
+    /* Nút giỏ hàng */
+    .nav-link {
+        color: #fff;
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .nav-link i {
+        font-size: 20px;
+        margin-right: 5px;
+    }
+
+    .nav-link .badge {
+        background-color: #ff8c66;
+        /* Nền đỏ nhạt */
+        font-size: 12px;
+        margin-left: 5px;
+        padding: 3px 6px;
+        border-radius: 10px;
+    }
+
+    /* Dropdown user */
+    .user-dropdown .dropdown-toggle {
+        background: linear-gradient(45deg, #ff8c66, #ff5e3a);
+        /* Gradient cam */
+        color: #fff;
+        /* Màu chữ trắng */
+        border: none;
+        font-weight: 500;
+        border-radius: 5px;
+        /* Bo góc */
+        padding: 5px 15px;
+        /* Khoảng cách bên trong */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        /* Hiệu ứng shadow */
+        transition: all 0.3s ease;
+        /* Hiệu ứng chuyển động mượt */
+    }
+
+    .user-dropdown .dropdown-toggle:hover {
+        background: linear-gradient(45deg, #ff5e3a, #ff8c66);
+        /* Đảo chiều gradient */
+        transform: scale(1.05);
+        /* Phóng to nhẹ khi hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        /* Shadow đậm hơn */
+    }
+
+    .user-dropdown .dropdown-menu {
+        background: linear-gradient(135deg, #ffd54f, #ffc107);
+        /* Gradient vàng */
+        border: none;
+        border-radius: 10px;
+        /* Bo góc nhiều hơn */
+        padding: 10px;
+        /* Khoảng cách bên trong */
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+        /* Hiệu ứng shadow */
+        animation: fadeIn 0.4s ease;
+        /* Hiệu ứng xuất hiện mượt */
+    }
+
+    .user-dropdown .dropdown-menu a {
+        color: #333;
+        /* Màu văn bản tối */
+        font-weight: 500;
+        /* Đậm văn bản */
+        padding: 8px 10px;
+        /* Khoảng cách bên trong từng mục */
+        border-radius: 5px;
+        /* Bo góc mỗi mục */
+        transition: all 0.3s ease;
+        /* Hiệu ứng mượt khi hover */
+    }
+
+    .user-dropdown .dropdown-menu a:hover {
+        color: #fff;
+        /* Màu chữ trắng khi hover */
+        background: #ff8c66;
+        /* Nền cam khi hover */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        /* Shadow khi hover */
+        transform: translateX(5px);
+        /* Dịch nhẹ sang phải */
+    }
+
+    /* Hiệu ứng fadeIn cho menu */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+            /* Di chuyển từ trên xuống */
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            /* Về vị trí ban đầu */
+        }
+    }
+
+
+    /* Nút thông báo */
+    #alertsDropdown {
+        color: #fff;
+        position: relative;
+    }
+
+    #alertsDropdown .badge {
+        font-size: 10px;
+        font-weight: bold;
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #ff8c66;
+        /* Nền đỏ nhạt */
+        padding: 5px;
+        border-radius: 50%;
+    }
+
+    /* Responsive header */
+    @media screen and (max-width: 768px) {
+        #header {
+            flex-wrap: wrap;
+            text-align: center;
+        }
+
+        #navbar {
+            flex-direction: column;
+        }
+
+        #navbar li {
+            margin: 10px 0;
+        }
+    }
+</style>
+
+<script>
+    // JavaScript (or AngularJS) to handle dropdown hover effect
+    document.querySelectorAll('.user-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('mouseenter', () => {
+            const menu = dropdown.querySelector('.dropdown-menu');
+            menu.style.opacity = 1;
+            menu.style.visibility = 'visible';
+        });
+
+        dropdown.addEventListener('mouseleave', () => {
+            const menu = dropdown.querySelector('.dropdown-menu');
+            menu.style.opacity = 0;
+            menu.style.visibility = 'hidden';
+        });
+    });
+
+</script>

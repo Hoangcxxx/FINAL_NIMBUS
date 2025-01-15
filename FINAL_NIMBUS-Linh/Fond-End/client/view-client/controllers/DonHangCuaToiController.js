@@ -1,5 +1,7 @@
 window.DonHangCuaToiController = function ($scope, $http, $window) {
 
+
+    
     // Lấy thông tin người dùng từ localStorage
     var userInfo = localStorage.getItem('user');
     // Lắng nghe sự kiện click trên nút "Tra Cứu"
@@ -126,7 +128,8 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
                         xa: hoaDon.tenXa,
-                        giaTriMavoucher: hoaDon.giaTriMavoucher // Đảm bảo mã voucher được lấy chính xác
+                        giaTriMavoucher: hoaDon.giaTriMavoucher , // Đảm bảo mã voucher được lấy chính xác
+                        kieuGiamGia: hoaDon.kieuGiamGia,
                     };
 
                     // Cập nhật chi tiết sản phẩm
@@ -175,6 +178,42 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
         }
     };
 
+    $scope.getTotalProductPrice = function () {
+        let total = 0;
+
+        // Kiểm tra xem $scope.orderDetails và listSanPhamChiTiet có tồn tại không
+        if ($scope.orderlist && Array.isArray($scope.orderlist.listSanPhamChiTiet)) {
+            angular.forEach($scope.orderlist.listSanPhamChiTiet, function (item) {
+                total += item.tongtien || 0; // Thêm giá của mỗi sản phẩm vào tổng
+            });
+        } else {
+            console.log("orderDetails or listSanPhamChiTiet is undefined or not an array.");
+        }
+
+        return total;
+    };
+
+    $scope.calculateDiscount = function () {
+        let discount = 0;
+        if ($scope.orderHieu) {
+            if ($scope.orderHieu.kieuGiamGia === false) {
+                // Giảm giá theo phần trăm
+                discount = ($scope.getTotalProductPrice() * $scope.orderHieu.giaTriMavoucher) / 100;
+            } else if ($scope.orderHieu.kieuGiamGia === true) {
+                // Giảm giá trực tiếp bằng số tiền
+                discount = $scope.orderHieu.giaTriMavoucher;
+            }
+        }
+        return discount;
+    };
+    
+    $scope.calculateTotalAfterDiscount = function () {
+        const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
+        const discount = $scope.calculateDiscount(); // Số tiền giảm giá
+        return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
+    };
+    
+
 
     // Gọi API để lấy danh sách đơn hàng khi tải trang
     $scope.getOrderDetails = function () {
@@ -203,4 +242,6 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
     // Gọi hàm getOrderDetails khi tải trang
     $scope.getOrderDetails();
 
+
+    
 }

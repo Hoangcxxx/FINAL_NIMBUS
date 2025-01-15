@@ -4,8 +4,10 @@ import com.example.duantn.entity.GioHang;
 import com.example.duantn.entity.GioHangChiTiet;
 import com.example.duantn.entity.SanPhamChiTiet;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,7 @@ public interface GioHangChiTietRepository extends JpaRepository<GioHangChiTiet, 
 
     List<GioHangChiTiet> findByGioHang(GioHang gioHang);
     Optional<GioHangChiTiet> findByGioHangAndSanPhamChiTiet(GioHang gioHang, SanPhamChiTiet sanPhamChiTiet);
+
 
 
 }

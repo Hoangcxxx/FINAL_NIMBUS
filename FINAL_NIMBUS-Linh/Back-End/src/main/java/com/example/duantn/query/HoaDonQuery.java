@@ -38,6 +38,7 @@ public class HoaDonQuery {
             "ORDER BY \n" +
             "    ls.ngay_tao DESC,   \n" +
             "    ls.Id_hoa_don;";
+
     public static final String GET_TRANG_THAI_HOA_DON_BY_ID_HOA_DON = "SELECT \n" +
             "    h.ma_hoa_don, \n" +
             "    tthd.mo_ta,\n" +
@@ -116,7 +117,27 @@ public class HoaDonQuery {
                     "FROM hoa_don\n" +
                     "ORDER BY Id_hoa_don DESC;\n";
 
+    public static final String GET_PHI_SHIP =
+            "SELECT TOP 1 phi_ship\n" +
+                    "FROM hoa_don\n" +
+                    "ORDER BY Id_hoa_don DESC;\n";
 
+    public static final String GET_TEN_SAN_PHAM_THEO_MA_HOA_DON =
+            "SELECT TOP 1 sp.ten_san_pham " +
+                    "FROM hoa_don hd " +
+                    "JOIN hoa_don_chi_tiet hdct ON hd.Id_hoa_don = hdct.id_hoa_don " +
+                    "JOIN san_pham_chi_tiet spct ON hdct.id_san_pham_chi_tiet = spct.id_san_pham_chi_tiet " +
+                    "JOIN san_pham sp ON spct.id_san_pham = sp.Id_san_pham " +
+                    "WHERE hd.ma_hoa_don = ? " +
+                    "ORDER BY hd.Id_hoa_don DESC;";
+
+
+    public static final String GET_Voucher = "SELECT v.gia_tri_giam_gia, v.kieu_giam_gia\n" +
+            "FROM hoa_don h\n" +
+            "JOIN voucher v ON h.id_voucher = v.id_voucher\n" +
+            "WHERE h.id_hoa_don = (SELECT MAX(id_hoa_don) FROM hoa_don)\n" +
+            "ORDER BY h.Id_hoa_don \n" +
+            "\n";
 
 
 }

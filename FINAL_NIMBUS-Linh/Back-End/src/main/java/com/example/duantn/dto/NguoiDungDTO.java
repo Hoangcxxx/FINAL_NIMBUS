@@ -9,6 +9,7 @@ import java.util.Date;
 @Getter@Setter
 public class NguoiDungDTO {
     private Integer idNguoiDung;
+    private String maNguoiDung;
     private String tenNguoiDung;
     private String email;
     private String sdt;

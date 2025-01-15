@@ -49,43 +49,11 @@ public class HoaDonChiTietService {
     public List<Object[]> getAllTongSanPhamTrongThang() {
         return hoaDonChiTietRepository.getAllTongSanPhamTrongThang();
     }
-    public Integer getSoLuongDonHangCho(LocalDate startDate, LocalDate endDate) {
-        return hoaDonChiTietRepository.countDonHangCho(startDate, endDate);
+
+    public List<Object[]> getAllSoluongLoaiTrangThaiHoaDon() {
+        return hoaDonChiTietRepository.getAllSoluongLoaiTrangThaiHoaDon();
     }
 
-    public Integer getSoLuongDonHangDangGiao(LocalDate startDate, LocalDate endDate) {
-        return hoaDonChiTietRepository.countDonHangDangGiao(startDate, endDate);
-    }
-
-    public Integer getSoLuongDonHangHoanThanh(LocalDate startDate, LocalDate endDate) {
-        return hoaDonChiTietRepository.countDonHangHoanThanh(startDate, endDate);
-    }
-
-    public Integer getSoLuongDonHangHuyBo(LocalDate startDate, LocalDate endDate) {
-        return hoaDonChiTietRepository.countDonHangHuyBo(startDate, endDate);
-    }
-    public Double findDoanhThuByMonthAndYear(int month, int year) {
-        return hoaDonChiTietRepository.findDoanhThuByMonthAndYear(month, year);
-    }
-
-    public Double findDoanhThuByYear(int year) {
-        return hoaDonChiTietRepository.findDoanhThuByYear(year);
-    }
-    public Integer getSoLuongDhCho() {
-        return hoaDonChiTietRepository.countDonHangCho();
-    }
-
-    public Integer getSoLuongDhDangGiao() {
-        return hoaDonChiTietRepository.countDonHangDangGiao();
-    }
-
-    public Integer getSoLuongDhHoanThanh() {
-        return hoaDonChiTietRepository.countDonHangHoanThanh();
-    }
-
-    public Integer getSoLuongDhHuyBo() {
-        return hoaDonChiTietRepository.countDonHangHuyBo();
-    }
     public void createHoaDonChiTiet(HoaDonChiTietDTO hoaDonChiTietDTO) {
 
         SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(hoaDonChiTietDTO.getIdSanPhamChiTiet())
@@ -118,6 +86,7 @@ public class HoaDonChiTietService {
             hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
             HoaDon hoaDon = hoaDonRepository.findById(dto.getIdHoaDon())
                     .orElseThrow(() -> new ExpressionException("Hóa đơn không tìm thấy"));
+
             GiamGiaSanPham giamGiaSanPham = giamGiaSanPhamRepository.findBySanPham(sanPhamChiTiet.getSanPham())
                     .orElse(null);
 

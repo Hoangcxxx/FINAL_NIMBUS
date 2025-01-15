@@ -35,7 +35,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
     $scope.editUser = function (user) {
         $scope.selectedUser = angular.copy(user); // Sao chép đối tượng người dùng được chọn
     };
-    // Cập nhật thông tin người dùng
+
     $scope.updateUser = function () {
         if ($scope.updateUserForm.$valid) {
             const url = `${baseURL}/${$scope.selectedUser.idNguoiDung}`; // Sử dụng idNguoiDung từ đối tượng đã chọn
@@ -171,6 +171,78 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
         }
     };
     $scope.registerUser = function () {
+        // Kiểm tra các trường đầu vào
+        if (!$scope.tenNguoiDung || !$scope.email || !$scope.password || !$scope.phone || !$scope.gender) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin!',
+                text: 'Vui lòng điền đầy đủ thông tin trước khi đăng ký.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra định dạng tên người dùng (chỉ chứa ký tự và số, ít nhất 3 ký tự)
+        if ($scope.tenNguoiDung.includes('@')) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Tên người dùng không hợp lệ!',
+                text: 'Tên người dùng không được chứa ký tự "@"',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra định dạng email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test($scope.email)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Email không hợp lệ!',
+                text: 'Vui lòng nhập đúng định dạng email.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra độ dài mật khẩu
+        if ($scope.password.length < 6) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Mật khẩu quá ngắn!',
+                text: 'Mật khẩu phải có ít nhất 6 ký tự.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra định dạng số điện thoại (giả sử số điện thoại có 10 chữ số)
+        const phonePattern = /^[0-9]{10}$/;
+        if (!phonePattern.test($scope.phone)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số điện thoại không hợp lệ!',
+                text: 'Số điện thoại phải bao gồm 10 chữ số.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra giới tính (giả sử chỉ có 'Nam' và 'Nữ' là hợp lệ)
+        if ($scope.gender !== 'Nam' && $scope.gender !== 'Nữ') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Giới tính không hợp lệ!',
+                text: 'Vui lòng chọn giới tính đúng.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Đặt vai trò mặc định là 2 (Khách hàng)
+        $scope.role = 2; // Vai trò Khách hàng (mặc định)
+
+        // Gửi yêu cầu đăng ký
         const registerData = {
             tenNguoiDung: $scope.tenNguoiDung,
             email: $scope.email,
@@ -184,9 +256,8 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
             .then(function () {
                 Swal.fire({
                     icon: 'success',
-                    title: 'tạo tài khoản thành công !',
+                    title: 'Tạo tài khoản thành công!',
                     html: '<p>Bạn đã tạo tài khoản thành công. Hãy đăng nhập để bắt đầu trải nghiệm!</p>',
-                    confirmButtonText: 'Đăng nhập ngay'
                 }).then(() => {
                     window.location.reload(); // Reload lại toàn bộ trang
                 });
@@ -201,21 +272,170 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
             });
     };
 
-
     // Lắng nghe sự kiện submit form
     document.getElementById('addUserForm').addEventListener('submit', function (event) {
         event.preventDefault(); // Ngừng hành động mặc định của form
         $scope.tenNguoiDung = document.getElementById('username').value;
         $scope.email = document.getElementById('email').value;
         $scope.password = document.getElementById('password').value;
-        $scope.role = parseInt(document.getElementById('role').value); // Lấy vai trò từ select
         $scope.phone = document.getElementById('phone').value; // Lấy số điện thoại
         $scope.gender = document.getElementById('gender').value; // Lấy giới tính
         $scope.registerUser();
+    });
+     $scope.registerEmployee = function () {
+        // Kiểm tra các trường đầu vào
+        if (!$scope.tenNhanVien || !$scope.email || !$scope.password || !$scope.phone || !$scope.gender || !$scope.role) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin!',
+                text: 'Vui lòng điền đầy đủ thông tin trước khi đăng ký.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra định dạng email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test($scope.email)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Email không hợp lệ!',
+                text: 'Vui lòng nhập đúng định dạng email.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra độ dài mật khẩu
+        if ($scope.password.length < 6) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Mật khẩu quá ngắn!',
+                text: 'Mật khẩu phải có ít nhất 6 ký tự.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra định dạng số điện thoại (giả sử số điện thoại có 10 chữ số)
+        const phonePattern = /^[0-9]{10}$/;
+        if (!phonePattern.test($scope.phone)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Số điện thoại không hợp lệ!',
+                text: 'Số điện thoại phải bao gồm 10 chữ số.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Kiểm tra giới tính (giả sử chỉ có 'Nam' và 'Nữ' là hợp lệ)
+        if ($scope.gender !== 'Nam' && $scope.gender !== 'Nữ') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Giới tính không hợp lệ!',
+                text: 'Vui lòng chọn giới tính đúng.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        // Gửi yêu cầu kiểm tra trùng lặp email và số điện thoại
+        $http.get('http://127.0.0.1:8080/api/admin/nguoi_dung/list/nhanvien')
+            .then(function (response) {
+                const existingUsers = response.data;  // Dữ liệu trả về từ API (Danh sách nhân viên)
+
+                // Kiểm tra số điện thoại và email đã tồn tại trong cơ sở dữ liệu
+                const isPhoneExist = existingUsers.some(user => user.sdt === $scope.phone);
+                const isEmailExist = existingUsers.some(user => user.email === $scope.email);
+
+                if (isPhoneExist) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Số điện thoại đã tồn tại!',
+                        text: 'Số điện thoại này đã được đăng ký. Vui lòng sử dụng số khác.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                if (isEmailExist) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Email đã tồn tại!',
+                        text: 'Email này đã được đăng ký. Vui lòng sử dụng email khác.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                // Nếu cả số điện thoại và email đều chưa tồn tại, tiếp tục đăng ký nhân viên
+                const registerData = {
+                    tenNguoiDung: $scope.tenNhanVien,
+                    email: $scope.email,
+                    matKhau: $scope.password,
+                    vaiTro: { idVaiTro: $scope.role },
+                    sdt: $scope.phone,
+                    gioiTinh: $scope.gender
+                };
+
+                // Gửi yêu cầu tạo nhân viên
+                callApi('POST', `${baseURL}/create`, registerData)
+                    .then(function () {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thêm nhân viên thành công!',
+                            html: '<p>Bạn đã thêm nhân viên mới thành công.</p>',
+                        }).then(() => {
+                            window.location.reload(); // Reload lại trang để cập nhật danh sách
+                        });
+                    })
+                    .catch(function (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thêm nhân viên thất bại!',
+                            text: error.data && error.data.message ? `Lỗi: ${error.data.message}` : 'Đã xảy ra lỗi không xác định. Vui lòng thử lại!',
+                            confirmButtonText: 'Thử lại'
+                        });
+                    });
+            })
+            .catch(function (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi kiểm tra thông tin!',
+                    text: 'Không thể kiểm tra email hoặc số điện thoại. Vui lòng thử lại.',
+                    confirmButtonText: 'OK'
+                });
+            });
+    };
+
+    // Lắng nghe sự kiện submit form
+    document.getElementById('addEmployeeForm').addEventListener('submit', function (event) {
+        event.preventDefault(); // Ngừng hành động mặc định của form
+
+        // Lấy các giá trị từ form
+        $scope.tenNhanVien = document.getElementById('usernameEmployee').value;
+        $scope.email = document.getElementById('email').value;
+        $scope.password = document.getElementById('passwordEmployee').value;
+        $scope.role = parseInt(document.getElementById('roleEmployee').value); // Lấy vai trò từ select
+        $scope.phone = document.getElementById('phoneEmployee').value; // Lấy số điện thoại
+        $scope.gender = document.getElementById('genderEmployee').value; // Lấy giới tính
+
+        // Log dữ liệu để kiểm tra
+        console.log('Tên nhân viên:', $scope.tenNhanVien);
+        console.log('Email:', $scope.email);
+        console.log('Mật khẩu:', $scope.password);
+        console.log('Vai trò:', $scope.role);
+        console.log('Số điện thoại:', $scope.phone);
+        console.log('Giới tính:', $scope.gender);
+
+        // Gọi hàm đăng ký nhân viên
+        $scope.registerEmployee();
     });
 
     // Khởi tạo dữ liệu khi trang load
     getUsers();
     getEmployees();
     getLeLe();
+
 };

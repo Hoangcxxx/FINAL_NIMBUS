@@ -214,7 +214,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
                 if (!response.data.trangThai) {
                     Swal.fire({
                         title: 'Tài khoản của bạn đã bị khóa!',
-                        text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: support@example.com.',
+                        text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
                         icon: 'error',
                         confirmButtonText: 'Liên hệ hỗ trợ',
                         footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
@@ -257,25 +257,7 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
                         }
                         // Log số lượng tồn kho
                         console.log("Số lượng tồn kho của sản phẩm:", $scope.soLuongTon);
-
-                        // Kiểm tra số lượng trong giỏ hàng và số lượng tồn kho
-                        if (existingProduct) {
-                            let totalQuantityInCart = existingProduct.soLuongGioHang + $scope.soluong;
-
-                            console.log("Tổng số lượng trong giỏ hàng sau khi thêm:", totalQuantityInCart);
-
-                            if (totalQuantityInCart > $scope.soLuongTon) {
-                                // Nếu số lượng trong giỏ hàng + số lượng người dùng muốn thêm vượt quá số lượng tồn kho
-                                Swal.fire({
-                                    title: 'Lỗi',
-                                    text: `Số lượng tồn của sản phẩm trong kho không đủ(số lượng còn lại là: ${$scope.soLuongTon}).`,
-                                    icon: 'error',
-                                    confirmButtonText: 'OK'
-                                });
-                                return;
-                            }
-                        }
-
+                        
                         // Nếu không có sản phẩm trong giỏ hàng hoặc có thể thêm, tiếp tục thêm sản phẩm vào giỏ hàng
                         let cartItem = {
                             idSanPham: $scope.sanPhamChiTiet[0].idSanPham,

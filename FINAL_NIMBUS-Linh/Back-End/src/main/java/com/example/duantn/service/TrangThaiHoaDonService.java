@@ -39,30 +39,108 @@ public class TrangThaiHoaDonService {
         return !existingStatuses.isEmpty();  // Trả về true nếu trạng thái đã tồn tại
     }
     public List<TrangThaiHoaDon> saveTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai, Integer idNhanVien) {
+        // Kiểm tra sự tồn tại của hóa đơn và loại trạng thái
         Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
         Optional<LoaiTrangThai> loaiTrangThaiOpt = loaiTrangThaiRepository.findById(idLoaiTrangThai);
 
+        // Nếu hóa đơn và loại trạng thái tồn tại
         if (hoaDonOpt.isPresent() && loaiTrangThaiOpt.isPresent()) {
             HoaDon hoaDon = hoaDonOpt.get();
             LoaiTrangThai loaiTrangThai = loaiTrangThaiOpt.get();
 
-            // Kiểm tra xem trạng thái loại đã tồn tại chưa
+            // Kiểm tra trạng thái đã tồn tại hay chưa
             if (isTrangThaiHoaDonExist(idHoaDon, idLoaiTrangThai)) {
-                System.out.println("Trạng thái đã tồn tại cho hóa đơn này với loại trạng thái ID = " + idLoaiTrangThai);
-                return null;  // Nếu trạng thái đã tồn tại, không tiếp tục thực hiện lưu và trả về null
+                String errorMessage = "Trạng thái đã tồn tại cho hóa đơn này với loại trạng thái ID = " + idLoaiTrangThai;
+                System.out.println(errorMessage);
+
+                // Khởi tạo TrangThaiHoaDon và gán thông báo lỗi vào MoTa
+                TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                errorTrangThai.setMoTa(errorMessage);  // Gán thông báo lỗi vào MoTa
+                return List.of(errorTrangThai);  // Trả về danh sách chứa thông báo lỗi
             }
 
-            // Kiểm tra nếu trạng thái là 'Hoàn thành' (idLoaiTrangThai == 8)
-            if (idLoaiTrangThai == 8) {
-                // Kiểm tra xem hóa đơn có đang ở trạng thái 'Chờ thanh toán' (idLoaiTrangThai == 4) hay không
-                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 7); // Kiểm tra xem trạng thái 'đã xác nhận thanh toán' có tồn tại không
+            // Kiểm tra trạng thái 'Xác nhận đơn hàng' (idLoaiTrangThai == 3)
+            if (idLoaiTrangThai == 3) {
+                // Nếu trạng thái 'Chờ xác nhận' (idLoaiTrangThai == 2) không tồn tại, cho phép cập nhật
+                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 2);
                 if (!isPaymentConfirmed) {
-                    System.out.println("Không thể cập nhật trạng thái 'Hoàn thành' vì hóa đơn chưa xác nhận thanh toán.");
-                    return null; // Nếu hóa đơn chưa thanh toán, không cho phép cập nhật trạng thái hoàn thành
+                    String errorMessage = "Không thể cập nhật trạng thái 'Xác nhận đơn hàng' vì hóa đơn chưa được 'Chờ xác nhận'.";
+                    System.out.println(errorMessage);
+
+                    // Trả về thông báo lỗi
+                    TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                    errorTrangThai.setMoTa(errorMessage);  // Gán thông báo lỗi vào MoTa
+                    return List.of(errorTrangThai);  // Trả về danh sách chứa thông báo lỗi
                 }
             }
 
-            // Tạo đối tượng TrangThaiHoaDon mới
+            // Kiểm tra các trạng thái khác (4, 5, 6, 7, 8) tương tự
+            if (idLoaiTrangThai == 4) {
+                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 3);
+                if (!isPaymentConfirmed) {
+                    String errorMessage = "Không thể cập nhật trạng thái 'Chờ giao hàng' vì hóa đơn chưa được 'Xác nhận đơn hàng'.";
+                    System.out.println(errorMessage);
+
+                    // Khởi tạo TrangThaiHoaDon và gán thông báo lỗi vào MoTa
+                    TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                    errorTrangThai.setMoTa(errorMessage);
+                    return List.of(errorTrangThai);
+                }
+            }
+
+            if (idLoaiTrangThai == 5) {
+                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 4);
+                if (!isPaymentConfirmed) {
+                    String errorMessage = "Không thể cập nhật trạng thái 'Đang giao hàng' vì hóa đơn chưa được 'Chờ giao hàng'.";
+                    System.out.println(errorMessage);
+
+                    // Khởi tạo TrangThaiHoaDon và gán thông báo lỗi vào MoTa
+                    TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                    errorTrangThai.setMoTa(errorMessage);
+                    return List.of(errorTrangThai);
+                }
+            }
+
+            if (idLoaiTrangThai == 6) {
+                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 5);
+                if (!isPaymentConfirmed) {
+                    String errorMessage = "Không thể cập nhật trạng thái 'Chờ thanh toán' vì hóa đơn chưa được 'Đang giao hàng'.";
+                    System.out.println(errorMessage);
+
+                    // Khởi tạo TrangThaiHoaDon và gán thông báo lỗi vào MoTa
+                    TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                    errorTrangThai.setMoTa(errorMessage);
+                    return List.of(errorTrangThai);
+                }
+            }
+
+            if (idLoaiTrangThai == 7) {
+                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 6);
+                if (!isPaymentConfirmed) {
+                    String errorMessage = "Không thể cập nhật trạng thái 'Đã thanh toán thành công' vì hóa đơn chưa được 'Chờ thanh toán'.";
+                    System.out.println(errorMessage);
+
+                    // Khởi tạo TrangThaiHoaDon và gán thông báo lỗi vào MoTa
+                    TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                    errorTrangThai.setMoTa(errorMessage);
+                    return List.of(errorTrangThai);
+                }
+            }
+
+            if (idLoaiTrangThai == 8) {
+                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 7);
+                if (!isPaymentConfirmed) {
+                    String errorMessage = "Không thể cập nhật trạng thái 'Hoàn thành' vì hóa đơn chưa được xác nhận thanh toán.";
+                    System.out.println(errorMessage);
+
+                    // Khởi tạo TrangThaiHoaDon và gán thông báo lỗi vào MoTa
+                    TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                    errorTrangThai.setMoTa(errorMessage);
+                    return List.of(errorTrangThai);
+                }
+            }
+
+            // Sau khi các kiểm tra khác đều thành công:
             TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
             trangThaiHoaDon.setHoaDon(hoaDon);
             trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
@@ -70,13 +148,12 @@ public class TrangThaiHoaDonService {
             trangThaiHoaDon.setNgayCapNhat(new Date());
             trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
             trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
-
-            // Lưu trạng thái hóa đơn vào database
-            TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
-            System.out.println("Trạng thái hóa đơn đã được lưu: " + savedTrangThai);
-
+            // Lưu trạng thái 'Xác nhận đơn hàng' (idLoaiTrangThai == 3)
             if (idLoaiTrangThai == 3) {
-                // Nếu trạng thái là 3, thêm trạng thái 4
+                TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
+                System.out.println("Trạng thái 'Xác nhận đơn hàng' đã được lưu: " + savedTrangThai);
+
+                // Sau khi trạng thái 'Xác nhận đơn hàng' lưu thành công, lưu trạng thái 'Chờ thanh toán' (idLoaiTrangThai == 4)
                 LoaiTrangThai loaiTrangThaiThanhToan = loaiTrangThaiRepository.findById(4).orElse(null); // idLoaiTrangThai == 4: Chờ thanh toán
                 if (loaiTrangThaiThanhToan != null) {
                     TrangThaiHoaDon trangThaiThanhToan = new TrangThaiHoaDon();
@@ -89,13 +166,34 @@ public class TrangThaiHoaDonService {
                     trangThaiHoaDonRepository.save(trangThaiThanhToan);
                     System.out.println("Trạng thái 'Chờ thanh toán' đã được tạo thêm.");
                 }
-            }
 
-            return List.of(savedTrangThai);  // Trả về danh sách chứa trạng thái đã lưu
+                return List.of(savedTrangThai);
+            }
+            // Lưu trạng thái hóa đơn vào database
+            TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
+            System.out.println("Trạng thái hóa đơn đã được lưu: " + savedTrangThai);
+
+            // Kiểm tra nếu trạng thái đã được lưu thành công
+            if (savedTrangThai != null) {
+                // Trả về kết quả thành công
+                return List.of(savedTrangThai);  // Trả về danh sách chứa trạng thái đã lưu
+            } else {
+                // Trạng thái không lưu được, trả về lỗi
+                String errorMessage = "Có lỗi xảy ra khi lưu trạng thái hóa đơn.";
+                TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                errorTrangThai.setMoTa(errorMessage);
+                return List.of(errorTrangThai);  // Trả về thông báo lỗi
+            }
         }
 
-        System.out.println("Không tìm thấy hóa đơn hoặc loại trạng thái.");
-        return null;
+        // Trường hợp không tìm thấy hóa đơn hoặc loại trạng thái
+        String errorMessage = "Không tìm thấy hóa đơn hoặc loại trạng thái.";
+        System.out.println(errorMessage);
+
+        // Khởi tạo đối tượng TrangThaiHoaDon để trả về thông báo lỗi
+        TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+        errorTrangThai.setMoTa(errorMessage);  // Gán thông báo lỗi vào MoTa
+        return List.of(errorTrangThai);  // Trả về danh sách chứa thông báo lỗi
     }
 
 

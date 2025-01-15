@@ -150,30 +150,29 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             .then(function (response) {
                 console.log('Danh sách hóa đơn chưa thanh toán:', response.data);
                 $scope.unpaidInvoices = response.data;
-                // if ($scope.unpaidInvoices.length > 0) {
-                //     $scope.selectInvoice($scope.unpaidInvoices[0]);
-                // }
-                if ($scope.unpaidInvoices.length >= 5) {
-                    Swal.fire({
-                        title: 'Thông báo!',
-                        text: 'Bạn đã có 5 hóa đơn chưa thanh toán. Không thể tạo thêm hóa đơn!',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    });
-                }
             })
             .catch(function (error) {
                 console.error('Lỗi khi lấy danh sách hóa đơn chưa thanh toán:', error);
             });
     };
-
     $scope.createInvoice = function () {
-        console.log("Selected User:", $scope.selectedUser);
+        // Kiểm tra số hóa đơn chưa thanh toán
+        if ($scope.unpaidInvoices && $scope.unpaidInvoices.length >= 5) {
+            Swal.fire({
+                title: 'Thông báo!',
+                text: 'Đã đạt giới hạn tối đa 5 hóa đơn chưa thanh toán. Vui lòng thanh toán trước khi tạo hóa đơn mới.',
+                icon: 'warning',
+                confirmButtonText: 'Đóng'
+            });
+            return;
+        }
+
         var user = JSON.parse(localStorage.getItem("user"));
-        console.log(user.idNguoiDung);  // 123
-        console.log(user.tenNguoiDung); // "Nguyễn Văn A"
+        console.log(user.idNguoiDung);  // ID của nhân viên
+        console.log(user.tenNguoiDung); // Tên nhân viên
+
         // Kiểm tra xem đã chọn người dùng chưa
-        if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung) {
+        if (!$scope.selectedUser || !$scope.selectedUser.idNguoiDung || !$scope.selectedUser.tenNguoiDung) {
             Swal.fire({
                 title: 'Lỗi!',
                 text: 'Vui lòng chọn người dùng trước khi tạo hóa đơn.',
@@ -183,8 +182,17 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             return;
         }
 
+        if (!$scope.searchTerm || $scope.searchTerm.trim() === "") {
+            Swal.fire({
+                title: 'Lỗi!',
+                text: 'Vui lòng chọn người dùng trước khi tạo hóa đơn.',
+                icon: 'error',
+                confirmButtonText: 'Đóng'
+            });
+            return;
+        }
 
-        // Nếu không c  ó hóa đơn chưa thanh toán, tiếp tục tạo hóa đơn
+        // Nếu số hóa đơn chưa thanh toán hợp lệ, tiếp tục tạo hóa đơn
         let newInvoice = {
             tenNguoiNhan: $scope.selectedUser.tenNguoiDung,
             nguoiDung: { idNguoiDung: $scope.selectedUser.idNguoiDung },
@@ -628,77 +636,77 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             $scope.dsvoucher(); // Gọi lại API danh sách voucher
         }
     });
-$scope.calculateTotalPrice = function () {
-    // Tính tổng tiền chưa giảm giá
-    let originalTotalPrice = 0;
-    let discount = 0;
+    $scope.calculateTotalPrice = function () {
+        // Tính tổng tiền chưa giảm giá
+        let originalTotalPrice = 0;
+        let discount = 0;
 
-    if ($scope.cartItems && Array.isArray($scope.cartItems)) {
-        $scope.cartItems.forEach(function (item) {
-            if (item && item.soLuong && item.giaBan) {
-                originalTotalPrice += item.soLuong * item.giaBan;
-            }
-        });
-    } else {
-        console.error('Giỏ hàng không hợp lệ:', $scope.cartItems);
-    }
-
-    // Kiểm tra tổng tiền hợp lệ
-    if (isNaN(originalTotalPrice) || originalTotalPrice <= 0) {
-        console.error('Tổng tiền không hợp lệ:', originalTotalPrice);
-        $scope.totalPrice = 0;
-        $scope.selectedVoucher = null;
-        $scope.originalTotalPrice = 0;  // Đảm bảo giá trị gốc cũng được cập nhật
-        $scope.discount = 0;  // Đảm bảo giá trị giảm cũng được cập nhật
-        return;
-    }
-
-    // Đặt lại tổng tiền gốc và tổng tiền giảm
-    $scope.originalTotalPrice = originalTotalPrice;
-    $scope.discount = discount;
-
-    // Đặt lại tổng tiền
-    $scope.totalPrice = originalTotalPrice;
-
-    // Kiểm tra và áp dụng voucher nếu có
-    if ($scope.selectedVoucher) {
-        const minValue = $scope.selectedVoucher.soTienToiThieu;
-        const maxValue = $scope.selectedVoucher.giaTriToiDa;
-
-        // Kiểm tra voucher có hợp lệ với tổng tiền chưa giảm giá
-        if ($scope.totalPrice < minValue || ($scope.selectedVoucher.kieuGiamGia === false && $scope.totalPrice > maxValue)) {
-            $scope.selectedVoucher = null;
+        if ($scope.cartItems && Array.isArray($scope.cartItems)) {
+            $scope.cartItems.forEach(function (item) {
+                if (item && item.soLuong && item.giaBan) {
+                    originalTotalPrice += item.soLuong * item.giaBan;
+                }
+            });
         } else {
-            if ($scope.selectedVoucher.kieuGiamGia === false) {
-                // Giảm theo tỷ lệ phần trăm
-                discount = $scope.totalPrice * ($scope.selectedVoucher.giaTriGiamGia / 100);
-            } else {
-                // Giảm theo giá trị cố định
-                discount = $scope.selectedVoucher.giaTriGiamGia;
-            }
-
-            // Áp dụng giảm giá
-            $scope.totalPrice -= discount;
-            $scope.totalPrice = Math.max($scope.totalPrice, 0);  // Đảm bảo tổng tiền không âm
+            console.error('Giỏ hàng không hợp lệ:', $scope.cartItems);
         }
-    }
-    $scope.discount = discount;
 
-    // Lưu thông tin vào localStorage
-    const totalPriceInfo = {
-        originalTotalPrice: $scope.originalTotalPrice,
-        discount: $scope.discount,
-        totalPrice: $scope.totalPrice
+        // Kiểm tra tổng tiền hợp lệ
+        if (isNaN(originalTotalPrice) || originalTotalPrice <= 0) {
+            console.error('Tổng tiền không hợp lệ:', originalTotalPrice);
+            $scope.totalPrice = 0;
+            $scope.selectedVoucher = null;
+            $scope.originalTotalPrice = 0;  // Đảm bảo giá trị gốc cũng được cập nhật
+            $scope.discount = 0;  // Đảm bảo giá trị giảm cũng được cập nhật
+            return;
+        }
+
+        // Đặt lại tổng tiền gốc và tổng tiền giảm
+        $scope.originalTotalPrice = originalTotalPrice;
+        $scope.discount = discount;
+
+        // Đặt lại tổng tiền
+        $scope.totalPrice = originalTotalPrice;
+
+        // Kiểm tra và áp dụng voucher nếu có
+        if ($scope.selectedVoucher) {
+            const minValue = $scope.selectedVoucher.soTienToiThieu;
+            const maxValue = $scope.selectedVoucher.giaTriToiDa;
+
+            // Kiểm tra voucher có hợp lệ với tổng tiền chưa giảm giá
+            if ($scope.totalPrice < minValue || ($scope.selectedVoucher.kieuGiamGia === false && $scope.totalPrice > maxValue)) {
+                $scope.selectedVoucher = null;
+            } else {
+                if ($scope.selectedVoucher.kieuGiamGia === false) {
+                    // Giảm theo tỷ lệ phần trăm
+                    discount = $scope.totalPrice * ($scope.selectedVoucher.giaTriGiamGia / 100);
+                } else {
+                    // Giảm theo giá trị cố định
+                    discount = $scope.selectedVoucher.giaTriGiamGia;
+                }
+
+                // Áp dụng giảm giá
+                $scope.totalPrice -= discount;
+                $scope.totalPrice = Math.max($scope.totalPrice, 0);  // Đảm bảo tổng tiền không âm
+            }
+        }
+        $scope.discount = discount;
+
+        // Lưu thông tin vào localStorage
+        const totalPriceInfo = {
+            originalTotalPrice: $scope.originalTotalPrice,
+            discount: $scope.discount,
+            totalPrice: $scope.totalPrice
+        };
+
+        // Lưu thông tin vào localStorage dưới dạng chuỗi JSON
+        localStorage.setItem('totalPriceInfo', JSON.stringify(totalPriceInfo));
+
+        // Lưu riêng originalTotalPrice vào localStorage
+        localStorage.setItem('originalTotalPrice', $scope.originalTotalPrice);
+        localStorage.setItem('discount', $scope.discount);
+        console.log('Thông tin tổng tiền đã lưu vào localStorage:', totalPriceInfo);
     };
-
-    // Lưu thông tin vào localStorage dưới dạng chuỗi JSON
-    localStorage.setItem('totalPriceInfo', JSON.stringify(totalPriceInfo));
-
-    // Lưu riêng originalTotalPrice vào localStorage
-    localStorage.setItem('originalTotalPrice', $scope.originalTotalPrice);
-
-    console.log('Thông tin tổng tiền đã lưu vào localStorage:', totalPriceInfo);
-};
 
 
 
@@ -797,29 +805,26 @@ $scope.calculateTotalPrice = function () {
 
 
     $scope.confirmVoucher = function () {
-        if ($scope.selectedVoucher) {
-            // Lấy giá trị voucher và tổng tiền hiện tại
-            const voucher = $scope.selectedVoucher;
-            console.log('Selected Voucher:', $scope.selectedVoucher);
-            console.log('Total Amount:',  $scope.totalPrice);
-            if (!voucher.kieuGiamGia &&  $scope.totalPrice > voucher.giaTriToiDa) {
-                console.log('Validation failed: totalAmount > giaTriToiDa');
-            }
+        if ($scope.tempVoucher) {
+            const voucher = $scope.tempVoucher;
+
+            // Kiểm tra giá trị tối thiểu
             if ($scope.totalPrice < voucher.soTienToiThieu) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Lỗi!',
-                    text: `Đơn hàng phải có giá trị từ ${voucher.soTienToiThieu.toLocaleString()} VND để áp dụng voucher.` ,
+                    text: `Đơn hàng phải có giá trị từ ${voucher.soTienToiThieu.toLocaleString()} VND để áp dụng voucher.`,
                     confirmButtonText: 'OK',
                     customClass: {
                         confirmButton: 'btn btn-danger'
                     },
                     buttonsStyling: false
                 });
-                return; // Dừng thực thi nếu không hợp lệ
-            }       
-            // Kiểm tra nếu kiểu giảm giá là `false` và giá trị đơn hàng vượt quá giá trị tối đa
-            if (!voucher.kieuGiamGia &&  $scope.totalPrice > voucher.giaTriToiDa) {
+                return;
+            }
+
+            // Kiểm tra giá trị tối đa nếu giảm giá là phần trăm
+            if (!voucher.kieuGiamGia && $scope.totalPrice > voucher.giaTriToiDa) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Lỗi!',
@@ -830,10 +835,15 @@ $scope.calculateTotalPrice = function () {
                     },
                     buttonsStyling: false
                 });
-                return; // Dừng thực thi nếu không hợp lệ
+                return;
             }
-    
-            // Nếu điều kiện hợp lệ, hiển thị thông báo thành công
+
+            // Áp dụng voucher thành công
+            $scope.selectedVoucher = $scope.tempVoucher; // Gán voucher chính thức
+            $scope.tempVoucher = null; // Reset voucher tạm
+            console.log("Confirmed Voucher:", $scope.selectedVoucher);
+            localStorage.setItem('voucherdachon', JSON.stringify($scope.selectedVoucher));
+            // Thông báo thành công
             Swal.fire({
                 icon: 'success',
                 title: 'Thành công!',
@@ -845,12 +855,14 @@ $scope.calculateTotalPrice = function () {
                 buttonsStyling: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Đóng modal
-                    $('#voucherModal').modal('hide'); // Đóng modal bằng jQuery
+                    // Đóng modal nếu cần
+                    $('#voucherModal').modal('hide');
                 }
             });
+
+            // Cập nhật tổng giá trị đơn hàng
+            $scope.calculateTotalPrice();
         } else {
-            // Hiển thị lỗi nếu chưa chọn voucher
             Swal.fire({
                 icon: 'error',
                 title: 'Lỗi!',
@@ -862,40 +874,40 @@ $scope.calculateTotalPrice = function () {
                 buttonsStyling: false
             });
         }
-    
-        $scope.calculateTotalPrice(); // Cập nhật tổng giá
     };
-    
+
     $scope.removeVoucher = function () {
         // Xóa voucher đã chọn
         $scope.selectedVoucher = null;
         $scope.voucherCode = '';  // Xóa mã voucher (nếu có)
-    
+
         // Cập nhật lại tổng tiền
         $scope.discount = 0;
         $scope.totalPrice = $scope.originalTotalPrice; // Đặt lại tổng tiền về giá trị gốc
-    
+
         // Cập nhật lại thông tin trong localStorage
         const totalPriceInfo = {
             originalTotalPrice: $scope.originalTotalPrice,
             discount: $scope.discount,
             totalPrice: $scope.totalPrice
         };
-    
+
         // Lưu thông tin mới vào localStorage
         localStorage.setItem('totalPriceInfo', JSON.stringify(totalPriceInfo));
         localStorage.removeItem('selectedVoucher'); // Xóa voucher đã lưu trong localStorage
-    
+
         console.log('Voucher đã bị xóa và giao diện đã được cập nhật.');
     };
-    
+
+    $scope.tempVoucher = null; // Biến tạm để lưu voucher trước khi xác nhận
+    $scope.selectedVoucher = null; // Voucher chính thức sau khi xác nhận
     $scope.selectVoucher = function (voucher) {
         if (voucher.isUsable) {
-            $scope.selectedVoucher = voucher;
+            $scope.tempVoucher = voucher;
+
             $scope.voucherCode = voucher.maVoucher;  // Gán mã voucher vào input (nếu cần)
             $scope.voucherError = '';  // Reset lỗi
             console.log("Selected Voucher:", $scope.selectedVoucher);
-            
             // Lưu voucher vào localStorage
             localStorage.setItem('selectedVoucher', JSON.stringify($scope.selectedVoucher)); // Lưu đối tượng voucher vào localStorage
             localStorage.setItem('voucherCode', $scope.voucherCode); // Lưu mã voucher vào localStorage nếu cần
@@ -903,7 +915,6 @@ $scope.calculateTotalPrice = function () {
             $scope.voucherError = 'Voucher này không thể sử dụng.';
         }
     };
-    
 
 
 
@@ -1034,6 +1045,7 @@ $scope.calculateTotalPrice = function () {
                         // Load lại danh sách sản phẩm và tính tổng tiền
                         $scope.getProductDetails();
                         $scope.calculateTotalPrice();
+                        $scope.getCartItems();
                     })
                     .catch(function (error) {
                         console.error('Lỗi khi lấy thông tin sản phẩm chi tiết:', error);
@@ -1093,12 +1105,30 @@ $scope.calculateTotalPrice = function () {
     $scope.createOrderStatus = function () {
         var hoaDonId = JSON.parse(localStorage.getItem('selectedInvoice')).idHoaDon;
         var user = JSON.parse(localStorage.getItem('user'));
+
+        // Lấy danh sách trạng thái đã tạo từ localStorage
+        var createdStatuses = JSON.parse(localStorage.getItem('createdOrderStatuses')) || [];
+
+        if (createdStatuses.includes(hoaDonId)) {
+            console.log("Trạng thái hóa đơn đã tồn tại!");
+            return; // Dừng lại, không gọi API
+        }
+
+        // Gửi yêu cầu tạo trạng thái hóa đơn
         $http.post('http://localhost:8080/api/admin/ban_hang/create-trang-thai/' + hoaDonId + '/' + user.idNguoiDung)
             .then(function (response) {
                 console.log("Trạng thái hóa đơn đã được tạo!");
+
+                // Lưu trạng thái hóa đơn vào danh sách và cập nhật localStorage
+                createdStatuses.push(hoaDonId);
+                localStorage.setItem('createdOrderStatuses', JSON.stringify(createdStatuses));
+
                 // Sau khi tạo trạng thái thành công, mở modal thanh toán
                 $('#paymentModal').modal('show');
             })
+            .catch(function (error) {
+                console.error("Lỗi khi tạo trạng thái hóa đơn:", error);
+            });
     };
 
     $scope.TEST = async function () {
@@ -1211,10 +1241,98 @@ $scope.calculateTotalPrice = function () {
                 console.error('Lỗi khi tạo lịch sử thanh toán:', error);
             });
     };
-
+    $scope.checkVouchersValidity = async function(vouchers) {
+        // Mảng lưu Promise kiểm tra tính hợp lệ của các voucher
+        const promises = vouchers.map(async (voucher) => {
+            try {
+                // Gửi yêu cầu để kiểm tra voucher từ API
+                const response = await $http.get(`http://localhost:8080/api/admin/ban_hang/vouchers/${voucher.idVoucher}`);
+                const voucherData = response.data;
+    
+                // Kiểm tra nếu voucher không hợp lệ
+                if (!voucherData.isUsable || voucherData.soLuong <= 0) {
+                    // Nếu voucher hết số lượng hoặc không hợp lệ
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Voucher không hợp lệ',
+                        text: 'Rất tiếc, voucher này đã hết số lượng và không thể sử dụng nữa.',
+                        confirmButtonText: 'OK'
+                    });
+                    return false; // Trả về false để dừng lại
+                }
+    
+                // Kiểm tra số lượng voucher là 1 hoặc lớn hơn
+                if (voucherData.soLuong > 1) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Voucher không hợp lệ',
+                        text: 'Số lượng voucher không hợp lệ, vui lòng kiểm tra lại.',
+                        confirmButtonText: 'OK'
+                    });
+                    return false; // Trả về false nếu số lượng không hợp lệ
+                }
+    
+                // Kiểm tra trạng thái giảm giá của voucher
+                if (voucherData.trangThaiGiamGia.idTrangThaiGiamGia === 2) { // Giả sử trạng thái 2 là "đã bị xóa"
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Voucher không hợp lệ',
+                        text: 'Voucher này đã bị xóa bởi người bán và không thể sử dụng để thanh toán.',
+                        confirmButtonText: 'OK'
+                    });
+                    return false; // Trả về false nếu voucher bị xóa
+                }
+    
+                // Nếu voucher hợp lệ
+                return true;
+            } catch (error) {
+                // Xử lý lỗi nếu có
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi khi kiểm tra voucher',
+                    text: 'Đã xảy ra lỗi khi kiểm tra tính hợp lệ của voucher. Vui lòng thử lại.',
+                    confirmButtonText: 'OK'
+                });
+                return false; // Trả về false nếu có lỗi
+            }
+        });
+        
+        // Sử dụng Promise.allSettled để kiểm tra tất cả các voucher
+        const results = await Promise.allSettled(promises);
+        
+        // Kiểm tra nếu bất kỳ voucher nào không hợp lệ
+        const isValid = results.every(result => result.status === 'fulfilled' && result.value === true);
+        
+        if (!isValid) {
+            // Nếu có voucher không hợp lệ, dừng lại và trả về false
+            console.log('Một hoặc nhiều voucher không hợp lệ.');
+            return false;
+        }
+        
+        // Tất cả voucher hợp lệ
+        console.log('Tất cả voucher hợp lệ.');
+        return true;
+    };
+    
+    
+    
+    
+    
     $scope.createHoaDonChiTiet = async function () {
         // Kiểm tra xác nhận thanh toán
         if ($scope.xacNhanThanhToan()) {
+            const voucher = JSON.parse(localStorage.getItem('voucherdachon'));
+
+        // Kiểm tra nếu không có voucher hoặc voucher không hợp lệ
+        if (!voucher || voucher.soLuong <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Voucher hết số lượng',
+                text: 'Voucher này đã hết số lượng và không thể sử dụng nữa.',
+                confirmButtonText: 'OK'
+            });
+            return; // Dừng lại nếu không có voucher hoặc số lượng <= 0
+        }
             // Nếu phương thức thanh toán là PayOS (ví dụ, phương thức thanh toán 3)
             if ($scope.selectedPhuongThucThanhToan === 3) {
                 await $scope.TEST(); // Gọi hàm xử lý PayOS
@@ -1239,9 +1357,31 @@ $scope.calculateTotalPrice = function () {
                 }
 
                 const userId = userFromStorage.idNguoiDung;
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
 
-                // Cập nhật trạng thái hóa đơn
-                await $scope.updateInvoiceStatus();
+                for (const item of cartItems) {
+                    const idSanPhamChiTiet = item.idSanPhamChiTiet;
+                    const tenSanPham = item.tenSanPham;
+                    // Gọi API kiểm tra trạng thái sản phẩm
+                    try {
+                        const response = await $http.get(`http://localhost:8080/api/admin/ban_hang/check-trang-thai/${idSanPhamChiTiet}`);
+
+                        // Kiểm tra mã trạng thái HTTP
+                        if (response.status === 200) {
+                            // Sản phẩm đang hoạt động, tiếp tục xử lý
+                            console.log(`Sản phẩm ID ${idSanPhamChiTiet} đang hoạt động.`);
+                        }
+                    } catch (error) {
+                        // Nếu có lỗi khi gọi API
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Sản phẩm ngừng bán',
+                            text: `Sản phẩm "${tenSanPham}" đã ngừng bán.!`,
+                        });
+                        return;
+                    }
+                }
+
                 await $scope.createPaymentHistory();
                 // Chạy các tác vụ không phụ thuộc đồng thời
                 await Promise.all([
@@ -1346,7 +1486,14 @@ $scope.calculateTotalPrice = function () {
             // Cập nhật lại số lượng voucher trong giao diện người dùng
             $scope.selectedVoucher.soLuong--;
         } catch (error) {
-            console.error('Lỗi khi trừ số lượng voucher:', error);
+            if (error.response && error.response.status === 400) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Voucher không hợp lệ!',
+                    text: 'Voucher này không thể được phát hành hoặc đã hết hạn.',
+                    confirmButtonText: 'Thử lại'
+                });
+            } 
         }
     };
     // Hàm reset dữ liệu sau khi tạo hóa đơn
@@ -1455,9 +1602,13 @@ $scope.calculateTotalPrice = function () {
 
 
     // Định dạng số thành tiền tệ
+    // Định dạng số thành tiền tệ (VNĐ) không có từ 'VND' phía sau
     $scope.formatCurrency = function (value) {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' })
+            .format(value)
+            .replace('₫', ' VNĐ'); // Chuyển ký hiệu "₫" thành " VNĐ"
     };
+
     $scope.printInvoice = function () {
         // Lấy dữ liệu từ localStorage
         const cartItems = JSON.parse(sessionStorage.getItem('giohang')) || [];
@@ -1467,89 +1618,92 @@ $scope.calculateTotalPrice = function () {
         const user = JSON.parse(localStorage.getItem('user')) || {};
         const selectedPaymentMethod = JSON.parse(localStorage.getItem('selectedPaymentMethod')) || {};
         const paymentInfo = JSON.parse(localStorage.getItem('paymentInfo')) || {};
-
+        const discount = localStorage.getItem('discount') || 0;
+        const voucherCode = localStorage.getItem('voucherCode') || 'N/A';
+        let formattedDate = 'N/A'; // Mặc định là 'N/A'
+        if (selectedInvoice.ngayTao) {
+            const dateObj = new Date(selectedInvoice.ngayTao);
+            formattedDate = dateObj.getDate().toString().padStart(2, '0') + '/' +
+                (dateObj.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                dateObj.getFullYear();
+        }
         // Tạo HTML hóa đơn từ dữ liệu
         const invoiceHtml = `
-            <div style="font-family: 'Roboto', sans-serif; padding: 20px; color: #333; background-color: #fff; width: 100%; max-width: 800px; margin: 0 auto; border: 1px solid #ddd; border-radius: 10px;">
-                <!-- Thông tin cửa hàng -->
-                <div style="text-align: center; margin-bottom: 30px; color: #333;">
-                    <img src="/view-admin/assets/image/favicon1.png" alt="Logo" style="max-width: 150px; margin-bottom: 10px;">
-                    <h2 style="font-size: 28px; font-weight: bold; color: #1E3D58;">NB Fashion</h2>
-                    <p style="font-size: 16px; margin: 5px 0;">Địa Chỉ: 32 Cổ Nhuế 2 - Bắc Từ Liêm - Hà Nội</p>
-                    <p style="font-size: 16px; margin: 5px 0;">Số Điện Thoại: 0989899999</p>
-                </div>
-              
-                <hr style="border: 1px solid #1E3D58; margin-bottom: 30px;">
-                <!-- Thông tin khách hàng -->
-                <div style="font-size: 16px; margin-bottom: 20px;">
-                    <p><strong style="color: #1E3D58;">Tên Nhân Viên:</strong> ${user.tenNguoiDung || 'N/A'}</p>
-                </div>
-                <div style="font-size: 16px; margin-bottom: 20px;">
-                    <p><strong style="color: #1E3D58;">Tên Khách Hàng:</strong> ${selectedUser.tenNguoiDung || 'N/A'}</p>
-                    <p><strong style="color: #1E3D58;">Số Điện Thoại:</strong> ${selectedUser.sdt || 'N/A'}</p>
-                </div>
+       <div style="font-family: 'Roboto', sans-serif; padding: 20px; color: #333; background-color: #fff; width: 100%; max-width: 800px; margin: 0 auto; border: 1px solid #ddd; border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+    <!-- Thông tin cửa hàng -->
+    <div style="text-align: center; margin-bottom: 30px; color: #333;">
+        <img src="/view-admin/assets/image/favicon1.png" alt="Logo" style="max-width: 150px; margin-bottom: 10px;">
+        <h2 style="font-size: 32px; font-weight: bold; color: #1E3D58; margin-bottom: 5px;">NB Fashion</h2>
+        <p style="font-size: 16px; margin: 5px 0; color: #555;">Địa Chỉ: 32 Cổ Nhuế 2 - Bắc Từ Liêm - Hà Nội</p>
+        <p style="font-size: 16px; margin: 5px 0; color: #555;">Số Điện Thoại: 0989899999</p>
+    </div>
     
-                <!-- Thông tin hóa đơn -->
-                <div style="font-size: 16px; margin-bottom: 20px;">
-                    <p><strong style="color: #1E3D58;">Mã Hóa Đơn:</strong> ${selectedInvoice.maHoaDon || 'N/A'}</p>
-                    <p><strong style="color: #1E3D58;">Ngày Tạo:</strong> ${selectedInvoice.ngayTao || 'N/A'}</p>
-                    <div style="font-size: 14px; margin-top: 10px;">
-                        <p><strong style="color: #1E3D58;">Hình thức thanh toán:</strong> ${selectedPaymentMethod.tenPhuongThuc || 'Chưa rõ'}</p>
-                    </div>
-                </div>
+    <hr style="border: 1px solid #1E3D58; margin-bottom: 30px;">
     
-                <!-- Chi tiết sản phẩm -->
-                <p style="font-size: 18px; font-weight: bold; color: #1E3D58; margin-top: 30px; text-align: center;">Chi Tiết Sản Phẩm</p>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #f9f9f9;">
-                    <thead style="background-color: #1E3D58; color: #fff;">
-                        <tr>
-                            <th style="padding: 12px; text-align: center; font-size: 14px;">#</th>
-                            <th style="padding: 12px; text-align: left; font-size: 14px;">Sản Phẩm</th>
-                            <th style="padding: 12px; text-align: left; font-size: 14px;">chất liệu</th>
-                            <th style="padding: 12px; text-align: left; font-size: 14px;">Màu sắc</th>
-                            <th style="padding: 12px; text-align: left; font-size: 14px;">Kích thước</th>
-                            <th style="padding: 12px; text-align: center; font-size: 14px;">Số Lượng</th>
-                            <th style="padding: 12px; text-align: right; font-size: 14px;">Đơn Giá</th>
-                            <th style="padding: 12px; text-align: right; font-size: 14px;">Tổng Tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${cartItems.map((item, index) => `
-                            <tr style="border-bottom: 1px solid #ddd;">
-                                <td style="padding: 10px; text-align: center; font-size: 14px;">${index + 1}</td>
-                                <td style="padding: 10px; font-size: 14px;">${item.tenSanPham || 'N/A'}</td>
-                                <td style="padding: 10px; font-size: 14px;">${item.chatLieu || 'N/A'}</td>
-                                <td style="padding: 10px; font-size: 14px;">${item.mauSac || 'N/A'}</td>
-                                <td style="padding: 10px; font-size: 14px;">${item.kichThuoc || 'N/A'}</td>
-                                <td style="padding: 10px; text-align: center; font-size: 14px;">${item.soLuong || 0}</td>
-                                <td style="padding: 10px; text-align: right; font-size: 14px;">${$scope.formatCurrency(item.giaBan)}</td>
-                                <td style="padding: 10px; text-align: right; font-size: 14px;">${$scope.formatCurrency(item.soLuong * item.giaBan)}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+    <!-- Thông tin khách hàng và nhân viên -->
+    <div style="display: flex; justify-content: space-between; font-size: 16px; color: #444; margin-bottom: 20px;">
+    <!-- Thông tin khách hàng và nhân viên bên trái -->
+    <div style="width: 48%; padding-right: 20px;">
+        <p><strong style="color: #1E3D58;">Tên Nhân Viên:</strong> ${user.tenNguoiDung || 'N/A'}</p>
+        <p><strong style="color: #1E3D58;">Tên Khách Hàng:</strong> ${selectedUser.tenNguoiDung || 'N/A'}</p>
+        <p><strong style="color: #1E3D58;">Số Điện Thoại:</strong> ${selectedUser.sdt || 'N/A'}</p>
+        <p><strong style="color: #1E3D58;">Mã Voucher:</strong> ${voucherCode}</p>
+    </div>
     
-                <!-- Tổng tiền và các khoản phí -->
-                <div style="text-align: right; font-weight: bold; margin-top: 30px; font-size: 18px; color: #1E3D58;">
-                    <p><strong>Thuế VAT (10%):</strong> ${$scope.formatCurrency(totalPriceInfo.vat || 0)}</p>
-                    <p><strong>Phí Vận Chuyển:</strong> ${$scope.formatCurrency(totalPriceInfo.shippingFee || 0)}</p>
-                    <p><strong>Tổng Cộng:</strong> ${$scope.formatCurrency(totalPriceInfo.totalPrice || 0)}</p>
-                </div>
-    
-                <!-- Thông tin thanh toán -->
+    <!-- Thông tin hóa đơn bên phải -->
+    <div style="width: 48%; padding-left: 20px;">
+        <p><strong style="color: #1E3D58;">Mã Hóa Đơn:</strong> ${selectedInvoice.maHoaDon || 'N/A'}</p>
+        <p><strong style="color: #1E3D58;">Ngày Tạo:</strong> ${formattedDate}</p>
+        <p><strong style="color: #1E3D58;">Hình thức thanh toán:</strong> ${selectedPaymentMethod.tenPhuongThuc || 'Chưa rõ'}</p>
+       
+    </div>
+</div>
 
-    
-                <!-- Mã vạch -->
-                <div style="text-align: center; margin-top: 30px;">
-                    <img src="https://example.com/barcode/${selectedInvoice.maHoaDon}" alt="Mã vạch" style="width: 180px;">
-                </div>
-    
-                <!-- Lời cảm ơn -->
-                <div style="text-align: center; margin-top: 40px; font-size: 16px; font-style: italic; color: #333;">
-                    <p>Cảm ơn bạn đã mua sắm tại NB Fashion. Chúc bạn có một ngày tốt lành!</p>
-                </div>
-            </div>
-        `;
+
+    <!-- Chi tiết sản phẩm -->
+    <h3 style="font-size: 20px; font-weight: bold; color: #1E3D58; text-align: center; margin-top: 30px;">Chi Tiết Sản Phẩm</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #f9f9f9; border-radius: 8px; overflow: hidden;">
+        <thead style="background-color: #1E3D58; color: #fff;">
+            <tr>
+                <th style="padding: 12px; text-align: center; font-size: 14px;">#</th>
+                <th style="padding: 12px; text-align: left; font-size: 14px;">Sản Phẩm</th>
+                <th style="padding: 12px; text-align: left; font-size: 14px;">Chất Liệu</th>
+                <th style="padding: 12px; text-align: left; font-size: 14px;">Màu Sắc</th>
+<th style="padding: 12px; text-align: left; font-size: 14px;">Kích Thước</th>
+                <th style="padding: 12px; text-align: center; font-size: 14px;">Số Lượng</th>
+                <th style="padding: 12px; text-align: right; font-size: 14px;">Đơn Giá</th>
+                <th style="padding: 12px; text-align: right; font-size: 14px;">Tổng Tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${cartItems.map((item, index) => `
+                <tr style="border-bottom: 1px solid #ddd; text-align: center;">
+                    <td style="padding: 10px; font-size: 14px;">${index + 1}</td>
+                    <td style="padding: 10px; font-size: 14px;">${item.tenSanPham || 'N/A'}</td>
+                    <td style="padding: 10px; font-size: 14px;">${item.chatLieu || 'N/A'}</td>
+                    <td style="padding: 10px; font-size: 14px;">${item.mauSac || 'N/A'}</td>
+                    <td style="padding: 10px; font-size: 14px;">${item.kichThuoc || 'N/A'}</td>
+                    <td style="padding: 10px; text-align: center; font-size: 14px;">${item.soLuong || 0}</td>
+                    <td style="padding: 10px; text-align: right; font-size: 14px;">${$scope.formatCurrency(item.giaBan)}</td>
+                    <td style="padding: 10px; text-align: right; font-size: 14px;">${$scope.formatCurrency(item.soLuong * item.giaBan)}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    </table>
+
+    <!-- Tổng tiền và các khoản phí -->
+    <div style="text-align: right; font-weight: bold; margin-top: 30px; font-size: 18px; color: #1E3D58;">
+        <p><strong>Giảm Giá:</strong> ${$scope.formatCurrency(discount)}</p>
+        <p><strong>Tổng Cộng:</strong> ${$scope.formatCurrency(totalPriceInfo.totalPrice || 0)}</p>
+    </div>
+
+    <!-- Lời cảm ơn -->
+    <div style="text-align: center; margin-top: 40px; font-size: 16px; font-style: italic; color: #333;">
+        <p>Cảm ơn bạn đã mua sắm tại NB Fashion. Chúc bạn có một ngày tuyệt vời!</p>
+    </div>
+</div>
+
+    `;
 
         // Tạo iframe tạm thời để in
         const iframe = document.createElement('iframe');
@@ -1594,7 +1748,7 @@ $scope.calculateTotalPrice = function () {
             text: 'Cảm ơn bạn đã mua sắm tại NB Fashion.',
             confirmButtonText: 'Đóng'
         });
-
+        localStorage.removeItem('voucherCode');
         // Xóa giỏ hàng trong sessionStorage sau khi in
         sessionStorage.removeItem('giohang');
 
@@ -1616,6 +1770,7 @@ $scope.calculateTotalPrice = function () {
         console.log('Đóng modal');
         $scope.isGiaoHang = false;
     };
+    $scope.selectedInvoice = { maHoaDon: 0 };
     $scope.customerPaid = null;
     $scope.getProductDetails();
     $scope.getUnpaidInvoices();

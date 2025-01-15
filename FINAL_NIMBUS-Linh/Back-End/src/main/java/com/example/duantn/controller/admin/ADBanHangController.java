@@ -1,5 +1,6 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.dto.VoucherDTO;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.entity.Voucher;
@@ -153,6 +154,18 @@ public class ADBanHangController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    @GetMapping("/check-trang-thai/{idSanPhamChiTiet}")
+    public ResponseEntity<Void> checkTrangThai(@PathVariable("idSanPhamChiTiet") int idSanPhamChiTiet) {
+        boolean isAvailable = sanPhamService.checkTrangThaiSanPhamByChiTiet(idSanPhamChiTiet);
 
-
+        if (isAvailable) {
+            return ResponseEntity.ok().build(); // Trả về 200 nếu sản phẩm đang hoạt động
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    @GetMapping("/vouchers/{idVoucher}")
+    public VoucherDTO getVoucherById(@PathVariable("idVoucher") Integer idVoucher) {
+        return voucherService.getVoucherByIdhaha(idVoucher);
+    }
 }

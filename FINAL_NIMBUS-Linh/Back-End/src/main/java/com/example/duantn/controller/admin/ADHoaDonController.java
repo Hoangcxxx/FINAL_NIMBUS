@@ -40,7 +40,14 @@ public class ADHoaDonController {
         return results.stream().map(this::mapHoaDon).collect(Collectors.toList());
     }
 
-
+    // API tìm kiếm hóa đơn theo mã hóa đơn
+    // API tìm kiếm hóa đơn theo mã hóa đơn
+    @GetMapping("/search")
+    public ResponseEntity<List<Map<String, Object>>> searchHoaDon(@RequestParam("maHoaDon") String maHoaDon) {
+        List<Object[]> hoaDons = hoaDonService.searchHoaDonByMaHoaDon(maHoaDon);
+        List<Map<String, Object>> filteredProducts = mapHoaDons(hoaDons);
+        return ResponseEntity.ok(filteredProducts); // Trả về ResponseEntity
+    }
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllThongKe() {
         List<Object[]> hoaDons = hoaDonService.getAllHoaDon();
@@ -166,7 +173,13 @@ public class ADHoaDonController {
             } else {
                 result.put("trangThaiHoaDon", "Chưa có trạng thái");
             }
-
+// Thêm thông tin về tỉnh, huyện, xã
+            DiaChiVanChuyen diaChiVanChuyen = hoaDon.getDiaChiVanChuyen();
+            if (diaChiVanChuyen != null) {
+                result.put("tinh", diaChiVanChuyen.getTinh() != null ? diaChiVanChuyen.getTinh().getTenTinh() : null);
+                result.put("huyen", diaChiVanChuyen.getHuyen() != null ? diaChiVanChuyen.getHuyen().getTenHuyen() : null);
+                result.put("xa", diaChiVanChuyen.getXa() != null ? diaChiVanChuyen.getXa().getTenXa() : null);
+            }
             return ResponseEntity.ok(result);
         } else {
             // Trả về lỗi nếu không tìm thấy hóa đơn
@@ -179,27 +192,61 @@ public class ADHoaDonController {
         return new ResponseEntity<>(LoaiTrangThaiList, HttpStatus.OK);
     }
 
+
+
+
+
+
+
     @PostMapping("/updateLoaiTrangThai")
     public ResponseEntity<Map<String, Object>> saveTrangThaiHoaDon(@RequestParam Integer idHoaDon,
                                                                    @RequestParam Integer idLoaiTrangThai,
                                                                    @RequestParam Integer idNhanVien) {
         System.out.println("Nhận yêu cầu cập nhật trạng thái hóa đơn với ID Hóa đơn: " + idHoaDon + " và ID Loại trạng thái: " + idLoaiTrangThai);
 
+        // Gọi service để lưu trạng thái hóa đơn
         List<TrangThaiHoaDon> results = trangThaiHoaDonService.saveTrangThaiHoaDon(idHoaDon, idLoaiTrangThai, idNhanVien);
 
         Map<String, Object> response = new HashMap<>();
         if (results == null || results.isEmpty()) {
-            System.out.println("Không thể tạo trạng thái vì nó đã tồn tại hoặc có lỗi xảy ra.");
-            response.put("message", "Không thể tạo trạng thái hóa đơn.");
+            // Nếu không có kết quả hợp lệ, trả về lỗi chung
+            response.put("message", "Có lỗi xảy ra khi lưu trạng thái hóa đơn.");
             response.put("success", false);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } else {
-            System.out.println("Trạng thái hóa đơn đã được lưu thành công.");
-            response.put("message", "Trạng thái hóa đơn đã được lưu thành công.");
-            response.put("success", true);
-            return ResponseEntity.ok(response);
+            // Kiểm tra xem có thông báo lỗi hay không
+            String errorMessage = results.get(0).getMoTa();
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                // Kiểm tra nếu là thông báo thành công
+                if (errorMessage.equals("Khách hàng đã thanh toán thành công.") ||
+                        errorMessage.equals("Đơn hàng đã được giao đến khách hàng thành công.") ||
+                        errorMessage.equals("Đơn hàng đang được vận chuyển và trên đường giao đến khách hàng.") ||
+                        errorMessage.equals("Đơn hàng đã được vận chuyển nhưng chưa thanh toán.") ||
+                        errorMessage.equals("Người bán đã xác nhận đơn hàng.") ||
+                        errorMessage.equals("Đơn hàng đã được thanh toán thành công và đang chờ giao đến khách hàng.")) {
+                    response.put("message", errorMessage);
+                    response.put("success", true);  // Trả về success true
+                    return ResponseEntity.ok(response);
+                }
+
+                response.put("message", errorMessage);
+                response.put("success", false);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);  // Trả về lỗi chi tiết
+            } else {
+                response.put("message", "Trạng thái hóa đơn đã được lưu thành công.");
+                response.put("success", true);
+                return ResponseEntity.ok(response);  // Trả về thành công
+            }
         }
     }
+
+
+
+
+
+
+
+
 
     private Map<String, Object> mapTrangThaiHoaDon(Object[] row) {
         Map<String, Object> map = new HashMap<>();

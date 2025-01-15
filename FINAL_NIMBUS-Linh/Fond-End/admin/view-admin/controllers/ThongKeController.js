@@ -1,6 +1,6 @@
 window.ThongKeController = function ($scope, $http) {
     $scope.tongSoLuongBanRa = 0; // Biến để lưu tổng số lượng bán ra
-
+    $scope.dsThongKeTrangThai = [];
     $scope.dsSanPhamBanChay = [];
     // Lấy dữ liệu từ API
     $http.get('http://localhost:8080/api/admin/thong_ke/getAllThongKe')
@@ -88,25 +88,48 @@ window.ThongKeController = function ($scope, $http) {
         .catch(function (error) {
             console.error("Lỗi khi lấy tổng số lượng bán ra:", error);
         });
-    // Chart.js Pie Chart Example
-    const ctx = document.getElementById('orderChart').getContext('2d');
-    const orderChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Đơn Hàng Chờ Xử Lý', 'Đang Giao', 'Đã Hoàn Thành', 'Bị Hủy'],
-            datasets: [{
-                data: [10, 15, 40, 5],
-                backgroundColor: ['#FFCE56', '#36A2EB', '#4BC0C0', '#FF6384']
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
+
+    // Lấy dữ liệu từ API tổng hợp số lượng trạng thái hóa đơn
+    $http.get('http://localhost:8080/api/admin/thong_ke/tong_so_luong_trang_thai_hoa_don')
+        .then(function (response) {
+            // Lưu dữ liệu trả về vào biến $scope.dsThongKeTrangThai
+            $scope.dsThongKeTrangThai = response.data;
+
+            // Dữ liệu cho biểu đồ
+            const labels = [];
+            const data = [];
+            const backgroundColor = ['#FFCE56', '#4BC0C0', '#FF6384', '#FF5733', '#8E44AD', '#20c997']; // Màu sắc cho từng trạng thái
+
+            // Lặp qua dữ liệu và chuẩn bị labels và data cho biểu đồ
+            $scope.dsThongKeTrangThai.forEach(item => {
+                labels.push(item.tenTrangThai);
+                data.push(item.soLuongHoaDon);
+            });
+
+            // Lấy biểu đồ canvas và vẽ biểu đồ
+            const ctx = document.getElementById('orderChart').getContext('2d');
+            const orderChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: backgroundColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
                 }
-            }
-        }
-    });
+            });
+        })
+        .catch(function (error) {
+            console.error("Lỗi khi lấy dữ liệu thống kê trạng thái hóa đơn:", error);
+        });
+
 
 };

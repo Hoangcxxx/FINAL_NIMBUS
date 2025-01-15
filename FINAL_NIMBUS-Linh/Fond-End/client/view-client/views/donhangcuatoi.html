@@ -27,7 +27,21 @@
             <div class="tab-content shadow-sm p-4 mb-5 bg-white rounded">
                 <div class="tab-pane fade show active" id="dashboard">
                     <h4 class="mt-4 text-primary">Đơn hàng của bạn</h4>
-                    <div class="card shadow-sm p-3">
+                    <div>
+                        <!-- Dropdown để chọn trạng thái -->
+                        <label for="statusFilter">Lọc theo trạng thái:</label>
+                        <select id="statusFilter" class="form-select" ng-model="selectedStatus">
+                            <option value="">Tất cả</option>
+                            <option value="Chờ xác nhận">Chờ xác nhận</option>
+                            <option value="Chờ Thanh Toán">Chờ Thanh Toán</option>
+                            <option value="Chờ giao hàng">Chờ giao hàng</option>
+                            <option value="Thanh toán thành công">Thanh toán thành công</option>
+                            <option value="Hoàn thành">Hoàn thành</option>
+                        </select>
+                    </div>
+
+                    <!-- Phần bảng có thanh cuộn -->
+                    <div class="table-scrollable" style="max-height: 300px; overflow-y: auto;">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -39,8 +53,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Hiển thị danh sách đơn hàng -->
-                                <tr ng-repeat="hoaDon in orderData">
+                                <!-- Hiển thị danh sách đơn hàng với bộ lọc trạng thái -->
+                                <tr
+                                    ng-repeat="hoaDon in orderData | filter:{tenLoaiTrangThai:selectedStatus} | limitTo: 100">
                                     <td>{{ hoaDon.maHoaDon }}</td>
                                     <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
                                     <td>{{ hoaDon.thanhTien | currency:"":0 }} VND</td>
@@ -54,7 +69,6 @@
                                             Chi tiết
                                         </button>
                                     </td>
-
                                 </tr>
 
                                 <!-- Trường hợp không có đơn hàng -->
@@ -65,6 +79,7 @@
                         </table>
                     </div>
                 </div>
+
 
                 <!-- Modal Chi Tiết Đơn Hàng -->
                 <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="modalspcn"
@@ -96,10 +111,10 @@
                                         <p>
                                     </div>
 
-                                    <p><strong class="text-muted">Địa chỉ:</strong> {{
-                                        orderHieu.tinh }},
-                                        {{ orderHieu.huyen }}, {{ orderHieu.xa }}</p>
-                                    <p><strong class="text-muted">Địa chỉ cụ thể:</strong> {{ orderHieu.diaChi }}</p>
+                                    <p><strong class="text-muted">Địa chỉ:</strong>
+                                        {{ orderHieu.xa }}, {{ orderHieu.huyen}} ,{{orderHieu.tinh }}</p>
+                                    <p><strong class="text-muted">Địa chỉ:</strong>
+                                        {{ orderHieu.diaChi }}</p>
                                 </div>
                             </div>
                             <div class="container">
@@ -145,134 +160,379 @@
 
                                 <!-- Tổng tiền và phí ship -->
                                 <div class="mt-4">
-                                    <div class="d-flex justify-content-between">
-                                        <p><strong class="text-muted">Voucher:</strong> <span class="text-success">{{
-                                                orderHieu.giaTriMavoucher || 0 }} VND</span></p>
+                                    <!-- Voucher -->
+                                    <!-- <div class="d-flex justify-content-between">
+                                        <p class="mb-0">
+                                            <strong class="text-muted">Voucher:</strong>
+                                        </p>
+                                        <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0"
+                                            class="text-secondary">
+                                            0 VND
+                                        </span>
+                                        <span ng-if="orderHieu.giaTriMavoucher && orderHieu.giaTriMavoucher !== 0">
+                                            <span ng-if="orderHieu.kieuGiamGia === false" class="text-success">
+                                                {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} %
+                                            </span>
+                                            <span ng-if="orderHieu.kieuGiamGia === true" class="text-danger">
+                                                {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} VND
+                                            </span>
+                                        </span>
+                                    </div> -->
+
+                                    <!-- Số tiền giảm giá -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <strong class="text-muted">Số tiền giảm giá:</strong>
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="text-muted">
+                                                {{ calculateTotalAfterDiscount() | currency:"":0 }} VND
+                                            </span>
+                                            <span class="text-danger">
+                                                (Giảm {{ calculateDiscount() | currency:"":0 }} VND)
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <p><strong class="text-muted">Tổng Tiền:</strong> <span class="text-success">{{
-                                                orderlist.thanhTien | currency:"":0 }} VND</span></p>
+
+                                    <!-- Phí Ship -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <p class="mb-0"><strong class="text-muted">Phí Ship:</strong></p>
+                                        <span class="text-warning">
+                                            {{ orderlist.phiShip | currency:"":0 }} VND
+                                        </span>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <p><strong class="text-muted">Phí Ship:</strong> <span class="text-warning">{{
-                                                orderlist.phiShip | currency:"":0 }} VND</span></p>
+
+                                    <!-- Tổng Tiền -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <p class="mb-0"><strong class="text-muted">Tổng Tiền:</strong></p>
+                                        <span class="text-success">
+                                            {{ orderlist.thanhTien | currency:"":0 }} VND
+                                        </span>
                                     </div>
                                 </div>
+
+
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="orders">
+                    <div class="card border-0 shadow-sm p-4">
+                        <!-- Nội dung chính -->
+                        <h5 class="text-center text-primary">Tra Cứu Đơn Hàng</h5>
+
+                        <!-- Form tra cứu -->
+                        <div class="mb-3">
+                            <label for="orderCode" class="form-label">Mã Đơn Hàng</label>
+                            <input type="text" id="orderCode" class="form-control form-control-sm"
+                                placeholder="Nhập mã đơn hàng...">
+                        </div>
+                        <button class="btn btn-danger w-100 btn-sm" id="searchOrder">Tra Cứu</button>
+
+                        <!-- Khu vực hiển thị thông tin đơn hàng -->
+                        <div class="order-info mt-3 p-3" id="orderInfo"
+                            style="display: none; border: 1px solid #ddd; border-radius: 10px;">
+                            <h6 class="text-info">Thông Tin Đơn Hàng</h6>
+                            <p><strong>Mã Đơn Hàng:</strong> <span id="infoOrderCode"></span></p>
+                            <p><strong>Khách Hàng:</strong> <span id="infoCustomerName"></span></p>
+                            <p><strong>Ngày Đặt Hàng:</strong> <span id="infoOrderDate"></span></p>
+                            <p><strong>Trạng Thái:</strong> <span id="infoOrderStatus"></span></p>
                         </div>
                     </div>
                 </div>
+
             </div>
 
 
-            <div class="tab-pane fade" id="orders">
-                <div class="card border-0 shadow-sm p-4">
-                    <!-- Nội dung chính -->
-                    <h5 class="text-center text-primary">Tra Cứu Đơn Hàng</h5>
 
-                    <!-- Form tra cứu -->
-                    <div class="mb-3">
-                        <label for="orderCode" class="form-label">Mã Đơn Hàng</label>
-                        <input type="text" id="orderCode" class="form-control form-control-sm"
-                            placeholder="Nhập mã đơn hàng...">
-                    </div>
-                    <button class="btn btn-danger w-100 btn-sm" id="searchOrder">Tra Cứu</button>
 
-                    <!-- Khu vực hiển thị thông tin đơn hàng -->
-                    <div class="order-info mt-3 p-3" id="orderInfo"
-                        style="display: none; border: 1px solid #ddd; border-radius: 10px;">
-                        <h6 class="text-info">Thông Tin Đơn Hàng</h6>
-                        <p><strong>Mã Đơn Hàng:</strong> <span id="infoOrderCode"></span></p>
-                        <p><strong>Khách Hàng:</strong> <span id="infoCustomerName"></span></p>
-                        <p><strong>Ngày Đặt Hàng:</strong> <span id="infoOrderDate"></span></p>
-                        <p><strong>Trạng Thái:</strong> <span id="infoOrderStatus"></span></p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Modal Chi Tiết Đơn Hàng -->
-            <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="modalspcn" aria-hidden="true">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Chi Tiết Đơn Hàng</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Hiển thị thông tin đơn hàng -->
-                            <h6>Mã Đơn Hàng: {{ orderHieu.maHoaDon }}</h6>
-                            <p>Ngày Đặt Hàng: {{ orderHieu.ngayTao | date:'dd/MM/yyyy' }}</p>
-                            <p>Số Điện Thoại: {{ orderHieu.sdtNguoiNhan }}</p>
-                            <p>Tên Khách Hàng: {{ orderHieu.tenNguoiNhan }}</p>
-                            <p>Địa Chỉ: {{ orderHieu.tinh }}, {{ orderHieu.huyen }}, {{
-                                orderHieu.xa }}, {{ orderHieu.diaChi }}</p>
 
-                            <h6>Giỏ Hàng</h6>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Sản Phẩm</th>
-                                        <th>Giá</th>
-                                        <th>Số Lượng</th>
-                                        <th>Thành Tiền</th>
-                                        <th>Hình Ảnh</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="item in orderlist.listSanPhamChiTiet">
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ item.tenSanPham }}</td>
-                                        <td>{{ item.giaTien | currency:"":0 }}VND</td>
-                                        <td>{{ item.soLuong }}</td>
-                                        <td>{{ item.soLuong * item.giaTien | currency:"":0 }}VND</td>
-                                        <td>
-                                            <img ng-if="item.urlAnh" ng-src="{{ item.urlAnh }}"
-                                                alt="{{ item.tenSanPham }}"
-                                                style="width: 50px; height: 50px; object-fit: cover;">
-                                            <span ng-if="!item.urlAnh">Chưa có hình ảnh</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p>Tổng Tiền: {{ orderlist.thanhTien | currency:"":0 }}VND</p>
-                            <p>Phí Ship: {{ orderlist.phiShip | currency:"":0 }}VND</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="tracuu">
-                <div class="card border-0 shadow-sm p-4">
-                    <!-- Nội dung chính -->
-                    <h5 class="text-center text-primary">Tra Cứu Đơn Hàng</h5>
-
-                    <!-- Form tra cứu -->
-                    <div class="mb-3">
-                        <label for="orderCode" class="form-label">Mã Đơn Hàng</label>
-                        <input type="text" id="orderCode" class="form-control form-control-sm"
-                            placeholder="Nhập mã đơn hàng...">
-                    </div>
-                    <button class="btn btn-danger w-100 btn-sm" id="searchOrder">Tra Cứu</button>
-
-                    <!-- Khu vực hiển thị thông tin đơn hàng -->
-                    <div class="order-info mt-3 p-3" id="orderInfo"
-                        style="display: none; border: 1px solid #ddd; border-radius: 10px;">
-                        <h6 class="text-info">Thông Tin Đơn Hàng</h6>
-                        <p><strong>Mã Đơn Hàng:</strong> <span id="infoOrderCode"></span></p>
-                        <p><strong>Khách Hàng:</strong> <span id="infoCustomerName"></span></p>
-                        <p><strong>Ngày Đặt Hàng:</strong> <span id="infoOrderDate"></span></p>
-                        <p><strong>Trạng Thái:</strong> <span id="infoOrderStatus"></span></p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
+<style>
+    .table-scrollable {
+        max-height: 300px;
+        /* Giới hạn chiều cao */
+        overflow-y: auto;
+        /* Cho phép cuộn dọc */
+
+    }
+
+
+
+    #page-header h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    #page-header p {
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+
+    /* Sidebar */
+    .dashboard_tab_button {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard_tab_button ul {
+        padding: 0;
+        list-style: none;
+    }
+
+    .dashboard_tab_button .nav-item a {
+        padding: 10px 15px;
+        display: block;
+        color: #555;
+        transition: all 0.3s ease;
+    }
+
+    .dashboard_tab_button .nav-item a:hover,
+    .dashboard_tab_button .nav-item a.active {
+        background: #f6d365;
+        color: #fff;
+    }
+
+    /* Bảng đơn hàng */
+    .table-scrollable {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    .table-scrollable table {
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table-scrollable table th {
+        background: #f6d365;
+        color: #fff;
+        text-align: center;
+    }
+
+    .table-scrollable table td {
+        text-align: center;
+    }
+
+    /* Nút bấm */
+    button {
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        background-color: #fda085 !important;
+    }
+
+    /* Modal */
+    .modal-header {
+        background: #f6d365;
+        color: #fff;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Modal tổng quan */
+    .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        background: #fdfdfd;
+        overflow: hidden;
+    }
+
+    /* Tiêu đề Modal */
+    .modal-header {
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        color: #fff;
+        border-bottom: none;
+        padding: 15px 20px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .modal-title {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .modal-header .btn-close {
+        background-color: #fff;
+        color: #ff7e5f;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+
+    .modal-header .btn-close:hover {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    /* Nội dung Modal */
+    .modal-body {
+        padding: 20px;
+        font-size: 14px;
+        color: #333;
+        background: #f9f9f9;
+    }
+
+    /* Thông tin đơn hàng */
+    .modal-body h6 {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .modal-body p {
+        margin-bottom: 8px;
+        color: #555;
+        font-size: 14px;
+    }
+
+    /* Bảng giỏ hàng */
+    .modal-body .table {
+        margin-top: 15px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .modal-body .table th {
+        background: #ff7e5f;
+        color: #fff;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .modal-body .table td {
+        text-align: center;
+        font-size: 13px;
+        color: #555;
+        vertical-align: middle;
+    }
+
+    .modal-body .table td img {
+        border-radius: 4px;
+        transition: transform 0.3s ease;
+    }
+
+    .modal-body .table td img:hover {
+        transform: scale(1.2);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Tổng tiền, phí ship */
+    .modal-body p:last-child {
+        font-weight: bold;
+        color: #333;
+        font-size: 15px;
+    }
+
+
+    /* Card tra cứu đơn hàng */
+    .card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Tiêu đề tra cứu đơn hàng */
+    .card h5 {
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+    }
+
+    /* Form nhập mã đơn hàng */
+    #orderCode {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    #orderCode:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        outline: none;
+    }
+
+    /* Nút tra cứu */
+    #searchOrder {
+        border-radius: 20px;
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
+
+    #searchOrder:hover {
+        background: linear-gradient(90deg, #feb47b, #ff7e5f);
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Thông tin đơn hàng */
+    #orderInfo {
+        background: #fff;
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #orderInfo h6 {
+        font-size: 18px;
+        font-weight: bold;
+        color: #17a2b8;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+    }
+
+    #orderInfo p {
+        font-size: 14px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    #orderInfo p strong {
+        color: #555;
+    }
+
+    /* Responsive cho màn hình nhỏ */
+    @media (max-width: 576px) {
+        .card {
+            padding: 15px;
+        }
+
+        #orderCode {
+            font-size: 13px;
+            padding: 6px 10px;
+        }
+
+        #searchOrder {
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+
+        #orderInfo {
+            padding: 10px;
+        }
+    }
+</style>
+<script>
+
+</script>

@@ -13929,4 +13929,19 @@ fieldset:disabled .btn {
     }
 }
 
+.fa-cart-shopping::before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgb(204, 231, 208);
+    color: rgb(8, 129, 120);
+    font-size: 16px;
+    line-height: 40px;
+    text-align: center;
+    content: "\f07a";
+}
+
 /*# sourceMappingURL=bootstrap.min.css.map */

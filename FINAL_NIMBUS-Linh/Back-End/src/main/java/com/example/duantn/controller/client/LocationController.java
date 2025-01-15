@@ -71,17 +71,6 @@ public class LocationController {
     }
 
 
-    // API lấy danh sách các phương thức vận chuyển khả dụng
-    @GetMapping("/available-services")
-    public ResponseEntity<List<Map<String, Object>>> getShippingServices() {
-        try {
-            List<Map<String, Object>> services = testDemoSevice.getShippingServices();
-            return ResponseEntity.ok(services);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
-        }
-    }
 
     // API tính phí vận chuyển
     @PostMapping("/fee")
@@ -99,7 +88,5 @@ public class LocationController {
             return ResponseEntity.status(500).body(null);
         }
     }
-
-
 
 }

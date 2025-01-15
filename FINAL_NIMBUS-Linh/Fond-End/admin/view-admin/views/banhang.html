@@ -321,14 +321,6 @@
                         </div>
 
 
-                        <div class="mb-3">
-                            <label for="description" class="form-label" style="font-weight: 600;">
-                                <i class="fa-solid fa-comments"></i>Mô tả
-                            </label>
-                            <textarea class="form-control" id="description" ng-model="description"
-                                placeholder="Nhập mô tả tại đây..."
-                                style="font-size: 1rem; border-radius: 5px; height: 100px;"></textarea>
-                        </div>
                         <!-- Khi chưa chọn voucher -->
                         <div class="mb-3" ng-show="!selectedVoucher">
                             <div class="voucher-default"
@@ -341,6 +333,7 @@
                                 </p>
                             </div>
                         </div>
+
 
                         <!-- Khi đã chọn voucher -->
                         <div class="mb-3" ng-if="selectedVoucher">
@@ -366,12 +359,12 @@
                                         <p>
                                             <strong>Áp dụng cho đơn hàng từ:</strong>
                                             <span>{{ selectedVoucher.soTienToiThieu | currency:"":0 }} VND</span>
-        
+
                                             <span ng-if="selectedVoucher.kieuGiamGia === false">
                                                 đến
                                                 <span>{{ selectedVoucher.giaTriToiDa | currency:"":0 }} VND</span>
                                             </span>
-        
+
                                             <span ng-if="selectedVoucher.kieuGiamGia === true">
                                                 trở lên
                                             </span>
@@ -392,6 +385,16 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label" style="font-weight: 600;">
+                                <i class="fa-solid fa-comments"></i>Mô tả
+                            </label>
+                            <textarea class="form-control" id="description" ng-model="description"
+                                placeholder="Nhập mô tả tại đây..."
+                                style="font-size: 1rem; border-radius: 5px; height: 100px;"></textarea>
+                        </div>
+
 
 
                         <div class="d-flex gap-3" style="margin-top: 20px;">
@@ -505,9 +508,9 @@
                                 <th class="text-center" style="padding: 10px;">#</th>
                                 <th class="text-center" style="padding: 10px;">Mã sản phẩm</th>
                                 <th class="text-center" style="padding: 10px;">Sản phẩm</th>
+                                <th class="text-center" style="padding: 10px;">Chất liệu</th>
                                 <th class="text-center" style="padding: 10px;">Màu sắc</th>
                                 <th class="text-center" style="padding: 10px;">Kích thước</th>
-                                <th class="text-center" style="padding: 10px;">Chất liệu</th>
                                 <th class="text-center" style="padding: 10px;">Số lượng</th>
                                 <th class="text-center" style="padding: 10px;">Giá bán</th>
                                 <th class="text-center" style="padding: 10px;">Thao tác</th>
@@ -515,13 +518,13 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="detail in filteredProductDetails() | filter: {ma_san_pham_chi_tiet: searchProductCode}"
-                                ng-mouseover="detail.isHovered = true" ng-mouseleave="detail.isHovered = false">
+                                ng-mouseover="detail.isHovered = true" ng-mouseleave="detail.isHovered = false" class="text-center">
                                 <td class="text-center" style="padding: 10px;">{{ $index + 1 }}</td>
                                 <td style="padding: 10px;">{{ detail.ma_san_pham_chi_tiet }}</td>
                                 <td style="padding: 10px;">{{ detail.ten_san_pham }}</td>
+                                <td style="padding: 10px;">{{ detail.ten_chat_lieu }}</td>
                                 <td style="padding: 10px;">{{ detail.ten_mau_sac }}</td>
                                 <td style="padding: 10px;">{{ detail.ten_kich_thuoc }}</td>
-                                <td style="padding: 10px;">{{ detail.ten_chat_lieu }}</td>
                                 <td class="text-center" style="padding: 10px;">{{ detail.so_luong }}</td>
                                 <td style="padding: 10px;">
                                     <span ng-if="detail.giaKhuyenMai"
@@ -832,70 +835,6 @@
 </div>
 
 
-
-
-
-<!-- Modal In Hóa Đơn -->
-<div class="modal fade" id="invoicePrintModal" tabindex="-1" role="dialog" aria-labelledby="invoicePrintModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="store-info">
-                    <h4>Tên Cửa Hàng: NB Fasion</h4>
-                    <p>Địa Chỉ: 32 Cổ nhuế 2 - Bắc Từ Liêm - Hà Nội</p>
-                    <p>Số Điện Thoại: 0989899999</p>
-                </div>
-                <hr>
-                <h6>Thông Tin Hóa Đơn</h6>
-                <div>
-                    <p><strong>Mã Hóa Đơn:</strong> {{selectedInvoice.maHoaDon}}</p>
-                    <p><strong>Tên Người Nhận:</strong> {{selectedInvoice.tenNguoiNhan}}
-                    </p>
-                    <p><strong>Ngày Tạo:</strong> {{selectedInvoice.ngayTao |
-                        date:'dd/MM/yyyy'}}</p>
-                    <p><strong>Sản phẩm mua:</strong></p>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Sản Phẩm</th>
-                                <th>Màu Sắc</th>
-                                <th>Kích Thước</th>
-                                <th>Số Lượng</th>
-                                <th>Đơn Giá</th>
-                                <th>Tổng Tiền</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="item in cartItems">
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ item.tenSanPham }}</td>
-                                <td>{{ item.mauSac }}</td>
-                                <td>{{ item.kichThuoc }}</td>
-                                <td>{{ item.soLuong }}</td>
-                                <td>{{ item.giaBan | currency: '' : 0 }} ₫</td>
-                                <td>{{ item.soLuong * item.giaBan | currency: '' : 0 }}
-                                    ₫</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="total-price text-right">
-                    <h5 style="font-weight: bold;">Tổng Tiền Hàng:</h5>
-                    <label class="form-control" style="font-size: 1.5rem; font-weight: bold; text-align: right;">
-                        {{ totalPrice | currency: '' : 0 }} ₫
-                    </label>
-                </div>
-            </div>
-            <div class="signature">
-                <p style="font-weight: bold;">Người Lập Hóa Đơn</p>
-                <p>(Ký và ghi rõ họ tên)</p>
-                <p>Nhân viên </p>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
