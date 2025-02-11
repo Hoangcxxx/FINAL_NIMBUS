@@ -1,11 +1,7 @@
 package com.example.duantn.service;
 
-import com.example.duantn.entity.HoaDon;
-import com.example.duantn.entity.LoaiTrangThai;
-import com.example.duantn.entity.TrangThaiHoaDon;
-import com.example.duantn.repository.HoaDonRepository;
-import com.example.duantn.repository.LoaiTrangThaiRepository;
-import com.example.duantn.repository.TrangThaiHoaDonRepository;
+import com.example.duantn.entity.*;
+import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +15,11 @@ public class TrangThaiHoaDonService {
     @Autowired
     private TrangThaiHoaDonRepository trangThaiHoaDonRepository;
 
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
+
+
+
     // Lấy tất cả trạng thái hóa đơn
     public List<TrangThaiHoaDon> getAllTrangThaiHoaDon() {
         return trangThaiHoaDonRepository.findAll();
@@ -27,6 +28,7 @@ public class TrangThaiHoaDonService {
     public List<Object[]> getAllTrangThaiHoaDonByidHoaDon(Integer idHoaDon) {
         return trangThaiHoaDonRepository.findAllByidHoaDon(idHoaDon);
     }
+
     @Autowired
     private HoaDonRepository hoaDonRepository;
 
@@ -38,6 +40,7 @@ public class TrangThaiHoaDonService {
         List<TrangThaiHoaDon> existingStatuses = trangThaiHoaDonRepository.findByHoaDon_IdHoaDonAndLoaiTrangThai_IdLoaiTrangThai(idHoaDon, idLoaiTrangThai);
         return !existingStatuses.isEmpty();  // Trả về true nếu trạng thái đã tồn tại
     }
+
     public List<TrangThaiHoaDon> saveTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai, Integer idNhanVien) {
         // Kiểm tra sự tồn tại của hóa đơn và loại trạng thái
         Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
@@ -62,6 +65,7 @@ public class TrangThaiHoaDonService {
             // Kiểm tra trạng thái 'Xác nhận đơn hàng' (idLoaiTrangThai == 3)
             if (idLoaiTrangThai == 3) {
                 // Nếu trạng thái 'Chờ xác nhận' (idLoaiTrangThai == 2) không tồn tại, cho phép cập nhật
+                // Cập nhật số lượng tồn kho
                 boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 2);
                 if (!isPaymentConfirmed) {
                     String errorMessage = "Không thể cập nhật trạng thái 'Xác nhận đơn hàng' vì hóa đơn chưa được 'Chờ xác nhận'.";
@@ -223,6 +227,7 @@ public class TrangThaiHoaDonService {
         // Lưu trạng thái hóa đơn vào cơ sở dữ liệu
         trangThaiHoaDonRepository.save(trangThaiHoaDon2);
     }
+
     public TrangThaiHoaDon createTrangThaiHoaDon(Integer idHoaDon) {
         // Lấy hóa đơn từ cơ sở dữ liệu
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
@@ -261,8 +266,6 @@ public class TrangThaiHoaDonService {
         // Trả về trạng thái loại 5 (hoặc bất kỳ trạng thái nào bạn muốn phản hồi)
         return trangThaiHoaDon1;
     }
-
-
 
 
 }

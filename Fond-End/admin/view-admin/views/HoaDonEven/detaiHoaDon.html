@@ -129,8 +129,9 @@
         <!-- Action Buttons -->
         <div class="d-flex justify-content-between mt-4">
             <div>
-                <!-- Nút chuyển trạng thái trực tiếp -->
-                <button class="btn btn-secondary" ng-click="updateTrangThaiHoaDon()" ng-if="modalButtonText">
+                <!-- Nút chuyển trạng thái chỉ hiển thị khi không phải khách hàng lẽ -->
+                <button class="btn btn-secondary" ng-click="updateTrangThaiHoaDon()"
+                    ng-if="modalButtonText && !isKhachHangLe">
                     {{modalButtonText}}
                 </button>
             </div>
@@ -146,7 +147,7 @@
                     <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Lịch sử thanh toán</h3>
                     <!-- Nút Xác nhận thanh toán, chỉ hiển thị nếu chưa có nhân viên xác nhận -->
                     <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#xacNhanModal"
-                        ng-if="showPaymentButton()">Xác nhận thanh toán</button>
+                        ng-if="showPaymentButton() && isPaymentButtonVisible()">Xác nhận thanh toán</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">

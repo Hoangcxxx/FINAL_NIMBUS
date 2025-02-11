@@ -113,7 +113,8 @@
 
                                     <p><strong class="text-muted">Địa chỉ:</strong>
                                         {{ orderHieu.xa }}, {{ orderHieu.huyen}} ,{{orderHieu.tinh }}</p>
-                                    <p><strong class="text-muted">Địa chỉ cụ thể:</strong> {{ orderHieu.diaChi }}</p>
+                                    <p><strong class="text-muted">Địa chỉ:</strong>
+                                        {{ orderHieu.diaChi }}</p>
                                 </div>
                             </div>
                             <div class="container">
@@ -160,15 +161,14 @@
                                 <!-- Tổng tiền và phí ship -->
                                 <div class="mt-4">
                                     <!-- Voucher -->
-                                    <div class="d-flex justify-content-between">
+                                    <!-- <div class="d-flex justify-content-between">
                                         <p class="mb-0">
                                             <strong class="text-muted">Voucher:</strong>
                                         </p>
-                                        <!-- Kiểm tra nếu không có voucher -->
-                                        <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0" class="text-secondary">
+                                        <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0"
+                                            class="text-secondary">
                                             0 VND
                                         </span>
-                                        <!-- Kiểm tra kiểu giảm giá nếu có voucher -->
                                         <span ng-if="orderHieu.giaTriMavoucher && orderHieu.giaTriMavoucher !== 0">
                                             <span ng-if="orderHieu.kieuGiamGia === false" class="text-success">
                                                 {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} %
@@ -177,8 +177,8 @@
                                                 {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} VND
                                             </span>
                                         </span>
-                                    </div>
-                                
+                                    </div> -->
+
                                     <!-- Số tiền giảm giá -->
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <strong class="text-muted">Số tiền giảm giá:</strong>
@@ -191,7 +191,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                
+
                                     <!-- Phí Ship -->
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <p class="mb-0"><strong class="text-muted">Phí Ship:</strong></p>
@@ -199,7 +199,7 @@
                                             {{ orderlist.phiShip | currency:"":0 }} VND
                                         </span>
                                     </div>
-                                
+
                                     <!-- Tổng Tiền -->
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <p class="mb-0"><strong class="text-muted">Tổng Tiền:</strong></p>
@@ -208,7 +208,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                
+
 
                             </div>
                         </div>

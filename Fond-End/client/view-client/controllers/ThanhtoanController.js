@@ -625,57 +625,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
         }
 
 
-        // function checkupdategiatienpai() {
-        //     return $http.get(`http://localhost:8080/api/nguoi_dung/gio_hang/${iduser}`)
-        //         .then(function (response) {
-        //             $scope.cart = response.data;
-
-        //             // Duyệt qua từng sản phẩm trong giỏ hàng để kiểm tra giá tiền
-        //             const promises = $scope.cart.map(item => {
-        //                 return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/lay-gia/${item.idSanPhamCT}`)
-        //                     .then(function (response) {
-        //                         const giaMoi = response.data.giaBan;
-        //                         if (item.giaSanPham !== giaMoi) {
-        //                             // Nếu giá tiền khác, hiển thị thông báo
-        //                             Swal.fire({
-        //                                 icon: 'info',
-        //                                 title: 'Giá sản phẩm đã thay đổi!',
-        //                                 text: `Giá sản phẩm "${item.tenSanPham}" đã được cập nhật từ ${item.giaBan} VNĐ thành ${giaMoi} VNĐ. Vui lòng kiểm tra lại giỏ hàng của bạn.`,
-        //                                 confirmButtonText: 'Đồng ý'
-        //                             });
-
-        //                             // Cập nhật giá sản phẩm trong giỏ hàng
-        //                             item.giaBan = giaMoi;
-        //                         }
-        //                     })
-        //                     .catch(function (error) {
-        //                         console.error(`Lỗi khi kiểm tra giá tiền cho sản phẩm "${item.tenSanPham}":`, error);
-        //                         throw error;
-        //                     });
-        //             });
-
-        //             // Chờ tất cả các kiểm tra hoàn tất
-        //             return Promise.allSettled(promises).then(results => {
-        //                 const hasError = results.some(result => result.status === 'rejected');
-        //                 if (hasError) {
-        //                     throw new Error('Lỗi trong quá trình kiểm tra giá sản phẩm.');
-        //                 }
-        //             });
-        //         })
-        //         .catch(function (error) {
-        //             console.error('Lỗi khi lấy dữ liệu giỏ hàng:', error);
-        //             Swal.fire({
-        //                 icon: 'error',
-        //                 title: 'Lỗi!',
-        //                 text: 'Đã xảy ra lỗi khi cập nhật giá sản phẩm. Vui lòng thử lại sau.',
-        //                 confirmButtonText: 'Đồng ý'
-        //             });
-        //             throw error;
-        //         });
-        // }
-
-
-
         // Kiểm tra tồn kho sản phẩm và khớp số lượng giỏ hàng
         function checkProductStock() {
             const promises = $scope.cart.map(item => {
@@ -839,13 +788,22 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         throw error;
                     });
                 }
-                $scope.isProcessing = true;
 
-                // Hiển thị overlay khi bắt đầu xử lý, nhưng chỉ che một phần nhỏ (thông báo)
-                $scope.showOverlay();
+                // Kiểm tra nếu `thanhTien` là số âm
+                if (orderData.thanhTien < 0) {
+                    // Hiển thị thông báo lỗi
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi thanh toán!',
+                        text: 'Tổng tiền không thể là số âm. Vui lòng kiểm tra lại thông tin đơn hàng.',
+                        confirmButtonText: 'Đồng ý'
+                    });
 
-                // Đảm bảo rằng giao diện chính vẫn hiển thị
-                $scope.isOverlayVisible = true; // Dùng biến này để chỉ hiển thị overlay khi cần
+                    // Ẩn overlay và dừng xử lý
+                    $scope.isOverlayVisible = false;
+                    $scope.isProcessing = false;
+                    return;
+                }
 
                 return $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData)
                     .then(function (response) {
@@ -861,12 +819,13 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         }
 
 
+
                         // Hiển thị thông báo đợi trong 5 giây, vẫn hiển thị dữ liệu
                         Swal.fire({
                             icon: 'info',
                             title: 'Đang xử lý thanh toán...',
                             text: 'Vui lòng chờ trong giây lát. Quá trình thanh toán đang diễn ra.',
-                            timer: 5000, // Đợi 5 giây
+                            timer: 3000, // Đợi 5 giây
                             timerProgressBar: true,
                             showConfirmButton: false, // Ẩn nút xác nhận
                             allowOutsideClick: false, // Không cho phép đóng thông báo bằng cách click ngoài
@@ -880,6 +839,10 @@ window.ThanhToanController = function ($scope, $http, $window) {
                                 $scope.isOverlayVisible = false;
                             }
                         });
+
+
+
+
 
                         // Gửi email xác nhận
                         return $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData);
@@ -905,7 +868,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         // Đảm bảo rằng sau khi quá trình hoàn thành, trạng thái isProcessing được đặt về false
                         $scope.isProcessing = false;
                     });
-
             })
     }
 

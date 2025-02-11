@@ -399,10 +399,11 @@ public class HoaDonService {
                 throw new RuntimeException("Số lượng tồn kho không đủ");
             }
 
-            // Cập nhật số lượng tồn kho
-            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - sanPham.getSoLuong());
-            sanPhamChiTietRepository.save(sanPhamChiTiet);
+//            // Cập nhật số lượng tồn kho
+//            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - sanPham.getSoLuong());
+//            sanPhamChiTietRepository.save(sanPhamChiTiet);
 // Tạo hoặc lấy LichSuHoaDon
+
             LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
             lichSuHoaDon.setNgayGiaoDich(new Date());
             lichSuHoaDon.setSoTienThanhToan(

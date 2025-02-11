@@ -842,7 +842,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             $scope.selectedVoucher = $scope.tempVoucher; // Gán voucher chính thức
             $scope.tempVoucher = null; // Reset voucher tạm
             console.log("Confirmed Voucher:", $scope.selectedVoucher);
-
+            localStorage.setItem('voucherdachon', JSON.stringify($scope.selectedVoucher));
             // Thông báo thành công
             Swal.fire({
                 icon: 'success',
@@ -1045,6 +1045,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         // Load lại danh sách sản phẩm và tính tổng tiền
                         $scope.getProductDetails();
                         $scope.calculateTotalPrice();
+                        $scope.getCartItems();
                     })
                     .catch(function (error) {
                         console.error('Lỗi khi lấy thông tin sản phẩm chi tiết:', error);
@@ -1104,12 +1105,30 @@ window.BanHangController = function ($scope, $http, $window, $location) {
     $scope.createOrderStatus = function () {
         var hoaDonId = JSON.parse(localStorage.getItem('selectedInvoice')).idHoaDon;
         var user = JSON.parse(localStorage.getItem('user'));
+
+        // Lấy danh sách trạng thái đã tạo từ localStorage
+        var createdStatuses = JSON.parse(localStorage.getItem('createdOrderStatuses')) || [];
+
+        if (createdStatuses.includes(hoaDonId)) {
+            console.log("Trạng thái hóa đơn đã tồn tại!");
+            return; // Dừng lại, không gọi API
+        }
+
+        // Gửi yêu cầu tạo trạng thái hóa đơn
         $http.post('http://localhost:8080/api/admin/ban_hang/create-trang-thai/' + hoaDonId + '/' + user.idNguoiDung)
             .then(function (response) {
                 console.log("Trạng thái hóa đơn đã được tạo!");
+
+                // Lưu trạng thái hóa đơn vào danh sách và cập nhật localStorage
+                createdStatuses.push(hoaDonId);
+                localStorage.setItem('createdOrderStatuses', JSON.stringify(createdStatuses));
+
                 // Sau khi tạo trạng thái thành công, mở modal thanh toán
                 $('#paymentModal').modal('show');
             })
+            .catch(function (error) {
+                console.error("Lỗi khi tạo trạng thái hóa đơn:", error);
+            });
     };
 
     $scope.TEST = async function () {
@@ -1123,8 +1142,8 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             const amount = $scope.totalPrice;
             const invoice = $scope.selectedInvoice;
             const description = 'Thanh toán cho hóa đơn';
-            const returnUrl = 'http://127.0.0.1:5502/admin.html#!/ban_hang';
-            const cancelUrl = 'http://127.0.0.1:5502/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai';
+            const returnUrl = 'http://127.0.0.1:5501/admin.html#!/ban_hang';
+            const cancelUrl = 'http://127.0.0.1:5501/admin.html#!/ban_hang?message=Thanh%20toan%20that%20bai';
 
             try {
                 const response = await $http.post('http://localhost:8080/api/admin/payos/create-payment-link', {
@@ -1221,11 +1240,61 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             .catch(function (error) {
                 console.error('Lỗi khi tạo lịch sử thanh toán:', error);
             });
-    };
+    }; 
+    async function checkVoucher(idVoucher) {
+        try {
+            const response = await fetch(`http://localhost:8080/api/admin/ban_hang/vouchers/${idVoucher}`);
+            if (!response.ok) {
+                throw new Error('Không thể lấy thông tin voucher');
+            }
+    
+            const data = await response.json();
+            console.log('Thông tin Voucher:', data);
+    
+            // Kiểm tra số lượng
+            if (data.soLuong <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Voucher không hợp lệ',
+                    text: 'Rất tiếc, voucher này đã hết số lượng và không thể sử dụng nữa.',
+                    confirmButtonText: 'OK'
+                });
+                return false; // Dừng xử lý
+            }
+            if (data.idTrangThaiGiamGia === 5) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Voucher không hợp lệ',
+                    text: 'Voucher này đã bị xóa bởi người bán và không thể sử dụng để thanh toán.',
+                    confirmButtonText: 'OK'
+                });
+                return false; // Dừng xử lý
+            }
 
+            // Voucher hợp lệ
+            return true; // Tiếp tục xử lý
+        } catch (error) {
+            console.error('Lỗi khi kiểm tra voucher:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi hệ thống',
+                text: 'Không thể kiểm tra voucher, vui lòng thử lại sau.',
+                confirmButtonText: 'OK'
+            });
+            return false; // Dừng xử lý do lỗi
+        }
+    }
+       
     $scope.createHoaDonChiTiet = async function () {
         // Kiểm tra xác nhận thanh toán
-        if ($scope.xacNhanThanhToan()) {
+        if ($scope.xacNhanThanhToan()) {       
+            const voucher = JSON.parse(localStorage.getItem('voucherdachon'));
+            if (voucher && voucher.idVoucher) {
+                const isValidVoucher = await checkVoucher(voucher.idVoucher); // Kiểm tra voucher
+                if (!isValidVoucher) {
+                    return; // Dừng lại nếu voucher không hợp lệ
+                }
+            }    
             // Nếu phương thức thanh toán là PayOS (ví dụ, phương thức thanh toán 3)
             if ($scope.selectedPhuongThucThanhToan === 3) {
                 await $scope.TEST(); // Gọi hàm xử lý PayOS
@@ -1254,7 +1323,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
 
                 for (const item of cartItems) {
                     const idSanPhamChiTiet = item.idSanPhamChiTiet;
-
+                    const tenSanPham = item.tenSanPham;
                     // Gọi API kiểm tra trạng thái sản phẩm
                     try {
                         const response = await $http.get(`http://localhost:8080/api/admin/ban_hang/check-trang-thai/${idSanPhamChiTiet}`);
@@ -1269,7 +1338,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Sản phẩm ngừng bán',
-                            text: 'Sản phẩm đã ngừng bán.Vui lòng xóa sản phẩm khỏi giỏ hàng để tiếp tục thanh toán!',
+                            text: `Sản phẩm "${tenSanPham}" đã ngừng bán.!`,
                         });
                         return;
                     }
@@ -1379,7 +1448,14 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             // Cập nhật lại số lượng voucher trong giao diện người dùng
             $scope.selectedVoucher.soLuong--;
         } catch (error) {
-            console.error('Lỗi khi trừ số lượng voucher:', error);
+            if (error.response && error.response.status === 400) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Voucher không hợp lệ!',
+                    text: 'Voucher này không thể được phát hành hoặc đã hết hạn.',
+                    confirmButtonText: 'Thử lại'
+                });
+            } 
         }
     };
     // Hàm reset dữ liệu sau khi tạo hóa đơn

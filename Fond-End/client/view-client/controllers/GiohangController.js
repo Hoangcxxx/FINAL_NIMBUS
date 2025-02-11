@@ -165,7 +165,7 @@ window.GiohangController = function ($scope, $http, $window) {
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Số lượng không đủ!',
-                                text: `Sản phẩm "${item.tenSanPham}" hiện không đủ số lượng trong kho. Chúng tôi chỉ có ${systemQuantity} sản phẩm, nhưng bạn muốn mua ${item.soLuongGioHang} sản phẩm.`,
+                                text: `Sản phẩm "${item.tenSanPham}" hiện không đủ số lượng trong kho. Chúng tôi chỉ có ${systemQuantity} sản phẩm.`,
                                 confirmButtonText: 'Đồng ý'
                             });
                             

@@ -17,6 +17,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
     // Hàm gọi API chung cho việc lấy trạng thái và thông tin hóa đơn
     function fetchStatusAndInvoiceData() {
+        // Lấy trạng thái hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
             .then(function (response) {
                 if (Array.isArray(response.data)) {
@@ -29,23 +30,48 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             .catch(function (error) {
                 console.error('Error fetching status data:', error);
             });
+        // Lấy dữ liệu từ API
+        $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
+            .then(function (response) {
+                // Dữ liệu trả về từ API
+                $scope.statuses = response.data;
 
-        $scope.totalBeforeDiscount = 0; // Khởi tạo biến tổng tiền trước khi giảm giá
+                // Lọc ra các trạng thái cần thiết: 1, 3, 5, 6, 7, 8
+                $scope.filteredStatuses = $scope.statuses.filter(function (status) {
+                    return [1, 3, 5, 6, 7, 8].includes(status.idLoaiTrangThaiHoaDon);
+                });
+            })
+            .catch(function (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+            });
+        // Khởi tạo biến tổng tiền trước khi giảm giá
+        $scope.totalBeforeDiscount = 0;
+
+        // Lấy dữ liệu chi tiết hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findHoaDonCT/' + idHoaDon)
             .then(function (response) {
                 console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
                 $scope.hoaDon = response.data;
                 $scope.totalAmount = $scope.hoaDon.thanhTien;  // Gán giá trị thanhTien vào totalAmount
 
-                // Tính tổng tiền trước khi giảm giá từ sanPhamCT
-                $scope.totalBeforeDiscount = $scope.sanPhamCT.reduce(function (accumulator, product) {
-                    return accumulator + (product.tongTien || 0);  // Cộng giá sản phẩm nhân với số lượng
-                }, 0);
-                console.log('Tổng tiền trước khi giảm giá:', $scope.totalBeforeDiscount);
+                // Kiểm tra và tính tổng tiền trước khi giảm giá từ sanPhamCT (sản phẩm chi tiết hóa đơn)
+                if ($scope.sanPhamCT && Array.isArray($scope.sanPhamCT) && $scope.sanPhamCT.length > 0) {
+                    $scope.totalBeforeDiscount = $scope.sanPhamCT.reduce(function (accumulator, product) {
+                        // Kiểm tra nếu product.tongTien là hợp lệ
+                        if (product.tongTien && !isNaN(product.tongTien)) {
+                            return accumulator + product.tongTien;  // Cộng giá trị hợp lệ
+                        }
+                        return accumulator;  // Nếu không hợp lệ, không cộng vào tổng
+                    }, 0);
+                    console.log('Tổng tiền trước khi giảm giá:', $scope.totalBeforeDiscount);
+                } else {
+                    console.warn('Dữ liệu sản phẩm chi tiết hóa đơn không hợp lệ hoặc trống:', $scope.sanPhamCT);
+                }
 
                 // Kiểm tra vai trò khách hàng để quyết định ẩn/hiển thị email và địa chỉ
                 if ($scope.hoaDon.vaiTro.idVaiTro === 3) {
-                    $scope.showEmailAndAddress = false;  // Nếu vai trò là 3 (không phải khách hàng), ẩn email và địa chỉ
+                    $scope.showEmailAndAddress = false;  // Nếu vai trò là 3 (khách hàng lẽ), ẩn email và địa chỉ
+                    $scope.isKhachHangLe = true;
                 } else {
                     $scope.showEmailAndAddress = true;  // Nếu vai trò là 2 (Khách hàng), hiển thị đầy đủ thông tin
                 }
@@ -72,7 +98,6 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                                     $scope.discountAmount = voucher.giaTriGiamGia;
                                 } else {
                                     // Giảm giá theo phần trăm (kieuGiamGia = false)
-                                    // Tính giảm giá cho từng sản phẩm hoặc tổng tiền
                                     $scope.discountAmount = ($scope.totalBeforeDiscount * voucher.giaTriGiamGia) / 100;
                                 }
 
@@ -89,16 +114,35 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 console.error('Lỗi khi lấy dữ liệu hóa đơn:', error);
             });
 
+        // Lấy dữ liệu sản phẩm chi tiết hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findSanPhamCTHoaDon/' + idHoaDon)
             .then(function (response) {
-                console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
+                console.log('Dữ liệu trả về từ API sản phẩm chi tiết:', response.data);
+                // Cập nhật lại dữ liệu sản phẩm chi tiết
                 $scope.sanPhamCT = response.data;
+
+                // Sau khi dữ liệu sản phẩm đã được tải, tính toán lại tổng tiền
+                if ($scope.sanPhamCT && Array.isArray($scope.sanPhamCT) && $scope.sanPhamCT.length > 0) {
+                    $scope.totalBeforeDiscount = $scope.sanPhamCT.reduce(function (accumulator, product) {
+                        // Kiểm tra nếu product.tongTien là hợp lệ
+                        if (product.tongTien && !isNaN(product.tongTien)) {
+                            return accumulator + product.tongTien;  // Cộng giá trị hợp lệ
+                        }
+                        return accumulator;  // Nếu không hợp lệ, không cộng vào tổng
+                    }, 0);
+                    console.log('Tổng tiền trước khi giảm giá sau khi tải sản phẩm:', $scope.totalBeforeDiscount);
+                } else {
+                    console.warn('Sản phẩm chi tiết không hợp lệ hoặc trống:', $scope.sanPhamCT);
+                }
             })
             .catch(function (error) {
-                console.error('Lỗi khi lấy dữ liệu hóa đơn:', error);
+                console.error('Lỗi khi lấy dữ liệu sản phẩm chi tiết hóa đơn:', error);
             });
     }
+
+    // Gọi hàm để thực thi
     fetchStatusAndInvoiceData();
+
 
 
 
@@ -295,6 +339,15 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             });
         }
     };
+    $scope.isPaymentButtonVisible = function () {
+        // Kiểm tra nếu trạng thái cuối cùng của hóa đơn là "Chờ thanh toán" (trạng thái 6)
+        if ($scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+            // Trả về true nếu trạng thái là 6 (Chờ thanh toán)
+            return currentStatus.idLoaiTrangThaiHoaDon === 6;
+        }
+        return false; // Nếu không có trạng thái hoặc trạng thái không phải là 6, ẩn nút
+    };
 
     // Hàm cập nhật trạng thái trong backend
     function updateStatusInBackend(nextStatusId) {
@@ -316,7 +369,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                     });
 
                     // Tải lại dữ liệu trạng thái hóa đơn sau khi cập nhật
-                    fetchStatusAndInvoiceData();  // Gọi lại hàm fetchStatusAndInvoiceData để tải lại dữ liệu
+                    fetchStatusAndInvoiceData();
                 } else {
                     // Nếu không thành công, hiển thị thông báo lỗi từ backend
                     console.error('Lỗi khi cập nhật trạng thái:', response.data.message);
@@ -386,7 +439,10 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         $scope.amountGiven = $scope.totalAmount;
         $scope.notes = '';  // Reset ghi chú
     };
-
+    // Khi người dùng mở modal, tự động điền thông tin vào modal
+    $('#xacNhanModal').on('show.bs.modal', function () {
+        $scope.openPaymentModal();
+    });
     $scope.updatePaymentHistory = function () {
         var amountGiven = document.getElementById("amountGiven").value;
         var notes = document.getElementById("notes").value;
@@ -458,10 +514,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     };
 
 
-    // Khi người dùng mở modal, tự động điền thông tin vào modal
-    $('#xacNhanModal').on('show.bs.modal', function () {
-        $scope.openPaymentModal();
-    });
+
 
 
 

@@ -71,27 +71,22 @@
                                 </tr>
 
                                 <!-- Voucher -->
-                                <tr>
+                                <!-- <tr>
                                     <th scope="row">Voucher:</th>
                                     <td>
-                                        <!-- Kiểm tra nếu có voucher -->
                                         <span ng-if="orderData.giaTriMavoucher > 0">
-                                            <!-- Kiểm tra kiểu giảm giá -->
                                             <span ng-if="orderData.kieuGiamGia === false">
                                                 {{ orderData.giaTriMavoucher | currency:'' : 0 }} %
-                                                <!-- Hiển thị phần trăm khi là giảm giá phần trăm -->
                                             </span>
                                             <span ng-if="orderData.kieuGiamGia === true">
                                                 {{ orderData.giaTriMavoucher | currency:'' : 0 }} VND
-                                                <!-- Hiển thị giá trị VND khi là giảm giá tiền -->
                                             </span>
                                         </span>
-                                        <!-- Nếu không có voucher, hiển thị 0 VND -->
                                         <span ng-if="orderData.giaTriMavoucher <= 0">
                                             0 VND
                                         </span>
                                     </td>
-                                </tr>
+                                </tr> -->
                                 <!-- Số tiền giảm giá -->
                                 <tr>
                                     <th scope="row">Số tiền giảm giá:</th>

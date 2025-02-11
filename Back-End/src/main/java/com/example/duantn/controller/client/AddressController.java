@@ -112,4 +112,23 @@ public class AddressController {
             return ResponseEntity.status(500).body("Lỗi khi lưu địa chỉ: " + e.getMessage());
         }
     }
+
+    // Tính phí vận chuyển
+    @PostMapping("/calculate-fee")
+    public ResponseEntity<?> calculateShippingFee(
+            @RequestParam String fromDistrictId,
+            @RequestParam String toDistrictId,
+            @RequestParam int weight,
+            @RequestParam int length,
+            @RequestParam int width,
+            @RequestParam int height) {
+        try {
+            double fee = addressService.calculateShippingFee(fromDistrictId, toDistrictId, weight, length, width, height);
+            return ResponseEntity.ok().body("Phí vận chuyển là: " + fee + " VND");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Lỗi khi tính phí vận chuyển: " + e.getMessage());
+        }
+    }
+
+
 }

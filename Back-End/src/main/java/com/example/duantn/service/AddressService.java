@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -331,6 +332,38 @@ public class AddressService {
 
         // Nếu không tìm thấy xã hoặc có lỗi, ném ngoại lệ
         throw new RuntimeException("Không thể lấy dữ liệu xã từ GHN API");
+    }
+
+    // Tính phí vận chuyển từ GHN API
+    public double calculateShippingFee(String fromDistrictId, String toDistrictId, int weight, int length, int width, int height) {
+        String url = "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Token", "347f8e0e-981c-11ef-a905-420459bb4727"); // Thay bằng token của bạn
+        headers.set("Content-Type", "application/json");
+
+        // Tạo JSON body yêu cầu
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("from_district_id", Integer.parseInt(fromDistrictId));
+        requestBody.put("to_district_id", Integer.parseInt(toDistrictId));
+        requestBody.put("weight", weight);  // Trọng lượng tính bằng gram
+        requestBody.put("length", length); // Chiều dài tính bằng cm
+        requestBody.put("width", width);   // Chiều rộng tính bằng cm
+        requestBody.put("height", height); // Chiều cao tính bằng cm
+        requestBody.put("service_id", 53320); // ID dịch vụ vận chuyển (tùy thuộc vào GHN)
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        // Gửi yêu cầu POST đến API GHN
+        Map<String, Object> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class).getBody();
+
+        // Kiểm tra và trả về phí vận chuyển
+        if (response != null && response.get("code").equals(200)) {
+            Map<String, Object> data = (Map<String, Object>) response.get("data");
+            return Double.parseDouble(data.get("total").toString()); // Tổng phí vận chuyển
+        }
+
+        // Nếu có lỗi, ném ngoại lệ
+        throw new RuntimeException("Không thể tính phí vận chuyển từ GHN API");
     }
 
 
