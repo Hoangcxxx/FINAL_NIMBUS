@@ -64,7 +64,7 @@ public class NguoiDungService {
         if (isSdtExist(nguoiDung.getSdt())) {
             return new ResponseEntity<>("Số điện thoại đã tồn tại!", HttpStatus.BAD_REQUEST);
         }
-
+        nguoiDung.setTenNguoiDung(nguoiDung.getTenNguoiDung());
         // Mã hóa mật khẩu và tạo mã khách hàng
         nguoiDung.setMatKhau(passwordEncoder.encode(nguoiDung.getMatKhau()));
         nguoiDung.setMaNguoiDung(nguoiDung.getMaNguoiDung() == null ? generateUniqueCode() : nguoiDung.getMaNguoiDung());
@@ -230,6 +230,7 @@ public class NguoiDungService {
                 .map(nguoiDung -> {
                     NguoiDungDTO dto = new NguoiDungDTO();
                     dto.setIdNguoiDung(nguoiDung.getIdNguoiDung());
+                    dto.setMaNguoiDung(nguoiDung.getMaNguoiDung());
                     dto.setTenNguoiDung(nguoiDung.getTenNguoiDung());
                     dto.setEmail(nguoiDung.getEmail());
                     dto.setSdt(nguoiDung.getSdt());
@@ -262,6 +263,7 @@ public class NguoiDungService {
                 .map(nguoiDung -> {
                     NguoiDungDTO dto = new NguoiDungDTO();
                     dto.setIdNguoiDung(nguoiDung.getIdNguoiDung());
+                    dto.setMaNguoiDung(nguoiDung.getMaNguoiDung());
                     dto.setTenNguoiDung(nguoiDung.getTenNguoiDung());
                     dto.setEmail(nguoiDung.getEmail());
                     dto.setSdt(nguoiDung.getSdt());

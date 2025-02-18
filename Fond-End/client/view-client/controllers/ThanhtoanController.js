@@ -788,13 +788,22 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         throw error;
                     });
                 }
-                $scope.isProcessing = true;
 
-                // Hiển thị overlay khi bắt đầu xử lý, nhưng chỉ che một phần nhỏ (thông báo)
-                $scope.showOverlay();
+                // Kiểm tra nếu `thanhTien` là số âm
+                if (orderData.thanhTien < 0) {
+                    // Hiển thị thông báo lỗi
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi thanh toán!',
+                        text: 'Tổng tiền không thể là số âm. Vui lòng kiểm tra lại thông tin đơn hàng.',
+                        confirmButtonText: 'Đồng ý'
+                    });
 
-                // Đảm bảo rằng giao diện chính vẫn hiển thị
-                $scope.isOverlayVisible = true; // Dùng biến này để chỉ hiển thị overlay khi cần
+                    // Ẩn overlay và dừng xử lý
+                    $scope.isOverlayVisible = false;
+                    $scope.isProcessing = false;
+                    return;
+                }
 
                 return $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData)
                     .then(function (response) {
@@ -810,12 +819,13 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         }
 
 
+
                         // Hiển thị thông báo đợi trong 5 giây, vẫn hiển thị dữ liệu
                         Swal.fire({
                             icon: 'info',
                             title: 'Đang xử lý thanh toán...',
                             text: 'Vui lòng chờ trong giây lát. Quá trình thanh toán đang diễn ra.',
-                            timer: 5000, // Đợi 5 giây
+                            timer: 3000, // Đợi 5 giây
                             timerProgressBar: true,
                             showConfirmButton: false, // Ẩn nút xác nhận
                             allowOutsideClick: false, // Không cho phép đóng thông báo bằng cách click ngoài
@@ -829,6 +839,10 @@ window.ThanhToanController = function ($scope, $http, $window) {
                                 $scope.isOverlayVisible = false;
                             }
                         });
+
+
+
+
 
                         // Gửi email xác nhận
                         return $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData);

@@ -1,5 +1,6 @@
 package com.example.duantn.controller.admin;
 
+import com.example.duantn.dto.VoucherDTO;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.entity.Voucher;
@@ -163,5 +164,8 @@ public class ADBanHangController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
+    @GetMapping("/vouchers/{idVoucher}")
+    public VoucherDTO getVoucherById(@PathVariable("idVoucher") Integer idVoucher) {
+        return voucherService.getVoucherByIdhaha(idVoucher);
+    }
 }

@@ -282,7 +282,7 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
         $scope.gender = document.getElementById('gender').value; // Lấy giới tính
         $scope.registerUser();
     });
-    $scope.registerEmployee = function () {
+     $scope.registerEmployee = function () {
         // Kiểm tra các trường đầu vào
         if (!$scope.tenNhanVien || !$scope.email || !$scope.password || !$scope.phone || !$scope.gender || !$scope.role) {
             Swal.fire({
@@ -340,32 +340,71 @@ window.QuanLynguoidungController = function ($scope, $http, $window) {
             return;
         }
 
-        // Gửi yêu cầu thêm nhân viên
-        const registerData = {
-            tenNhanVien: $scope.tenNhanVien,
-            email: $scope.email,
-            matKhau: $scope.password,
-            vaiTro: { idVaiTro: $scope.role },
-            sdt: $scope.phone,
-            gioiTinh: $scope.gender
-        };
+        // Gửi yêu cầu kiểm tra trùng lặp email và số điện thoại
+        $http.get('http://127.0.0.1:8080/api/admin/nguoi_dung/list/nhanvien')
+            .then(function (response) {
+                const existingUsers = response.data;  // Dữ liệu trả về từ API (Danh sách nhân viên)
 
-        callApi('POST', `${baseURL}/create`, registerData)
-            .then(function () {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thêm nhân viên thành công!',
-                    html: '<p>Bạn đã thêm nhân viên mới thành công.</p>',
-                }).then(() => {
-                    window.location.reload(); // Reload lại trang để cập nhật danh sách
-                });
+                // Kiểm tra số điện thoại và email đã tồn tại trong cơ sở dữ liệu
+                const isPhoneExist = existingUsers.some(user => user.sdt === $scope.phone);
+                const isEmailExist = existingUsers.some(user => user.email === $scope.email);
+
+                if (isPhoneExist) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Số điện thoại đã tồn tại!',
+                        text: 'Số điện thoại này đã được đăng ký. Vui lòng sử dụng số khác.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                if (isEmailExist) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Email đã tồn tại!',
+                        text: 'Email này đã được đăng ký. Vui lòng sử dụng email khác.',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                // Nếu cả số điện thoại và email đều chưa tồn tại, tiếp tục đăng ký nhân viên
+                const registerData = {
+                    tenNguoiDung: $scope.tenNhanVien,
+                    email: $scope.email,
+                    matKhau: $scope.password,
+                    vaiTro: { idVaiTro: $scope.role },
+                    sdt: $scope.phone,
+                    gioiTinh: $scope.gender
+                };
+
+                // Gửi yêu cầu tạo nhân viên
+                callApi('POST', `${baseURL}/create`, registerData)
+                    .then(function () {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thêm nhân viên thành công!',
+                            html: '<p>Bạn đã thêm nhân viên mới thành công.</p>',
+                        }).then(() => {
+                            window.location.reload(); // Reload lại trang để cập nhật danh sách
+                        });
+                    })
+                    .catch(function (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thêm nhân viên thất bại!',
+                            text: error.data && error.data.message ? `Lỗi: ${error.data.message}` : 'Đã xảy ra lỗi không xác định. Vui lòng thử lại!',
+                            confirmButtonText: 'Thử lại'
+                        });
+                    });
             })
             .catch(function (error) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Thêm nhân viên thất bại!',
-                    text: error.data && error.data.message ? `Lỗi: ${error.data.message}` : 'Đã xảy ra lỗi không xác định. Vui lòng thử lại!',
-                    confirmButtonText: 'Thử lại'
+                    title: 'Lỗi kiểm tra thông tin!',
+                    text: 'Không thể kiểm tra email hoặc số điện thoại. Vui lòng thử lại.',
+                    confirmButtonText: 'OK'
                 });
             });
     };

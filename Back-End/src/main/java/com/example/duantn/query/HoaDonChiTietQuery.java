@@ -99,7 +99,7 @@ public class HoaDonChiTietQuery {
             "    ltt.ten_loai_trang_thai = 'Hoàn thành'  -- Trạng thái 'Hoàn thành'\n" +
             "    AND CAST(hd.ngay_tao AS DATE) = CAST(GETDATE() AS DATE)  -- Lọc theo ngày hôm nay";
     public static final String GET_ALL_TONG_SAN_PHAM_TRONG_THANG = "SELECT \n" +
-            "    SUM(hdct.so_luong) AS tong_so_luong_san_pham_da_ban  -- Tổng số lượng sản phẩm đã bán\n" +
+            "    COUNT(DISTINCT spct.id_san_pham) AS tong_so_luong_san_pham_da_ban  -- Tổng số lượng sản phẩm đã bán\n" +
             "FROM \n" +
             "    hoa_don_chi_tiet hdct\n" +
             "JOIN \n" +
@@ -108,6 +108,8 @@ public class HoaDonChiTietQuery {
             "    trang_thai_hoa_don tthd ON hd.id_hoa_don = tthd.id_hoa_don\n" +
             "JOIN\n" +
             "    loai_trang_thai ltt ON tthd.id_loai_trang_thai = ltt.Id_loai_trang_thai\n" +
+            "JOIN \n" +
+            "    san_pham_chi_tiet spct ON hdct.id_san_pham_chi_tiet = spct.Id_san_pham_chi_tiet\n" +
             "WHERE \n" +
             "    ltt.ten_loai_trang_thai = 'Hoàn thành'  -- Trạng thái 'Hoàn thành'\n" +
             "    AND CAST(hd.ngay_tao AS DATE) BETWEEN CAST(DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AS DATE) \n" +

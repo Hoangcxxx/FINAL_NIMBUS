@@ -1,11 +1,7 @@
 package com.example.duantn.service;
 
-import com.example.duantn.entity.HoaDon;
-import com.example.duantn.entity.LoaiTrangThai;
-import com.example.duantn.entity.TrangThaiHoaDon;
-import com.example.duantn.repository.HoaDonRepository;
-import com.example.duantn.repository.LoaiTrangThaiRepository;
-import com.example.duantn.repository.TrangThaiHoaDonRepository;
+import com.example.duantn.entity.*;
+import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +15,11 @@ public class TrangThaiHoaDonService {
     @Autowired
     private TrangThaiHoaDonRepository trangThaiHoaDonRepository;
 
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
+
+
+
     // Lấy tất cả trạng thái hóa đơn
     public List<TrangThaiHoaDon> getAllTrangThaiHoaDon() {
         return trangThaiHoaDonRepository.findAll();
@@ -27,6 +28,7 @@ public class TrangThaiHoaDonService {
     public List<Object[]> getAllTrangThaiHoaDonByidHoaDon(Integer idHoaDon) {
         return trangThaiHoaDonRepository.findAllByidHoaDon(idHoaDon);
     }
+
     @Autowired
     private HoaDonRepository hoaDonRepository;
 
@@ -38,6 +40,7 @@ public class TrangThaiHoaDonService {
         List<TrangThaiHoaDon> existingStatuses = trangThaiHoaDonRepository.findByHoaDon_IdHoaDonAndLoaiTrangThai_IdLoaiTrangThai(idHoaDon, idLoaiTrangThai);
         return !existingStatuses.isEmpty();  // Trả về true nếu trạng thái đã tồn tại
     }
+
     public List<TrangThaiHoaDon> saveTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai, Integer idNhanVien) {
         // Kiểm tra sự tồn tại của hóa đơn và loại trạng thái
         Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
@@ -71,6 +74,27 @@ public class TrangThaiHoaDonService {
                     TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
                     errorTrangThai.setMoTa(errorMessage);  // Gán thông báo lỗi vào MoTa
                     return List.of(errorTrangThai);  // Trả về danh sách chứa thông báo lỗi
+                }
+
+                // Cập nhật số lượng sản phẩm chi tiết
+                List<HoaDonChiTiet> hoaDonChiTietList = hoaDon.getHoaDonChiTietList();
+                for (HoaDonChiTiet hoaDonChiTiet : hoaDonChiTietList) {
+                    SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+                    Integer soLuongBan = hoaDonChiTiet.getSoLuong();
+                    Integer soLuongTon = sanPhamChiTiet.getSoLuong();
+
+                    // Kiểm tra nếu còn đủ số lượng trong kho để trừ đi
+                    if (soLuongTon >= soLuongBan) {
+                        sanPhamChiTiet.setSoLuong(soLuongTon - soLuongBan); // Trừ số lượng tồn kho
+                        sanPhamChiTietRepository.save(sanPhamChiTiet);  // Lưu lại thông tin sản phẩm chi tiết với số lượng mới
+                        System.out.println("Đã trừ đi " + soLuongBan + " sản phẩm từ kho.");
+                    } else {
+                        // Nếu số lượng trong kho không đủ, trả về thông báo lỗi
+                        String errorMessage = "Không đủ số lượng trong kho để xác nhận đơn hàng.";
+                        TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                        errorTrangThai.setMoTa(errorMessage);
+                        return List.of(errorTrangThai);  // Trả về thông báo lỗi
+                    }
                 }
             }
 
@@ -223,6 +247,7 @@ public class TrangThaiHoaDonService {
         // Lưu trạng thái hóa đơn vào cơ sở dữ liệu
         trangThaiHoaDonRepository.save(trangThaiHoaDon2);
     }
+
     public TrangThaiHoaDon createTrangThaiHoaDon(Integer idHoaDon) {
         // Lấy hóa đơn từ cơ sở dữ liệu
         HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
@@ -261,8 +286,6 @@ public class TrangThaiHoaDonService {
         // Trả về trạng thái loại 5 (hoặc bất kỳ trạng thái nào bạn muốn phản hồi)
         return trangThaiHoaDon1;
     }
-
-
 
 
 }
