@@ -58,7 +58,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
             });
             return;
         }
-
+    
         // Kiểm tra giá trị giảm giá hợp lệ
         if (!$scope.selectedVoucher.giaTriGiamGia || isNaN($scope.selectedVoucher.giaTriGiamGia) || parseFloat($scope.selectedVoucher.giaTriGiamGia) <= 0) {
             Swal.fire({
@@ -69,9 +69,10 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
             });
             return;
         }
-
+    
         // Kiểm tra nếu kiểu giảm giá là phần trăm (kieuGiamGia === false)
         if ($scope.selectedVoucher.kieuGiamGia === false) {
+            // Kiểm tra giảm giá theo phần trăm không vượt quá 100%
             if (parseFloat($scope.selectedVoucher.giaTriGiamGia) > 100) {
                 Swal.fire({
                     icon: 'error',
@@ -81,7 +82,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
                 });
                 return;
             }
-
+    
             // Kiểm tra giá trị tối đa nếu kiểu giảm giá là phần trăm
             if (!$scope.selectedVoucher.giaTriToiDa || isNaN($scope.selectedVoucher.giaTriToiDa) || parseFloat($scope.selectedVoucher.giaTriToiDa) <= 0) {
                 Swal.fire({
@@ -92,8 +93,19 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
                 });
                 return;
             }
+    
+            // Kiểm tra Số Tiền Chi Tối Thiểu phải nhỏ hơn Giá Trị Tối Đa khi kiểu giảm giá là phần trăm
+            if (parseFloat($scope.selectedVoucher.soTienToiThieu) >= parseFloat($scope.selectedVoucher.giaTriToiDa)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Số Tiền Chi Tối Thiểu phải nhỏ hơn Giá Trị Tối Đa.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
         }
-
+    
         // Kiểm tra số lượng voucher hợp lệ
         if (!$scope.selectedVoucher.soLuong || isNaN($scope.selectedVoucher.soLuong) || parseInt($scope.selectedVoucher.soLuong) <= 0) {
             Swal.fire({
@@ -104,7 +116,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
             });
             return;
         }
-
+    
         // Kiểm tra ngày bắt đầu và ngày kết thúc hợp lệ
         if (!$scope.selectedVoucher.ngayBatDau || !$scope.selectedVoucher.ngayKetThuc) {
             Swal.fire({
@@ -115,7 +127,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
             });
             return;
         }
-
+    
         if ($scope.selectedVoucher.ngayBatDau > $scope.selectedVoucher.ngayKetThuc) {
             Swal.fire({
                 icon: 'error',
@@ -125,7 +137,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
             });
             return;
         }
-
+    
         const voucherData = {
             maVoucher: $scope.selectedVoucher.maVoucher || null,
             tenVoucher: $scope.selectedVoucher.tenVoucher,
@@ -139,7 +151,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
             ngayBatDau: $scope.selectedVoucher.ngayBatDau.toLocaleDateString('en-CA'),  // Format yyyy-MM-dd
             ngayKetThuc: $scope.selectedVoucher.ngayKetThuc.toLocaleDateString('en-CA'),  // Format yyyy-MM-dd
         };
-
+    
         // Kiểm tra nếu voucher đã có id (cập nhật voucher)
         if ($scope.selectedVoucher.idVoucher) {
             // Gửi yêu cầu PUT để cập nhật voucher
@@ -183,6 +195,7 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
                 });
         }
     };
+    
 
 
 
