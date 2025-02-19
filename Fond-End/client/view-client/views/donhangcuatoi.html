@@ -149,7 +149,7 @@
                                                 <td class="text-center">{{ item.tenmausac }}</td>
                                                 <td class="text-center">{{ item.tenchatlieu }}</td>
                                                 <td class="text-center">{{ item.tenkichthuoc }}</td>
-                                                <td class="text-center">{{ item.giaKhuyenMai | currency:"":0 }} VND</td>
+                                                <td class="text-center">{{ item.tongtien | currency:"":0 }} VND</td>
                                                 <td class="text-center">{{ item.soLuong }}</td>
                                                 <td class="text-center">{{ item.tongtien | currency:"":0 }} VND
                                                 </td>
@@ -160,24 +160,7 @@
 
                                 <!-- Tổng tiền và phí ship -->
                                 <div class="mt-4">
-                                    <!-- Voucher -->
-                                    <!-- <div class="d-flex justify-content-between">
-                                        <p class="mb-0">
-                                            <strong class="text-muted">Voucher:</strong>
-                                        </p>
-                                        <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0"
-                                            class="text-secondary">
-                                            0 VND
-                                        </span>
-                                        <span ng-if="orderHieu.giaTriMavoucher && orderHieu.giaTriMavoucher !== 0">
-                                            <span ng-if="orderHieu.kieuGiamGia === false" class="text-success">
-                                                {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} %
-                                            </span>
-                                            <span ng-if="orderHieu.kieuGiamGia === true" class="text-danger">
-                                                {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} VND
-                                            </span>
-                                        </span>
-                                    </div> -->
+
 
                                     <!-- Số tiền giảm giá -->
                                     <div class="d-flex justify-content-between align-items-center mb-3">

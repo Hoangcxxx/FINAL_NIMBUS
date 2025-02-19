@@ -341,50 +341,54 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 $scope.availableVouchers = [];
             });
     };
-
-
     $scope.calculateTotal = function () {
         // Tính tổng tiền sản phẩm theo giá bán cơ bản hoặc giá khuyến mãi
         let totalProductPrice = $scope.cart.reduce(function (total, item) {
-            let donGia = item.giaKhuyenMai != null ? item.giaKhuyenMai : item.giaBan;
+            let donGia = item.giaKhuyenMai !== null ? item.giaKhuyenMai : item.giaBan;
             return total + (item.soLuongGioHang * donGia);
         }, 0);
-
-        let totalDiscountedPrice = totalProductPrice;
-
+    
+        let discount = 0;
+    
         // Áp dụng voucher giảm giá (nếu có)
         if ($scope.selectedVoucher) {
-            let discount = 0;
-            if ($scope.selectedVoucher.kieuGiamGia === false) {
+            if (!$scope.selectedVoucher.kieuGiamGia) {
                 // Giảm theo phần trăm
                 discount = totalProductPrice * ($scope.selectedVoucher.giaTriGiamGia / 100);
-                discount = Math.min(discount, $scope.selectedVoucher.giaTriToiDa || discount); // Giới hạn giảm tối đa nếu có
-            } else if ($scope.selectedVoucher.kieuGiamGia === true) {
+                // Nếu có giới hạn giảm tối đa, lấy giá trị nhỏ hơn
+                discount = Math.min(discount, $scope.selectedVoucher.giaTriToiDa || discount);
+            } else {
                 // Giảm theo giá trị cố định
                 discount = $scope.selectedVoucher.giaTriGiamGia;
             }
-
-            totalDiscountedPrice -= discount; // Trừ giảm giá
+            // Giới hạn số tiền giảm giá không vượt quá tổng tiền sản phẩm
+            discount = Math.min(discount, totalProductPrice);
         }
-
-        // Cộng thêm phí vận chuyển (nếu có)
-        if ($scope.shippingFee) {
-            totalDiscountedPrice += $scope.shippingFee;
-        }
-
-        // Đảm bảo tổng tiền không âm
+    
+        // Tính số tiền sau giảm giá (chỉ tính voucher, chưa cộng phí ship)
+        let totalAfterDiscount = totalProductPrice - discount;
+        totalAfterDiscount = Math.max(totalAfterDiscount, 0);  // đảm bảo không âm
+    
+        // Cộng phí vận chuyển (nếu có)
+        let shippingFee = $scope.shippingFee || 0;
+        let totalDiscountedPrice = totalAfterDiscount + shippingFee;
+    
+        // Đảm bảo tổng tiền cuối cùng không âm
         $scope.totalAmount = Math.max(totalDiscountedPrice, 0);
-
-        // Cập nhật các giá trị để hiển thị trong UI
+    
+        // Cập nhật các giá trị hiển thị trong UI
         $scope.totalProductPrice = totalProductPrice;
+        $scope.discountAmount = discount;
         $scope.totalDiscountedPrice = totalDiscountedPrice;
-
+    
         // Lưu tổng tiền vào localStorage
         localStorage.setItem('totalAmount', $scope.totalAmount);
-
-        console.log("Tổng tiền sản phẩm (theo giá bán cơ bản): ", totalProductPrice);
-        console.log("Tổng tiền sau khi áp dụng voucher và phí ship: ", totalDiscountedPrice);
+    
+        console.log("Tổng tiền sản phẩm:", totalProductPrice);
+        console.log("Giảm giá:", discount);
+        console.log("Tổng tiền sau khi áp dụng voucher và phí ship:", totalDiscountedPrice);
     };
+    
 
     $scope.validateUserInfo = function () {
         if (!$scope.userInfo.tenNguoiDung || $scope.userInfo.tenNguoiDung.trim() === "") {
@@ -789,85 +793,75 @@ window.ThanhToanController = function ($scope, $http, $window) {
                     });
                 }
 
-                // Kiểm tra nếu `thanhTien` là số âm
-                if (orderData.thanhTien < 0) {
-                    // Hiển thị thông báo lỗi
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi thanh toán!',
-                        text: 'Tổng tiền không thể là số âm. Vui lòng kiểm tra lại thông tin đơn hàng.',
-                        confirmButtonText: 'Đồng ý'
-                    });
-
-                    // Ẩn overlay và dừng xử lý
-                    $scope.isOverlayVisible = false;
-                    $scope.isProcessing = false;
-                    return;
-                }
-
-                return $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData)
-                    .then(function (response) {
-                        const maHoaDon = response.data.maHoaDon;
-                        const idHoaDon = response.data.idHoaDon;
-
-                        // Lưu mã hóa đơn vào localStorage
-                        if (maHoaDon) {
-                            localStorage.setItem("maHoaDon", maHoaDon);
-                        }
-                        if (idHoaDon) {
-                            localStorage.setItem("idHoaDon", idHoaDon);
-                        }
-
-
-
-                        // Hiển thị thông báo đợi trong 5 giây, vẫn hiển thị dữ liệu
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Đang xử lý thanh toán...',
-                            text: 'Vui lòng chờ trong giây lát. Quá trình thanh toán đang diễn ra.',
-                            timer: 3000, // Đợi 5 giây
-                            timerProgressBar: true,
-                            showConfirmButton: false, // Ẩn nút xác nhận
-                            allowOutsideClick: false, // Không cho phép đóng thông báo bằng cách click ngoài
-                            didOpen: () => {
-                                Swal.showLoading(); // Hiển thị hiệu ứng loading trong khi chờ
-                            },
-                            didClose: () => {
-                                // Điều hướng đến trang thành công sau khi 5 giây
-                                $window.location.href = "/#!Thanhcong?";
-                                // Ẩn overlay khi xử lý xong
+                Swal.fire({
+                    title: 'Xác nhận đặt hàng',
+                    text: 'Bạn có chắc chắn muốn mua hàng không?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Có, đặt hàng!',
+                    cancelButtonText: 'Không'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Bắt đầu quá trình xử lý đơn hàng
+                        $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData)
+                            .then(function (response) {
+                                const maHoaDon = response.data.maHoaDon;
+                                const idHoaDon = response.data.idHoaDon;
+                
+                                // Lưu mã hóa đơn vào localStorage
+                                if (maHoaDon) {
+                                    localStorage.setItem("maHoaDon", maHoaDon);
+                                }
+                                if (idHoaDon) {
+                                    localStorage.setItem("idHoaDon", idHoaDon);
+                                }
+                
+                                // Hiển thị thông báo chờ
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Đang xử lý thanh toán...',
+                                    text: 'Vui lòng chờ trong giây lát. Quá trình thanh toán đang diễn ra.',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    },
+                                    didClose: () => {
+                                        // Điều hướng đến trang thành công
+                                        $window.location.href = "/#!Thanhcong?";
+                                        $scope.isOverlayVisible = false;
+                                    }
+                                });
+                
+                                // Gửi email xác nhận
+                                return $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData);
+                            })
+                            .then(function (response) {
+                                console.log("Email đã được gửi thành công:", response.data);
+                            })
+                            .catch(function (error) {
+                                console.error('Lỗi khi gửi email hoặc xử lý đơn hàng:', error);
+                
+                                // Hiển thị thông báo lỗi
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: 'Có lỗi xảy ra trong quá trình thanh toán hoặc gửi email xác nhận. Vui lòng thử lại.',
+                                    confirmButtonText: 'Đồng ý'
+                                });
+                
                                 $scope.isOverlayVisible = false;
-                            }
-                        });
-
-
-
-
-
-                        // Gửi email xác nhận
-                        return $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData);
-                    })
-                    .then(function (response) {
-                        console.log("Email đã được gửi thành công:", response.data);
-                    })
-                    .catch(function (error) {
-                        console.error('Lỗi khi gửi email hoặc xử lý đơn hàng:', error);
-
-                        // Hiển thị thông báo lỗi khi gửi email
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi!',
-                            text: 'Có lỗi xảy ra trong quá trình thanh toán hoặc gửi email xác nhận. Vui lòng thử lại.',
-                            confirmButtonText: 'Đồng ý'
-                        });
-
-                        // Ẩn overlay khi có lỗi
-                        $scope.isOverlayVisible = false;
-                    })
-                    .finally(function () {
-                        // Đảm bảo rằng sau khi quá trình hoàn thành, trạng thái isProcessing được đặt về false
-                        $scope.isProcessing = false;
-                    });
+                            })
+                            .finally(function () {
+                                $scope.isProcessing = false;
+                            });
+                    }
+                });
+                
             })
     }
 
