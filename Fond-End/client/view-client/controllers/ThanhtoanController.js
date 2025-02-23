@@ -627,6 +627,59 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 console.log("Không có idVoucher trong localStorage để kiểm tra."); // Log nếu không có idVoucher trong localStorage
             }
         }
+        function checkProductPrices() {
+            const promises = $scope.cart.map(item => {
+                return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham/kiem-tra-gia/${item.idSanPham}`)
+                    .then(response => {
+                        const giaBanMoi = response.data.giaBan;
+        
+                        if (giaBanMoi <= 0) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: "Giá sản phẩm không hợp lệ!",
+                                text: `Giá của sản phẩm "${item.tenSanPham}" không hợp lệ. Vui lòng kiểm tra lại.`,
+                                confirmButtonText: 'Đồng ý'
+                            });
+                            throw new Error(`Giá sản phẩm "${item.tenSanPham}" không hợp lệ.`);
+                        }
+        
+                        // Kiểm tra nếu giá sản phẩm thay đổi
+                        if (item.giaBan !== giaBanMoi) {
+                            return Swal.fire({
+                                icon: 'warning',
+                                title: "Cập nhật giá sản phẩm",
+                                text: `Shop vừa cập nhật giá của sản phẩm "${item.tenSanPham}". Giá mới là ${giaBanMoi.toLocaleString()} VNĐ (trước đó ${item.giaBan.toLocaleString()} VNĐ). Bạn có muốn tiếp tục đặt hàng không?`,
+                                showCancelButton: true,
+                                confirmButtonText: 'Tiếp tục mua',
+                                cancelButtonText: 'Hủy'
+                                
+                            }).then(result => {
+                                if (!result.isConfirmed) {
+                                    throw new Error(`Người dùng từ chối mua sản phẩm "${item.tenSanPham}" với giá mới.`);
+                                }
+        
+                                // Cập nhật giá sản phẩm trên giao diện (KHÔNG reload)
+                                item.giaBan = giaBanMoi;
+                                $scope.$apply(); // Cập nhật giao diện
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Lỗi kiểm tra giá sản phẩm "${item.tenSanPham}":`, error);
+                        throw error;
+                    });
+            });
+        
+            return Promise.all(promises)
+                .then(() => {
+                    // Sau khi kiểm tra giá, tính lại tổng tiền giỏ hàng
+                    $scope.calculateTotal();
+                })
+                .catch(error => {
+                    console.error("Lỗi khi kiểm tra giá sản phẩm:", error);
+                });
+        }
+        
 
 
         // Kiểm tra tồn kho sản phẩm và khớp số lượng giỏ hàng
@@ -715,8 +768,11 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 return checkProductStock();  // Kiểm tra tồn kho
             })
             .then(function () {
-                return checkProductStatus();  // Kiểm tra trạng thái sản phẩm
+                   return   checkProductStatus();  // Kiểm tra trạng thái sản phẩm
             })
+            .then(function () {
+                return  checkProductPrices()
+         })
             .then(function () {
                 // Kiểm tra thông tin người dùng
                 if (!$scope.validateUserInfo()) {

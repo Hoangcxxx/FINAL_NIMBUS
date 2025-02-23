@@ -133,4 +133,32 @@ public class SanPhamController {
                                            @RequestParam(required = false) Integer kichThuocId) {
         return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId);
     }
+
+    @GetMapping("/kiem-tra-gia/{idSanPham}")
+    public ResponseEntity<?> validateProductPrice(@PathVariable Integer idSanPham) {
+        BigDecimal giaBan = sanPhamService.getGiaSanPham(idSanPham);
+
+        if (giaBan == null) {
+            return ResponseEntity.badRequest().body("Sản phẩm không tồn tại");
+        }
+
+        // Kiểm tra giá có hợp lệ không (ví dụ giá không được nhỏ hơn 0 hoặc quá cao)
+        if (giaBan.compareTo(BigDecimal.ZERO) <= 0) {
+            return ResponseEntity.badRequest().body("Giá sản phẩm không hợp lệ");
+        }
+
+        return ResponseEntity.ok(Map.of("idSanPham", idSanPham, "giaBan", giaBan));
+    }
+
+
+    // Lấy giá sản phẩm theo mã sản phẩm
+    @GetMapping("/gia")
+    public ResponseEntity<?> getGiaSanPhamByMa(@RequestParam String maSanPham) {
+        BigDecimal giaBan = sanPhamService.getGiaSanPham(maSanPham);
+        if (giaBan != null) {
+            return ResponseEntity.ok(giaBan);
+        } else {
+            return ResponseEntity.badRequest().body("Sản phẩm không tồn tại");
+        }
+    }
 }

@@ -226,5 +226,15 @@ public class SanPhamService {
         return sanPhams.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public BigDecimal getGiaSanPham(Integer idSanPham) {
+        Optional<SanPham> sanPham = sanPhamRepository.findById(idSanPham);
+        return sanPham.map(SanPham::getGiaBan).orElse(null);
+    }
+
+    public BigDecimal getGiaSanPham(String maSanPham) {
+        Optional<SanPham> sanPham = sanPhamRepository.findByMaSanPham(maSanPham);
+        return sanPham.map(SanPham::getGiaBan).orElse(null);
+    }
+
 
 }

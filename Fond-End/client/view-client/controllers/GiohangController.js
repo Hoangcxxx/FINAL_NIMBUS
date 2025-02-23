@@ -168,7 +168,7 @@ window.GiohangController = function ($scope, $http, $window) {
                                 text: `Sản phẩm "${item.tenSanPham}" hiện không đủ số lượng trong kho. Chúng tôi chỉ có ${systemQuantity} sản phẩm.`,
                                 confirmButtonText: 'Đồng ý'
                             });
-                            
+
                             throw new Error(`Sản phẩm "${item.tenSanPham}" không đủ số lượng trong kho.`);
                         }
                     })
@@ -231,32 +231,76 @@ window.GiohangController = function ($scope, $http, $window) {
                     throw error;
                 });
         }
-
-        // Bắt đầu quá trình kiểm tra giỏ hàng
+        function checkProductPrices() {
+            const promises = $scope.cart.map(item => {
+                return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham/kiem-tra-gia/${item.idSanPham}`)
+                    .then(response => {
+                        const giaBanMoi = response.data.giaBan;
+        
+                        if (giaBanMoi <= 0) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: "Giá sản phẩm không hợp lệ!",
+                                text: `Giá của sản phẩm "${item.tenSanPham}" không hợp lệ. Vui lòng kiểm tra lại.`,
+                                confirmButtonText: 'Đồng ý'
+                            });
+                            throw new Error(`Giá sản phẩm "${item.tenSanPham}" không hợp lệ.`);
+                        }
+        
+                        // Kiểm tra nếu giá sản phẩm thay đổi
+                        if (item.giaBan !== giaBanMoi) {
+                            return Swal.fire({
+                                icon: 'warning',
+                                title: "Giá sản phẩm đã thay đổi",
+                                text: `Giá của sản phẩm "${item.tenSanPham}" đã thay đổi từ ${item.giaBan.toLocaleString()} VNĐ thành ${giaBanMoi.toLocaleString()} VNĐ. Bạn có muốn tiếp tục không?`,
+                                showCancelButton: true,
+                                confirmButtonText: 'Tiếp tục mua',
+                                cancelButtonText: 'Hủy'
+                            }).then(result => {
+                                if (!result.isConfirmed) {
+                                    throw new Error(`Người dùng từ chối mua sản phẩm "${item.tenSanPham}" với giá mới.`);
+                                }
+        
+                                // Cập nhật giá sản phẩm trên giao diện (KHÔNG reload)
+                                item.giaBan = giaBanMoi;
+                                $scope.$apply(); // Cập nhật giao diện
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Lỗi kiểm tra giá sản phẩm "${item.tenSanPham}":`, error);
+                        throw error;
+                    });
+            });
+        
+            return Promise.all(promises);
+        }
+        
+        // Kiểm tra giỏ hàng trước khi thanh toán
         if (!validateCartItems()) {
             $scope.isValidCart = false;
             return;
         }
-
-        // Thực hiện kiểm tra tồn kho, trạng thái sản phẩm và trạng thái người dùng
-        Promise.allSettled([checkStockAvailability(), checkProductStatuses(), checkUserStatus()])
+        
+        // Kiểm tra tất cả điều kiện trước khi thanh toán
+        Promise.allSettled([checkStockAvailability(), checkProductStatuses(), checkUserStatus(), checkProductPrices()])
             .then(results => {
                 const hasError = results.some(result => result.status === 'rejected');
                 const userStatusValid = results[2].status === 'fulfilled' && results[2].value === true;
-
+        
                 if (hasError || !userStatusValid) {
                     $scope.isValidCart = false;
                     return;
                 }
-
+        
                 // Nếu tất cả kiểm tra thành công
                 $scope.isValidCart = true;
-                $window.location.href = '/#!thanh_toan';
+                $window.location.href = '/#!thanh_toan'; // Chuyển đến trang thanh toán mà không reload lại trang trước đó
             })
             .catch(error => {
                 console.error('Lỗi xảy ra trong quá trình kiểm tra:', error);
             });
-    };
+        }        
 
 
 
