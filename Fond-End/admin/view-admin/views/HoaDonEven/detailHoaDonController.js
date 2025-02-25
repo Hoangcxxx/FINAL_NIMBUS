@@ -102,6 +102,11 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                                     $scope.discountAmount = ($scope.totalBeforeDiscount * voucher.giaTriGiamGia) / 100;
                                 }
 
+                                // Kiểm tra và đảm bảo discountAmount không lớn hơn totalBeforeDiscount
+                                if ($scope.discountAmount > $scope.totalBeforeDiscount) {
+                                    $scope.discountAmount = $scope.totalBeforeDiscount;
+                                }
+
                                 // Cập nhật lại tổng thanh toán sau giảm giá
                                 $scope.finalAmount = $scope.totalBeforeDiscount - $scope.discountAmount;
 
@@ -109,6 +114,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                                 if ($scope.finalAmount < 0) {
                                     $scope.finalAmount = 0;
                                 }
+
                             }
                         })
                         .catch(function (error) {
