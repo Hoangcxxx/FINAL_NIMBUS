@@ -450,7 +450,6 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         var tienKhachDua = $scope.tienKhachDua ? $scope.tienKhachDua.replace(/,/g, '') : '0';
         tienKhachDua = parseFloat(tienKhachDua);
         var totalPrice = parseFloat($scope.totalPrice) || 0;
-
         // Kiểm tra nếu tiền khách đưa không hợp lệ
         if (isNaN(tienKhachDua) || tienKhachDua < 0) {
             $scope.tienKhachDua = "";
@@ -463,7 +462,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             });
             return; // Dừng hàm nếu tiền khách đưa không hợp lệ
         }
-
+    
         // Kiểm tra tổng tiền thanh toán
         if (isNaN(totalPrice) || totalPrice < 0) {
             $scope.totalPrice = 0;
@@ -958,7 +957,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         $scope.getCartItems(); // Load lại giỏ hàng
                         $scope.getProductDetails(); // Load lại sản phẩm
                         $scope.calculateTotalPrice(); // Tính toán lại tổng tiền sau khi xóa sản phẩm
-
+                        $scope.tienKhachDua = "";
                         Swal.fire({
                             title: 'Thành công!',
                             text: 'Sản phẩm đã được xóa khỏi giỏ hàng.',
@@ -1258,7 +1257,10 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                     title: 'Voucher không hợp lệ',
                     text: 'Rất tiếc, voucher này đã hết số lượng và không thể sử dụng nữa.',
                     confirmButtonText: 'OK'
+                    
                 });
+                localStorage.removeItem('voucherdachon');
+               $scope.removeVoucher();
                 return false; // Dừng xử lý
             }
             if (data.idTrangThaiGiamGia === 5) {
@@ -1268,6 +1270,8 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                     text: 'Voucher này đã bị xóa bởi người bán và không thể sử dụng để thanh toán.',
                     confirmButtonText: 'OK'
                 });
+                localStorage.removeItem('voucherdachon');
+                $scope.removeVoucher();
                 return false; // Dừng xử lý
             }
 
@@ -1281,7 +1285,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 text: 'Không thể kiểm tra voucher, vui lòng thử lại sau.',
                 confirmButtonText: 'OK'
             });
-            return false; // Dừng xử lý do lỗi
+            return true; // Dừng xử lý do lỗi
         }
     }
        

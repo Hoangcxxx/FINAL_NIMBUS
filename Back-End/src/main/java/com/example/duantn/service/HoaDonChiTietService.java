@@ -104,6 +104,7 @@ public class HoaDonChiTietService {
             hoaDonChiTiet.setSoLuong(dto.getSoLuong());
             hoaDonChiTiet.setTongTien(tongTien);
             hoaDonChiTiet.setSoTienThanhToan(dto.getSoTienThanhToan());
+            hoaDonChiTiet.setTienSanPham(giaBan);
             hoaDonChiTiet.setTienTraLai(dto.getTienTraLai());
             hoaDonChiTiet.setMoTa(dto.getMoTa());
             Date now = new Date();
@@ -126,6 +127,7 @@ public class HoaDonChiTietService {
                     hoaDonChiTiet.getTongTien(),
                     hoaDonChiTiet.getSoTienThanhToan(),
                     hoaDonChiTiet.getTienTraLai(),
+                    hoaDonChiTiet.getTienSanPham(),
                     hoaDonChiTiet.getMoTa()
             );
             createdHoaDonChiTietList.add(createdDto);

@@ -48,6 +48,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         $scope.totalBeforeDiscount = 0;
 
         // Lấy dữ liệu chi tiết hóa đơn
+        // Lấy dữ liệu chi tiết hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findHoaDonCT/' + idHoaDon)
             .then(function (response) {
                 console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
@@ -103,6 +104,11 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
                                 // Cập nhật lại tổng thanh toán sau giảm giá
                                 $scope.finalAmount = $scope.totalBeforeDiscount - $scope.discountAmount;
+
+                                // Kiểm tra và đảm bảo finalAmount không âm
+                                if ($scope.finalAmount < 0) {
+                                    $scope.finalAmount = 0;
+                                }
                             }
                         })
                         .catch(function (error) {

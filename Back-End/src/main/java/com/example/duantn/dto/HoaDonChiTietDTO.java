@@ -16,6 +16,8 @@ public class HoaDonChiTietDTO {
     private int soLuong;
     private BigDecimal tongTien;
     private BigDecimal soTienThanhToan;
+    private BigDecimal tienSanPham;
     private BigDecimal tienTraLai;
     private String moTa;
+
 }

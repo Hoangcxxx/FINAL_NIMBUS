@@ -1,3 +1,0 @@
-window.AboutController = function ($scope) {
-    
-}
