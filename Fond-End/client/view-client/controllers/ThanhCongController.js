@@ -49,7 +49,8 @@ window.ThanhCongController = function ($scope, $http) {
                             tenchatlieu: hoaDon.tenchatlieu,
                             tenkichthuoc: hoaDon.tenkichthuoc,
                             tongtien: hoaDon.tongtien,
-                            giaKhuyenMai: hoaDon.giaKhuyenMai
+                            giaKhuyenMai: hoaDon.giaKhuyenMai,
+                            tienSanPham: hoaDon.tienSanPham
                         };
 
                         // Lấy hình ảnh cho từng sản phẩm

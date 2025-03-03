@@ -145,7 +145,8 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                             tenchatlieu: hoaDon.tenchatlieu, // Đảm bảo trường này tồn tại
                             tenkichthuoc: hoaDon.tenkichthuoc, // Đảm bảo trường này tồn tại
                             tongtien: hoaDon.tongtien,
-                            giaKhuyenMai: hoaDon.giaKhuyenMai
+                            giaKhuyenMai: hoaDon.giaKhuyenMai,
+                            tienSanPham: hoaDon.tienSanPham
                         };
 
                         // Lấy hình ảnh cho từng sản phẩm

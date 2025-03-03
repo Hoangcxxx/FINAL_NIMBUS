@@ -52,4 +52,8 @@ public class HoaDonChiTiet {
 
     @Column(name = "mo_ta")
     private String moTa;
+
+
+    @Column(name = "tien_san_pham", nullable = false)
+    private BigDecimal tiensanpham;
 }

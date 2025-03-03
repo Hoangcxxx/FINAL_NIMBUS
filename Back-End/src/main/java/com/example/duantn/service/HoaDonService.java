@@ -185,6 +185,7 @@ public class HoaDonService {
                     spDTO.setSoLuong(chiTiet.getSoLuong());
                     spDTO.setMaSPCT(chiTiet.getSanPhamChiTiet().getMaSanPhamCT());
                     spDTO.setTongtien(chiTiet.getTongTien());
+                    spDTO.setTienSanPham(chiTiet.getTiensanpham());
                     spDTO.setGiaTien(chiTiet.getSanPhamChiTiet().getSanPham().getGiaBan());
                     spDTO.setTenkichthuoc(chiTiet.getSanPhamChiTiet().getKichThuocChiTiet().getKichThuoc().getTenKichThuoc());
                     spDTO.setTenmausac(chiTiet.getSanPhamChiTiet().getMauSacChiTiet().getMauSac().getTenMauSac());
@@ -422,6 +423,49 @@ public class HoaDonService {
             hoaDonChiTiet.setNgayTao(new Date());
             hoaDonChiTiet.setNgayCapNhat(new Date());
             hoaDonChiTiet.setTrangThai(true);
+            hoaDonChiTiet.setTiensanpham(sanPham.getGiaTien());
+            hoaDonChiTietRepository.save(hoaDonChiTiet);
+        });
+
+        // Sau khi tạo hóa đơn, clear giỏ hàng
+        clearGioHangByUserId(hoaDonDTO.getCartId());
+    }
+
+    private void processCartItemsvnpay(HoaDonDTO hoaDonDTO, HoaDon hoaDon) {
+        // Xử lý các sản phẩm trong giỏ hàng
+        hoaDonDTO.getListSanPhamChiTiet().forEach(sanPham -> {
+            SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(sanPham.getIdspct())
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm chi tiết"));
+
+            // Kiểm tra số lượng tồn kho
+            if (sanPhamChiTiet.getSoLuong() <= 0 || sanPham.getSoLuong() > sanPhamChiTiet.getSoLuong()) {
+                throw new RuntimeException("Số lượng tồn kho không đủ");
+            }
+
+            // Cập nhật số lượng tồn kho
+            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - sanPham.getSoLuong());
+            sanPhamChiTietRepository.save(sanPhamChiTiet);
+// Tạo hoặc lấy LichSuHoaDon
+
+            LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+            lichSuHoaDon.setNgayGiaoDich(new Date());
+            lichSuHoaDon.setSoTienThanhToan(
+                    hoaDonDTO.getListSanPhamChiTiet().stream()
+                            .map(sp -> sp.getGiaTien().multiply(BigDecimal.valueOf(sp.getSoLuong())))
+                            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            );
+            lichSuHoaDon.setNguoiDung(hoaDon.getNguoiDung());
+            lichSuHoaDonRepository.save(lichSuHoaDon);
+            // Lưu chi tiết hóa đơn
+            HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
+            hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
+            hoaDonChiTiet.setHoaDon(hoaDon);
+            hoaDonChiTiet.setSoLuong(sanPham.getSoLuong());
+            hoaDonChiTiet.setTongTien(sanPham.getGiaTien().multiply(BigDecimal.valueOf(sanPham.getSoLuong())));
+            hoaDonChiTiet.setNgayTao(new Date());
+            hoaDonChiTiet.setNgayCapNhat(new Date());
+            hoaDonChiTiet.setTrangThai(true);
+            hoaDonChiTiet.setTiensanpham(sanPham.getGiaTien());
             hoaDonChiTietRepository.save(hoaDonChiTiet);
         });
 
@@ -591,7 +635,7 @@ public class HoaDonService {
         hoaDon.setPhiShip(phiVanChuyen.getSoTienVanChuyen());
 
 
-        processCartItems(hoaDonDTO, hoaDon);
+        processCartItemsvnpay(hoaDonDTO, hoaDon);
         updateHoaDonAfterPaymentSuccess(hoaDon, generatedMaHoaDon);
         // Không lưu hóa đơn ngay tại đây, sẽ lưu sau khi nhận thông báo thanh toán từ VNPa
         return hoaDon;
