@@ -3,18 +3,14 @@ package com.example.duantn.service;
 import com.example.duantn.dto.GioHangChiTietDTO;
 import com.example.duantn.dto.GioHangRequest;
 import com.example.duantn.dto.GioHangResponse;
-import com.example.duantn.dto.SanPhamChiTietDTO;
 import com.example.duantn.entity.*;
 import com.example.duantn.repository.*;
 
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;

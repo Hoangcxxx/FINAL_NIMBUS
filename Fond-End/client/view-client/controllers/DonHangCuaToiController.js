@@ -145,8 +145,7 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                             tenchatlieu: hoaDon.tenchatlieu, // Đảm bảo trường này tồn tại
                             tenkichthuoc: hoaDon.tenkichthuoc, // Đảm bảo trường này tồn tại
                             tongtien: hoaDon.tongtien,
-                            giaKhuyenMai: hoaDon.giaKhuyenMai,
-                            tienSanPham: hoaDon.tienSanPham
+                            giaKhuyenMai: hoaDon.giaKhuyenMai
                         };
 
                         // Lấy hình ảnh cho từng sản phẩm
@@ -205,19 +204,13 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                 discount = $scope.orderHieu.giaTriMavoucher;
             }
         }
-        const totalPrice = $scope.getTotalProductPrice();
-        // Nếu giảm quá số tiền sản phẩm thì gán discount = tổng tiền sản phẩm
-        if (discount > totalPrice) {
-            discount = totalPrice;
-        }
         return discount;
     };
     
     $scope.calculateTotalAfterDiscount = function () {
         const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
-        const discount = $scope.calculateDiscount();     // Số tiền giảm (đã điều chỉnh)
-        // Tổng tiền sau giảm sẽ không âm (nếu discount = totalPrice thì = 0)
-        return totalPrice - discount;
+        const discount = $scope.calculateDiscount(); // Số tiền giảm giá
+        return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
     };
     
 

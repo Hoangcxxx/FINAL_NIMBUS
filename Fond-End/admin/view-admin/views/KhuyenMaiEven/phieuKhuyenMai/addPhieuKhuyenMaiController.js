@@ -25,7 +25,6 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
     };
 
     // Lấy voucher theo ID nếu có
-    // Lấy voucher theo ID nếu có
     if ($routeParams.id) {
         $http.get('http://localhost:8080/api/admin/vouchers/' + $routeParams.id).then(function (response) {
             $scope.selectedVoucher = response.data;
@@ -49,8 +48,31 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
 
     // Hàm tạo mới hoặc cập nhật voucher
     $scope.createOrUpdateVoucher = function () {
+        // Kiểm tra các trường bắt buộc
+        if (!$scope.selectedVoucher.tenVoucher) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Mã voucher và tên voucher là bắt buộc.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+    
+        // Kiểm tra giá trị giảm giá hợp lệ
+        if (!$scope.selectedVoucher.giaTriGiamGia || isNaN($scope.selectedVoucher.giaTriGiamGia) || parseFloat($scope.selectedVoucher.giaTriGiamGia) <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Giá trị giảm giá phải là số dương và không được để trống.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+    
         // Kiểm tra nếu kiểu giảm giá là phần trăm (kieuGiamGia === false)
         if ($scope.selectedVoucher.kieuGiamGia === false) {
+            // Kiểm tra giảm giá theo phần trăm không vượt quá 100%
             if (parseFloat($scope.selectedVoucher.giaTriGiamGia) > 100) {
                 Swal.fire({
                     icon: 'error',
@@ -60,8 +82,62 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
                 });
                 return;
             }
+    
+            // Kiểm tra giá trị tối đa nếu kiểu giảm giá là phần trăm
+            if (!$scope.selectedVoucher.giaTriToiDa || isNaN($scope.selectedVoucher.giaTriToiDa) || parseFloat($scope.selectedVoucher.giaTriToiDa) <= 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Giá trị tối đa phải là số dương và không được để trống.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+    
+            // Kiểm tra Số Tiền Chi Tối Thiểu phải nhỏ hơn Giá Trị Tối Đa khi kiểu giảm giá là phần trăm
+            if (parseFloat($scope.selectedVoucher.soTienToiThieu) >= parseFloat($scope.selectedVoucher.giaTriToiDa)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: 'Số Tiền Chi Tối Thiểu phải nhỏ hơn Giá Trị Tối Đa.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
         }
-
+    
+        // Kiểm tra số lượng voucher hợp lệ
+        if (!$scope.selectedVoucher.soLuong || isNaN($scope.selectedVoucher.soLuong) || parseInt($scope.selectedVoucher.soLuong) <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Số lượng voucher phải là số nguyên dương và không được để trống.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+    
+        // Kiểm tra ngày bắt đầu và ngày kết thúc hợp lệ
+        if (!$scope.selectedVoucher.ngayBatDau || !$scope.selectedVoucher.ngayKetThuc) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Ngày bắt đầu và ngày kết thúc là bắt buộc.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+    
+        if ($scope.selectedVoucher.ngayBatDau > $scope.selectedVoucher.ngayKetThuc) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Ngày bắt đầu phải trước ngày kết thúc.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+    
         const voucherData = {
             maVoucher: $scope.selectedVoucher.maVoucher || null,
             tenVoucher: $scope.selectedVoucher.tenVoucher,
@@ -71,11 +147,11 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
             giaTriToiDa: $scope.selectedVoucher.kieuGiamGia === false ? $scope.selectedVoucher.giaTriToiDa : null,
             soTienToiThieu: $scope.selectedVoucher.soTienToiThieu,
             moTa: "Voucher giảm giá cho đơn hàng từ 50k",
-            // Đảm bảo ngày được định dạng đúng
-            ngayBatDau: $scope.selectedVoucher.ngayBatDau.toISOString().slice(0, 10),  // Chỉ lấy ngày (yyyy-MM-dd)
-            ngayKetThuc: $scope.selectedVoucher.ngayKetThuc.toISOString().slice(0, 10),  // Chỉ lấy ngày (yyyy-MM-dd)
+            // Sử dụng toLocaleDateString để giữ nguyên ngày
+            ngayBatDau: $scope.selectedVoucher.ngayBatDau.toLocaleDateString('en-CA'),  // Format yyyy-MM-dd
+            ngayKetThuc: $scope.selectedVoucher.ngayKetThuc.toLocaleDateString('en-CA'),  // Format yyyy-MM-dd
         };
-
+    
         // Kiểm tra nếu voucher đã có id (cập nhật voucher)
         if ($scope.selectedVoucher.idVoucher) {
             // Gửi yêu cầu PUT để cập nhật voucher
@@ -119,6 +195,8 @@ window.addPhieuKhuyenMaiController = function ($scope, $http, $routeParams, $win
                 });
         }
     };
+    
+
 
 
 

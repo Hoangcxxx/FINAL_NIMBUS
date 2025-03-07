@@ -54,6 +54,6 @@ public class HoaDonChiTiet {
     private String moTa;
 
 
-    @Column(name = "tien_san_pham", nullable = false)
-    private BigDecimal tiensanpham;
+    @Column(name = "tien_san_pham")
+    private BigDecimal tienSanPham;
 }

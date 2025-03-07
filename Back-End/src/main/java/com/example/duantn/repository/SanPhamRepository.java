@@ -21,8 +21,6 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-
 @Repository
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaSpecificationExecutor<SanPham> {
     @Query(value = SanPhamQuery.BASE_QUERY, nativeQuery = true)
@@ -132,10 +130,5 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaS
         // Trả về kết quả tìm kiếm
         return findAll(specification);
     }
-
-
-        Optional<SanPham> findByMaSanPham(String maSanPham);
-
-
 
 }

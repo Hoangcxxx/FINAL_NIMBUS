@@ -11,6 +11,7 @@ select * from dia_chi_van_chuyen
 select * from phi_van_chuyen
 select * from voucher 
 select * from hoa_don 
+select * from hoa_don_chi_tiet
 select * from vai_tro
 select * from dot_giam_gia
 select * from nguoi_dung 

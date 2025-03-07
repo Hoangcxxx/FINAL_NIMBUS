@@ -486,6 +486,7 @@ CREATE TABLE [hoa_don_chi_tiet] (
   [id_lich_su_hoa_don] INT,
   [id_hoa_don] INT,
   [so_luong] INT NOT NULL,
+  [tien_san_pham] DECIMAL(18),
   [tong_tien] DECIMAL(18),
   [so_tien_thanh_toan] DECIMAL(18),
   [tien_tra_lai] DECIMAL(18),
@@ -561,7 +562,7 @@ INSERT INTO [trang_thai_giam_gia] (ten_trang_thai_giam_gia, mo_ta) VALUES
 (N'Số lượng voucher đã hết', N'Số lượng giảm giá đã hết vui lòng thử lại vào dịp sau .');
 go
 -- Insert data for voucher
-INSERT INTO voucher (ma_voucher,ten_voucher,kieu_giam_gia, gia_tri_giam_gia, so_luong, gia_tri_toi_da, so_tien_toi_thieu, mo_ta, ngay_bat_dau, ngay_ket_thuc,id_trang_thai_giam_gia) VALUES
+INSERT INTO voucher (ma_voucher,ten_voucher,kieu_giam_gia, gia_tri_giam_gia, so_luong, so_tien_toi_thieu, gia_tri_toi_da, mo_ta, ngay_bat_dau, ngay_ket_thuc,id_trang_thai_giam_gia) VALUES
 (N'KM10',N'Giảm giá cho đơn hàng', 0,10, 100, 500000,2000000, N'Giảm 10% cho đơn hàng từ 50k', '2024-01-01', '2024-01-31', 3),
 (N'KM20K',N'Giảm giá cho đơn hàng',1, 20000, 50,500000,2000000, N'Giảm 20.000đ cho đơn hàng từ 100k', '2024-02-01', '2024-02-28', 3),
 (N'FREE_SHIP',N'Miễn phí vận chuyển cho đơn hàng',1, 0, 200,500000,2000000, N'Miễn phí vận chuyển cho đơn hàng từ 150k', '2024-03-01', '2024-03-31', 3),

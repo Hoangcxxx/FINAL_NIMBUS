@@ -65,7 +65,6 @@ public class TrangThaiHoaDonService {
             // Kiểm tra trạng thái 'Xác nhận đơn hàng' (idLoaiTrangThai == 3)
             if (idLoaiTrangThai == 3) {
                 // Nếu trạng thái 'Chờ xác nhận' (idLoaiTrangThai == 2) không tồn tại, cho phép cập nhật
-                // Cập nhật số lượng tồn kho
                 boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 2);
                 if (!isPaymentConfirmed) {
                     String errorMessage = "Không thể cập nhật trạng thái 'Xác nhận đơn hàng' vì hóa đơn chưa được 'Chờ xác nhận'.";
@@ -75,6 +74,27 @@ public class TrangThaiHoaDonService {
                     TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
                     errorTrangThai.setMoTa(errorMessage);  // Gán thông báo lỗi vào MoTa
                     return List.of(errorTrangThai);  // Trả về danh sách chứa thông báo lỗi
+                }
+
+                // Cập nhật số lượng sản phẩm chi tiết
+                List<HoaDonChiTiet> hoaDonChiTietList = hoaDon.getHoaDonChiTietList();
+                for (HoaDonChiTiet hoaDonChiTiet : hoaDonChiTietList) {
+                    SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+                    Integer soLuongBan = hoaDonChiTiet.getSoLuong();
+                    Integer soLuongTon = sanPhamChiTiet.getSoLuong();
+
+                    // Kiểm tra nếu còn đủ số lượng trong kho để trừ đi
+                    if (soLuongTon >= soLuongBan) {
+                        sanPhamChiTiet.setSoLuong(soLuongTon - soLuongBan); // Trừ số lượng tồn kho
+                        sanPhamChiTietRepository.save(sanPhamChiTiet);  // Lưu lại thông tin sản phẩm chi tiết với số lượng mới
+                        System.out.println("Đã trừ đi " + soLuongBan + " sản phẩm từ kho.");
+                    } else {
+                        // Nếu số lượng trong kho không đủ, trả về thông báo lỗi
+                        String errorMessage = "Không đủ số lượng trong kho để xác nhận đơn hàng.";
+                        TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+                        errorTrangThai.setMoTa(errorMessage);
+                        return List.of(errorTrangThai);  // Trả về thông báo lỗi
+                    }
                 }
             }
 
