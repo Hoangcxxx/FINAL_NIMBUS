@@ -1,6 +1,5 @@
 package com.example.duantn.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +29,10 @@ public class SanPhamChiTietDTO {
 	private Integer idSanPham;
 
 	private  Integer DotGiamGia;
+
 	private BigDecimal Tongtien;
+
+	private BigDecimal TienSanPham;
 
 	@Override
 	public String toString() {

@@ -482,9 +482,31 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                             title: 'Cập nhật thành công!',
                             text: response.data.message
                         }).then(function () {
-                            // Đóng modal sau khi hiển thị thông báo
-                            $('#xacNhanModal').modal('hide'); // Đóng modal bằng jQuery
+                            // Dùng AngularJS để thao tác với DOM
+                            var modalElement = angular.element(document.getElementById('xacNhanModal'));
+                            if (modalElement) {
+                                console.log('Modal exists in DOM, hiding modal...');
+                        
+                                // Loại bỏ class 'show' nếu modal đang hiển thị
+                                modalElement.removeClass('show');
+                        
+                                // Đặt lại style để chắc chắn modal bị ẩn
+                                modalElement.css('display', 'none');
+                        
+                                // Xóa backdrop nếu có
+                                var backdrop = angular.element(document.querySelector('.modal-backdrop'));
+                                if (backdrop) {
+                                    backdrop.remove(); // Loại bỏ backdrop nếu có
+                                }
+                        
+                                // Kiểm tra lại xem modal đã bị ẩn chưa
+                                console.log('Modal visibility after hide:', modalElement.css('display'));
+                            } else {
+                                console.error('Modal with ID "xacNhanModal" does not exist in the DOM.');
+                            }
                         });
+                        
+
                     } else {
                         console.error('Lỗi khi cập nhật thanh toán:', response.data.message);
 
