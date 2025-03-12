@@ -4,9 +4,14 @@ import com.example.duantn.dto.SanPhamDTO;
 import com.example.duantn.entity.DotGiamGia;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.repository.DotGiamGiaRepository;
+import com.example.duantn.repository.SanPhamRepository;
 import com.example.duantn.service.DotGiamGiaService;
 import com.example.duantn.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +32,9 @@ public class SanPhamController {
     private DotGiamGiaService dotGiamGiaService;
     @Autowired
     private DotGiamGiaRepository dotGiamGiaRepository;
+
+    @Autowired
+    private SanPhamRepository sanPhamRepository;
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -133,4 +141,20 @@ public class SanPhamController {
                                            @RequestParam(required = false) Integer kichThuocId) {
         return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId);
     }
+    @GetMapping("/phan_trang")
+    public ResponseEntity<Map<String, Object>> getSanPhamPhanTrang(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("idSanPham").ascending());
+        Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageable);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("sanPhams", sanPhamPage.getContent());
+        response.put("totalPages", sanPhamPage.getTotalPages());
+        response.put("totalElements", sanPhamPage.getTotalElements());
+        response.put("currentPage", sanPhamPage.getNumber());
+
+        return ResponseEntity.ok(response);
+    }
+
 }

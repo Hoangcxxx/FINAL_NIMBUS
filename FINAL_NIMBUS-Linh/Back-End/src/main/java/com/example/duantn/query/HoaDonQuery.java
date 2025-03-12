@@ -74,7 +74,7 @@ public class HoaDonQuery {
             "    spct.trang_thai,\n" +
             "    sp.ma_san_pham,\n" +
             "    sp.ten_san_pham,\n" +
-            "    sp.gia_ban,\n" +
+            "    ghct.tien_san_pham,\n" +
             "    cl.ten_chat_lieu,\n" +
             "    ms.ten_mau_sac,\n" +
             "    kt.ten_kich_thuoc,\n" +

@@ -1270,4 +1270,60 @@ footer a:hover {
 .user-dropdown .dropdown-item {
     padding: 5px 10px;
     /* Điều chỉnh padding cho các mục */
+    
 }
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 20px;
+}
+
+#pagination a, #pagination span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    background: #f8f9fa;
+    color: #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#pagination a:hover {
+    background: #ff4500;
+    color: white;
+    transform: translateY(-2px);
+}
+
+#pagination a.active {
+    background: #ff4500;
+    color: white;
+    font-size: 18px;
+    box-shadow: 0 4px 8px rgba(255, 69, 0, 0.3);
+}
+
+#pagination a.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    box-shadow: none;
+}
+
+#pagination .page-btn {
+    width: 50px;
+    background: white;
+    border: 2px solid #ddd;
+}
+
+#pagination .page-btn:hover {
+    background: #ff4500;
+    color: white;
+}
+    

@@ -486,6 +486,7 @@ CREATE TABLE [hoa_don_chi_tiet] (
   [id_lich_su_hoa_don] INT,
   [id_hoa_don] INT,
   [so_luong] INT NOT NULL,
+  [tien_san_pham] DECIMAL(18),
   [tong_tien] DECIMAL(18),
   [so_tien_thanh_toan] DECIMAL(18),
   [tien_tra_lai] DECIMAL(18),

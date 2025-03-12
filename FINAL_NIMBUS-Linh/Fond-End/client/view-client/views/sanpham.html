@@ -204,14 +204,48 @@
 </section>
 
 <section id="pagination" class="section-p1">
-    <a href="#">1</a>
-    <a href="#">2</a>
-    <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+    <!-- Nút Previous -->
+    <a href="" ng-click="changePage(page - 1)" 
+       ng-class="{ 'disabled': page === 0 }" 
+       class="page-btn prev">
+        <i class="fa-solid fa-chevron-left"></i>
+    </a>
+
+    <!-- Trang đầu -->
+    <a href="" ng-click="changePage(0)" ng-class="{ 'active': page === 0 }">1</a>
+
+    <!-- Dấu "..." nếu có nhiều trang -->
+    <span ng-if="page > 2">...</span>
+
+    <!-- Hiển thị các số trang gần trang hiện tại -->
+    <a href="" ng-repeat="n in getPageNumbers()" 
+       ng-click="changePage(n)" 
+       ng-class="{ 'active': n === page }">
+        {{n + 1}}
+    </a>
+
+    <!-- Dấu "..." nếu có nhiều trang -->
+    <span ng-if="page < totalPages - 3">...</span>
+
+    <!-- Trang cuối -->
+    <a href="" ng-click="changePage(totalPages - 1)" 
+       ng-class="{ 'active': page === totalPages - 1 }">
+        {{totalPages}}
+    </a>
+
+    <!-- Nút Next -->
+    <a href="" ng-click="changePage(page + 1)" 
+       ng-class="{ 'disabled': page === totalPages - 1 }" 
+       class="page-btn next">
+        <i class="fa-solid fa-chevron-right"></i>
+    </a>
 </section>
+
 <style>
     /* Khi hover vào các biểu tượng xóa bộ lọc, hiển thị con trỏ bàn tay */
     .badge .fa-xmark {
         cursor: pointer;
         /* Chuyển con trỏ thành hình bàn tay khi hover vào */
     }
+    
 </style>
