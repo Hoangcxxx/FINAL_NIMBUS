@@ -2,9 +2,7 @@ window.ThanhCongttController = function ($scope, $http, $window) {
     // Lấy mã hóa đơn từ URL hoặc localStorage nếu có
     var maHoaDon = new URLSearchParams(window.location.search).get("maHoaDon") || localStorage.getItem("maHoaDon");
 
-    // Nếu không có mã hóa đơn thì thông báo lỗi
     if (!maHoaDon) {
-        // Nếu không có mã hóa đơn, hiển thị thông báo lỗi thay vì thông báo thành công
         Swal.fire({
             icon: 'error',
             title: 'Lỗi',
@@ -14,8 +12,7 @@ window.ThanhCongttController = function ($scope, $http, $window) {
         return;
     }
     
-
-    // Nếu có mã hóa đơn, hiển thị thông báo thanh toán thành công
+    // Hiển thị thông báo thành công khi có mã hóa đơn
     Swal.fire({
         icon: 'success',
         title: 'Thanh toán thành công!',
@@ -34,7 +31,6 @@ window.ThanhCongttController = function ($scope, $http, $window) {
                     : null;
 
                 if (hoaDon) {
-                    // Cập nhật thông tin đơn hàng vào scope
                     $scope.orderData = {
                         maHoaDon: hoaDon.maHoaDon,
                         tenPhuongThucThanhToan: hoaDon.tenPhuongThucThanhToan,
@@ -47,13 +43,10 @@ window.ThanhCongttController = function ($scope, $http, $window) {
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
                         xa: hoaDon.tenXa,
-                        giaTriMavoucher: hoaDon.giaTriMavoucher,
-                        kieuGiamGia: hoaDon.kieuGiamGia,
+                        giaTriMavoucher: hoaDon.giaTriMavoucher, // Giá trị giảm (là % hoặc số tiền)
+                        kieuGiamGia: hoaDon.kieuGiamGia, // false: giảm theo %, true: giảm theo tiền
                         idlichsuhoadon: hoaDon.idlichsuhoadon || []
                     };
-
-                    console.log("Giá trị mã voucher:", $scope.orderData.giaTriMavoucher);
-                    console.log("Kiểu Giảm Giá:", $scope.orderData.kieuGiamGia);
 
                     // Cập nhật chi tiết sản phẩm
                     if (hoaDon.listSanPhamChiTiet && hoaDon.listSanPhamChiTiet.length > 0) {
@@ -67,7 +60,8 @@ window.ThanhCongttController = function ($scope, $http, $window) {
                             tenchatlieu: hoaDon.tenchatlieu,
                             tenkichthuoc: hoaDon.tenkichthuoc,
                             tongtien: hoaDon.tongtien,
-                            giaKhuyenMai: hoaDon.giaKhuyenMai
+                            giaKhuyenMai: hoaDon.giaKhuyenMai,
+                            tienSanPham: hoaDon.tienSanPham
                         };
 
                         // Lấy hình ảnh cho từng sản phẩm
@@ -90,42 +84,39 @@ window.ThanhCongttController = function ($scope, $http, $window) {
             });
     }
 
-    // Tính tổng giá trị sản phẩm trong đơn hàng
+    // Tính tổng giá trị sản phẩm (Tạm tính)
     $scope.getTotalProductPrice = function () {
         let total = 0;
-
-        // Kiểm tra xem $scope.orderDetails và listSanPhamChiTiet có tồn tại không
         if ($scope.orderDetails && Array.isArray($scope.orderDetails.listSanPhamChiTiet)) {
             angular.forEach($scope.orderDetails.listSanPhamChiTiet, function (item) {
-                total += item.tongtien || 0; // Thêm giá của mỗi sản phẩm vào tổng
+                total += item.tongtien || 0;
             });
-        } else {
-            console.log("orderDetails or listSanPhamChiTiet is undefined or not an array.");
         }
-
         return total;
     };
 
-    // Tính toán giảm giá
+    // Tính số tiền giảm giá (Discount)
     $scope.calculateDiscount = function () {
+        let total = $scope.getTotalProductPrice();
         let discount = 0;
         if ($scope.orderData) {
             if ($scope.orderData.kieuGiamGia === false) {
-                // Giảm giá theo phần trăm
-                discount = ($scope.getTotalProductPrice() * $scope.orderData.giaTriMavoucher) / 100;
+                // Giảm theo phần trăm
+                discount = (total * $scope.orderData.giaTriMavoucher) / 100;
             } else if ($scope.orderData.kieuGiamGia === true) {
-                // Giảm giá trực tiếp bằng số tiền
+                // Giảm trực tiếp theo số tiền
                 discount = $scope.orderData.giaTriMavoucher;
             }
         }
-        return discount;
+        // Giới hạn giảm giá không vượt quá tổng tiền sản phẩm
+        return Math.min(discount, total);
     };
 
-    // Tính tổng giá trị sau khi trừ giảm giá
+    // Tính tổng tiền sau giảm giá (chưa cộng phí ship)
     $scope.calculateTotalAfterDiscount = function () {
-        const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
-        const discount = $scope.calculateDiscount(); // Số tiền giảm giá
-        return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
+        const total = $scope.getTotalProductPrice();
+        const discount = $scope.calculateDiscount();
+        return Math.max(total - discount, 0);
     };
 
     // Gọi API để lấy chi tiết đơn hàng

@@ -31,10 +31,9 @@ public class SanPhamController {
     @Autowired
     private DotGiamGiaService dotGiamGiaService;
     @Autowired
-    private DotGiamGiaRepository dotGiamGiaRepository;
-
-    @Autowired
     private SanPhamRepository sanPhamRepository;
+    @Autowired
+    private DotGiamGiaRepository dotGiamGiaRepository;
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -156,5 +155,4 @@ public class SanPhamController {
 
         return ResponseEntity.ok(response);
     }
-
 }
