@@ -1,0 +1,417 @@
+<!-- Begin Page Content -->
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <h1 class="page-title">Chi Tiết Hóa Đơn</h1>
+        </div>
+        <div class="rounded ">
+            <div class="d-flex justify-content-between">
+                <a href="#!don_hang">
+                    <button class="btn btn-secondary">
+                        <i class="fa-light fa-rotate-right"></i> Trở lại
+                    </button>
+                </a>
+            </div>
+        </div>
+        <!-- Thanh trạng thái -->
+        <div class="card p-4">
+            <!-- Header -->
+            <div class="mb-4">
+                <h5 class="fw-bold text-primary">Danh sách hóa đơn / Mã hóa đơn: {{hoaDon.maHoaDon}}</h5>
+            </div>
+
+            <!-- Timeline -->
+            <div class="d-flex justify-content-around align-items-center mb-4 timeline">
+                <!-- Bước 1: Chờ xác nhận -->
+                <div class="step text-center"
+                    ng-if="isStatusAvailableById(1) || isStatusAvailableById(2) || isStatusAvailableById(3)">
+                    <div>
+                        <div class="step-icon bg-info text-white">
+                            <i class="fa-regular fa-pen-to-square fa-2x"></i> <!-- Icon: Bút viết -->
+                        </div>
+                        <p class="mb-1 fw-bold">Chờ Xác Nhận</p>
+                        <small class="text-muted">{{ getStatusDescriptionById(getStatus2()) }}</small> <br>
+                        <small class="text-muted">{{ getStatusDateById(2) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                    </div>
+                </div>
+
+
+
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(4)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 3: Chờ giao hàng -->
+                <div class="step text-center" ng-if="isStatusAvailableById(4)">
+                    <div class="step-icon bg-success text-white">
+                        <i class="fa-solid fa-truck-loading fa-2x"></i> <!-- Icon: Xe tải đang vận chuyển -->
+                    </div>
+                    <p class="mb-1 fw-bold">Chờ Giao Hàng</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(4) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(4) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(5)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 4: Đang vận chuyển -->
+                <div class="step text-center" ng-if="isStatusAvailableById(5)">
+                    <div class="step-icon bg-warning text-white">
+                        <i class="fa-solid fa-truck-fast fa-2x"></i> <!-- Icon: Xe tải giao hàng nhanh -->
+                    </div>
+                    <p class="mb-1 fw-bold">Đang Vận Chuyển</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(5) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(5) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(6)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+
+                <!-- <div class="step text-center" ng-if="isStatusAvailableById(6)">
+                    <div class="step-icon bg-primary text-white">
+                        <i class="fa-regular fa-credit-card fa-2x"></i>
+                    </div>
+                    <p class="mb-1 fw-bold">Chờ Thanh Toán</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus6()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus6()) | date:'dd/MM/yyyy hh:mm:ss a'
+                        }}</small>
+                </div>
+                <i ng-if="isStatusAvailableById(7)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <div class="step text-center" ng-if="isStatusAvailableById(7)">
+                    <div class="step-icon bg-primary text-white">
+                        <i class="fa-solid fa-user-check fa-2x"></i>
+                    </div>
+                    <p class="mb-1 fw-bold">Thanh toán thành công</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus7()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus7()) | date:'dd/MM/yyyy hh:mm:ss a'
+                        }}</small>
+                </div>
+                <i ng-if="isStatusAvailableById(8)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i> -->
+
+                <!-- Bước 5: Hoàn thành -->
+                <div class="step text-center" ng-if="isStatusAvailableById(6)">
+                    <div class="step-icon bg-success text-white">
+                        <i class="fa-regular fa-circle-check fa-2x"></i> <!-- Icon: Biểu tượng check hoàn thành -->
+                    </div>
+                    <p class="mb-1 fw-bold">Giao Hàng Thành Công</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(6) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(6) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(7)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <!-- Bước 6: Đã hủy -->
+                <div class="step text-center" ng-if="isStatusAvailableById(7)">
+                    <div class="step-icon bg-danger text-white">
+                        <i class="fa-solid fa-xmark fa-2x"></i> <!-- Icon: Biểu tượng hủy -->
+                    </div>
+                    <p class="mb-1 fw-bold">Đã Hủy</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(7) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(7) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <div>
+                <!-- Nút chuyển trạng thái chỉ hiển thị khi không phải khách hàng lẽ -->
+                <button class="btn btn-secondary" ng-click="updateTrangThaiHoaDon()"
+                    ng-if="modalButtonText && !isKhachHangLe">
+                    {{modalButtonText}}
+                </button>
+                <!-- Nút Hủy hiển thị khi nhấn sẽ gọi hàm cancelOrder -->
+                <!-- <button class="btn btn-danger" ng-click="cancelOrder()" ng-if="!isOrderCancelled()">Hủy</button> -->
+                <button class="btn btn-danger" ng-click="cancelOrder()" ng-if="canCancelOrder()">Hủy</button>
+
+            </div>
+            <div>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#chiTietModal">Chi tiết</button>
+            </div>
+        </div>
+        <!-- <div class="my-2 p-4 border rounded shadow-lg">
+            <section class="product-details mb-4">
+                <div class="d-flex justify-content-between">
+                    <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Lịch sử thanh toán</h3>
+                    <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#xacNhanModal"
+                        ng-if="showPaymentButton() && isPaymentButtonVisible()">Xác nhận thanh toán</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Số tiền</th>
+                                <th>Thời gian</th>
+                                <th>Trạng thái thanh toán</th>
+                                <th>Nhân viên xác nhận</th>
+                                <th>Mô tả</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in lichSuThanhToan">
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ item.soTienThanhToan | currency: '' : 0 }} VND</td>
+                                <td>{{ item.ngayGiaoDich | date:'yyyy-MM-dd HH:mm:ss a' }}</td>
+                                <td>{{ item.trangThaiThanhToan ? 'Đã thanh toán' : 'Chưa thanh toán' }}</td>
+                                <td>{{ item.tenNhanVien === 'N/A' ? 'Chưa có nhân viên xác nhận' : item.tenNhanVien }}
+                                </td>
+                                <td>{{ item.moTa || 'Không có mô tả' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div> -->
+        <div class="my-2 p-4 border rounded shadow-lg">
+            <div class="d-flex">
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin hóa đơn -->
+                    <section class="invoice-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Thông tin hóa đơn</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Mã hóa đơn:</strong> {{hoaDon.maHoaDon}}</li>
+                            <li><strong>Ngày tạo:</strong> {{hoaDon.ngayTao | date:'dd/MM/yyyy'}}</li>
+                            <li><strong>Trạng thái:</strong> {{hoaDon.trangThaiHoaDon}}</li>
+                            <li><strong>Phương thức thanh toán:</strong> {{hoaDon.tenPhuongThucThanhToan}}</li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin khách hàng -->
+                    <section class="customer-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Thông tin khách hàng</h3>
+                        <ul class="list-unstyled">
+                            <li><strong>Tên khách hàng:</strong> {{hoaDon.tenNguoiNhan}}</li>
+                            <li><strong>Vai trò:</strong> {{hoaDon.vaiTro.ten}}</li>
+                            <li><strong>Mô tả vai trò:</strong> {{hoaDon.vaiTro.moTa}}</li>
+
+                            <!-- Chỉ hiển thị email nếu showEmailAndAddress là true -->
+                            <li ng-if="showEmailAndAddress"><strong>Email:</strong> {{hoaDon.emailNguoiNhan}}</li>
+
+                            <!-- Chỉ hiển thị số điện thoại -->
+                            <li ng-if="showEmailAndAddress"><strong>Số điện thoại:</strong> {{hoaDon.sdtNguoiNhan}}</li>
+
+                            <!-- Chỉ hiển thị địa chỉ nếu showEmailAndAddress là true -->
+                            <li ng-if="showEmailAndAddress"><strong>Địa chỉ:</strong> {{hoaDon.diaChi}}, {{hoaDon.xa}},
+                                {{hoaDon.huyen}}, {{hoaDon.tinh}}</li>
+                        </ul>
+                    </section>
+
+                </div>
+                <div class="p-2 flex-fill">
+                    <!-- Thông tin khuyến mãi -->
+                    <section class="discount-info mb-4">
+                        <h3 class="h5 pb-3 text-black" style="font-weight: bold;">Khuyến mãi</h3>
+                        <ul class="list-unstyled">
+                            <li ng-if="voucherInfo !== 'Không sử dụng voucher'">
+                                <strong>Mã voucher:</strong> {{voucherInfo.maVoucher}}
+                            </li>
+                            <li ng-if="voucherInfo !== 'Không sử dụng voucher'">
+                                <strong>Tên voucher:</strong> {{voucherInfo.tenVoucher}}
+                            </li>
+                            <li ng-if="voucherInfo !== 'Không sử dụng voucher'">
+                                <strong>Giá trị giảm giá:</strong>
+                                <span ng-if="voucherInfo.kieuGiamGia">{{voucherInfo.giaTriGiamGia | currency: '': 0}}
+                                    VNĐ</span>
+                                <span ng-if="!voucherInfo.kieuGiamGia">{{voucherInfo.giaTriGiamGia | currency: '':
+                                    0}}%</span>
+                            </li>
+
+                            <!-- Nếu không có voucher, hiển thị thông báo -->
+                            <li ng-if="voucherInfo === 'Không sử dụng voucher'">
+                                Không sử dụng voucher
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+
+            </div>
+            <!-- Chi tiết sản phẩm -->
+            <section class="product-details mb-4">
+                <div class="d-flex justify-content-between">
+                    <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Chi tiết sản phẩm</h3>
+                    <button class="btn btn-danger" ng-click="huyDonHang()" ng-if="huyOrder()"><i
+                            class="fa-solid fa-rotate-left"></i>Trả hàng tất cả</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã sản phẩm chi tiết</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Chất liệu</th>
+                                <th>Màu sắc</th>
+                                <th>Kích thước</th>
+                                <th>Giá bán</th>
+                                <th>Số lượng</th>
+                                <th>Tổng tiền</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in sanPhamCT track by $index">
+                                <td>{{item.maSanPhamCT}}</td>
+                                <td>{{item.tenSanPham}}</td>
+                                <td>{{item.tenChatLieu}}</td>
+                                <td>{{item.tenMauSac}}</td>
+                                <td>{{item.tenKichThuoc}}</td>
+                                <td>{{item.giaBan | currency: '': 0}} VND</td>
+                                <td>{{item.soLuong}}</td>
+                                <td>{{item.tongTien | currency: '': 0}} VND</td>
+                                <td><button class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#confirmModal"><i class="fa-solid fa-rotate-left"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <div class="d-flex">
+                <div class="p-2 flex-fill"></div>
+                <div class="p-2 flex-fill"></div>
+                <div class="p-2 flex-fill">
+                    <!-- Tổng cộng -->
+                    <section class="total mb-4">
+                        <ul class="list-unstyled">
+                            <li><strong>Tổng Tiền Sản Phẩm:</strong> {{totalBeforeDiscount | currency: '': 0}} VND
+                            </li>
+                            <li ng-if="discountAmount > 0">
+                                <strong>Số Tiền Sau Giảm Giá:</strong>
+                                {{finalAmount | currency:'':0}} VND
+                                (<span class="discount-amount">-{{discountAmount | currency:'':0}} VND</span>)
+                            </li>
+                            <li><strong>Phí vận chuyển:</strong> {{hoaDon.phiShip | currency: '': 0}} VND</li>
+                            <li class="h4 mt-5">
+                                <strong>Tổng thanh toán:</strong>
+                                {{hoaDon.thanhTien/1 | currency: '': 0}} VND
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="alert alert-warning mb-0 me-2 p-2 d-flex align-items-center" role="alert"
+                    style="font-size: 18px;">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <strong>Xác nhận</strong>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <!-- Số lượng -->
+                    <div class="mb-3">
+                        <label for="soLuong" class="form-label">
+                            <span class="text-danger">*</span> Số lượng
+                        </label>
+                        <input type="number" class="form-control" id="soLuong" value="" min="" />
+                    </div>
+
+                    <!-- Lý do trả hàng -->
+                    <div class="mb-3">
+                        <label for="lyDoTraHang" class="form-label">
+                            <span class="text-danger">*</span> Lý do trả hàng
+                        </label>
+                        <textarea class="form-control" id="lyDoTraHang" rows="3"
+                            placeholder="Nhập lý do trả hàng..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- The Modal -->
+<!-- <div class="modal" id="xacNhanModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Xác nhận thanh toán</h5>
+                <button class="modal-close product-form" data-dismiss="modal" ng-click="resetModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="amountGiven" class="form-label">Tiền khách đưa <span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="amountGiven" placeholder="0"
+                                ng-model="amountGiven" readonly>
+                            <span class="input-group-text">VNĐ</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Ghi chú <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="notes" rows="3" placeholder="Nhập ghi chú..."
+                            ng-model="notes"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="mb-0">Số tiền cần thanh toán: <span class="text-danger fw-bold">{{totalAmount |
+                                currency: '' : 0}} VND</span></p>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" ng-click="updatePaymentHistory()">Thanh
+                            Toán</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- Modal Chi tiết -->
+<div class="modal fade" id="chiTietModal" tabindex="-1" role="dialog" aria-labelledby="chiTietModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content container ">
+            <h4 class="mt-4">Lịch sử chi tiết</h4>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Trạng thái</th>
+                        <th>Thời gian</th>
+                        <th>Nhân viên xác nhận</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in filteredStatuses track by $index">
+                        <td>{{item.tenLoaiTrangThaiHoaDon}}</td>
+                        <td>{{item.ngayTao | date:'dd/MM/yyyy hh:mm:ss a'}}</td>
+                        <td>{{item.tenNhanVien}}</td>
+                        <td>{{item.moTa}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

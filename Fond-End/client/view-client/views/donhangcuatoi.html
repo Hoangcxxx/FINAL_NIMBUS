@@ -1,0 +1,722 @@
+<section id="page-header" class="text-center py-4 bg-light">
+    <h2 class="text-uppercase font-weight-bold">#stayhome</h2>
+    <p class="lead text-muted">Save more with coupons & up to 70% off!</p>
+</section>
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3">
+            <div class="dashboard_tab_button">
+                <ul role="tablist" class="nav flex-column dashboard-list shadow-sm p-3 mb-5 bg-white rounded">
+                    <li class="nav-item mb-2">
+                        <a href="#dashboard" data-bs-toggle="tab" class="nav-link active bg-light text-dark rounded">
+                            Đơn hàng của tôi
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="#hoantra" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
+                            Đổi trả đơn hàng
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="#orders" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
+                            Tra Cứu Đơn Hàng
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <div class="tab-content shadow-sm p-4 mb-5 bg-white rounded">
+                <div class="tab-pane fade show active" id="dashboard">
+                    <h4 class="mt-4 text-primary">Đơn hàng của bạn</h4>
+                    <div>
+                        <!-- Dropdown để chọn trạng thái -->
+                        <label for="statusFilter">Lọc theo trạng thái:</label>
+                        <select id="statusFilter" class="form-select" ng-model="selectedStatus">
+                            <option value="">Tất cả</option>
+                            <option value="Chờ xác nhận">Chờ xác nhận</option>
+                            <option value="Chờ giao hàng">Chờ giao hàng</option>
+                            <option value="Đang giao hàng">Đang giao hàng</option>
+                            <option value="Giao hàng thành công">Giao hàng thành công</option>
+                            <option value="Đã hủy">Đã hủy</option>
+                            <option value="Hoàn trả">Hoàn trả</option>
+                        </select>
+                    </div>
+
+                    <!-- Phần bảng có thanh cuộn -->
+                    <div class="table-scrollable" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Mã đơn hàng</th>
+                                    <th scope="col">Ngày đặt hàng</th>
+                                    <th scope="col">Thành tiền</th>
+                                    <th scope="col">Trạng thái</th>
+                                    <th scope="col">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Hiển thị danh sách đơn hàng với bộ lọc trạng thái -->
+                                <tr
+                                    ng-repeat="hoaDon in orderData | filter:{tenLoaiTrangThai:selectedStatus} | limitTo: 100">
+                                    <td>{{ hoaDon.maHoaDon }}</td>
+                                    <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
+                                    <td>{{ hoaDon.thanhTien | currency:"":0 }} VND</td>
+                                    <td>
+                                        <span>{{ hoaDon.tenLoaiTrangThai }}</span>
+                                    </td>
+                                    <!-- Nút mở modal Chi Tiết Đơn Hàng -->
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#orderDetailsModal" ng-click="showOrderDetails(hoaDon)">
+                                            Chi tiết
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Trường hợp không có đơn hàng -->
+                                <tr ng-if="!orderData || orderData.length === 0">
+                                    <td colspan="5" class="text-center">Không có đơn hàng nào</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade show" id="hoantra">
+                    <h4 class="mt-4 text-primary">Đổi trả đơn hàng</h4>
+
+                    <!-- Phần bảng có thanh cuộn -->
+                    <div class="table-scrollable" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Mã đơn hàng</th>
+                                    <th scope="col">Ngày đặt hàng</th>
+                                    <th scope="col">Thành tiền</th>
+                                    <th scope="col">Trạng thái</th>
+                                    <th scope="col">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Hiển thị danh sách đơn hàng với bộ lọc trạng thái -->
+                                <tr
+                                    ng-repeat="hoaDon in orderData | filter:{tenLoaiTrangThai:selectedStatus} | limitTo: 100">
+                                    <td>{{ hoaDon.maHoaDon }}</td>
+                                    <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
+                                    <td>{{ hoaDon.thanhTien | currency:"":0 }} VND</td>
+                                    <td>
+                                        <span>{{ hoaDon.tenLoaiTrangThai }}</span>
+                                    </td>
+                                    <!-- Nút mở modal Chi Tiết Đơn Hàng -->
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#orderDetailsModal" ng-click="showOrderDetails(hoaDon)">
+                                            Chi tiết
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Trường hợp không có đơn hàng -->
+                                <tr ng-if="!orderData || orderData.length === 0">
+                                    <td colspan="5" class="text-center">Không có đơn hàng nào</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Modal Chi Tiết Đơn Hàng -->
+                <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="modalspcn"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-xl " role="document">
+
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title fw-bold">Chi Tiết Đơn Hàng</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Thông tin đơn hàng -->
+                                <ul class="nav nav-tabs mt-3" id="userManagementTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link active text-black" id="userTab" data-bs-toggle="tab"
+                                            href="#userManagement" role="tab" aria-controls="userManagement"
+                                            aria-selected="true">CHI TIẾT ĐƠN HÀNG</a>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link text-black" id="employeeTab" data-bs-toggle="tab"
+                                            href="#employeeManagement" role="tab" aria-controls="employeeManagement"
+                                            aria-selected="false">ĐỔI TRẢ HÀNG</a>
+                                    </li>
+                                </ul>
+
+                                <!-- Tab content -->
+                                <div class="tab-content mt-3">
+                                    <!-- Quản Lý Người Dùng -->
+                                    <div class="tab-pane fade show active" id="userManagement" role="tabpanel"
+                                        aria-labelledby="userTab">
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <p><strong class="text-muted">Mã Đơn Hàng:</strong> <span
+                                                        class="text-primary">{{ orderHieu.maHoaDon }}</span></p>
+                                                <p><strong class="text-muted">Ngày Đặt Hàng:</strong> {{
+                                                    orderHieu.ngayTao |
+                                                    date:'dd/MM/yyyy' }}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong class="text-muted">Số Điện Thoại:</strong> {{
+                                                    orderHieu.sdtNguoiNhan
+                                                    }}</p>
+                                                <p><strong class="text-muted">Tên Khách Hàng:</strong> {{
+                                                    orderHieu.tenNguoiNhan
+                                                    }}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Phương thức thanh toán:</strong>
+                                                    {{orderHieu.tenPhuongThucThanhToan}}
+                                                <p>
+                                            </div>
+
+                                            <p><strong class="text-muted">Địa chỉ:</strong>
+                                                {{ orderHieu.xa }}, {{ orderHieu.huyen}} ,{{orderHieu.tinh }}</p>
+                                            <p><strong class="text-muted">Địa chỉ:</strong>
+                                                {{ orderHieu.diaChi }}</p>
+                                        </div>
+                                        <div class="container">
+                                            <!-- Giỏ hàng -->
+                                            <h6 class="fw-bold text-primary">Giỏ Hàng</h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-bordered align-middle">
+                                                    <thead class="table-light text-center">
+                                                        <tr>
+                                                            <th>#</th>
+                                                            <th>Hình Ảnh</th>
+                                                            <th>Tên Sản Phẩm</th>
+                                                            <th>Chất Liệu</th>
+                                                            <th>Màu Sắc</th>
+                                                            <th>Kích Thước</th>
+                                                            <th>Giá</th>
+                                                            <th>Số Lượng</th>
+                                                            <th>Thành Tiền</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat="item in orderlist.listSanPhamChiTiet">
+                                                            <td class="text-center">{{ $index + 1 }}</td>
+                                                            <td class="text-center">
+                                                                <img ng-if="item.urlAnh" ng-src="{{ item.urlAnh }}"
+                                                                    alt="{{ item.tenSanPham }}"
+                                                                    class="img-fluid rounded-3"
+                                                                    style="max-height: 100px; object-fit: cover;">
+                                                                <span ng-if="!item.urlAnh" class="text-muted">Chưa có
+                                                                    hình
+                                                                    ảnh</span>
+                                                            </td>
+                                                            <td>{{ item.tenSanPham }}</td>
+                                                            <td class="text-center">{{ item.tenchatlieu }}</td>
+                                                            <td class="text-center">{{ item.tenmausac }}</td>
+                                                            <td class="text-center">{{ item.tenkichthuoc }}</td>
+                                                            <td class="text-center">{{ item.tienSanPham | currency:"":0
+                                                                }} VND</td>
+                                                            <td class="text-center">{{ item.soLuong }}</td>
+                                                            <td class="text-center">{{ item.tongtien | currency:"":0 }}
+                                                                VND
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- Tổng tiền và phí ship -->
+                                            <div class="mt-4">
+                                                <!-- Voucher -->
+                                                <!-- <div class="d-flex justify-content-between">
+                                                    <p class="mb-0">
+                                                        <strong class="text-muted">Voucher:</strong>
+                                                    </p>
+                                                    <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0"
+                                                        class="text-secondary">
+                                                        0 VND
+                                                    </span>
+                                                    <span ng-if="orderHieu.giaTriMavoucher && orderHieu.giaTriMavoucher !== 0">
+                                                        <span ng-if="orderHieu.kieuGiamGia === false" class="text-success">
+                                                            {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} %
+                                                        </span>
+                                                        <span ng-if="orderHieu.kieuGiamGia === true" class="text-danger">
+                                                            {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} VND
+                                                        </span>
+                                                    </span>
+                                                </div> -->
+
+                                                <!-- Số tiền giảm giá -->
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <strong class="text-muted">Số tiền giảm giá:</strong>
+                                                    <div class="d-flex flex-column align-items-end">
+                                                        <span class="text-muted">
+                                                            {{ calculateTotalAfterDiscount() | currency:"":0 }} VND
+                                                        </span>
+                                                        <span class="text-danger">
+                                                            (Giảm {{ calculateDiscount() | currency:"":0 }} VND)
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Phí Ship -->
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <p class="mb-0"><strong class="text-muted">Phí Ship:</strong></p>
+                                                    <span class="text-warning">
+                                                        {{ orderlist.phiShip | currency:"":0 }} VND
+                                                    </span>
+                                                </div>
+
+                                                <!-- Tổng Tiền -->
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <p class="mb-0"><strong class="text-muted">Tổng Tiền:</strong></p>
+                                                    <span class="text-success">
+                                                        {{ orderlist.thanhTien | currency:"":0 }} VND
+                                                    </span>
+                                                </div>
+                                                <hr>
+                                                <div class="d-flex justify-content-end">
+                                                    <!-- Nút "Hủy" với điều kiện ng-disabled -->
+                                                    <button class="btn btn-danger me-2" ng-click="cancelOrder()"
+                                                        ng-if="orderHieu.idLoaiTrangThai === 7 || orderHieu.idLoaiTrangThai === 6 || orderHieu.idLoaiTrangThai === 8 ? false : true">Hủy</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quản Lý Nhân Viên -->
+                                    <div class="tab-pane fade" id="employeeManagement" role="tabpanel"
+                                        aria-labelledby="employeeTab">
+                                        <form>
+                                            <table class="table table-bordered table-striped">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th class="text-center">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                ng-model="selectAll" ng-change="toggleSelectAll()"> Chọn
+                                                            tất cả
+                                                        </th>
+                                                        <th class="text-center">Tên sản phẩm</th>
+                                                        <th class="text-center">Đơn giá</th>
+                                                        <th class="text-center">Số lượng mua</th>
+                                                        <th class="text-center">Số lượng hoàn trả</th>
+                                                        <th class="text-center">Tổng giá trị</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Sản phẩm 1 -->
+                                                    <tr ng-repeat="item in orderlist.listSanPhamChiTiet">
+                                                        <td class="text-center">
+                                                            <input type="checkbox" ng-model="item.selected"
+                                                                ng-change="updateQuantityStatus(item)">
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <div>
+                                                                    <img ng-if="item.urlAnh" ng-src="{{ item.urlAnh }}"
+                                                                        alt="{{ item.tenSanPham }}"
+                                                                        class="img-fluid rounded-3"
+                                                                        style="max-height: 100px; object-fit: cover;">
+                                                                    <span ng-if="!item.urlAnh" class="text-muted">Chưa
+                                                                        có hình ảnh</span>
+                                                                </div>
+                                                                <div class="ml-2 ms-3">
+                                                                    <strong>{{ item.tenSanPham }}</strong><br>
+                                                                    <span class="text-muted">{{ item.tenchatlieu }} - {{
+                                                                        item.tenmausac }} - {{ item.tenkichthuoc
+                                                                        }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">{{ item.tienSanPham | currency:"":0 }}
+                                                            VND</td>
+                                                        <td class="text-center">{{ item.soLuong }}</td>
+                                                        <td><input type="number" class="form-control"
+                                                                ng-model="item.soLuongHoanTra"
+                                                                ng-disabled="!item.selected"></td>
+                                                        <td class="text-center">{{ item.tienSanPham *
+                                                            item.soLuongHoanTra | currency:"":0 }} VND</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <!-- Lý do đổi trả -->
+                                            <div class="mb-4">
+                                                <label for="reason" class="form-label">Lý do đổi trả</label>
+                                                <select class="form-select" id="reason" ng-model="selectedReason">
+                                                    <option value="" selected disabled>Chọn lý do đổi trả</option>
+                                                    <option value="quality">Sản phẩm bị lỗi chất lượng</option>
+                                                    <option value="wrong_item">Nhận nhầm sản phẩm</option>
+                                                    <option value="size_issue">Kích thước không phù hợp</option>
+                                                    <option value="other">Lý do khác</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Textbox hiển thị khi chọn lý do khác -->
+                                            <div class="mb-4" id="other-reason-container"
+                                                ng-show="selectedReason === 'other'">
+                                                <label for="other-reason" class="form-label">Lý do khác</label>
+                                                <textarea class="form-control" id="other-reason" rows="3"
+                                                    ng-model="otherReason"></textarea>
+                                            </div>
+
+                                            <div class="d-flex justify-content-end">
+                                                <button type="submit" class="btn btn-primary">Gửi yêu cầu đổi
+                                                    trả</button>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="orders">
+                    <div class="card border-0 shadow-sm p-4">
+                        <!-- Nội dung chính -->
+                        <h5 class="text-center text-primary">Tra Cứu Đơn Hàng</h5>
+
+                        <!-- Form tra cứu -->
+                        <div class="mb-3">
+                            <label for="orderCode" class="form-label">Mã Đơn Hàng</label>
+                            <input type="text" id="orderCode" class="form-control form-control-sm"
+                                placeholder="Nhập mã đơn hàng...">
+                        </div>
+                        <button class="btn btn-danger w-100 btn-sm" id="searchOrder">Tra Cứu</button>
+
+                        <!-- Khu vực hiển thị thông tin đơn hàng -->
+                        <div class="order-info mt-3 p-3" id="orderInfo"
+                            style="display: none; border: 1px solid #ddd; border-radius: 10px;">
+                            <h6 class="text-info">Thông Tin Đơn Hàng</h6>
+                            <p><strong>Mã Đơn Hàng:</strong> <span id="infoOrderCode"></span></p>
+                            <p><strong>Khách Hàng:</strong> <span id="infoCustomerName"></span></p>
+                            <p><strong>Ngày Đặt Hàng:</strong> <span id="infoOrderDate"></span></p>
+                            <p><strong>Trạng Thái:</strong> <span id="infoOrderStatus"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .table-scrollable {
+        max-height: 300px;
+        /* Giới hạn chiều cao */
+        overflow-y: auto;
+        /* Cho phép cuộn dọc */
+
+    }
+
+
+
+    #page-header h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    #page-header p {
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+
+    /* Sidebar */
+    .dashboard_tab_button {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard_tab_button ul {
+        padding: 0;
+        list-style: none;
+    }
+
+    .dashboard_tab_button .nav-item a {
+        padding: 10px 15px;
+        display: block;
+        color: #555;
+        transition: all 0.3s ease;
+    }
+
+    .dashboard_tab_button .nav-item a:hover,
+    .dashboard_tab_button .nav-item a.active {
+        background: #f6d365;
+        color: #fff;
+    }
+
+    /* Bảng đơn hàng */
+    .table-scrollable {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    .table-scrollable table {
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table-scrollable table th {
+        background: #f6d365;
+        color: #fff;
+        text-align: center;
+    }
+
+    .table-scrollable table td {
+        text-align: center;
+    }
+
+    /* Nút bấm */
+    button {
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        background-color: #fda085 !important;
+    }
+
+    /* Modal */
+    .modal-header {
+        background: #f6d365;
+        color: #fff;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Modal tổng quan */
+    .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        background: #fdfdfd;
+        overflow: hidden;
+    }
+
+    /* Tiêu đề Modal */
+    .modal-header {
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        color: #fff;
+        border-bottom: none;
+        padding: 15px 20px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .modal-title {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .modal-header .btn-close {
+        background-color: #fff;
+        color: #ff7e5f;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+
+    .modal-header .btn-close:hover {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    /* Nội dung Modal */
+    .modal-body {
+        padding: 20px;
+        font-size: 14px;
+        color: #333;
+        background: #f9f9f9;
+    }
+
+    /* Thông tin đơn hàng */
+    .modal-body h6 {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .modal-body p {
+        margin-bottom: 8px;
+        color: #555;
+        font-size: 14px;
+    }
+
+    /* Bảng giỏ hàng */
+    .modal-body .table {
+        margin-top: 15px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .modal-body .table th {
+        background: #ff7e5f;
+        color: #fff;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .modal-body .table td {
+        text-align: center;
+        font-size: 13px;
+        color: #555;
+        vertical-align: middle;
+    }
+
+    .modal-body .table td img {
+        border-radius: 4px;
+        transition: transform 0.3s ease;
+    }
+
+    .modal-body .table td img:hover {
+        transform: scale(1.2);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Tổng tiền, phí ship */
+    .modal-body p:last-child {
+        font-weight: bold;
+        color: #333;
+        font-size: 15px;
+    }
+
+
+    /* Card tra cứu đơn hàng */
+    .card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Tiêu đề tra cứu đơn hàng */
+    .card h5 {
+        font-size: 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+    }
+
+    /* Form nhập mã đơn hàng */
+    #orderCode {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    #orderCode:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        outline: none;
+    }
+
+    /* Nút tra cứu */
+    #searchOrder {
+        border-radius: 20px;
+        background: linear-gradient(90deg, #ff7e5f, #feb47b);
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
+
+    #searchOrder:hover {
+        background: linear-gradient(90deg, #feb47b, #ff7e5f);
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Thông tin đơn hàng */
+    #orderInfo {
+        background: #fff;
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #orderInfo h6 {
+        font-size: 18px;
+        font-weight: bold;
+        color: #17a2b8;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+    }
+
+    #orderInfo p {
+        font-size: 14px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    #orderInfo p strong {
+        color: #555;
+    }
+
+    /* Responsive cho màn hình nhỏ */
+    @media (max-width: 576px) {
+        .card {
+            padding: 15px;
+        }
+
+        #orderCode {
+            font-size: 13px;
+            padding: 6px 10px;
+        }
+
+        #searchOrder {
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+
+        #orderInfo {
+            padding: 10px;
+        }
+    }
+</style>
+<script>
+    // AngularJS app
+    angular.module('returnApp', [])
+        .controller('ReturnController', function ($scope) {
+            // Danh sách sản phẩm
+            $scope.products = [
+                { name: 'Sản phẩm A', price: 100000, selected: false, quantity: 0, total: 0 },
+                { name: 'Sản phẩm B', price: 200000, selected: false, quantity: 0, total: 0 },
+                { name: 'Sản phẩm C', price: 150000, selected: false, quantity: 0, total: 0 }
+            ];
+
+            // Tính tổng giá trị của mỗi sản phẩm
+            $scope.calculateTotal = function (item) {
+                if (item.selected && item.quantity > 0) {
+                    item.total = item.price * item.quantity;
+                } else {
+                    item.total = 0;
+                }
+            };
+
+            // Kiểm tra khi chọn lý do khác
+            $scope.toggleOtherReason = function () {
+                if ($scope.selectedReason !== 'other') {
+                    $scope.otherReason = '';  // Reset lý do khác nếu không chọn
+                }
+            };
+        });
+</script>
