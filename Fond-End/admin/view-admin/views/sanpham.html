@@ -44,6 +44,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
+                                        <th scope="col">Mã sản phẩm</th>
                                         <th scope="col">Tên sản phẩm</th>
                                         <th scope="col">Mô tả</th>
                                         <th scope="col" class="text-center">Trạng thái</th>
@@ -53,6 +54,7 @@
                                 <tbody>
                                     <tr ng-repeat="item in dsSanPham | filter:item">
                                         <th scope="row">{{$index + 1}}</th>
+                                        <td class="text-center">{{item.maSanPham}}</td>
                                         <td>{{item.tenSanPham}}</td>
                                         <td>{{item.moTa}}</td>
                                         <td>

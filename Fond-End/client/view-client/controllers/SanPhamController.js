@@ -150,13 +150,49 @@ window.SanPhamController = function ($scope, $http) {
     // Hàm lấy dữ liệu sản phẩm và danh mục khi khởi tạo controller
     function initializeData() {
         // Lấy danh sách sản phẩm
-        $scope.fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'dsSanPham');
+        // $scope.fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'dsSanPham');
         // Lấy danh sách danh mục
         $scope.fetchData('http://localhost:8080/api/nguoi_dung/danh_muc', 'dsDanhMuc');
         $scope.fetchData('http://localhost:8080/api/nguoi_dung/chat_lieu', 'dsChatLieu');
         $scope.fetchData('http://localhost:8080/api/nguoi_dung/mau_sac', 'dsMauSac');
         $scope.fetchData('http://localhost:8080/api/nguoi_dung/kich_thuoc', 'dsKichThuoc');
     }
+    $scope.page = 0; // Trang hiện tại
+    $scope.size = 8; // Số sản phẩm mỗi trang
+    $scope.totalPages = 1; // Tổng số trang
+    $scope.dsSanPham = []; // Danh sách sản phẩm
+
+    // Hàm lấy danh sách sản phẩm có phân trang
+    $scope.getSanPhams = function (page) {
+        if (page < 0 || page >= $scope.totalPages) return;
+        $http.get("http://localhost:8080/api/nguoi_dung/san_pham/phan_trang?page=" + page + "&size=" + $scope.size)
+            .then(function (response) {
+                $scope.dsSanPham = response.data.data; // Sử dụng key 'data' từ response
+                $scope.totalPages = response.data.totalPages;
+                $scope.page = response.data.currentPage;
+            });
+    };
+
+    // Hàm chuyển trang
+    $scope.changePage = function (newPage) {
+        $scope.getSanPhams(newPage);
+    };
+
+    // Gọi dữ liệu trang đầu tiên
+    $scope.getSanPhams(0);
+
+    // Hiển thị các số trang gần trang hiện tại
+    $scope.getPageNumbers = function () {
+        let range = [];
+        let start = Math.max(1, $scope.page - 1);
+        let end = Math.min($scope.totalPages - 2, $scope.page + 1);
+
+        for (let i = start; i <= end; i++) {
+            range.push(i);
+        }
+        return range;
+    };
+
 
     // Gọi hàm khởi tạo
     initializeData();

@@ -10,4 +10,6 @@ public interface TinhRepository  extends JpaRepository<Tinh, Integer> {
     Tinh findByIdTinh(Integer idTinh);  // Phương thức tìm kiếm tỉnh theo tên
     // Tìm kiếm Tinh theo mã
     Optional<Tinh> findByMaTinh(String maTinh);
+
+    List<Tinh> findAllByMaTinh(String maTinh);  // Trả về danh sách tỉnh có mã trùng
 }

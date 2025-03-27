@@ -173,7 +173,7 @@ public class ADHoaDonController {
             } else {
                 result.put("trangThaiHoaDon", "Chưa có trạng thái");
             }
-// Thêm thông tin về tỉnh, huyện, xã
+            // Thêm thông tin về tỉnh, huyện, xã
             DiaChiVanChuyen diaChiVanChuyen = hoaDon.getDiaChiVanChuyen();
             if (diaChiVanChuyen != null) {
                 result.put("tinh", diaChiVanChuyen.getTinh() != null ? diaChiVanChuyen.getTinh().getTenTinh() : null);
@@ -221,8 +221,8 @@ public class ADHoaDonController {
                 if (errorMessage.equals("Khách hàng đã thanh toán thành công.") ||
                         errorMessage.equals("Đơn hàng đã được giao đến khách hàng thành công.") ||
                         errorMessage.equals("Đơn hàng đang được vận chuyển và trên đường giao đến khách hàng.") ||
-                        errorMessage.equals("Đơn hàng đã được vận chuyển nhưng chưa thanh toán.") ||
                         errorMessage.equals("Người bán đã xác nhận đơn hàng.") ||
+                        errorMessage.equals("Đơn hàng bị hủy bỏ.") ||
                         errorMessage.equals("Đơn hàng đã được thanh toán thành công và đang chờ giao đến khách hàng.")) {
                     response.put("message", errorMessage);
                     response.put("success", true);  // Trả về success true
@@ -243,7 +243,12 @@ public class ADHoaDonController {
 
 
 
-
+    @PostMapping("/hoan_tra_san_pham")
+    public String hoanTraSanPhamTheoId(@RequestParam Integer idSanPhamChiTiet, @RequestParam Integer soLuongHoanTra,@RequestParam Integer idHoaDon,
+                                       @RequestParam Integer idLoaiTrangThai,
+                                       @RequestParam Integer idNhanVien) {
+        return hoaDonService.hoanTraSanPhamTheoId(idSanPhamChiTiet, soLuongHoanTra,idHoaDon, idLoaiTrangThai, idNhanVien);
+    }
 
 
 

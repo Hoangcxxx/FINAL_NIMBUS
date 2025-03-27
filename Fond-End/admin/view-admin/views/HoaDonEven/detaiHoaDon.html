@@ -69,58 +69,53 @@
                 <i ng-if="isStatusAvailableById(6)" class="fa-solid fa-arrow-right fa-2x text-muted"
                     style="margin-top: -86px;"></i>
 
-                <!-- Bước 2: Chờ thanh toán -->
-                <div class="step text-center" ng-if="isStatusAvailableById(6)">
+
+                <!-- <div class="step text-center" ng-if="isStatusAvailableById(6)">
                     <div class="step-icon bg-primary text-white">
-                        <i class="fa-regular fa-credit-card fa-2x"></i> <!-- Icon: Thẻ tín dụng -->
+                        <i class="fa-regular fa-credit-card fa-2x"></i>
                     </div>
                     <p class="mb-1 fw-bold">Chờ Thanh Toán</p>
-                    <!-- Hiển thị trạng thái cho các bước khác -->
                     <small class="text-muted">{{ getStatusDescriptionById(getStatus6()) }}</small> <br>
                     <small class="text-muted">{{ getStatusDateById(getStatus6()) | date:'dd/MM/yyyy hh:mm:ss a'
                         }}</small>
                 </div>
-                <!-- Dấu mũi tên -->
                 <i ng-if="isStatusAvailableById(7)" class="fa-solid fa-arrow-right fa-2x text-muted"
                     style="margin-top: -86px;"></i>
 
-                <!-- Bước 2: Chờ thanh toán -->
                 <div class="step text-center" ng-if="isStatusAvailableById(7)">
                     <div class="step-icon bg-primary text-white">
                         <i class="fa-solid fa-user-check fa-2x"></i>
                     </div>
                     <p class="mb-1 fw-bold">Thanh toán thành công</p>
-                    <!-- Hiển thị trạng thái cho các bước khác -->
                     <small class="text-muted">{{ getStatusDescriptionById(getStatus7()) }}</small> <br>
                     <small class="text-muted">{{ getStatusDateById(getStatus7()) | date:'dd/MM/yyyy hh:mm:ss a'
                         }}</small>
                 </div>
-                <!-- Dấu mũi tên -->
                 <i ng-if="isStatusAvailableById(8)" class="fa-solid fa-arrow-right fa-2x text-muted"
-                    style="margin-top: -86px;"></i>
+                    style="margin-top: -86px;"></i> -->
 
                 <!-- Bước 5: Hoàn thành -->
-                <div class="step text-center" ng-if="isStatusAvailableById(8)">
+                <div class="step text-center" ng-if="isStatusAvailableById(6)">
                     <div class="step-icon bg-success text-white">
                         <i class="fa-regular fa-circle-check fa-2x"></i> <!-- Icon: Biểu tượng check hoàn thành -->
                     </div>
-                    <p class="mb-1 fw-bold">Hoàn Thành</p>
-                    <small class="text-muted">{{ getStatusDescriptionById(8) }}</small> <br>
-                    <small class="text-muted">{{ getStatusDateById(8) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                    <p class="mb-1 fw-bold">Giao Hàng Thành Công</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(6) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(6) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
                 </div>
 
                 <!-- Dấu mũi tên -->
-                <i ng-if="isStatusAvailableById(9)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                <i ng-if="isStatusAvailableById(7)" class="fa-solid fa-arrow-right fa-2x text-muted"
                     style="margin-top: -86px;"></i>
 
                 <!-- Bước 6: Đã hủy -->
-                <div class="step text-center" ng-if="isStatusAvailableById(9)">
+                <div class="step text-center" ng-if="isStatusAvailableById(7)">
                     <div class="step-icon bg-danger text-white">
                         <i class="fa-solid fa-xmark fa-2x"></i> <!-- Icon: Biểu tượng hủy -->
                     </div>
                     <p class="mb-1 fw-bold">Đã Hủy</p>
-                    <small class="text-muted">{{ getStatusDescriptionById(9) }}</small> <br>
-                    <small class="text-muted">{{ getStatusDateById(9) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                    <small class="text-muted">{{ getStatusDescriptionById(7) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(7) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
                 </div>
             </div>
         </div>
@@ -134,18 +129,19 @@
                     ng-if="modalButtonText && !isKhachHangLe">
                     {{modalButtonText}}
                 </button>
-            </div>
+                <!-- Nút Hủy hiển thị khi nhấn sẽ gọi hàm cancelOrder -->
+                <!-- <button class="btn btn-danger" ng-click="cancelOrder()" ng-if="!isOrderCancelled()">Hủy</button> -->
+                <button class="btn btn-danger" ng-click="cancelOrder()" ng-if="canCancelOrder()">Hủy</button>
 
+            </div>
             <div>
                 <button class="btn btn-primary" data-toggle="modal" data-target="#chiTietModal">Chi tiết</button>
             </div>
         </div>
         <div class="my-2 p-4 border rounded shadow-lg">
-            <!-- Chi tiết sản phẩm -->
             <section class="product-details mb-4">
                 <div class="d-flex justify-content-between">
                     <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Lịch sử thanh toán</h3>
-                    <!-- Nút Xác nhận thanh toán, chỉ hiển thị nếu chưa có nhân viên xác nhận -->
                     <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#xacNhanModal"
                         ng-if="showPaymentButton() && isPaymentButtonVisible()">Xác nhận thanh toán</button>
                 </div>
@@ -242,7 +238,11 @@
             </div>
             <!-- Chi tiết sản phẩm -->
             <section class="product-details mb-4">
-                <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Chi tiết sản phẩm</h3>
+                <div class="d-flex justify-content-between">
+                    <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Chi tiết sản phẩm</h3>
+                    <button class="btn btn-danger" ng-click="huyDonHang()" ng-if="huyOrder()"><i
+                            class="fa-solid fa-rotate-left"></i>Trả hàng tất cả</button>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
                         <thead class="table-light">
@@ -255,6 +255,7 @@
                                 <th>Giá bán</th>
                                 <th>Số lượng</th>
                                 <th>Tổng tiền</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -267,6 +268,9 @@
                                 <td>{{item.giaBan | currency: '': 0}} VND</td>
                                 <td>{{item.soLuong}}</td>
                                 <td>{{item.tongTien | currency: '': 0}} VND</td>
+                                <td><button class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#confirmModal"><i class="fa-solid fa-rotate-left"></i></button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -299,10 +303,48 @@
     </div>
 </main>
 
+<!-- Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="alert alert-warning mb-0 me-2 p-2 d-flex align-items-center" role="alert"
+                    style="font-size: 18px;">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    <strong>Xác nhận</strong>
+                </div>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <!-- Số lượng -->
+                    <div class="mb-3">
+                        <label for="soLuong" class="form-label">
+                            <span class="text-danger">*</span> Số lượng
+                        </label>
+                        <input type="number" class="form-control" id="soLuong" value="" min="" />
+                    </div>
+
+                    <!-- Lý do trả hàng -->
+                    <div class="mb-3">
+                        <label for="lyDoTraHang" class="form-label">
+                            <span class="text-danger">*</span> Lý do trả hàng
+                        </label>
+                        <textarea class="form-control" id="lyDoTraHang" rows="3"
+                            placeholder="Nhập lý do trả hàng..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- The Modal -->
-<div class="modal" id="xacNhanModal">
+<!-- <div class="modal" id="xacNhanModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -317,7 +359,6 @@
                         <label for="amountGiven" class="form-label">Tiền khách đưa <span
                                 class="text-danger">*</span></label>
                         <div class="input-group">
-                            <!-- Hiển thị số tiền thanh toán đã được định dạng -->
                             <input type="text" class="form-control" id="amountGiven" placeholder="0"
                                 ng-model="amountGiven" readonly>
                             <span class="input-group-text">VNĐ</span>
@@ -344,7 +385,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 
 <!-- Modal Chi tiết -->

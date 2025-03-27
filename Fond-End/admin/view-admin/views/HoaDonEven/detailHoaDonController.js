@@ -48,7 +48,6 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         $scope.totalBeforeDiscount = 0;
 
         // Lấy dữ liệu chi tiết hóa đơn
-        // Lấy dữ liệu chi tiết hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findHoaDonCT/' + idHoaDon)
             .then(function (response) {
                 console.log('Dữ liệu trả về từ API hóa đơn:', response.data);
@@ -178,16 +177,10 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             case 4: // Trạng thái "Chờ giao hàng"
                 $scope.modalButtonText = 'Giao hàng';
                 break;
-            case 5: // Trạng thái "Chờ giao hàng"
-                $scope.modalButtonText = 'Chờ thanh toán';
+            case 5:
+                $scope.modalButtonText = 'Giao hàng thành công';
                 break;
-            case 6: // Trạng thái "Chờ thanh toán"
-                $scope.modalButtonText = 'Xác nhận thanh toán';
-                break;
-            case 7: // Trạng thái "Đang vận chuyển"
-                $scope.modalButtonText = 'Hoàn thành';
-                break;
-            // case 8: 
+            // case 6:
             //     $scope.modalButtonText = 'Hủy';
             //     break;
             default:
@@ -274,56 +267,20 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
             // Kiểm tra trạng thái hiện tại và xác định trạng thái tiếp theo
             switch ($scope.ghiChu.trangThaiId) {
-                case 2:  // Chờ xác nhận -> Chuyển sang Chờ giao hàng (3)
+                case 2:
                     nextStatusId = 3;
                     break;
-                case 3:  // Chờ giao hàng -> Chuyển sang Chờ thanh toán (4)
+                case 3:
                     nextStatusId = 4;
                     break;
-                case 4:  // Chờ thanh toán -> Chuyển sang Chờ thanh toán (5)
+                case 4:
                     nextStatusId = 5;
                     break;
-                case 5:  // Chờ thanh toán -> Chuyển sang Đang vận chuyển (6)
+                case 5:
                     nextStatusId = 6;
                     break;
-                case 6:  // Chờ thanh toán -> Chuyển sang Đang vận chuyển (7)
+                case 6:
                     nextStatusId = 7;
-
-                    // Kiểm tra nếu đang chuyển từ trạng thái "Chờ thanh toán" (6) sang "Xác nhận thanh toán"
-                    // Kiểm tra xem đã có lịch sử thanh toán với nhân viên xác nhận chưa
-                    $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
-                        .then(function (response) {
-                            // Kiểm tra nếu có lịch sử thanh toán và xem có nhân viên xác nhận không
-                            const hasPaymentHistory = response.data.some(function (payment) {
-                                // Kiểm tra nếu `tenNhanVien` khác "N/A" và không phải `null`
-                                return payment.tenNhanVien !== "N/A" && payment.tenNhanVien !== null;
-                            });
-
-                            if (!hasPaymentHistory) {
-                                // Nếu không có nhân viên xác nhận thanh toán
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Không thể cập nhật trạng thái',
-                                    text: 'Vui lòng xác nhận thanh toán trước khi chuyển trạng thái!'
-                                });
-                                return; // Dừng cập nhật trạng thái nếu không có xác nhận thanh toán
-                            } else {
-                                // Nếu đã có nhân viên xác nhận thanh toán, tiếp tục cập nhật trạng thái
-                                updateStatusInBackend(nextStatusId);
-                            }
-                        })
-                        .catch(function (error) {
-                            // Xử lý lỗi trong quá trình lấy lịch sử thanh toán
-                            console.error('Lỗi khi kiểm tra lịch sử thanh toán:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Lỗi khi kiểm tra thanh toán',
-                                text: "Đã xảy ra lỗi khi kiểm tra lịch sử thanh toán."
-                            });
-                        });
-
-                    return;  // Dừng việc chuyển trạng thái nếu phải kiểm tra lịch sử thanh toán
-
                 case 7:  // Đang vận chuyển -> Hoàn thành
                     nextStatusId = 8;  // Trạng thái hoàn thành (có thể là trạng thái 8)
                     break;
@@ -404,6 +361,84 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             });
     }
 
+    $scope.canCancelOrder = function () {
+        // Kiểm tra nếu có trạng thái hóa đơn
+        if ($scope.trangThaiHoaDon && $scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1]; // Trạng thái hiện tại của hóa đơn
+
+            // Kiểm tra nếu trạng thái là 5 (Đang giao hàng) hoặc 6 (Chờ thanh toán), thì không cho phép hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon === 5 || currentStatus.idLoaiTrangThaiHoaDon === 6) {
+                return false; // Không thể hủy nếu đang ở trạng thái 5 hoặc 6
+            }
+
+            // Nếu trạng thái là "Đã hủy" (ID = 7), ẩn nút hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon === 7) {
+                return false; // Đã hủy, không cho phép hủy nữa
+            }
+        }
+
+        return true; // Nếu không phải trạng thái 5, 6 hoặc 7, cho phép hủy
+    };
+    $scope.huyOrder = function () {
+        // Kiểm tra nếu có trạng thái hóa đơn
+        if ($scope.trangThaiHoaDon && $scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1]; // Trạng thái hiện tại của hóa đơn
+
+            // Kiểm tra nếu trạng thái là 5 (Đang giao hàng) hoặc 6 (Chờ thanh toán), thì không cho phép hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon !== 6) {
+                return false; // Không thể hủy nếu đang ở trạng thái 5 hoặc 6
+            }
+
+            // Nếu trạng thái là "Đã hủy" (ID = 7), ẩn nút hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon === 6) {
+                return true; // Đã hủy, không cho phép hủy nữa
+            }
+        }
+
+        return true; // Nếu không phải trạng thái 5, 6 hoặc 7, cho phép hủy
+    };
+    $scope.cancelOrder = function () {
+        if (idHoaDon) {
+            // Kiểm tra trước khi hủy đơn hàng
+            const currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+
+            // Kiểm tra trạng thái hiện tại có phải là "Đang giao hàng" (5) hoặc "Chờ thanh toán" (6)
+            if (currentStatus.idLoaiTrangThaiHoaDon === 5 || currentStatus.idLoaiTrangThaiHoaDon === 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Không thể hủy đơn hàng',
+                    text: 'Đơn hàng hiện tại đang trong quá trình giao hàng hoặc chờ thanh toán, không thể hủy!'
+                });
+                return;
+            }
+
+            // Cập nhật trạng thái hủy đơn hàng (ID = 7)
+            updateStatusInBackend(7);
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng kiểm tra thông tin',
+                text: 'Không có mã hóa đơn để hủy!'
+            });
+        }
+    };
+    $scope.huyDonHang = function () {
+        if (idHoaDon) {
+            // Kiểm tra trước khi hủy đơn hàng
+            const currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+
+            if (currentStatus.idLoaiTrangThaiHoaDon === 6) {
+                updateStatusInBackend(7);
+            }
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng kiểm tra thông tin',
+                text: 'Không có mã hóa đơn để hủy!'
+            });
+        }
+    };
+
     // Lấy dữ liệu từ API
     $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
         .then(function (response) {
@@ -482,9 +517,31 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                             title: 'Cập nhật thành công!',
                             text: response.data.message
                         }).then(function () {
-                            // Đóng modal sau khi hiển thị thông báo
-                            $('#xacNhanModal').modal('hide'); // Đóng modal bằng jQuery
+                            // Dùng AngularJS để thao tác với DOM
+                            var modalElement = angular.element(document.getElementById('xacNhanModal'));
+                            if (modalElement) {
+                                console.log('Modal exists in DOM, hiding modal...');
+
+                                // Loại bỏ class 'show' nếu modal đang hiển thị
+                                modalElement.removeClass('show');
+
+                                // Đặt lại style để chắc chắn modal bị ẩn
+                                modalElement.css('display', 'none');
+
+                                // Xóa backdrop nếu có
+                                var backdrop = angular.element(document.querySelector('.modal-backdrop'));
+                                if (backdrop) {
+                                    backdrop.remove(); // Loại bỏ backdrop nếu có
+                                }
+
+                                // Kiểm tra lại xem modal đã bị ẩn chưa
+                                console.log('Modal visibility after hide:', modalElement.css('display'));
+                            } else {
+                                console.error('Modal with ID "xacNhanModal" does not exist in the DOM.');
+                            }
                         });
+
+
                     } else {
                         console.error('Lỗi khi cập nhật thanh toán:', response.data.message);
 

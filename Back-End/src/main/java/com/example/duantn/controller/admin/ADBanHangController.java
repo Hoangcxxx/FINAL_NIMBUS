@@ -48,26 +48,26 @@ public class ADBanHangController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-    @PostMapping("/create-trang-thai/{hoaDonId}/{idNhanVien}")
-    public ResponseEntity<Map<String, String>> TrangThaiHoaDonKhiChonPTTT(
-            @PathVariable Integer hoaDonId,
-            @PathVariable Integer idNhanVien) {
-
-        try {
-            // Gọi service để cập nhật trạng thái hóa đơn và lưu idNhanVien
-            trangThaiHoaDonService.TrangThaiHoaDonKhiChonPTTT(hoaDonId, idNhanVien);
-
-            // Trả về thông báo thành công
-            Map<String, String> successResponse = new HashMap<>();
-            successResponse.put("message", "Cập nhật trạng thái hóa đơn thành công!");
-            return ResponseEntity.ok(successResponse);
-        } catch (IllegalArgumentException e) {
-            // Trả về thông báo lỗi nếu có exception
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(errorResponse);
-        }
-    }
+//    @PostMapping("/create-trang-thai/{hoaDonId}/{idNhanVien}")
+//    public ResponseEntity<Map<String, String>> TrangThaiHoaDonKhiChonPTTT(
+//            @PathVariable Integer hoaDonId,
+//            @PathVariable Integer idNhanVien) {
+//
+//        try {
+//            // Gọi service để cập nhật trạng thái hóa đơn và lưu idNhanVien
+//            trangThaiHoaDonService.TrangThaiHoaDonKhiChonPTTT(hoaDonId, idNhanVien);
+//
+//            // Trả về thông báo thành công
+//            Map<String, String> successResponse = new HashMap<>();
+//            successResponse.put("message", "Cập nhật trạng thái hóa đơn thành công!");
+//            return ResponseEntity.ok(successResponse);
+//        } catch (IllegalArgumentException e) {
+//            // Trả về thông báo lỗi nếu có exception
+//            Map<String, String> errorResponse = new HashMap<>();
+//            errorResponse.put("message", e.getMessage());
+//            return ResponseEntity.badRequest().body(errorResponse);
+//        }
+//    }
     @GetMapping("/chi_tiet")
     public List<Map<String, Object>> getSanPhamChiTiet(@RequestParam("id_san_pham") Integer idSanPham) {
         // Gọi service để lấy dữ liệu từ database

@@ -10,6 +10,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -25,13 +27,12 @@ import java.util.List;
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaSpecificationExecutor<SanPham> {
     @Query(value = SanPhamQuery.BASE_QUERY, nativeQuery = true)
     List<Object[]> getAllSanPham();
-
+    @Query(value = SanPhamQuery.BASE_QUERY, nativeQuery = true)
+    Page<Object[]> getAllSanPham(Pageable pageable);
     @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_DANH_MUC, nativeQuery = true)
     List<Object[]> getSanPhamByDanhMuc(@Param("idDanhMuc") Integer idDanhMuc);
     @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_ID_DOT_GIAM_GIA, nativeQuery = true)
     List<Object[]> getSanPhamByIdDotGiamGia(@Param("idDotGiamGia") Integer idDotGiamGia);
-    @Query(value = SanPhamQuery.GET_SAN_PHAM_BY_ID, nativeQuery = true)
-    List<Object[]> getSanPhamById(@Param("idSanPham") String idSanPham);
 
     @Query(value = SanPhamQuery.GET_SAN_PHAM_AD, nativeQuery = true)
     List<Object[]> getAllSanPhamAD();
@@ -126,7 +127,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaS
                 .and(SanPhamSpecification.withMauSac(mauSacId))
                 .and(SanPhamSpecification.withKichThuoc(kichThuocId))
                 .and(SanPhamSpecification.withSanPhamChiTiet());
-
         // Trả về kết quả tìm kiếm
         return findAll(specification);
     }

@@ -5,9 +5,8 @@ window.ThongKeController = function ($scope, $http) {
     // Lấy dữ liệu từ API
     $http.get('http://localhost:8080/api/admin/thong_ke/getAllThongKe')
         .then(function (response) {
-            // Dữ liệu trả về từ API
+              // Dữ liệu trả về từ API
             $scope.dsSanPhamBanChay = response.data;
-
         })
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
@@ -17,7 +16,6 @@ window.ThongKeController = function ($scope, $http) {
         .then(function (response) {
             // Log toàn bộ dữ liệu trả về để kiểm tra cấu trúc
             console.log("Dữ liệu trả về từ API:", response.data);
-
             // Kiểm tra xem `tongSoLuongBanRa` có tồn tại không
             if (response.data && response.data[0] && response.data[0].tongSoLuongBanRa !== undefined) {
                 $scope.tongSoLuongBanRa = response.data[0].tongSoLuongBanRa; // Lưu giá trị trả về vào biến
@@ -47,7 +45,6 @@ window.ThongKeController = function ($scope, $http) {
         .then(function (response) {
             // Log toàn bộ dữ liệu trả về để kiểm tra cấu trúc
             console.log("Dữ liệu trả về từ API:", response.data);
-
             // Kiểm tra xem `tongSoLuongBanRa` có tồn tại không
             if (response.data && response.data[0] && response.data[0].tongHoaDonThangNay !== undefined) {
                 $scope.tongHoaDonThangNay = response.data[0].tongHoaDonThangNay; // Lưu giá trị trả về vào biến
