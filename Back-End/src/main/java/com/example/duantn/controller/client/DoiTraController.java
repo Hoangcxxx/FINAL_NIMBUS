@@ -19,11 +19,11 @@ public class DoiTraController {
         this.doiTraService = doiTraService;
     }
 
-    // API tạo yêu cầu đổi trả
-    @PostMapping("/tao")
-    public ResponseEntity<DoiTra> taoDoiTra(@RequestBody DoiTraDTO doiTraDTO) {
-        DoiTra doiTra = doiTraService.createDoiTra(doiTraDTO);
-        return ResponseEntity.ok(doiTra);
+    // API để tạo nhiều yêu cầu đổi trả
+    @PostMapping("/tao-doi-tra")
+    public ResponseEntity<List<DoiTra>> createMultipleDoiTra(@RequestBody List<DoiTraDTO> doiTraDTOList) {
+        List<DoiTra> doiTraList = doiTraService.createDoiTra(doiTraDTOList);
+        return ResponseEntity.ok(doiTraList);
     }
 
     // API lấy danh sách đổi trả theo hóa đơn

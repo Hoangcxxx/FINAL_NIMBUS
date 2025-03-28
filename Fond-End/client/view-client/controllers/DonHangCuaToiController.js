@@ -171,7 +171,109 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                 console.error("Lỗi khi lấy thông tin hóa đơn:", error);
             });
     }
-
+    $scope.submitReturnRequest = function () {
+        // Kiểm tra trạng thái đơn hàng trước khi xử lý hoàn trả
+        if ($scope.orderHieu.idLoaiTrangThai === 7) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Không thể yêu cầu hoàn trả vì đơn hàng của bạn đã bị hủy!',
+                confirmButtonText: 'Đồng ý'
+            });
+            return; // Ngừng quá trình
+        }
+    
+        // Kiểm tra danh sách sản phẩm có tồn tại và có sản phẩm không
+        if (!$scope.orderlist?.listSanPhamChiTiet?.length) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Không có sản phẩm nào trong đơn hàng để thực hiện hoàn trả!',
+                confirmButtonText: 'Đồng ý'
+            });
+            return;
+        }
+    
+        // Lọc sản phẩm được chọn và có số lượng hoàn trả > 0
+        const filteredItems = $scope.orderlist.listSanPhamChiTiet.filter(
+            item => item.selected && item.soLuongHoanTra > 0
+        );
+    
+        if (filteredItems.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Vui lòng chọn ít nhất một sản phẩm và nhập số lượng hoàn trả hợp lệ!',
+                confirmButtonText: 'Đồng ý'
+            });
+            return;
+        }
+    
+        // Kiểm tra lý do đổi trả hợp lệ
+        const reasonToSend = ($scope.selectedReason === 'other' && $scope.otherReason)
+            ? $scope.otherReason
+            : $scope.selectedReason;
+    
+        if (!reasonToSend) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Vui lòng chọn lý do đổi trả hoặc nhập lý do khác!',
+                confirmButtonText: 'Đồng ý'
+            });
+            return;
+        }
+    
+        // Tạo danh sách DoiTraDTO từ sản phẩm đã chọn
+        const doiTraDTOList = filteredItems.map(item => ({
+            idHoaDon: $scope.orderHieu.idHoaDon,
+            idSanPhamChiTiet: item.idspct,
+            soLuong: item.soLuongHoanTra,
+            lyDo: reasonToSend,
+            trangThai: true,
+            tongTien: item.soLuongHoanTra * item.tienSanPham
+        }));
+    
+        // Gửi yêu cầu đổi trả lên API backend và xử lý phản hồi
+        $http.post("http://localhost:8080/api/nguoi_dung/doi-tra/tao-doi-tra", doiTraDTOList)
+            .then(response => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: 'Yêu cầu hoàn trả của bạn đã được xử lý thành công!',
+                    confirmButtonText: 'Đồng ý'
+                });
+                resetForm(); // Đặt lại biểu mẫu sau khi hoàn tất
+            })
+            .catch(error => {
+                const errorMessage = error?.data?.message || 'Không thể xử lý yêu cầu hoàn trả do lỗi hệ thống. Vui lòng thử lại sau!';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: errorMessage,
+                    confirmButtonText: 'Đồng ý'
+                });
+            });
+    };
+    
+    
+    
+    $scope.resetOtherReason = function () {
+        if ($scope.selectedReason !== 'other') {
+            $scope.otherReason = '';  // Xóa lý do nhập tay nếu không chọn 'Lý do khác'
+        }
+    };
+    
+    function resetForm() {
+        $scope.orderlist.listSanPhamChiTiet.forEach(item => {
+            item.selected = false;
+            item.soLuongHoanTra = 0;
+        });
+        $scope.selectedReason = '';
+        $scope.otherReason = '';
+    }
+    
+    
 
     $scope.getTotalProductPrice = function () {
         let total = 0;
