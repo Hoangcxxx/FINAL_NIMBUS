@@ -12,4 +12,6 @@ public interface HuyenRepository extends JpaRepository<Huyen, Integer> {
     List<Huyen> findByTinh_IdTinh(Integer idTinh);
     // Tìm kiếm Huyen theo mã
     Optional<Huyen> findByMaHuyen(String maHuyen);
+
+    List<Huyen> findAllByMaHuyen(String maHuyen);
 }

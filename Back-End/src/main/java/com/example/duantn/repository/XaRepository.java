@@ -12,5 +12,5 @@ public interface XaRepository extends JpaRepository<Xa, Integer> {
     // Tìm kiếm Xa theo mã
     Optional<Xa> findByMaXa(String maXa);
 
-
+    List<Xa> findAllByMaXa(String maXa);  // Trả về danh sách xã có mã trùng
 }

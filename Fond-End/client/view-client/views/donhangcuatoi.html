@@ -15,11 +15,6 @@
                         </a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#hoantra" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
-                            Đổi trả đơn hàng
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
                         <a href="#orders" data-bs-toggle="tab" class="nav-link bg-light text-dark rounded">
                             Tra Cứu Đơn Hàng
                         </a>
@@ -85,49 +80,6 @@
                         </table>
                     </div>
                 </div>
-                <div class="tab-pane fade show" id="hoantra">
-                    <h4 class="mt-4 text-primary">Đổi trả đơn hàng</h4>
-
-                    <!-- Phần bảng có thanh cuộn -->
-                    <div class="table-scrollable" style="max-height: 300px; overflow-y: auto;">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Mã đơn hàng</th>
-                                    <th scope="col">Ngày đặt hàng</th>
-                                    <th scope="col">Thành tiền</th>
-                                    <th scope="col">Trạng thái</th>
-                                    <th scope="col">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Hiển thị danh sách đơn hàng với bộ lọc trạng thái -->
-                                <tr
-                                    ng-repeat="hoaDon in orderData | filter:{tenLoaiTrangThai:selectedStatus} | limitTo: 100">
-                                    <td>{{ hoaDon.maHoaDon }}</td>
-                                    <td>{{ hoaDon.ngayTao | date:'dd/MM/yyyy' }}</td>
-                                    <td>{{ hoaDon.thanhTien | currency:"":0 }} VND</td>
-                                    <td>
-                                        <span>{{ hoaDon.tenLoaiTrangThai }}</span>
-                                    </td>
-                                    <!-- Nút mở modal Chi Tiết Đơn Hàng -->
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#orderDetailsModal" ng-click="showOrderDetails(hoaDon)">
-                                            Chi tiết
-                                        </button>
-                                    </td>
-                                </tr>
-
-                                <!-- Trường hợp không có đơn hàng -->
-                                <tr ng-if="!orderData || orderData.length === 0">
-                                    <td colspan="5" class="text-center">Không có đơn hàng nào</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
                 <!-- Modal Chi Tiết Đơn Hàng -->
                 <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="modalspcn"
                     aria-hidden="true">
@@ -147,7 +99,8 @@
                                             href="#userManagement" role="tab" aria-controls="userManagement"
                                             aria-selected="true">CHI TIẾT ĐƠN HÀNG</a>
                                     </li>
-                                    <li class="nav-item" role="presentation">
+                                    <li class="nav-item" role="presentation"
+                                        ng-if="[6].includes(orderHieu.idLoaiTrangThai)">
                                         <a class="nav-link text-black" id="employeeTab" data-bs-toggle="tab"
                                             href="#employeeManagement" role="tab" aria-controls="employeeManagement"
                                             aria-selected="false">ĐỔI TRẢ HÀNG</a>
@@ -233,25 +186,6 @@
 
                                             <!-- Tổng tiền và phí ship -->
                                             <div class="mt-4">
-                                                <!-- Voucher -->
-                                                <!-- <div class="d-flex justify-content-between">
-                                                    <p class="mb-0">
-                                                        <strong class="text-muted">Voucher:</strong>
-                                                    </p>
-                                                    <span ng-if="!orderHieu.giaTriMavoucher || orderHieu.giaTriMavoucher === 0"
-                                                        class="text-secondary">
-                                                        0 VND
-                                                    </span>
-                                                    <span ng-if="orderHieu.giaTriMavoucher && orderHieu.giaTriMavoucher !== 0">
-                                                        <span ng-if="orderHieu.kieuGiamGia === false" class="text-success">
-                                                            {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} %
-                                                        </span>
-                                                        <span ng-if="orderHieu.kieuGiamGia === true" class="text-danger">
-                                                            {{ orderHieu.giaTriMavoucher | currency:'' : 0 }} VND
-                                                        </span>
-                                                    </span>
-                                                </div> -->
-
                                                 <!-- Số tiền giảm giá -->
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                                     <strong class="text-muted">Số tiền giảm giá:</strong>
@@ -284,7 +218,7 @@
                                                 <div class="d-flex justify-content-end">
                                                     <!-- Nút "Hủy" với điều kiện ng-disabled -->
                                                     <button class="btn btn-danger me-2" ng-click="cancelOrder()"
-                                                        ng-if="orderHieu.idLoaiTrangThai === 7 || orderHieu.idLoaiTrangThai === 6 || orderHieu.idLoaiTrangThai === 8 ? false : true">Hủy</button>
+                                                        ng-if="[1, 2, 3, 4].includes(orderHieu.idLoaiTrangThai)">Hủy</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -298,11 +232,10 @@
                                                 <thead class="thead-light">
                                                     <tr>
                                                         <th class="text-center">
-                                                            <input type="checkbox" class="form-check-input"
-                                                                ng-model="selectAll" ng-change="toggleSelectAll()"> Chọn
-                                                            tất cả
+                                                            <input type="checkbox" ng-model="selectAll"
+                                                                ng-change="toggleSelectAll()"> Chọn tất cả
                                                         </th>
-                                                        <th class="text-center">Tên sản phẩm</th>
+                                                        <th class="text-center">Thông tin sản phẩm</th>
                                                         <th class="text-center">Đơn giá</th>
                                                         <th class="text-center">Số lượng mua</th>
                                                         <th class="text-center">Số lượng hoàn trả</th>
@@ -310,11 +243,9 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <!-- Sản phẩm 1 -->
                                                     <tr ng-repeat="item in orderlist.listSanPhamChiTiet">
                                                         <td class="text-center">
-                                                            <input type="checkbox" ng-model="item.selected"
-                                                                ng-change="updateQuantityStatus(item)">
+                                                            <input type="checkbox" ng-model="item.selected">
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center">
@@ -337,38 +268,41 @@
                                                         <td class="text-center">{{ item.tienSanPham | currency:"":0 }}
                                                             VND</td>
                                                         <td class="text-center">{{ item.soLuong }}</td>
-                                                        <td><input type="number" class="form-control"
-                                                                ng-model="item.soLuongHoanTra"
-                                                                ng-disabled="!item.selected"></td>
-                                                        <td class="text-center">{{ item.tienSanPham *
-                                                            item.soLuongHoanTra | currency:"":0 }} VND</td>
+                                                        <td>
+                                                            <input type="number" class="form-control"
+                                                                ng-model="item.soLuongHoanTra" min="1"
+                                                                max="{{ item.soLuong }}" ng-disabled="!item.selected">
+                                                        </td>
+                                                        <td class="text-center">{{ item.soLuongHoanTra *
+                                                            item.tienSanPham | currency:"":0 }} VND</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
 
-                                            <!-- Lý do đổi trả -->
                                             <div class="mb-4">
                                                 <label for="reason" class="form-label">Lý do đổi trả</label>
-                                                <select class="form-select" id="reason" ng-model="selectedReason">
-                                                    <option value="" selected disabled>Chọn lý do đổi trả</option>
-                                                    <option value="quality">Sản phẩm bị lỗi chất lượng</option>
-                                                    <option value="wrong_item">Nhận nhầm sản phẩm</option>
-                                                    <option value="size_issue">Kích thước không phù hợp</option>
+                                                <select class="form-control" id="reason" ng-model="selectedReason"
+                                                    ng-change="resetOtherReason()">
+                                                    <option value="">-- Chọn lý do --</option>
+                                                    <option value="Sản phẩm lỗi">Sản phẩm lỗi</option>
+                                                    <option value="Hàng giao sai">Hàng giao sai</option>
+                                                    <option value="Không đúng mô tả">Không đúng mô tả</option>
                                                     <option value="other">Lý do khác</option>
                                                 </select>
                                             </div>
 
-                                            <!-- Textbox hiển thị khi chọn lý do khác -->
-                                            <div class="mb-4" id="other-reason-container"
-                                                ng-show="selectedReason === 'other'">
+                                            <!-- Nếu chọn 'Lý do khác', sẽ hiển thị ô nhập -->
+                                            <div class="mb-4" ng-if="selectedReason === 'other'">
                                                 <label for="other-reason" class="form-label">Lý do khác</label>
                                                 <textarea class="form-control" id="other-reason" rows="3"
-                                                    ng-model="otherReason"></textarea>
+                                                    ng-model="otherReason" placeholder="Nhập lý do đổi trả"></textarea>
                                             </div>
 
+
+
                                             <div class="d-flex justify-content-end">
-                                                <button type="submit" class="btn btn-primary">Gửi yêu cầu đổi
-                                                    trả</button>
+                                                <button type="button" class="btn btn-primary"
+                                                    ng-click="submitReturnRequest()">Gửi yêu cầu đổi trả</button>
                                             </div>
                                         </form>
                                     </div>
@@ -380,34 +314,36 @@
                         </div>
 
                     </div>
+
                 </div>
-                <div class="tab-pane fade" id="orders">
-                    <div class="card border-0 shadow-sm p-4">
-                        <!-- Nội dung chính -->
-                        <h5 class="text-center text-primary">Tra Cứu Đơn Hàng</h5>
+            </div>
+            <div class="tab-pane fade" id="orders">
+                <div class="card border-0 shadow-sm p-4">
+                    <!-- Nội dung chính -->
+                    <h5 class="text-center text-primary">Tra Cứu Đơn Hàng</h5>
 
-                        <!-- Form tra cứu -->
-                        <div class="mb-3">
-                            <label for="orderCode" class="form-label">Mã Đơn Hàng</label>
-                            <input type="text" id="orderCode" class="form-control form-control-sm"
-                                placeholder="Nhập mã đơn hàng...">
-                        </div>
-                        <button class="btn btn-danger w-100 btn-sm" id="searchOrder">Tra Cứu</button>
+                    <!-- Form tra cứu -->
+                    <div class="mb-3">
+                        <label for="orderCode" class="form-label">Mã Đơn Hàng</label>
+                        <input type="text" id="orderCode" class="form-control form-control-sm"
+                            placeholder="Nhập mã đơn hàng...">
+                    </div>
+                    <button class="btn btn-danger w-100 btn-sm" id="searchOrder">Tra Cứu</button>
 
-                        <!-- Khu vực hiển thị thông tin đơn hàng -->
-                        <div class="order-info mt-3 p-3" id="orderInfo"
-                            style="display: none; border: 1px solid #ddd; border-radius: 10px;">
-                            <h6 class="text-info">Thông Tin Đơn Hàng</h6>
-                            <p><strong>Mã Đơn Hàng:</strong> <span id="infoOrderCode"></span></p>
-                            <p><strong>Khách Hàng:</strong> <span id="infoCustomerName"></span></p>
-                            <p><strong>Ngày Đặt Hàng:</strong> <span id="infoOrderDate"></span></p>
-                            <p><strong>Trạng Thái:</strong> <span id="infoOrderStatus"></span></p>
-                        </div>
+                    <!-- Khu vực hiển thị thông tin đơn hàng -->
+                    <div class="order-info mt-3 p-3" id="orderInfo"
+                        style="display: none; border: 1px solid #ddd; border-radius: 10px;">
+                        <h6 class="text-info">Thông Tin Đơn Hàng</h6>
+                        <p><strong>Mã Đơn Hàng:</strong> <span id="infoOrderCode"></span></p>
+                        <p><strong>Khách Hàng:</strong> <span id="infoCustomerName"></span></p>
+                        <p><strong>Ngày Đặt Hàng:</strong> <span id="infoOrderDate"></span></p>
+                        <p><strong>Trạng Thái:</strong> <span id="infoOrderStatus"></span></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 <style>
     .table-scrollable {

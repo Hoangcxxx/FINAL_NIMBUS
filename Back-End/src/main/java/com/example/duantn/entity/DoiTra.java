@@ -2,7 +2,6 @@ package com.example.duantn.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -10,7 +9,6 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
 @Table(name = "doi_tra")
 public class DoiTra {
@@ -22,15 +20,17 @@ public class DoiTra {
 
     @ManyToOne
     @JoinColumn(name = "id_hoa_don", referencedColumnName = "Id_hoa_don", nullable = false)
-    private HoaDon hoaDon; // Tham chiếu đến bảng hoa_don
+    private HoaDon hoaDon;
 
     @ManyToOne
     @JoinColumn(name = "id_san_pham_chi_tiet", referencedColumnName = "Id_san_pham_chi_tiet", nullable = false)
-    private SanPhamChiTiet sanPhamChiTiet; // Tham chiếu đến bảng san_pham_chi_tiet
+    private SanPhamChiTiet sanPhamChiTiet;
 
-    @Column(name = "so_luong")
+
+    @Column(name = "so_luong", nullable = false)
     private Integer soLuong;
-    @Column(name = "tong_tien")
+
+    @Column(name = "tong_tien", precision = 19, scale = 2)
     private BigDecimal tongTien;
 
     @Column(name = "ly_do", length = 225)
@@ -46,5 +46,4 @@ public class DoiTra {
     @Column(name = "ngay_cap_nhat")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
-
 }

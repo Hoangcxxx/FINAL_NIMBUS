@@ -111,11 +111,23 @@
                 <!-- Bước 6: Đã hủy -->
                 <div class="step text-center" ng-if="isStatusAvailableById(7)">
                     <div class="step-icon bg-danger text-white">
-                        <i class="fa-solid fa-xmark fa-2x"></i> <!-- Icon: Biểu tượng hủy -->
+                        <i class="fa-solid fa-arrow-right fa-2x"></i> <!-- Icon: Biểu tượng hủy -->
                     </div>
                     <p class="mb-1 fw-bold">Đã Hủy</p>
                     <small class="text-muted">{{ getStatusDescriptionById(7) }}</small> <br>
                     <small class="text-muted">{{ getStatusDateById(7) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+
+                <i ng-if="isStatusAvailableById(8)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+                <!-- Bước 6: Đã hủy -->
+                <div class="step text-center" ng-if="isStatusAvailableById(8)">
+                    <div class="step-icon  text-white" style="background-color: blueviolet;">
+                        <i class="fa-solid fa-rotate-right fa-2x"></i> <!-- Icon: Biểu tượng hủy -->
+                    </div>
+                    <p class="mb-1 fw-bold">Hoàn trả</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(8) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(8) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
                 </div>
             </div>
         </div>
@@ -276,6 +288,55 @@
                     </table>
                 </div>
             </section>
+            <section class="product-details mb-4">
+                <div class="">
+                    <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Hoàn trả sản phẩm</h3>
+                    <button ng-if="canConfirmReturn()" ng-click="confirmReturn()" ng-if="hoanTra()"
+                        class="btn btn-primary">
+                        Xác nhận hoàn trả
+                    </button>
+                    <form>
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">Thông tin sản phẩm</th>
+                                    <th class="text-center">Số lượng hoàn trả</th>
+                                    <th class="text-center">Tổng giá trị</th>
+                                    <th class="text-center">Lý do hoàn trả</th>
+                                    <th class="text-center">Thời gian hoàn trả</th>
+                                    <th class="text-center">Trạng thái hoàn trả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in doiTra">
+                                    <td class="text-center">{{$index + 1}}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="ml-2 ms-3">
+                                                <strong>{{ item.tenSanPham }}</strong><br>
+                                                <span class="text-muted">{{ item.tenChatLieu }} - {{ item.tenMauSac }} -
+                                                    {{ item.tenKichThuoc }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ item.soLuongHoanTra }}</td>
+                                    <td class="text-center">{{ item.tongTienHoanTra | currency:"":0 }} VND</td>
+                                    <td class="text-center">{{ item.lyDoHoanTra }}</td>
+                                    <td class="text-center">{{ item.ngayTao | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+                                    <td class="text-center">
+                                        <span class="badge" ng-class="{
+                                            'badge-success': item.trangThaiHoanTra,
+                                            'badge-danger': !item.trangThaiHoanTra
+                                        }">{{ item.trangThaiHoanTra ? 'Đã hoàn' : 'Chưa hoàn' }}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </section>
+
             <div class="d-flex">
                 <div class="p-2 flex-fill"></div>
                 <div class="p-2 flex-fill"></div>

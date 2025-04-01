@@ -169,6 +169,36 @@ public class TrangThaiHoaDonService {
                 // Trả về kết quả thành công
                 return List.of(savedTrangThai);  // Trả về danh sách chứa trạng thái đã lưu
             }
+            if (idLoaiTrangThai == 12) {
+                // Lưu trạng thái hủy
+                TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
+                trangThaiHoaDon.setHoaDon(hoaDon);
+                trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
+                trangThaiHoaDon.setNgayTao(new Date());
+                trangThaiHoaDon.setNgayCapNhat(new Date());
+                trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
+                trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
+
+                // Lưu trạng thái hủy vào database
+                TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
+                System.out.println("Trạng thái 'Hủy đơn hàng' đã được lưu: " + savedTrangThai);
+
+                // Cộng lại số lượng sản phẩm vào kho
+                List<HoaDonChiTiet> hoaDonChiTietList = hoaDon.getHoaDonChiTietList();
+                for (HoaDonChiTiet hoaDonChiTiet : hoaDonChiTietList) {
+                    SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+                    Integer soLuongBan = hoaDonChiTiet.getSoLuong();
+                    Integer soLuongTon = sanPhamChiTiet.getSoLuong();
+
+                    // Cộng lại số lượng sản phẩm vào kho
+                    sanPhamChiTiet.setSoLuong(soLuongTon + soLuongBan); // Cộng số lượng sản phẩm vào kho
+                    sanPhamChiTietRepository.save(sanPhamChiTiet);  // Lưu lại thông tin sản phẩm chi tiết với số lượng mới
+                    System.out.println("Đã cộng lại " + soLuongBan + " sản phẩm vào kho.");
+                }
+
+                // Trả về kết quả thành công
+                return List.of(savedTrangThai);  // Trả về danh sách chứa trạng thái đã lưu
+            }
 
             // Sau khi các kiểm tra khác đều thành công:
             TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();

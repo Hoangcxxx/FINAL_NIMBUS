@@ -304,30 +304,62 @@ public class HoaDonService {
 
         // Lấy hoặc lưu Tỉnh theo mã
         String cityCode = hoaDonDTO.getTinh().toString();  // Lấy mã Tỉnh từ hoaDonDTO
-        Tinh selectedCity = tinhRepository.findByMaTinh(cityCode)
+
+// Truy vấn danh sách tỉnh có mã tỉnh trùng
+        List<Tinh> cities = tinhRepository.findAllByMaTinh(cityCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Tinh selectedCity = cities.stream()
+                .findFirst()  // Lấy phần tử đầu tiên nếu tồn tại
                 .orElseGet(() -> {
-                    Tinh city = fetchCityInfoFromGHN(cityCode); // Gọi API GHN nếu không có trong DB
-                    return tinhRepository.save(city);          // Lưu vào DB
+                    Tinh city = fetchCityInfoFromGHN(cityCode);  // Gọi API GHN nếu không tìm thấy
+                    return tinhRepository.save(city);           // Lưu vào DB
                 });
 
-        // Lấy hoặc lưu Huyện theo mã
+// Thêm cảnh báo nếu có nhiều tỉnh trùng mã (tùy chọn)
+        if (cities.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều tỉnh trùng mã [" + cityCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+// Lấy hoặc lưu Huyện theo mã
         String districtCode = hoaDonDTO.getHuyen().toString();  // Lấy mã Huyện từ hoaDonDTO
-        Huyen selectedDistrict = huyenRepository.findByMaHuyen(districtCode)
+
+// Truy vấn danh sách huyện có mã trùng
+        List<Huyen> districts = huyenRepository.findAllByMaHuyen(districtCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Huyen selectedDistrict = districts.stream()
+                .findFirst()
                 .orElseGet(() -> {
-                    Huyen district = fetchDistrictInfoFromGHN(districtCode); // Gọi API GHN nếu không có trong DB
-                    district.setTinh(selectedCity);                         // Gán tỉnh liên quan
-                    return huyenRepository.save(district);                  // Lưu vào DB
+                    Huyen district = fetchDistrictInfoFromGHN(districtCode);  // Gọi API GHN nếu không có trong DB
+                    district.setTinh(selectedCity);                          // Gán tỉnh liên quan
+                    return huyenRepository.save(district);                   // Lưu vào DB
                 });
 
-        // Lấy hoặc lưu Xã theo mã
+        if (districts.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều huyện trùng mã [" + districtCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+// Lấy hoặc lưu Xã theo mã
         String wardCode = hoaDonDTO.getXa().toString();  // Lấy mã Xã từ hoaDonDTO
-        Xa selectedWard = xaRepository.findByMaXa(wardCode)
+
+// Truy vấn danh sách xã có mã trùng
+        List<Xa> wards = xaRepository.findAllByMaXa(wardCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Xa selectedWard = wards.stream()
+                .findFirst()
                 .orElseGet(() -> {
-                    // Gọi API GHN để lấy thông tin xã
-                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode); // Truyền mã huyện và mã xã
-                    ward.setHuyen(selectedDistrict);                       // Gán huyện liên quan
-                    return xaRepository.save(ward);                        // Lưu vào DB
+                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode);  // Gọi API GHN với mã huyện và mã xã
+                    ward.setHuyen(selectedDistrict);                        // Gán huyện liên quan
+                    return xaRepository.save(ward);                         // Lưu vào DB
                 });
+
+        if (wards.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều xã trùng mã [" + wardCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+
 
         // Tạo và lưu đối tượng DiaChiVanChuyen
         DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
@@ -395,10 +427,8 @@ public class HoaDonService {
                 throw new RuntimeException("Số lượng tồn kho không đủ");
             }
 
-//            // Cập nhật số lượng tồn kho
-//            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - sanPham.getSoLuong());
-//            sanPhamChiTietRepository.save(sanPhamChiTiet);
-// Tạo hoặc lấy LichSuHoaDon
+
+
 
             LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
             lichSuHoaDon.setNgayGiaoDich(new Date());
@@ -529,32 +559,64 @@ public class HoaDonService {
         if (hoaDonDTO.getTinh() == null || hoaDonDTO.getHuyen() == null || hoaDonDTO.getXa() == null) {
             throw new RuntimeException("Thông tin Tỉnh, Huyện, hoặc Xã không hợp lệ");
         }
+
         // Lấy hoặc lưu Tỉnh theo mã
         String cityCode = hoaDonDTO.getTinh().toString();  // Lấy mã Tỉnh từ hoaDonDTO
-        Tinh selectedCity = tinhRepository.findByMaTinh(cityCode)
+
+// Truy vấn danh sách tỉnh có mã tỉnh trùng
+        List<Tinh> cities = tinhRepository.findAllByMaTinh(cityCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Tinh selectedCity = cities.stream()
+                .findFirst()  // Lấy phần tử đầu tiên nếu tồn tại
                 .orElseGet(() -> {
-                    Tinh city = fetchCityInfoFromGHN(cityCode); // Gọi API GHN nếu không có trong DB
-                    return tinhRepository.save(city);          // Lưu vào DB
+                    Tinh city = fetchCityInfoFromGHN(cityCode);  // Gọi API GHN nếu không tìm thấy
+                    return tinhRepository.save(city);           // Lưu vào DB
                 });
 
-        // Lấy hoặc lưu Huyện theo mã
+// Thêm cảnh báo nếu có nhiều tỉnh trùng mã (tùy chọn)
+        if (cities.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều tỉnh trùng mã [" + cityCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+// Lấy hoặc lưu Huyện theo mã
         String districtCode = hoaDonDTO.getHuyen().toString();  // Lấy mã Huyện từ hoaDonDTO
-        Huyen selectedDistrict = huyenRepository.findByMaHuyen(districtCode)
+
+// Truy vấn danh sách huyện có mã trùng
+        List<Huyen> districts = huyenRepository.findAllByMaHuyen(districtCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Huyen selectedDistrict = districts.stream()
+                .findFirst()
                 .orElseGet(() -> {
-                    Huyen district = fetchDistrictInfoFromGHN(districtCode); // Gọi API GHN nếu không có trong DB
-                    district.setTinh(selectedCity);                         // Gán tỉnh liên quan
-                    return huyenRepository.save(district);                  // Lưu vào DB
+                    Huyen district = fetchDistrictInfoFromGHN(districtCode);  // Gọi API GHN nếu không có trong DB
+                    district.setTinh(selectedCity);                          // Gán tỉnh liên quan
+                    return huyenRepository.save(district);                   // Lưu vào DB
                 });
 
-        // Lấy hoặc lưu Xã theo mã
+        if (districts.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều huyện trùng mã [" + districtCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+// Lấy hoặc lưu Xã theo mã
         String wardCode = hoaDonDTO.getXa().toString();  // Lấy mã Xã từ hoaDonDTO
-        Xa selectedWard = xaRepository.findByMaXa(wardCode)
+
+// Truy vấn danh sách xã có mã trùng
+        List<Xa> wards = xaRepository.findAllByMaXa(wardCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Xa selectedWard = wards.stream()
+                .findFirst()
                 .orElseGet(() -> {
-                    // Gọi API GHN để lấy thông tin xã
-                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode); // Truyền mã huyện và mã xã
-                    ward.setHuyen(selectedDistrict);                       // Gán huyện liên quan
-                    return xaRepository.save(ward);                        // Lưu vào DB
+                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode);  // Gọi API GHN với mã huyện và mã xã
+                    ward.setHuyen(selectedDistrict);                        // Gán huyện liên quan
+                    return xaRepository.save(ward);                         // Lưu vào DB
                 });
+
+        if (wards.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều xã trùng mã [" + wardCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
 
         // Tạo và lưu đối tượng DiaChiVanChuyen
         DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
