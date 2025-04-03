@@ -172,107 +172,75 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
             });
     }
     $scope.submitReturnRequest = function () {
-        // Kiểm tra trạng thái đơn hàng trước khi xử lý hoàn trả
         if ($scope.orderHieu.idLoaiTrangThai === 7) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: 'Không thể yêu cầu hoàn trả vì đơn hàng của bạn đã bị hủy!',
-                confirmButtonText: 'Đồng ý'
-            });
-            return; // Ngừng quá trình
-        }
-    
-        // Kiểm tra danh sách sản phẩm có tồn tại và có sản phẩm không
-        if (!$scope.orderlist?.listSanPhamChiTiet?.length) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Thông báo!',
-                text: 'Không có sản phẩm nào trong đơn hàng để thực hiện hoàn trả!',
-                confirmButtonText: 'Đồng ý'
-            });
+            showAlert('error', 'Lỗi!', 'Không thể yêu cầu hoàn trả vì đơn hàng của bạn đã bị hủy!');
             return;
         }
     
-        // Lọc sản phẩm được chọn và có số lượng hoàn trả > 0
+        if (!$scope.orderlist?.listSanPhamChiTiet?.length) {
+            showAlert('warning', 'Thông báo!', 'Không có sản phẩm nào trong đơn hàng để thực hiện hoàn trả!');
+            return;
+        }
+    
         const filteredItems = $scope.orderlist.listSanPhamChiTiet.filter(
             item => item.selected && item.soLuongHoanTra > 0
         );
     
-        if (filteredItems.length === 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Thông báo!',
-                text: 'Vui lòng chọn ít nhất một sản phẩm và nhập số lượng hoàn trả hợp lệ!',
-                confirmButtonText: 'Đồng ý'
-            });
+        if (!filteredItems.length) {
+            showAlert('warning', 'Thông báo!', 'Vui lòng chọn ít nhất một sản phẩm và nhập số lượng hoàn trả hợp lệ!');
             return;
         }
     
-        // Kiểm tra lý do đổi trả hợp lệ
-        const reasonToSend = ($scope.selectedReason === 'other' && $scope.otherReason)
-            ? $scope.otherReason
-            : $scope.selectedReason;
-    
+        // Kiểm tra lý do từ select hoặc textarea
+        let reasonToSend = $scope.selectedReason || $scope.otherReason;  
         if (!reasonToSend) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Thông báo!',
-                text: 'Vui lòng chọn lý do đổi trả hoặc nhập lý do khác!',
-                confirmButtonText: 'Đồng ý'
-            });
+            showAlert('warning', 'Thông báo!', 'Vui lòng chọn lý do đổi trả hoặc nhập lý do!');
             return;
         }
     
-        // Tạo danh sách DoiTraDTO từ sản phẩm đã chọn
         const doiTraDTOList = filteredItems.map(item => ({
             idHoaDon: $scope.orderHieu.idHoaDon,
             idSanPhamChiTiet: item.idspct,
             soLuong: item.soLuongHoanTra,
-            lyDo: reasonToSend,
+            lyDo: reasonToSend,  // Gửi lý do đã chọn hoặc nhập
             trangThai: true,
             tongTien: item.soLuongHoanTra * item.tienSanPham
         }));
     
-        // Gửi yêu cầu đổi trả lên API backend và xử lý phản hồi
         $http.post("http://localhost:8080/api/nguoi_dung/doi-tra/tao-doi-tra", doiTraDTOList)
-            .then(response => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: 'Yêu cầu hoàn trả của bạn đã được xử lý thành công!',
-                    confirmButtonText: 'Đồng ý'
-                });
-                resetForm(); // Đặt lại biểu mẫu sau khi hoàn tất
+            .then(() => {
+                showAlert('success', 'Thành công!', 'Yêu cầu hoàn trả của bạn đã được xử lý thành công!');
+                resetForm();
             })
             .catch(error => {
                 const errorMessage = error?.data?.message || 'Không thể xử lý yêu cầu hoàn trả do lỗi hệ thống. Vui lòng thử lại sau!';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi!',
-                    text: errorMessage,
-                    confirmButtonText: 'Đồng ý'
-                });
+                showAlert('error', 'Lỗi!', errorMessage);
             });
     };
     
-    
-    
+    // Xóa lý do khác khi người dùng thay đổi lựa chọn lý do (giữ lại textarea để nhập tự do)
     $scope.resetOtherReason = function () {
-        if ($scope.selectedReason !== 'other') {
-            $scope.otherReason = '';  // Xóa lý do nhập tay nếu không chọn 'Lý do khác'
+        if ($scope.selectedReason !== 'Lý do khác') {
+            $scope.otherReason = '';
         }
     };
-    
     function resetForm() {
         $scope.orderlist.listSanPhamChiTiet.forEach(item => {
             item.selected = false;
             item.soLuongHoanTra = 0;
         });
         $scope.selectedReason = '';
-        $scope.otherReason = '';
+        $scope.otherReason = ''; 
     }
     
+    function showAlert(icon, title, text) {
+        Swal.fire({
+            icon: icon,
+            title: title,
+            text: text,
+            confirmButtonText: 'Đồng ý'
+        });
+    }
     
 
     $scope.getTotalProductPrice = function () {
@@ -445,8 +413,6 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
             item.soLuongHoanTra = ''; // Nếu bỏ chọn thì reset số lượng hoàn trả
         }
     };
-
-
 
 
 }
