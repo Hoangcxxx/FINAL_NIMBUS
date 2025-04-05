@@ -133,6 +133,7 @@ public class DoiTraServiceImpl implements DoiTraService {
 
         // Lưu trạng thái nhập vào (10 hoặc 11)
         TrangThaiHoaDon trangThaiNhapVao = new TrangThaiHoaDon();
+        trangThaiNhapVao.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
         trangThaiNhapVao.setHoaDon(hoaDon);
         trangThaiNhapVao.setLoaiTrangThai(loaiTrangThai);
         trangThaiNhapVao.setNgayTao(new Date());

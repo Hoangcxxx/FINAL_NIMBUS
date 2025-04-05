@@ -36,8 +36,10 @@
                             <option value="Chờ giao hàng">Chờ giao hàng</option>
                             <option value="Đang giao hàng">Đang giao hàng</option>
                             <option value="Giao hàng thành công">Giao hàng thành công</option>
+                            <option value="Yêu cầu hoàn trả">Yêu cầu hoàn trả</option>
+                            <option value="Hoàn trả thành công">Hoàn trả thành công</option>
+                            <option value="Hoàn trả thất bại">Hoàn trả thất bại</option>
                             <option value="Đã hủy">Đã hủy</option>
-                            <option value="Hoàn trả">Hoàn trả</option>
                         </select>
                     </div>
 
@@ -224,7 +226,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Quản Lý Nhân Viên -->
                                     <div class="tab-pane fade" id="employeeManagement" role="tabpanel"
                                         aria-labelledby="employeeTab">
                                         <form>
@@ -279,6 +280,7 @@
                                                 </tbody>
                                             </table>
 
+                                            <!-- Lý do đổi trả -->
                                             <div class="mb-4">
                                                 <label for="reason" class="form-label">Lý do đổi trả</label>
                                                 <select class="form-control" id="reason" ng-model="selectedReason"
@@ -292,13 +294,11 @@
                                             </div>
 
                                             <!-- Nếu chọn 'Lý do khác', sẽ hiển thị ô nhập -->
-                                            <div class="mb-4" ng-if="selectedReason === 'other'">
+                                            <div class="mb-4" ng-show="selectedReason === 'other'">
                                                 <label for="other-reason" class="form-label">Lý do khác</label>
                                                 <textarea class="form-control" id="other-reason" rows="3"
                                                     ng-model="otherReason" placeholder="Nhập lý do đổi trả"></textarea>
                                             </div>
-
-
 
                                             <div class="d-flex justify-content-end">
                                                 <button type="button" class="btn btn-primary"
@@ -632,22 +632,6 @@
     // AngularJS app
     angular.module('returnApp', [])
         .controller('ReturnController', function ($scope) {
-            // Danh sách sản phẩm
-            $scope.products = [
-                { name: 'Sản phẩm A', price: 100000, selected: false, quantity: 0, total: 0 },
-                { name: 'Sản phẩm B', price: 200000, selected: false, quantity: 0, total: 0 },
-                { name: 'Sản phẩm C', price: 150000, selected: false, quantity: 0, total: 0 }
-            ];
-
-            // Tính tổng giá trị của mỗi sản phẩm
-            $scope.calculateTotal = function (item) {
-                if (item.selected && item.quantity > 0) {
-                    item.total = item.price * item.quantity;
-                } else {
-                    item.total = 0;
-                }
-            };
-
             // Kiểm tra khi chọn lý do khác
             $scope.toggleOtherReason = function () {
                 if ($scope.selectedReason !== 'other') {

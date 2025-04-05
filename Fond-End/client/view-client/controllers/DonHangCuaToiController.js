@@ -224,9 +224,9 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
             return;
         }
     
-        // Kiểm tra lý do đổi trả hợp lệ
-        const reasonToSend = ($scope.selectedReason === 'other' && $scope.otherReason)
-            ? $scope.otherReason
+        // Kiểm tra lý do đổi trả hợp lệ và lấy lý do đã chọn hoặc lý do nhập tay
+        let reasonToSend = ($scope.selectedReason === 'other' && $scope.otherReason)
+            ? $scope.otherReason // Lưu lý do nhập tay nếu chọn "Lý do khác"
             : $scope.selectedReason;
     
         if (!reasonToSend) {
@@ -244,12 +244,15 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
             return;
         }
     
+        // Log lý do nhập để kiểm tra
+        console.log("Lý do đổi trả: ", reasonToSend);
+    
         // Tạo danh sách DoiTraDTO từ sản phẩm đã chọn
         const doiTraDTOList = filteredItems.map(item => ({
             idHoaDon: $scope.orderHieu.idHoaDon,
             idSanPhamChiTiet: item.idspct,
             soLuong: item.soLuongHoanTra,
-            lyDo: reasonToSend,
+            lyDo: reasonToSend, // Gửi lý do đã nhập hoặc đã chọn
             trangThai: true,
             tongTien: item.soLuongHoanTra * item.tienSanPham
         }));
@@ -286,16 +289,6 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
             });
     };
     
-    
-    
-    
-    
-    $scope.resetOtherReason = function () {
-        if ($scope.selectedReason !== 'other') {
-            $scope.otherReason = '';  // Xóa lý do nhập tay nếu không chọn 'Lý do khác'
-        }
-    };
-    
     function resetForm() {
         $scope.orderlist.listSanPhamChiTiet.forEach(item => {
             item.selected = false;
@@ -304,6 +297,7 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
         $scope.selectedReason = '';
         $scope.otherReason = '';
     }
+    
     
     
 

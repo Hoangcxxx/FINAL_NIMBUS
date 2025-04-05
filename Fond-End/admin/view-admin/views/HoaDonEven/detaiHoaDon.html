@@ -61,39 +61,50 @@
                     <div class="step-icon bg-warning text-white">
                         <i class="fa-solid fa-truck-fast fa-2x"></i> <!-- Icon: Xe tải giao hàng nhanh -->
                     </div>
-                    <p class="mb-1 fw-bold">Đang Vận Chuyển</p>
+                    <p class="mb-1 fw-bold">Đang Giao Hàng</p>
                     <small class="text-muted">{{ getStatusDescriptionById(5) }}</small> <br>
                     <small class="text-muted">{{ getStatusDateById(5) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
                 </div>
-                <!-- Dấu mũi tên -->
-                <i ng-if="isStatusAvailableById(6)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                <i ng-if="isStatusAvailableById(13)" class="fa-solid fa-arrow-right fa-2x text-muted"
                     style="margin-top: -86px;"></i>
 
-
-                <!-- <div class="step text-center" ng-if="isStatusAvailableById(6)">
-                    <div class="step-icon bg-primary text-white">
-                        <i class="fa-regular fa-credit-card fa-2x"></i>
-                    </div>
-                    <p class="mb-1 fw-bold">Chờ Thanh Toán</p>
-                    <small class="text-muted">{{ getStatusDescriptionById(getStatus6()) }}</small> <br>
-                    <small class="text-muted">{{ getStatusDateById(getStatus6()) | date:'dd/MM/yyyy hh:mm:ss a'
-                        }}</small>
-                </div>
-                <i ng-if="isStatusAvailableById(7)" class="fa-solid fa-arrow-right fa-2x text-muted"
-                    style="margin-top: -86px;"></i>
-
-                <div class="step text-center" ng-if="isStatusAvailableById(7)">
+                <div class="step text-center" ng-if="isStatusAvailableById(13)">
                     <div class="step-icon bg-primary text-white">
                         <i class="fa-solid fa-user-check fa-2x"></i>
                     </div>
+                    <p class="mb-1 fw-bold">Chờ thanh toán</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus13()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus13()) | date:'dd/MM/yyyy hh:mm:ss a'
+                        }}</small>
+                </div>
+                <!-- Dấu mũi tên -->
+                <i ng-if="isStatusAvailableById(14)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+
+                <div class="step text-center" ng-if="isStatusAvailableById(14)">
+                    <div class="step-icon bg-primary text-white">
+                        <i class="fa-regular fa-credit-card fa-2x"></i>
+                    </div>
                     <p class="mb-1 fw-bold">Thanh toán thành công</p>
-                    <small class="text-muted">{{ getStatusDescriptionById(getStatus7()) }}</small> <br>
-                    <small class="text-muted">{{ getStatusDateById(getStatus7()) | date:'dd/MM/yyyy hh:mm:ss a'
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus14()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus14()) | date:'dd/MM/yyyy hh:mm:ss a'
+                        }}</small>
+                </div>
+                <i ng-if="isStatusAvailableById(15)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+
+                <div class="step text-center" ng-if="isStatusAvailableById(15)">
+                    <div class="step-icon bg-success text-white">
+                        <i class="fa-regular fa-circle-check fa-2x"></i>
+                    </div>
+                    <p class="mb-1 fw-bold">Hoàn thành đơn hàng</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(getStatus15()) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(getStatus15()) | date:'dd/MM/yyyy hh:mm:ss a'
                         }}</small>
                 </div>
                 <i ng-if="isStatusAvailableById(8)" class="fa-solid fa-arrow-right fa-2x text-muted"
-                    style="margin-top: -86px;"></i> -->
-
+                    style="margin-top: -86px;"></i>
                 <!-- Bước 5: Hoàn thành -->
                 <div class="step text-center" ng-if="isStatusAvailableById(6)">
                     <div class="step-icon bg-success text-white">
@@ -117,17 +128,25 @@
                     <small class="text-muted">{{ getStatusDescriptionById(7) }}</small> <br>
                     <small class="text-muted">{{ getStatusDateById(7) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
                 </div>
-
-                <i ng-if="isStatusAvailableById(8)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                <i ng-if="isStatusAvailableById(10)" class="fa-solid fa-arrow-right fa-2x text-muted"
                     style="margin-top: -86px;"></i>
-                <!-- Bước 6: Đã hủy -->
-                <div class="step text-center" ng-if="isStatusAvailableById(8)">
+                <div class="step text-center" ng-if="isStatusAvailableById(10)">
                     <div class="step-icon  text-white" style="background-color: blueviolet;">
-                        <i class="fa-solid fa-rotate-right fa-2x"></i> <!-- Icon: Biểu tượng hủy -->
+                        <i class="fa-solid fa-rotate-right fa-2x"></i>
                     </div>
                     <p class="mb-1 fw-bold">Hoàn trả</p>
-                    <small class="text-muted">{{ getStatusDescriptionById(8) }}</small> <br>
-                    <small class="text-muted">{{ getStatusDateById(8) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                    <small class="text-muted">{{ getStatusDescriptionById(10) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(10) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
+                </div>
+                <i ng-if="isStatusAvailableById(11)" class="fa-solid fa-arrow-right fa-2x text-muted"
+                    style="margin-top: -86px;"></i>
+                <div class="step text-center" ng-if="isStatusAvailableById(11)">
+                    <div class="step-icon  text-white" style="background-color: blueviolet;">
+                        <i class="fa-solid fa-rotate-right fa-2x"></i>
+                    </div>
+                    <p class="mb-1 fw-bold">Hoàn trả</p>
+                    <small class="text-muted">{{ getStatusDescriptionById(11) }}</small> <br>
+                    <small class="text-muted">{{ getStatusDateById(11) | date:'dd/MM/yyyy hh:mm:ss a' }}</small>
                 </div>
             </div>
         </div>
@@ -252,8 +271,8 @@
             <section class="product-details mb-4">
                 <div class="d-flex justify-content-between">
                     <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Chi tiết sản phẩm</h3>
-                    <button class="btn btn-danger" ng-click="huyDonHang()" ng-if="huyOrder()"><i
-                            class="fa-solid fa-rotate-left"></i>Trả hàng tất cả</button>
+                    <!-- <button class="btn btn-danger" ng-click="huyDonHang()" ng-if="huyOrder()"><i
+                            class="fa-solid fa-rotate-left"></i>Trả hàng tất cả</button> -->
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
@@ -267,7 +286,7 @@
                                 <th>Giá bán</th>
                                 <th>Số lượng</th>
                                 <th>Tổng tiền</th>
-                                <th>Thao tác</th>
+                                <!-- <th>Thao tác</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -280,19 +299,19 @@
                                 <td>{{item.giaBan | currency: '': 0}} VND</td>
                                 <td>{{item.soLuong}}</td>
                                 <td>{{item.tongTien | currency: '': 0}} VND</td>
-                                <td><button class="btn btn-danger" data-bs-toggle="modal"
+                                <!-- <td><button class="btn btn-danger" data-bs-toggle="modal"
                                         data-bs-target="#confirmModal"><i class="fa-solid fa-rotate-left"></i></button>
-                                </td>
+                                </td> -->
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </section>
-            <section class="product-details mb-4">
+            <section class="product-details mb-4" ng-if="sanPhamHoanTra()">
                 <div class="">
                     <h3 class="h5 pb-2 text-black" style="font-weight: bold;">Hoàn trả sản phẩm</h3>
-                    <button ng-if="canConfirmReturn()" ng-click="confirmReturn()" ng-if="hoanTra()"
-                        class="btn btn-primary">
+                    <button ng-if="canConfirmReturn()" ng-click="confirmReturn()" class="btn btn-primary"
+                        ng-if="hoanTra()">
                         Xác nhận hoàn trả
                     </button>
                     <form>

@@ -259,6 +259,21 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     $scope.getStatus8 = function () {
         return getMaxStatus([8]);
     };
+    $scope.getStatus8 = function () {
+        return getMaxStatus([10]);
+    };
+    $scope.getStatus8 = function () {
+        return getMaxStatus([11]);
+    };
+    $scope.getStatus13 = function () {
+        return getMaxStatus([13]);
+    };
+    $scope.getStatus14 = function () {
+        return getMaxStatus([14]);
+    };
+    $scope.getStatus15 = function () {
+        return getMaxStatus([15]);
+    };
     var userInfo = localStorage.getItem('user');
 
     if (userInfo) {
@@ -400,12 +415,12 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1]; // Trạng thái hiện tại của hóa đơn
 
             // Kiểm tra nếu trạng thái là 5 (Đang giao hàng) hoặc 6 (Chờ thanh toán), thì không cho phép hủy
-            if (currentStatus.idLoaiTrangThaiHoaDon !== 6) {
+            if (currentStatus.idLoaiTrangThaiHoaDon !== 15) {
                 return false; // Không thể hủy nếu đang ở trạng thái 5 hoặc 6
             }
 
             // Nếu trạng thái là "Đã hủy" (ID = 7), ẩn nút hủy
-            if (currentStatus.idLoaiTrangThaiHoaDon === 6) {
+            if (currentStatus.idLoaiTrangThaiHoaDon === 15) {
                 return true; // Đã hủy, không cho phép hủy nữa
             }
         }
@@ -471,6 +486,23 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
         return true; // Nếu không phải trạng thái 5, 6 hoặc 7, cho phép hủy
     };
+    $scope.sanPhamHoanTra = function () {
+        // Kiểm tra nếu có trạng thái hóa đơn
+        if ($scope.trangThaiHoaDon && $scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+            
+            // Kiểm tra nếu idLoaiTrangThaiHoaDon không phải là 9, 8 hoặc 10
+            if (![9, 8, 10,11].includes(currentStatus.idLoaiTrangThaiHoaDon)) {
+                return false;
+            }
+    
+            return true;
+        }
+    
+        return true;
+    };
+    
+
     // Lấy dữ liệu từ API
     $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
         .then(function (response) {
