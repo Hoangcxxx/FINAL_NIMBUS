@@ -129,134 +129,141 @@ window.GiohangController = function ($scope, $http, $window) {
     };
 
     $scope.checkout = function () {
-        // Hàm kiểm tra tính hợp lệ của giỏ hàng
-        function validateCartItems() {
-            const invalidItems = $scope.cart.filter(item => item.soLuongGioHang < 1 || item.soLuongGioHang > 20);
-            if (invalidItems.length > 0) {
-                invalidItems.forEach(item => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Giỏ hàng không hợp lệ!',
-                        text: `Số lượng sản phẩm "${item.tenSanPham}" phải từ 1 đến 20. Vui lòng kiểm tra lại.`,
-                        confirmButtonText: 'Đồng ý'
-                    });
-                });
-                return false; // Giỏ hàng không hợp lệ
-            }
-            return true; // Giỏ hàng hợp lệ
-        }
-
-        function checkStockAvailability() {
-            const promises = $scope.cart.map(item => {
-                return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/check-so-luong/${item.idSanPhamCT}?soLuongGioHang=${item.soLuongGioHang}`)
-                    .then(response => {
-                        const message = response.data.message;
-
-                        if (message.includes('hết hàng')) {
+        Swal.fire({
+            title: 'Xác nhận thanh toán',
+            text: "Bạn chắc chắn muốn thanh toán không?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Hàm kiểm tra tính hợp lệ của giỏ hàng
+                function validateCartItems() {
+                    const invalidItems = $scope.cart.filter(item => item.soLuongGioHang < 1 || item.soLuongGioHang > 20);
+                    if (invalidItems.length > 0) {
+                        invalidItems.forEach(item => {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Sản phẩm hết hàng!',
-                                text: `Sản phẩm "${item.tenSanPham}" đã hết hàng.`,
+                                title: 'Giỏ hàng không hợp lệ!',
+                                text: `Số lượng sản phẩm "${item.tenSanPham}" phải từ 1 đến 20. Vui lòng kiểm tra lại.`,
                                 confirmButtonText: 'Đồng ý'
                             });
-                            throw new Error(`Sản phẩm "${item.tenSanPham}" hết hàng.`);
-                        } else if (message.includes('không khớp')) {
-                            const [systemQuantity] = message.match(/Hệ thống: (\d+)/).slice(1);
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Số lượng không đủ!',
-                                text: `Sản phẩm "${item.tenSanPham}" hiện không đủ số lượng trong kho. Chúng tôi chỉ có ${systemQuantity} sản phẩm.`,
-                                confirmButtonText: 'Đồng ý'
-                            });
-                            
-                            throw new Error(`Sản phẩm "${item.tenSanPham}" không đủ số lượng trong kho.`);
-                        }
-                    })
-                    .catch(error => {
-                        console.error(`Lỗi kiểm tra tồn kho cho sản phẩm "${item.tenSanPham}":`, error);
-                        throw error;
-                    });
-            });
-
-            return Promise.all(promises);
-        }
-
-        // Kiểm tra trạng thái sản phẩm
-        function checkProductStatuses() {
-            const promises = $scope.cart.map(item => {
-                return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham/${item.idSanPham}/trang-thai`)
-                    .then(response => {
-                        if (!response.data) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: "Sản phẩm đã ngừng bán!",
-                                text: `Sản phẩm "${item.tenSanPham}" đã ngừng bán.`,
-                                confirmButtonText: 'Đồng ý'
-                            });
-                            throw new Error(`Sản phẩm "${item.tenSanPham}" không hợp lệ.`);
-                        }
-                    })
-                    .catch(error => {
-                        console.error(`Lỗi kiểm tra trạng thái sản phẩm "${item.tenSanPham}":`, error);
-                        throw error;
-                    });
-            });
-
-            return Promise.all(promises);
-        }
-
-        // Kiểm tra trạng thái người dùng
-        function checkUserStatus() {
-            return $http.get(`http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/${$scope.idNguoiDung}`)
-                .then(response => {
-                    if (!response.data.trangThai) {
-                        Swal.fire({
-                            title: 'Tài khoản của bạn đã bị khóa!',
-                            text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng.',
-                            icon: 'error',
-                            confirmButtonText: 'Đồng ý'
                         });
                         return false;
                     }
                     return true;
-                })
-                .catch(error => {
-                    console.error('Lỗi khi kiểm tra trạng thái người dùng:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Đã xảy ra lỗi khi kiểm tra trạng thái người dùng. Vui lòng thử lại sau.',
-                        confirmButtonText: 'Đồng ý'
+                }
+    
+                function checkStockAvailability() {
+                    const promises = $scope.cart.map(item => {
+                        return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/check-so-luong/${item.idSanPhamCT}?soLuongGioHang=${item.soLuongGioHang}`)
+                            .then(response => {
+                                const message = response.data.message;
+                                if (message.includes('hết hàng')) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Sản phẩm hết hàng!',
+                                        text: `Sản phẩm "${item.tenSanPham}" đã hết hàng.`,
+                                        confirmButtonText: 'Đồng ý'
+                                    });
+                                    throw new Error(`Sản phẩm "${item.tenSanPham}" hết hàng.`);
+                                } else if (message.includes('không khớp')) {
+                                    const [systemQuantity] = message.match(/Hệ thống: (\d+)/).slice(1);
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Số lượng không đủ!',
+                                        text: `Sản phẩm "${item.tenSanPham}" hiện không đủ số lượng trong kho. Chúng tôi chỉ có ${systemQuantity} sản phẩm.`,
+                                        confirmButtonText: 'Đồng ý'
+                                    });
+                                    throw new Error(`Sản phẩm "${item.tenSanPham}" không đủ số lượng.`);
+                                }
+                            })
+                            .catch(error => {
+                                console.error(`Lỗi kiểm tra tồn kho cho sản phẩm "${item.tenSanPham}":`, error);
+                                throw error;
+                            });
                     });
-                    throw error;
-                });
-        }
-
-        // Bắt đầu quá trình kiểm tra giỏ hàng
-        if (!validateCartItems()) {
-            $scope.isValidCart = false;
-            return;
-        }
-
-        // Thực hiện kiểm tra tồn kho, trạng thái sản phẩm và trạng thái người dùng
-        Promise.allSettled([checkStockAvailability(), checkProductStatuses(), checkUserStatus()])
-            .then(results => {
-                const hasError = results.some(result => result.status === 'rejected');
-                const userStatusValid = results[2].status === 'fulfilled' && results[2].value === true;
-
-                if (hasError || !userStatusValid) {
+    
+                    return Promise.all(promises);
+                }
+    
+                function checkProductStatuses() {
+                    const promises = $scope.cart.map(item => {
+                        return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham/${item.idSanPham}/trang-thai`)
+                            .then(response => {
+                                if (!response.data) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: "Sản phẩm đã ngừng bán!",
+                                        text: `Sản phẩm "${item.tenSanPham}" đã ngừng bán.`,
+                                        confirmButtonText: 'Đồng ý'
+                                    });
+                                    throw new Error(`Sản phẩm "${item.tenSanPham}" không hợp lệ.`);
+                                }
+                            })
+                            .catch(error => {
+                                console.error(`Lỗi kiểm tra trạng thái sản phẩm "${item.tenSanPham}":`, error);
+                                throw error;
+                            });
+                    });
+    
+                    return Promise.all(promises);
+                }
+    
+                function checkUserStatus() {
+                    return $http.get(`http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/${$scope.idNguoiDung}`)
+                        .then(response => {
+                            if (!response.data.trangThai) {
+                                Swal.fire({
+                                    title: 'Tài khoản của bạn đã bị khóa!',
+                                    text: 'Tài khoản của bạn đã bị tạm khóa do vi phạm chính sách.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Đồng ý'
+                                });
+                                return false;
+                            }
+                            return true;
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi kiểm tra trạng thái người dùng:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: 'Đã xảy ra lỗi khi kiểm tra tài khoản. Vui lòng thử lại sau.',
+                                confirmButtonText: 'Đồng ý'
+                            });
+                            throw error;
+                        });
+                }
+    
+                if (!validateCartItems()) {
                     $scope.isValidCart = false;
                     return;
                 }
-
-                // Nếu tất cả kiểm tra thành công
-                $scope.isValidCart = true;
-                $window.location.href = '/#!thanh_toan';
-            })
-            .catch(error => {
-                console.error('Lỗi xảy ra trong quá trình kiểm tra:', error);
-            });
+    
+                Promise.allSettled([
+                    checkStockAvailability(),
+                    checkProductStatuses(),
+                    checkUserStatus()
+                ]).then(results => {
+                    const hasError = results.some(result => result.status === 'rejected');
+                    const userStatusValid = results[2].status === 'fulfilled' && results[2].value === true;
+    
+                    if (hasError || !userStatusValid) {
+                        $scope.isValidCart = false;
+                        return;
+                    }
+    
+                    $scope.isValidCart = true;
+                    $window.location.href = '/#!thanh_toan';
+                }).catch(error => {
+                    console.error('Lỗi xảy ra trong quá trình kiểm tra:', error);
+                });
+            }
+        });
     };
+    
 
 
 

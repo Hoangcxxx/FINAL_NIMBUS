@@ -257,29 +257,32 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
 
         return total;
     };
-
+// Sửa Phần NàyNày
     $scope.calculateDiscount = function () {
         let discount = 0;
+        const totalPrice = $scope.getTotalProductPrice();
+    
         if ($scope.orderHieu) {
             if ($scope.orderHieu.kieuGiamGia === false) {
-                // Giảm giá theo phần trăm
-                discount = ($scope.getTotalProductPrice() * $scope.orderHieu.giaTriMavoucher) / 100;
+                // Giảm theo phần trăm
+                discount = (totalPrice * $scope.orderHieu.giaTriMavoucher) / 100;
             } else if ($scope.orderHieu.kieuGiamGia === true) {
-                // Giảm giá trực tiếp bằng số tiền
+                // Giảm theo số tiền
                 discount = $scope.orderHieu.giaTriMavoucher;
             }
         }
-        return discount;
+    
+        return Math.min(discount, totalPrice); // Không vượt quá tổng tiền
     };
-
+    
     $scope.calculateTotalAfterDiscount = function () {
-        const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
-        const discount = $scope.calculateDiscount(); // Số tiền giảm giá
-        return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
+        const totalPrice = $scope.getTotalProductPrice();
+        const discount = $scope.calculateDiscount();
+        return Math.max(totalPrice - discount, 0); // Không bao giờ âm
     };
 
-
-
+    // Sửa Phần NàyNày
+    
     // Gọi API để lấy danh sách đơn hàng khi tải trang
     $scope.getOrderDetails = function () {
         const apiUrl = `http://localhost:8080/api/nguoi_dung/hoa_don/user/${$scope.idNguoiDung}`;
