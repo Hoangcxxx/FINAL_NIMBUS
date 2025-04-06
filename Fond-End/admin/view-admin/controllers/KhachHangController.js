@@ -1,3 +1,0 @@
-window.KhachHangController = function ($scope) {
-    
-}
