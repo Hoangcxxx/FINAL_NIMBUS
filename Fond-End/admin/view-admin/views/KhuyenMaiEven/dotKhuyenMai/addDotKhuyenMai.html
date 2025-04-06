@@ -1,0 +1,155 @@
+<main class="content">
+    <div class="section active">
+        <div class="container-fluid">
+            <h1 class="page-title">{{dotGiamGia.idDotGiamGia ? 'Cập Nhật Đợt Giảm Giá' : 'Thêm Đợt Giảm Giá Mới'}}</h1>
+            <div class="admin-control">
+                <a href="#!dot_giam_gia">
+                    <button type="button" class="btn btn-secondary">Quay Lại</button>
+                </a>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="border rounded p-3">
+                        <h5 class="mb-3">{{dotGiamGia.idDotGiamGia ? 'Cập Nhật Đợt Giảm Giá' : 'Thêm Đợt Giảm Giá'}}
+                        </h5>
+                        <form ng-submit="saveDotGiamGia()">
+                            <div class="mb-3">
+                                <label for="tenDotGiamGia" class="form-label">Tên Đợt Giảm Giá</label>
+                                <input type="text" class="form-control" id="tenDotGiamGia"
+                                    ng-model="dotGiamGia.tenDotGiamGia" placeholder="Nhập tên đợt giảm giá" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kieuGiamGia" class="form-label">Kiểu Giảm Giá</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="kieuGiamGia"
+                                            ng-model="dotGiamGia.kieuGiamGia" value="true"
+                                            ng-checked="dotGiamGia.kieuGiamGia === true">
+                                        <label class="form-check-label">VND</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="kieuGiamGia"
+                                            ng-model="dotGiamGia.kieuGiamGia" value="false"
+                                            ng-checked="dotGiamGia.kieuGiamGia === false">
+                                        <label class="form-check-label">%</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="giaTriGiam" class="form-label">Giá Trị Giảm Giá</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="giaTriGiam"
+                                        ng-model="dotGiamGia.giaTriGiamGia" placeholder="Nhập giá trị giảm" required>
+                                    <span class="input-group-text">{{giamGiaUnit}}</span> <!-- Hiển thị đơn vị -->
+                                </div>
+                            </div>
+
+                            <!-- Ngày Bắt Đầu và Ngày Kết Thúc -->
+                            <div class="mb-3">
+                                <label for="ngayBatDau" class="form-label">Ngày Bắt Đầu</label>
+                                <input type="date" class="form-control" id="ngayBatDau" ng-model="dotGiamGia.ngayBatDau"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ngayKetThuc" class="form-label">Ngày Kết Thúc</label>
+                                <input type="date" class="form-control" id="ngayKetThuc"
+                                    ng-model="dotGiamGia.ngayKetThuc" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">{{dotGiamGia.idDotGiamGia ? 'Cập Nhật' : 'Thêm
+                                mới'}}</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div class="border rounded p-3" style="height: 100%;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5>Danh Sách Sản Phẩm</h5>
+                            <div class="form-group">
+                                <select id="selectCategory" class="form-select" required ng-model="SanPham.idDanhMuc"
+                                    ng-change="fetchSanPhamByDanhMuc(SanPham.idDanhMuc)">
+                                    <option value="">Chọn danh mục...</option>
+                                    <option ng-repeat="item in dsDanhMuc track by $index" value="{{item.idDanhMuc}}">
+                                        {{item.tenDanhMuc}}
+                                    </option>
+                                </select>
+                                <span class="form-message"></span>
+                            </div>
+                        </div>
+                        <div ng-if="message" class="alert alert-warning">
+                            {{ message }}
+                        </div>
+                        <!-- Bảng sản phẩm chưa giảm giá -->
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">
+                                            <input type="checkbox" ng-model="selectAll"
+                                                ng-change="toggleSelectAll(selectAll)">
+                                        </th>
+                                        <th scope="col">Ảnh Sản Phẩm</th>
+                                        <th scope="col">Tên Sản Phẩm</th>
+                                        <th scope="col">Tên Danh Mục</th>
+                                        <th scope="col">Giá Bán</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in dsSanPham track by $index">
+                                        <th scope="row">
+                                            <input type="checkbox" ng-model="item.selected"
+                                                ng-change="updateProductSelection(item)">
+                                        </th>
+                                        <td><img src="{{item.urlAnh}}" class="img-fluid" alt="{{item.tenSanPham}}"
+                                                width="50"></td>
+                                        <td>{{item.tenSanPham}}</td>
+                                        <td>{{item.tenDanhMuc}}</td>
+                                        <td>{{item.giaBan | currency: '' : 0}} VND</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng sản phẩm đã chọn thêm vào đợt giảm giá -->
+            <div class="border rounded p-3 mt-4">
+                <h5 class="mb-3">Sản Phẩm Được Chọn</h5>
+                <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Ảnh Sản Phẩm</th>
+                                <th scope="col">Tên Sản Phẩm</th>
+                                <th scope="col">Tên Danh Mục</th>
+                                <th scope="col">Giá Khuyến Mãi</th>
+                                <th scope="col">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in dsDaSanPham track by $index">
+                                <td>{{ $index + 1 }}</td>
+                                <td><img src="{{item.urlAnh}}" class="img-fluid" alt="{{item.tenSanPham}}" width="50">
+                                </td>
+                                <td>{{item.tenSanPham}}</td>
+                                <td>{{item.tenDanhMuc}}</td>
+                                <td>{{item.giaBan | currency: '' : 0}} VND</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger"
+                                        ng-click="xoaSanPhamGiamGia(dotGiamGia.idDotGiamGia, item.idSanPham)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>

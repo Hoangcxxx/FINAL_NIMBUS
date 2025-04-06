@@ -1,0 +1,149 @@
+<section id="login-wrapper">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="login-container">
+            <!-- Ảnh bên trái -->
+            <div class="login-image">
+                <img src="https://imgcdn.stablediffusionweb.com/2024/9/12/269253cf-0164-4ffa-a64e-c958447c4407.jpg"
+                    alt="Login Illustration" />
+            </div>
+
+            <!-- Form đăng nhập bên phải -->
+            <div class="login-card">
+                <h2 class="login-title">Đăng nhập</h2>
+                <form ng-submit="dangNhap()">
+                    <!-- Email Input -->
+                    <div class="login-input mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="email" class="form-control" id="email" ng-model="email" placeholder="Email"
+                                required />
+                        </div>
+                    </div>
+
+                    <!-- Mật khẩu Input -->
+                    <div class="login-input mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="matKhau" ng-model="matKhau"
+                                placeholder="Mật khẩu" required />
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary login-button">Đăng nhập</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    #login-wrapper {
+        width: 90%;
+        max-width: 900px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 120px;
+        /* Thêm margin-left để dịch chuyển sang phải */
+    }
+
+    .login-container {
+        display: flex;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+    }
+
+    .login-image {
+        flex: 1;
+        background: #f9f9f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .login-image img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .login-card {
+        flex: 1;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .login-title {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .login-input {
+        position: relative;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .login-input input {
+        border: none;
+        outline: none;
+        flex: 1;
+        background: none;
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    .login-input .form-label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+        color: #333;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 30px;
+        padding: 5px 15px;
+    }
+
+    .input-group-text {
+        background: none;
+        border: none;
+        color: #aaa;
+        font-size: 1rem;
+        margin-right: 10px;
+    }
+
+    .login-button {
+        background: #28a745;
+        color: #fff;
+        border: none;
+        padding: 12px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 1rem;
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .login-button:hover {
+        background: #218838;
+    }
+</style>
