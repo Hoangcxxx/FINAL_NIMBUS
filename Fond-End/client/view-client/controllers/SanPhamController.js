@@ -13,7 +13,7 @@ window.SanPhamController = function ($scope, $http) {
     $scope.selectedChatLieu = null;
     $scope.selectedMauSac = null;
     $scope.selectedKichThuoc = null;
-
+    $scope.searchTerm = ''; // Thêm biến tìm kiếm
     // Khởi tạo khoảng giá với giá trị mặc định min = 0 và max = 1000000
     $scope.priceRange = {
         min: 0, // Giá trị mặc định của min
@@ -45,7 +45,10 @@ window.SanPhamController = function ($scope, $http) {
         if ($scope.selectedKichThuoc) {
             filterUrl += `&kichThuocId=${$scope.selectedKichThuocId}`;
         }
-
+        // Thêm tham số tìm kiếm theo tên sản phẩm nếu có
+        if ($scope.searchTerm) {
+            filterUrl += `&tenSanPham=${$scope.searchTerm}`;
+        }
         // Fetch products from the API
         $http.get(filterUrl).then(function (response) {
             $scope.dsSanPham = response.data;
@@ -79,7 +82,10 @@ window.SanPhamController = function ($scope, $http) {
             }
         }, 500);  // 500ms = 0.5 giây
     };
-
+    // Hàm tìm kiếm sản phẩm
+    $scope.searchProducts = function () {
+        fetchFilteredProducts(); // Gọi hàm để lấy sản phẩm theo các bộ lọc và tên tìm kiếm
+    };
     // Hàm xóa bộ lọc
     $scope.removeFilter = function (filterType) {
         switch (filterType) {
@@ -196,4 +202,24 @@ window.SanPhamController = function ($scope, $http) {
 
     // Gọi hàm khởi tạo
     initializeData();
+    $scope.isValidDiscountPeriod = function (item) {
+        // Lấy ngày hiện tại
+        const today = new Date();
+
+        // Lấy ngày bắt đầu và ngày kết thúc từ dữ liệu sản phẩm
+        const startDate = new Date(item.ngayBatDau);
+        const endDate = item.ngayKetThuc ? new Date(item.ngayKetThuc) : null; // Nếu không có ngày kết thúc thì không có điều kiện
+
+        // Kiểm tra xem ngày hiện tại có nằm trong khoảng ngày bắt đầu và ngày kết thúc
+        if (startDate && endDate) {
+            return today >= startDate && today <= endDate;
+        } else if (startDate) {
+            return today >= startDate; // Nếu chỉ có ngày bắt đầu
+        } else if (endDate) {
+            return today <= endDate; // Nếu chỉ có ngày kết thúc
+        }
+
+        return false; // Không có ngày nào, không hợp lệ
+    };
+
 };

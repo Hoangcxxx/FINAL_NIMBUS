@@ -143,9 +143,11 @@ public class SanPhamController {
                                            @RequestParam(required = false) Integer danhMucId,
                                            @RequestParam(required = false) Integer chatLieuId,
                                            @RequestParam(required = false) Integer mauSacId,
-                                           @RequestParam(required = false) Integer kichThuocId) {
-        return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId);
+                                           @RequestParam(required = false) Integer kichThuocId,
+                                           @RequestParam(required = false) String tenSanPham) {
+        return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId, tenSanPham);
     }
+
 
     @GetMapping("/phan_trang")
     public ResponseEntity<Map<String, Object>> getAllSanPhams(

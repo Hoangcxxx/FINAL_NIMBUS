@@ -52,7 +52,22 @@ window.GiohangController = function ($scope, $http, $window) {
             });
     };
 
+    // Hàm kiểm tra ngày hiện tại có nằm trong khoảng ngày bắt đầu và ngày kết thúc hay không
+    $scope.isValidDiscountPeriod = function (item) {
+        const today = new Date();
+        const startDate = new Date(item.ngayBatDau);
+        const endDate = item.ngayKetThuc ? new Date(item.ngayKetThuc) : null;
 
+        // Kiểm tra nếu có ngày bắt đầu và ngày kết thúc
+        if (startDate && endDate) {
+            return today >= startDate && today <= endDate;
+        } else if (startDate) {
+            return today >= startDate; // Nếu chỉ có ngày bắt đầu
+        } else if (endDate) {
+            return today <= endDate; // Nếu chỉ có ngày kết thúc
+        }
+        return false; // Nếu không có ngày bắt đầu hoặc kết thúc
+    };
 
 
 
@@ -168,7 +183,7 @@ window.GiohangController = function ($scope, $http, $window) {
                                 text: `Sản phẩm "${item.tenSanPham}" hiện không đủ số lượng trong kho. Chúng tôi chỉ có ${systemQuantity} sản phẩm.`,
                                 confirmButtonText: 'Đồng ý'
                             });
-                            
+
                             throw new Error(`Sản phẩm "${item.tenSanPham}" không đủ số lượng trong kho.`);
                         }
                     })
