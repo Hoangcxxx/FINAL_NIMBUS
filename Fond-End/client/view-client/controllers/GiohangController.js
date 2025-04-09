@@ -391,6 +391,42 @@ window.GiohangController = function ($scope, $http, $window) {
     };
 
 
+    $scope.clearAllCart = function () {
+        if ($scope.userId) {
+            // Gọi API để xóa tất cả sản phẩm trong giỏ hàng của người dùng
+            $http.delete('http://localhost:8080/api/nguoi_dung/gio_hang/clear/' + $scope.userId)
+                .then(function (response) {
+                    // Cập nhật giỏ hàng trên giao diện người dùng sau khi xóa thành công
+                    $scope.cart = []; // Xóa tất cả sản phẩm trong giỏ hàng
+                    // Hiển thị thông báo thành công từ phản hồi JSON
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Giỏ hàng đã được xóa!',
+                        text: response.data.message, // Lấy thông báo từ phản hồi JSON
+                        confirmButtonText: 'Đồng ý'
+                    });
+                }, function (error) {
+                    // Xử lý lỗi (nếu có)
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi khi xóa giỏ hàng!',
+                        text: 'Đã xảy ra lỗi khi xóa tất cả sản phẩm trong giỏ hàng. Vui lòng thử lại.',
+                        confirmButtonText: 'Đồng ý'
+                    });
+                    console.error('Lỗi khi xóa giỏ hàng:', error);
+                });
+        } else {
+            // Nếu người dùng chưa đăng nhập
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng đăng nhập!',
+                text: 'Bạn cần đăng nhập để xóa giỏ hàng.',
+                confirmButtonText: 'Đồng ý'
+            });
+        }
+    };
+    
+
 
     fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'products');
     fetchData('http://localhost:8080/api/admin/danh_muc', 'dsDanhMuc');

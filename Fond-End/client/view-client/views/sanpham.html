@@ -35,12 +35,13 @@
                 <!-- Thêm ô tìm kiếm sản phẩm với button search -->
                 <div class="d-flex">
                     <input type="text" class="form-control me-2" placeholder="Tìm kiếm sản phẩm..."
-                        ng-model="searchTerm" ng-change="searchProducts()">
+                        ng-model="searchTerm" ng-keypress="handleKeyPress($event)">
                     <button class="btn btn-danger" ng-click="searchProducts()">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
                 <hr>
+
 
 
                 <!-- Price Range Filter -->

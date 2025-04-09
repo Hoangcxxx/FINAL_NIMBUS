@@ -5,6 +5,10 @@
 
 <section id="cart" class="section-p1">
     <h2 class="cart-title mb-4">Giỏ hàng của bạn</h2>
+    <!-- Nút xóa tất cả sản phẩm với cảnh báo xác nhận -->
+    <button class="btn btn-danger mb-2" ng-click="clearAllCart()">
+        <i class="fa-regular fa-circle-xmark"></i> Xóa tất cả sản phẩm
+    </button>
     <table width="100%">
         <thead>
             <tr>
@@ -39,7 +43,8 @@
                 </td>
                 <td>
                     <!-- Hiển thị giá khuyến mãi nếu có và giá không null -->
-                    <div ng-if="item.giaKhuyenMai != null && isValidDiscountPeriod(item)" class="d-flex flex-column align-items-center">
+                    <div ng-if="item.giaKhuyenMai != null && isValidDiscountPeriod(item)"
+                        class="d-flex flex-column align-items-center">
                         <span class="text-danger mb-2">
                             {{ item.giaKhuyenMai | currency: '': 0 }} VND
                         </span>
@@ -50,7 +55,8 @@
                     </div>
 
                     <!-- Nếu không có giảm giá hoặc giá khuyến mãi null, chỉ hiển thị giá gốc -->
-                    <div ng-if=" item.giaKhuyenMai === null || !isValidDiscountPeriod(item)" class="d-flex flex-column align-items-center">
+                    <div ng-if=" item.giaKhuyenMai === null || !isValidDiscountPeriod(item)"
+                        class="d-flex flex-column align-items-center">
                         <span>{{ item.giaBan | currency: '': 0 }} VND</span>
                     </div>
                 </td>

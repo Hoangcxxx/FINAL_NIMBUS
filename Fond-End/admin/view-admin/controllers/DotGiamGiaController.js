@@ -45,14 +45,33 @@ window.DotGiamGiaController = function ($scope, $http) {
 
     // Function to delete discount
     $scope.deleteDotGiamGia = function (id) {
-        if (confirm('Bạn có chắc chắn muốn xóa đợt giảm giá này?')) {
-            $http.delete('http://localhost:8080/api/admin/dot_giam_gia/' + id).then(function (response) {
-                console.log('Deleted successfully:', response.data.message); // Xử lý thông báo từ server
-                alert("Xóa đợt giảm giá thành công!");
-                $scope.fetchData('http://localhost:8080/api/admin/dot_giam_gia', 'dsDotKhuyenMai', 'Fetched Voucher:');
-            }, function (error) {
-                console.error('Error deleting:', error);
-            });
-        }
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa đợt giảm giá này?',
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Có, xóa nó!',
+            cancelButtonText: 'Không, hủy bỏ',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $http.delete('http://localhost:8080/api/admin/dot_giam_gia/' + id).then(function (response) {
+                    console.log('Deleted successfully:', response.data.message); // Xử lý thông báo từ server
+                    Swal.fire(
+                        'Đã xóa!',
+                        'Đợt giảm giá đã được xóa thành công.',
+                        'success'
+                    );
+                    $scope.fetchData('http://localhost:8080/api/admin/dot_giam_gia', 'dsDotKhuyenMai', 'Fetched Voucher:');
+                }, function (error) {
+                    console.error('Error deleting:', error);
+                    Swal.fire(
+                        'Lỗi!',
+                        'Đã có lỗi xảy ra khi xóa đợt giảm giá.',
+                        'error'
+                    );
+                });
+            }
+        });
     };
+
 };

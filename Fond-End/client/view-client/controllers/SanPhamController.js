@@ -86,6 +86,13 @@ window.SanPhamController = function ($scope, $http) {
     $scope.searchProducts = function () {
         fetchFilteredProducts(); // Gọi hàm để lấy sản phẩm theo các bộ lọc và tên tìm kiếm
     };
+     // Hàm xử lý sự kiện nhấn phím Enter để thực hiện tìm kiếm
+     $scope.handleKeyPress = function (event) {
+        // Kiểm tra nếu phím được nhấn là "Enter" (keyCode 13)
+        if (event.keyCode === 13) {
+            $scope.searchProducts(); // Gọi hàm tìm kiếm khi nhấn Enter
+        }
+    };
     // Hàm xóa bộ lọc
     $scope.removeFilter = function (filterType) {
         switch (filterType) {

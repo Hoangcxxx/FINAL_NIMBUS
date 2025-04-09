@@ -81,10 +81,15 @@ public class GioHangController {
         return ResponseEntity.ok(filteredProducts);
     }
     @DeleteMapping("/clear/{idGioHang}")
-    public ResponseEntity<String> clearGioHang(@PathVariable Integer idGioHang) {
+    public ResponseEntity<Map<String, String>> clearGioHang(@PathVariable Integer idGioHang) {
         gioHangService.clearGioHang(idGioHang);
-        return ResponseEntity.ok("Giỏ hàng đã được xóa sạch.");
+
+        // Trả về thông báo thành công dưới dạng đối tượng JSON
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Giỏ hàng đã được xóa sạch.");
+        return ResponseEntity.ok(response); // Trả về JSON chứa thông báo
     }
+
     private Map<String, Object> mapGioHangDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
 
