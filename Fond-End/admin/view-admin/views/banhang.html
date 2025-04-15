@@ -182,14 +182,23 @@
                                                         <td>{{ sp.tenSanPham }}</td>
                                                         <td>{{ sp.tenDanhMuc }}</td>
                                                         <td>
-                                                            <span ng-if="sp.giaKhuyenMai"
+                                                            <!-- Hiển thị giá gốc nếu có khuyến mãi hợp lệ và giá khuyến mãi nhỏ hơn giá gốc -->
+                                                            <span
+                                                                ng-if="sp.coKhuyenMai && kiemTraKhuyenMaiHopLe(sp) && sp.giaKhuyenMai < sp.giaBan"
                                                                 style="color: #999; text-decoration: line-through; display: block;">
                                                                 {{ sp.giaBan | currency: '' : 0 }} VND
                                                             </span>
-                                                            <div
+
+                                                            <!-- Hiển thị giá khuyến mãi nếu hợp lệ -->
+                                                            <div ng-if="sp.coKhuyenMai && kiemTraKhuyenMaiHopLe(sp)"
                                                                 style="color: #f00; font-weight: bold; margin-top: 5px; display: block;">
-                                                                {{ sp.giaKhuyenMai || sp.giaBan | currency: '' : 0 }}
-                                                                VND
+                                                                {{ sp.giaKhuyenMai | currency: '' : 0 }} VND
+                                                            </div>
+
+                                                            <!-- Hiển thị giá gốc nếu không có khuyến mãi hợp lệ -->
+                                                            <div ng-if="!kiemTraKhuyenMaiHopLe(sp)"
+                                                                style="color: #f00; font-weight: bold; margin-top: 5px; display: block;">
+                                                                {{ sp.giaBan | currency: '' : 0 }} VND
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -538,12 +547,16 @@
                                 <td style="padding: 10px;">{{ detail.ten_kich_thuoc }}</td>
                                 <td class="text-center" style="padding: 10px;">{{ detail.so_luong }}</td>
                                 <td style="padding: 10px;">
-                                    <span ng-if="detail.giaKhuyenMai"
+                                    <!-- Hiển thị giá gốc nếu có khuyến mãi hợp lệ -->
+                                    <span
+                                        ng-if="kiemTraKhuyenMaiDetailHopLe(detail) && detail.gia_khuyen_mai < detail.gia_ban"
                                         style="color: #999; text-decoration: line-through; display: block;">
                                         {{ detail.gia_ban | currency: '' : 0 }} VND
                                     </span>
+                                    <!-- Hiển thị giá khuyến mãi nếu hợp lệ, ngược lại hiển thị giá gốc -->
                                     <div style="color: #f00; font-weight: bold; margin-top: 5px; display: block;">
-                                        {{ detail.gia_khuyen_mai || detail.gia_ban | currency: '' : 0 }} VND
+                                        {{ kiemTraKhuyenMaiDetailHopLe(detail) ? (detail.gia_khuyen_mai | currency: '' :
+                                        0) : (detail.gia_ban | currency: '' : 0) }} VND
                                     </div>
                                 </td>
                                 <td class="text-center">

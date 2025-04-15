@@ -106,7 +106,6 @@ window.ThongKeController = function ($scope, $http) {
                 '#FF6347',   // Đã hủy (đỏ cam)
                 '#FF4500',   // Hoàn trả thất bại (cam đỏ)
                 '#8A2BE2',   // Hoàn trả thành công (tím)
-                '#1E90FF',   // Hoàn trả tất cả (xanh dương)
             ];
 
             // Lặp qua dữ liệu và chuẩn bị labels và data cho biểu đồ

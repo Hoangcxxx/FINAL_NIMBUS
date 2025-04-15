@@ -137,7 +137,7 @@ public class HoaDonChiTietQuery {
             "    )\n" +
             "WHERE \n" +
             "    lt.id_loai_trang_thai BETWEEN 2 AND 15 \n" +
-            "    AND lt.id_loai_trang_thai NOT IN (3, 8, 9, 13, 14)  -- Loại bỏ các trạng thái không cần thiết\n" +
+            "    AND lt.id_loai_trang_thai NOT IN (3, 8, 9, 12, 13, 14)  -- Loại bỏ các trạng thái không cần thiết\n" +
             "GROUP BY \n" +
             "    CASE \n" +
             "        WHEN lt.id_loai_trang_thai = 15 THEN 6   -- Kết hợp trạng thái 15 vào 6\n" +
