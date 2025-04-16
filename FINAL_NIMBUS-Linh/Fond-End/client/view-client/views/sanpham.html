@@ -32,7 +32,18 @@
                     </div>
                 </div>
                 <hr>
-                <!-- Price Range Filter -->
+                <!-- Thêm ô tìm kiếm sản phẩm với button search -->
+                <div class="d-flex">
+                    <input type="text" class="form-control me-2" placeholder="Tìm kiếm sản phẩm..."
+                        ng-model="searchTerm" ng-keypress="handleKeyPress($event)">
+                    <button class="btn btn-danger" ng-click="searchProducts()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <hr>
+
+
+
                 <!-- Price Range Filter -->
                 <div class="mb-3">
                     <label for="priceRange" class="form-label" style="font-weight: bold;">Sắp xếp khoảng giá</label>
@@ -72,7 +83,6 @@
                 </div>
 
                 <hr>
-                <!-- Category Filter -->
                 <!-- Chất Liệu Filter -->
                 <div>
                     <button class="btn w-100 d-flex justify-content-between align-items-center"
@@ -158,7 +168,7 @@
                             <h5>{{item.moTa}}</h5>
                             <div class="d-flex align-items-center">
                                 <!-- Kiểm tra nếu có giảm giá thì hiển thị badge giảm giá -->
-                                <span ng-if="item.kieuGiamGia !== null"
+                                <span ng-if="item.kieuGiamGia !== null && isValidDiscountPeriod(item)"
                                     class="badge bg-danger me-2 text-light text-center">
                                     <i class="fa-solid fa-tag text-light d-flex align-items-center">
                                         <div class="ms-1">
@@ -180,20 +190,26 @@
                             </div>
 
                             <div class="d-flex align-items-center">
-                                <!-- Hiển thị giá khuyến mãi nếu có giảm giá -->
-                                <span ng-if="item.giaKhuyenMai" class="text-danger me-3"
-                                    style="font-weight: bold; font-size: 20px;">
+                                <!-- Hiển thị giá khuyến mãi nếu có giảm giá và trong khoảng thời gian hợp lệ -->
+                                <span ng-if="item.giaKhuyenMai !== null && isValidDiscountPeriod(item)"
+                                    class="text-danger me-3" style="font-weight: bold; font-size: 20px;">
                                     {{ item.giaKhuyenMai | currency: '': 0}} VND
                                 </span>
-                                <!-- Hiển thị giá ban đầu nếu có giảm giá -->
-                                <span ng-if="item.giaKhuyenMai" style="font-size: 13px;">
+
+                                <!-- Hiển thị giá ban đầu nếu có giá giảm và trong khoảng thời gian hợp lệ -->
+                                <span ng-if="item.giaKhuyenMai !== null && isValidDiscountPeriod(item)"
+                                    style="font-size: 13px;">
                                     <del>{{ item.giaBan | currency: '': 0}}</del> VND
                                 </span>
-                                <!-- Nếu không có giảm giá, chỉ hiển thị giá gốc -->
-                                <h4 ng-if="!item.giaKhuyenMai" style="font-size: 18px;">
+
+                                <!-- Nếu không có giá khuyến mãi hoặc không trong khoảng thời gian thì chỉ hiển thị giá gốc -->
+                                <h4 ng-if="item.giaKhuyenMai === null || !isValidDiscountPeriod(item)"
+                                    style="font-size: 18px;">
                                     <span>{{ item.giaBan | currency: '': 0}} VND</span>
                                 </h4>
                             </div>
+
+
                         </div>
                         <a href="#!san_pham_ct/{{item.idSanPham}}"><i class="fa-solid fa-cart-shopping cart"></i></a>
                     </a>
@@ -202,44 +218,37 @@
         </div>
     </div>
 </section>
-
 <section id="pagination" class="section-p1">
     <!-- Nút Previous -->
-    <a href="" ng-click="changePage(page - 1)" 
-       ng-class="{ 'disabled': page === 0 }" 
-       class="page-btn prev">
+    <a href="" ng-click="changePage(page - 1)" ng-class="{ 'disabled': page === 0 }" class="page-btn prev">
         <i class="fa-solid fa-chevron-left"></i>
     </a>
 
     <!-- Trang đầu -->
     <a href="" ng-click="changePage(0)" ng-class="{ 'active': page === 0 }">1</a>
 
-    <!-- Dấu "..." nếu có nhiều trang -->
+    <!-- Dấu "..." nếu có nhiều trang trước -->
     <span ng-if="page > 2">...</span>
 
     <!-- Hiển thị các số trang gần trang hiện tại -->
-    <a href="" ng-repeat="n in getPageNumbers()" 
-       ng-click="changePage(n)" 
-       ng-class="{ 'active': n === page }">
+    <a href="" ng-repeat="n in getPageNumbers()" ng-click="changePage(n)" ng-class="{ 'active': n === page }">
         {{n + 1}}
     </a>
 
-    <!-- Dấu "..." nếu có nhiều trang -->
+    <!-- Dấu "..." nếu có nhiều trang sau -->
     <span ng-if="page < totalPages - 3">...</span>
 
     <!-- Trang cuối -->
-    <a href="" ng-click="changePage(totalPages - 1)" 
-       ng-class="{ 'active': page === totalPages - 1 }">
+    <a href="" ng-click="changePage(totalPages - 1)" ng-class="{ 'active': page === totalPages - 1 }">
         {{totalPages}}
     </a>
 
     <!-- Nút Next -->
-    <a href="" ng-click="changePage(page + 1)" 
-       ng-class="{ 'disabled': page === totalPages - 1 }" 
-       class="page-btn next">
+    <a href="" ng-click="changePage(page + 1)" ng-class="{ 'disabled': page === totalPages - 1 }" class="page-btn next">
         <i class="fa-solid fa-chevron-right"></i>
     </a>
 </section>
+
 <style>
     /* Khi hover vào các biểu tượng xóa bộ lọc, hiển thị con trỏ bàn tay */
     .badge .fa-xmark {

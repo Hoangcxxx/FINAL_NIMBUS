@@ -221,10 +221,15 @@ window.SanPhamController = function ($scope, $http) {
 
 
     // Function to update product status
+    // Function to update product status
     $scope.updateTrangThai = function (idSanPham, newStatus) {
         $http.put('http://localhost:8080/api/admin/san_pham/update_status/' + idSanPham, { trangThai: newStatus })
             .then(function (response) {
-                console.log('Cập nhật trạng thái sản phẩm thành công:', response.data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cập nhật trạng thái sản phẩm thành công',
+                    text: response.data.message || 'Trạng thái sản phẩm đã được cập nhật!',
+                });
             })
             .catch(function (error) {
                 console.error('Error updating product status:', error);
@@ -240,8 +245,16 @@ window.SanPhamController = function ($scope, $http) {
                 if (product) {
                     product.trangThai = !product.trangThai; // Toggle back
                 }
+
+                // Hiển thị thông báo lỗi
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra',
+                    text: 'Không thể cập nhật trạng thái sản phẩm. Vui lòng thử lại.',
+                });
             });
     };
+
 
 
 
@@ -287,12 +300,17 @@ window.SanPhamController = function ($scope, $http) {
         $scope.hideModal('updateProductModal');  // Đóng modal addProductModal
     };
     // Handle product creation
+    // Handle product creation
     $scope.onCreate = function () {
         $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
         $scope.SanPham.giaBan = parseInt($scope.SanPham.giaBan, 10);
 
         if (!$scope.SanPham.idDanhMuc || !$scope.SanPham.tenSanPham || !$scope.SanPham.giaBan || !$scope.SanPham.moTa) {
-            alert('Vui lòng điền đầy đủ thông tin sản phẩm.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin',
+                text: 'Vui lòng điền đầy đủ thông tin sản phẩm.',
+            });
             return;
         }
 
@@ -318,13 +336,21 @@ window.SanPhamController = function ($scope, $http) {
             .then(response => {
                 $scope.SanPham.idSanPham = response.data.idSanPham;
 
-                alert('Chúc mừng bạn tạo mới thành công');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Chúc mừng bạn tạo mới thành công',
+                    text: 'Sản phẩm đã được tạo mới.',
+                });
                 initializeData();
                 $scope.resetModal();
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra',
+                    text: 'Có lỗi xảy ra. Vui lòng thử lại.',
+                });
             });
     };
 

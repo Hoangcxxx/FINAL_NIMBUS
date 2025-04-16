@@ -505,6 +505,20 @@ CREATE TABLE [hoa_don_chi_tiet] (
       REFERENCES [lich_su_hoa_don]([id_lich_su_hoa_don])
 );
 go
+CREATE TABLE [doi_tra] (
+    [Id_doi_tra] INT PRIMARY KEY IDENTITY(1,1),
+    [id_hoa_don] INT,
+    [id_san_pham_chi_tiet] INT,
+    [so_luong] INT,
+    [tong_tien] DECIMAL(18),
+    [ly_do] NVARCHAR(225),
+    [trang_thai] BIT DEFAULT 1,
+	[ngay_tao] DATETIME DEFAULT GETDATE(),
+    [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (id_hoa_don) REFERENCES hoa_don(Id_hoa_don),
+    FOREIGN KEY (id_san_pham_chi_tiet) REFERENCES san_pham_chi_tiet(Id_san_pham_chi_tiet)
+);
+go
 INSERT INTO vai_tro (ten, mo_ta) VALUES 
 (N'Quản trị viên', N'Người quản lý toàn bộ hệ thống'),
 (N'Khách hàng', N'Người mua hàng trên website'),
@@ -689,13 +703,22 @@ VALUES
 (N'Tạo đơn hàng', N'Khách hàng đã tạo đơn hàng.'),
 (N'Chờ xác nhận', N'Đơn hàng đang chờ xác nhận từ người bán hoặc hệ thống.'),
 (N'Xác nhận đơn hàng', N'Người bán đã xác nhận đơn hàng.'),
-(N'Chờ giao hàng', N'Đơn hàng đã được thanh toán thành công và đang chờ giao đến khách hàng.'),
+(N'Chờ giao hàng', N'Đơn hàng đã được xác nhận thành công và đang chờ giao đến khách hàng.'),
 (N'Đang giao hàng', N'Đơn hàng đang được vận chuyển và trên đường giao đến khách hàng.'),
+/*
 (N'Chờ thanh toán', N'Đơn hàng đã được vận chuyển nhưng chưa thanh toán.'),
 (N'Đã thanh toán thành công', N'Khách hàng đã thanh toán thành công.'),
-(N'Hoàn thành', N'Đơn hàng đã được giao đến khách hàng thành công.'),
+*/
+(N'Giao hàng thành công', N'Đơn hàng đã được giao đến khách hàng thành công.'),
 (N'Đã hủy', N'Đơn hàng bị hủy bỏ.'),
-(N'Đã hoàn tiền', N'Đơn hàng đã bị hủy và tiền đã được hoàn trả cho khách hàng.');
+(N'Hoàn trả', N'Khách hàng hoàn trả đơn hàng.'),
+(N'Yêu cầu hoàn trả', N'Khách hàng đã gửi yêu cầu hoàn trả đơn hàng.'),
+(N'Hoàn trả thất bại', N'Người bán đã hủy bỏ yêu cầu hoàn trả từ khách hàng.'),
+(N'Hoàn trả thành công', N'Người bán đã xác nhận yêu cầu hoàn trả từ khách hàng.'),
+(N'Hoàn trả tất cả', N'Khách hàng đã hoàn trả tất cả sản phẩm.'),
+(N'Chờ thanh toán', N'Đơn hàng đang chưa thanh toán.'),
+(N'Đã thanh toán thành công', N'Khách hàng đã thanh toán thành công.'),
+(N'Đơn hàng hoàn thành', N'Đơn hàng đã giao đến khách hàng thành công.');
 
 -- Insert data for trang_thai_hoa_don
 -- Thêm trạng thái cho hóa đơn với Id_hoa_don là 1
@@ -1825,8 +1848,7 @@ INSERT INTO hoa_don_chi_tiet (id_san_pham_chi_tiet, id_hoa_don, so_luong, tong_t
 (25, 7, 3, 3600,4000,400),
 (53, 8, 5, 1500, 1500,0),
 (54, 9, 3, 3600,4000,400);
-go
-*/
+go */
 select * from vai_tro
 select * from nguoi_dung
 select * from voucher_nguoi_dung
@@ -1850,8 +1872,10 @@ select * from xa
 select * from pt_thanh_toan
 select * from pt_thanh_toan_hoa_don
 select * from trang_thai_hoa_don
+select * from loai_trang_thai
 select * from hoa_don
 select * from hoa_don_chi_tiet
+select * from doi_tra
 select * from xac_thuc
 select * from lich_su_hoa_don
 select * from san_pham

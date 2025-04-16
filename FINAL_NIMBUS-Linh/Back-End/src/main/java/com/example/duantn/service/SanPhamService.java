@@ -4,6 +4,8 @@ import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,10 @@ public class SanPhamService {
     public List<Object[]> getAllSanPhams() {
         return sanPhamRepository.getAllSanPham();
     }
+    public Page<Object[]> getAllSanPhams(Pageable pageable) {
+        return sanPhamRepository.getAllSanPham(pageable);
+    }
+
     public List<Object[]> getAllSanPhamAD() {
         return sanPhamRepository.getAllSanPhamAD();
     }
@@ -221,10 +227,12 @@ public class SanPhamService {
     }
 
     // Phương thức tìm kiếm sản phẩm
-    public List<SanPhamDTO> searchProducts(BigDecimal minPrice, BigDecimal maxPrice, Integer danhMucId, Integer chatLieuId, Integer mauSacId, Integer kichThuocId) {
-        List<SanPham> sanPhams = sanPhamRepository.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId);
+    public List<SanPhamDTO> searchProducts(BigDecimal minPrice, BigDecimal maxPrice, Integer danhMucId,
+                                           Integer chatLieuId, Integer mauSacId, Integer kichThuocId, String tenSanPham) {
+        List<SanPham> sanPhams = sanPhamRepository.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId, tenSanPham);
         return sanPhams.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+
 
 
 }

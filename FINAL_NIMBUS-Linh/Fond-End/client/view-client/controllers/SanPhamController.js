@@ -13,7 +13,7 @@ window.SanPhamController = function ($scope, $http) {
     $scope.selectedChatLieu = null;
     $scope.selectedMauSac = null;
     $scope.selectedKichThuoc = null;
-
+    $scope.searchTerm = ''; // Thêm biến tìm kiếm
     // Khởi tạo khoảng giá với giá trị mặc định min = 0 và max = 1000000
     $scope.priceRange = {
         min: 0, // Giá trị mặc định của min
@@ -45,7 +45,10 @@ window.SanPhamController = function ($scope, $http) {
         if ($scope.selectedKichThuoc) {
             filterUrl += `&kichThuocId=${$scope.selectedKichThuocId}`;
         }
-
+        // Thêm tham số tìm kiếm theo tên sản phẩm nếu có
+        if ($scope.searchTerm) {
+            filterUrl += `&tenSanPham=${$scope.searchTerm}`;
+        }
         // Fetch products from the API
         $http.get(filterUrl).then(function (response) {
             $scope.dsSanPham = response.data;
@@ -79,7 +82,17 @@ window.SanPhamController = function ($scope, $http) {
             }
         }, 500);  // 500ms = 0.5 giây
     };
-
+    // Hàm tìm kiếm sản phẩm
+    $scope.searchProducts = function () {
+        fetchFilteredProducts(); // Gọi hàm để lấy sản phẩm theo các bộ lọc và tên tìm kiếm
+    };
+     // Hàm xử lý sự kiện nhấn phím Enter để thực hiện tìm kiếm
+     $scope.handleKeyPress = function (event) {
+        // Kiểm tra nếu phím được nhấn là "Enter" (keyCode 13)
+        if (event.keyCode === 13) {
+            $scope.searchProducts(); // Gọi hàm tìm kiếm khi nhấn Enter
+        }
+    };
     // Hàm xóa bộ lọc
     $scope.removeFilter = function (filterType) {
         switch (filterType) {
@@ -150,7 +163,7 @@ window.SanPhamController = function ($scope, $http) {
     // Hàm lấy dữ liệu sản phẩm và danh mục khi khởi tạo controller
     function initializeData() {
         // Lấy danh sách sản phẩm
-        $scope.fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'dsSanPham');
+        // $scope.fetchData('http://localhost:8080/api/nguoi_dung/san_pham', 'dsSanPham');
         // Lấy danh sách danh mục
         $scope.fetchData('http://localhost:8080/api/nguoi_dung/danh_muc', 'dsDanhMuc');
         $scope.fetchData('http://localhost:8080/api/nguoi_dung/chat_lieu', 'dsChatLieu');
@@ -167,7 +180,7 @@ window.SanPhamController = function ($scope, $http) {
         if (page < 0 || page >= $scope.totalPages) return;
         $http.get("http://localhost:8080/api/nguoi_dung/san_pham/phan_trang?page=" + page + "&size=" + $scope.size)
             .then(function (response) {
-                $scope.dsSanPham = response.data.sanPhams;
+                $scope.dsSanPham = response.data.data; // Sử dụng key 'data' từ response
                 $scope.totalPages = response.data.totalPages;
                 $scope.page = response.data.currentPage;
             });
@@ -180,17 +193,40 @@ window.SanPhamController = function ($scope, $http) {
 
     // Gọi dữ liệu trang đầu tiên
     $scope.getSanPhams(0);
+
+    // Hiển thị các số trang gần trang hiện tại
     $scope.getPageNumbers = function () {
         let range = [];
         let start = Math.max(1, $scope.page - 1);
         let end = Math.min($scope.totalPages - 2, $scope.page + 1);
-        
+
         for (let i = start; i <= end; i++) {
             range.push(i);
         }
         return range;
     };
-    
+
+
     // Gọi hàm khởi tạo
     initializeData();
+    $scope.isValidDiscountPeriod = function (item) {
+        // Lấy ngày hiện tại
+        const today = new Date();
+
+        // Lấy ngày bắt đầu và ngày kết thúc từ dữ liệu sản phẩm
+        const startDate = new Date(item.ngayBatDau);
+        const endDate = item.ngayKetThuc ? new Date(item.ngayKetThuc) : null; // Nếu không có ngày kết thúc thì không có điều kiện
+
+        // Kiểm tra xem ngày hiện tại có nằm trong khoảng ngày bắt đầu và ngày kết thúc
+        if (startDate && endDate) {
+            return today >= startDate && today <= endDate;
+        } else if (startDate) {
+            return today >= startDate; // Nếu chỉ có ngày bắt đầu
+        } else if (endDate) {
+            return today <= endDate; // Nếu chỉ có ngày kết thúc
+        }
+
+        return false; // Không có ngày nào, không hợp lệ
+    };
+
 };

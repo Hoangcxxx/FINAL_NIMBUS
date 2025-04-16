@@ -51,6 +51,27 @@ window.SanPhamCTController = function ($scope, $http, $routeParams, $location) {
             });
     }
 
+    $scope.isValidDiscountPeriod = function (sanPhamChiTiet) {
+        // Lấy ngày hiện tại
+        const today = new Date();
+    
+        // Lấy ngày bắt đầu và ngày kết thúc từ dữ liệu sản phẩm
+        const startDate = new Date(sanPhamChiTiet.ngayBatDau);
+        const endDate = sanPhamChiTiet.ngayKetThuc ? new Date(sanPhamChiTiet.ngayKetThuc) : null; // Nếu không có ngày kết thúc thì không có điều kiện
+    
+        // Kiểm tra xem ngày hiện tại có nằm trong khoảng ngày bắt đầu và ngày kết thúc
+        if (startDate && endDate) {
+            return today >= startDate && today <= endDate;
+        } else if (startDate) {
+            return today >= startDate; // Nếu chỉ có ngày bắt đầu
+        } else if (endDate) {
+            return today <= endDate; // Nếu chỉ có ngày kết thúc
+        }
+    
+        return false; // Không có ngày nào, không hợp lệ
+    };
+    
+    
     function fetchMauSacChiTiet() {
         $http.get('http://localhost:8080/api/nguoi_dung/san_pham_chi_tiet/mau_sac/' + idSanPham)
             .then(function (response) {
@@ -356,4 +377,37 @@ function showDivs(n) {
     } else {
         console.error("Không có phần tử dots nào hoặc slideIndex không hợp lệ.");
     }
+
+    $scope.isValidDiscountPeriod = function (sanPhamChiTiet) {
+        // Lấy ngày hiện tại
+        const today = new Date();
+        console.log("Ngày hiện tại: " + today);
+    
+        // Lấy ngày bắt đầu và ngày kết thúc từ dữ liệu sản phẩm
+        const startDate = new Date(sanPhamChiTiet.ngayBatDau);
+        const endDate = sanPhamChiTiet.ngayKetThuc ? new Date(sanPhamChiTiet.ngayKetThuc) : null; // Nếu không có ngày kết thúc thì không có điều kiện
+    
+        console.log("Ngày bắt đầu khuyến mãi: " + startDate);
+        console.log("Ngày kết thúc khuyến mãi: " + (endDate ? endDate : "Không có"));
+    
+        // Kiểm tra xem ngày hiện tại có nằm trong khoảng ngày bắt đầu và ngày kết thúc
+        if (startDate && endDate) {
+            const isValid = today >= startDate && today <= endDate;
+            console.log("Ngày hiện tại nằm trong khoảng ngày bắt đầu và kết thúc: " + isValid);
+            return isValid;
+        } else if (startDate) {
+            const isValid = today >= startDate;
+            console.log("Chỉ có ngày bắt đầu và ngày hiện tại >= ngày bắt đầu: " + isValid);
+            return isValid; // Nếu chỉ có ngày bắt đầu
+        } else if (endDate) {
+            const isValid = today <= endDate;
+            console.log("Chỉ có ngày kết thúc và ngày hiện tại <= ngày kết thúc: " + isValid);
+            return isValid; // Nếu chỉ có ngày kết thúc
+        }
+    
+        console.log("Không có ngày nào hợp lệ");
+        return false; // Không có ngày nào, không hợp lệ
+    };
+    
+    
 }

@@ -29,11 +29,8 @@ public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
     @Autowired
-    private DotGiamGiaService dotGiamGiaService;
-    @Autowired
-    private SanPhamRepository sanPhamRepository;
-    @Autowired
     private DotGiamGiaRepository dotGiamGiaRepository;
+
     private Map<String, Object> mapSanPhamDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -52,9 +49,11 @@ public class SanPhamController {
         map.put("thuTu", row[13]);       // Danh sách kích thước
         return map;
     }
+
     private List<Map<String, Object>> mapSanPhams(List<Object[]> results) {
         return results.stream().map(this::mapSanPhamDetail).collect(Collectors.toList());
     }
+
     private Map<String, Object> mapSanPhamGiamGiaDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -72,9 +71,11 @@ public class SanPhamController {
         map.put("urlAnh", row[12]);    // Cập nhật chỉ số cho thứ tự
         return map;
     }
+
     private List<Map<String, Object>> mapSanPhamGiamGias(List<Object[]> results) {
         return results.stream().map(this::mapSanPhamGiamGiaDetail).collect(Collectors.toList());
     }
+
     private Map<String, Object> mapDanhMucDetail(Object[] row) {
         Map<String, Object> map = new HashMap<>();
         map.put("idSanPham", row[0]);
@@ -93,6 +94,7 @@ public class SanPhamController {
         map.put("thuTu", row[13]);       // Danh sách kích thước
         return map;
     }
+
     private List<Map<String, Object>> mapDanhMucs(List<Object[]> results) {
         return results.stream().map(this::mapDanhMucDetail).collect(Collectors.toList());
     }
@@ -103,6 +105,7 @@ public class SanPhamController {
         List<Map<String, Object>> filteredProducts = mapSanPhams(sanPhams);
         return ResponseEntity.ok(filteredProducts);
     }
+
     @GetMapping("/san_pham_giam_gia")
     public ResponseEntity<List<Map<String, Object>>> getAllSanPhamGiamGias() {
         List<Object[]> sanPhams = sanPhamService.getAllSanPhamGiamGia();
@@ -114,10 +117,12 @@ public class SanPhamController {
     public ResponseEntity<List<Map<String, Object>>> getSanPhamsByDanhMuc(@PathVariable Integer idDanhMuc) {
         return ResponseEntity.ok(mapDanhMucs(sanPhamService.getSanPhamsByDanhMuc(idDanhMuc)));
     }
+
     @GetMapping("/findDotGiamGia/{idDotGiamGia}")
     public ResponseEntity<List<Map<String, Object>>> getSanPhamsByDotGiamGia(@PathVariable Integer idDotGiamGia) {
         return ResponseEntity.ok(mapSanPhamGiamGias(sanPhamService.getSanPhamsByIdDotGiamGia(idDotGiamGia)));
     }
+
     @GetMapping("/dot_giam_gia")
     public List<DotGiamGia> getAllDotGiamGia() {
         List<DotGiamGia> list = dotGiamGiaRepository.findAll();
@@ -125,6 +130,7 @@ public class SanPhamController {
                 .sorted(Comparator.comparing(DotGiamGia::getNgayCapNhat).reversed()) // Sắp xếp giảm dần
                 .collect(Collectors.toList());
     }
+
     // API kiểm tra trạng thái của sản phẩm
     @GetMapping("/{id}/trang-thai")
     public Boolean checkSanPhamTrangThai(@PathVariable Integer id) {
@@ -137,22 +143,29 @@ public class SanPhamController {
                                            @RequestParam(required = false) Integer danhMucId,
                                            @RequestParam(required = false) Integer chatLieuId,
                                            @RequestParam(required = false) Integer mauSacId,
-                                           @RequestParam(required = false) Integer kichThuocId) {
-        return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId);
+                                           @RequestParam(required = false) Integer kichThuocId,
+                                           @RequestParam(required = false) String tenSanPham) {
+        return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId, tenSanPham);
     }
+
+
     @GetMapping("/phan_trang")
-    public ResponseEntity<Map<String, Object>> getSanPhamPhanTrang(
+    public ResponseEntity<Map<String, Object>> getAllSanPhams(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("idSanPham").ascending());
-        Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageable);
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> sanPhams = sanPhamService.getAllSanPhams(pageable);
+
+        List<Map<String, Object>> filteredProducts = mapSanPhams(sanPhams.getContent());
 
         Map<String, Object> response = new HashMap<>();
-        response.put("sanPhams", sanPhamPage.getContent());
-        response.put("totalPages", sanPhamPage.getTotalPages());
-        response.put("totalElements", sanPhamPage.getTotalElements());
-        response.put("currentPage", sanPhamPage.getNumber());
+        response.put("data", filteredProducts);
+        response.put("currentPage", sanPhams.getNumber());
+        response.put("totalItems", sanPhams.getTotalElements());
+        response.put("totalPages", sanPhams.getTotalPages());
 
         return ResponseEntity.ok(response);
     }
+
 }

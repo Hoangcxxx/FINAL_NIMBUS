@@ -121,36 +121,6 @@ public class SanPhamQuery {
             "    hl.url_anh, \n" +
             "    dc.ten_danh_muc; \n";
 
-    public static final String GET_SAN_PHAM_BY_ID = "SELECT " +
-            "    sp.Id_san_pham AS idSanPham, " +
-            "    sp.ma_san_pham AS maSanPham, " +
-            "    sp.ten_san_pham AS tenSanPham, " +
-            "    spct.so_luong AS soLuong, " +
-            "    spct.mo_ta AS mo_ta_spct, " +
-            "    sp.gia_ban AS giaBan, " +
-            "    dc.ten_danh_muc AS tenDanhMuc, " +
-            "    lv.ten_loai_voucher AS tenLoaiVoucher, " +
-            "    hl.trang_thai AS trangThai, " +
-            "    ms.ten_mau_sac AS tenMauSac, " +
-            "    kc.ten_kich_thuoc AS tenKichThuoc, " +
-            "    cl.ten_chat_lieu AS tenChatLieu, " +
-            "    hl.url_anh AS urlAnh, " +
-            "    hl.thu_tu AS thuTu " +
-            "FROM san_pham sp " +
-            "JOIN san_pham_chi_tiet spct ON sp.Id_san_pham = spct.id_san_pham " +
-            "LEFT JOIN hinh_anh_san_pham hl ON spct.Id_san_pham_chi_tiet = hl.id_san_pham_chi_tiet " +
-            "LEFT JOIN chat_lieu_chi_tiet clt ON spct.id_chat_lieu_chi_tiet = clt.Id_chat_lieu_tiet " +
-            "LEFT JOIN chat_lieu cl ON clt.id_chat_lieu = cl.Id_chat_lieu " +
-            "LEFT JOIN kich_thuoc_chi_tiet kct ON spct.id_kich_thuoc_chi_tiet = kct.Id_kich_thuoc_chi_tiet " +
-            "LEFT JOIN kich_thuoc kc ON kct.id_kich_thuoc = kc.Id_kich_thuoc " +
-            "LEFT JOIN mau_sac_chi_tiet mct ON spct.id_mau_sac_chi_tiet = mct.id_mau_sac_chi_tiet " +
-            "LEFT JOIN mau_sac ms ON mct.id_mau_sac = ms.Id_mau_sac " +
-            "LEFT JOIN danh_muc dc ON sp.id_danh_muc = dc.id_danh_muc " +
-            "LEFT JOIN loai_voucher lv ON sp.id_loai_voucher = lv.id_loai_voucher " +
-            "WHERE " +
-            "    sp.Id_san_pham = :idSanPham";
-
-
     public static final String ADD_SAN_PHAM_AD =
             "INSERT INTO san_pham (ma_san_pham,ten_san_pham, gia_ban, mo_ta, id_danh_muc, ngay_tao, ngay_cap_nhat, trang_thai) " +
                     "VALUES (:maSanPham,:tenSanPham, :giaBan, :moTa, :idDanhMuc, :ngayTao, :ngayCapNhat, :trangThai); " +

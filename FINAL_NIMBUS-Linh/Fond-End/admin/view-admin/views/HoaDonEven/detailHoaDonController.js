@@ -2,6 +2,7 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     var idHoaDon = $routeParams.idHoaDon;
     $scope.trangThaiHoaDon = [];
     $scope.hoaDon = [];
+    $scope.doiTra = [];
     $scope.sanPhamCT = [];
     $scope.lichSuThanhToan = [];
     $scope.voucher = [];
@@ -30,6 +31,17 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             .catch(function (error) {
                 console.error('Error fetching status data:', error);
             });
+        $http.get('http://localhost:8080/api/admin/doi_tra/' + idHoaDon)
+            .then(function (response) {
+                if (Array.isArray(response.data)) {
+                    $scope.doiTra = response.data;
+                } else {
+                    console.error('Dữ liệu trả về từ API không phải mảng:', response.data);
+                }
+            })
+            .catch(function (error) {
+                console.error('Error fetching status data:', error);
+            });
         // Lấy dữ liệu từ API
         $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
             .then(function (response) {
@@ -47,7 +59,6 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
         // Khởi tạo biến tổng tiền trước khi giảm giá
         $scope.totalBeforeDiscount = 0;
 
-        // Lấy dữ liệu chi tiết hóa đơn
         // Lấy dữ liệu chi tiết hóa đơn
         $http.get('http://localhost:8080/api/admin/hoa_don/findHoaDonCT/' + idHoaDon)
             .then(function (response) {
@@ -178,16 +189,10 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
             case 4: // Trạng thái "Chờ giao hàng"
                 $scope.modalButtonText = 'Giao hàng';
                 break;
-            case 5: // Trạng thái "Chờ giao hàng"
-                $scope.modalButtonText = 'Chờ thanh toán';
+            case 5:
+                $scope.modalButtonText = 'Giao hàng thành công';
                 break;
-            case 6: // Trạng thái "Chờ thanh toán"
-                $scope.modalButtonText = 'Xác nhận thanh toán';
-                break;
-            case 7: // Trạng thái "Đang vận chuyển"
-                $scope.modalButtonText = 'Hoàn thành';
-                break;
-            // case 8: 
+            // case 6:
             //     $scope.modalButtonText = 'Hủy';
             //     break;
             default:
@@ -251,6 +256,24 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
     $scope.getStatus7 = function () {
         return getMaxStatus([7]);
     };
+    $scope.getStatus8 = function () {
+        return getMaxStatus([8]);
+    };
+    $scope.getStatus8 = function () {
+        return getMaxStatus([10]);
+    };
+    $scope.getStatus8 = function () {
+        return getMaxStatus([11]);
+    };
+    $scope.getStatus13 = function () {
+        return getMaxStatus([13]);
+    };
+    $scope.getStatus14 = function () {
+        return getMaxStatus([14]);
+    };
+    $scope.getStatus15 = function () {
+        return getMaxStatus([15]);
+    };
     var userInfo = localStorage.getItem('user');
 
     if (userInfo) {
@@ -274,56 +297,20 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
             // Kiểm tra trạng thái hiện tại và xác định trạng thái tiếp theo
             switch ($scope.ghiChu.trangThaiId) {
-                case 2:  // Chờ xác nhận -> Chuyển sang Chờ giao hàng (3)
+                case 2:
                     nextStatusId = 3;
                     break;
-                case 3:  // Chờ giao hàng -> Chuyển sang Chờ thanh toán (4)
+                case 3:
                     nextStatusId = 4;
                     break;
-                case 4:  // Chờ thanh toán -> Chuyển sang Chờ thanh toán (5)
+                case 4:
                     nextStatusId = 5;
                     break;
-                case 5:  // Chờ thanh toán -> Chuyển sang Đang vận chuyển (6)
+                case 5:
                     nextStatusId = 6;
                     break;
-                case 6:  // Chờ thanh toán -> Chuyển sang Đang vận chuyển (7)
+                case 6:
                     nextStatusId = 7;
-
-                    // Kiểm tra nếu đang chuyển từ trạng thái "Chờ thanh toán" (6) sang "Xác nhận thanh toán"
-                    // Kiểm tra xem đã có lịch sử thanh toán với nhân viên xác nhận chưa
-                    $http.get('http://localhost:8080/api/admin/lich_su_thanh_toan/' + idHoaDon)
-                        .then(function (response) {
-                            // Kiểm tra nếu có lịch sử thanh toán và xem có nhân viên xác nhận không
-                            const hasPaymentHistory = response.data.some(function (payment) {
-                                // Kiểm tra nếu `tenNhanVien` khác "N/A" và không phải `null`
-                                return payment.tenNhanVien !== "N/A" && payment.tenNhanVien !== null;
-                            });
-
-                            if (!hasPaymentHistory) {
-                                // Nếu không có nhân viên xác nhận thanh toán
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Không thể cập nhật trạng thái',
-                                    text: 'Vui lòng xác nhận thanh toán trước khi chuyển trạng thái!'
-                                });
-                                return; // Dừng cập nhật trạng thái nếu không có xác nhận thanh toán
-                            } else {
-                                // Nếu đã có nhân viên xác nhận thanh toán, tiếp tục cập nhật trạng thái
-                                updateStatusInBackend(nextStatusId);
-                            }
-                        })
-                        .catch(function (error) {
-                            // Xử lý lỗi trong quá trình lấy lịch sử thanh toán
-                            console.error('Lỗi khi kiểm tra lịch sử thanh toán:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Lỗi khi kiểm tra thanh toán',
-                                text: "Đã xảy ra lỗi khi kiểm tra lịch sử thanh toán."
-                            });
-                        });
-
-                    return;  // Dừng việc chuyển trạng thái nếu phải kiểm tra lịch sử thanh toán
-
                 case 7:  // Đang vận chuyển -> Hoàn thành
                     nextStatusId = 8;  // Trạng thái hoàn thành (có thể là trạng thái 8)
                     break;
@@ -403,6 +390,118 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                 });
             });
     }
+
+    $scope.canCancelOrder = function () {
+        // Kiểm tra nếu có trạng thái hóa đơn
+        if ($scope.trangThaiHoaDon && $scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1]; // Trạng thái hiện tại của hóa đơn
+
+            // Kiểm tra nếu trạng thái là 5 (Đang giao hàng) hoặc 6 (Chờ thanh toán), thì không cho phép hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon === 1 || currentStatus.idLoaiTrangThaiHoaDon === 2 || currentStatus.idLoaiTrangThaiHoaDon === 3 || currentStatus.idLoaiTrangThaiHoaDon === 4) {
+                return true; // Không thể hủy nếu đang ở trạng thái 5 hoặc 6
+            }
+
+            // Nếu trạng thái là "Đã hủy" (ID = 7), ẩn nút hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon !== 1 || currentStatus.idLoaiTrangThaiHoaDon !== 2 || currentStatus.idLoaiTrangThaiHoaDon !== 3 || currentStatus.idLoaiTrangThaiHoaDon !== 4) {
+                return false; // Đã hủy, không cho phép hủy nữa
+            }
+        }
+
+        return true; // Nếu không phải trạng thái 5, 6 hoặc 7, cho phép hủy
+    };
+    $scope.huyOrder = function () {
+        // Kiểm tra nếu có trạng thái hóa đơn
+        if ($scope.trangThaiHoaDon && $scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1]; // Trạng thái hiện tại của hóa đơn
+
+            // Kiểm tra nếu trạng thái là 5 (Đang giao hàng) hoặc 6 (Chờ thanh toán), thì không cho phép hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon !== 15) {
+                return false; // Không thể hủy nếu đang ở trạng thái 5 hoặc 6
+            }
+
+            // Nếu trạng thái là "Đã hủy" (ID = 7), ẩn nút hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon === 15) {
+                return true; // Đã hủy, không cho phép hủy nữa
+            }
+        }
+
+        return true; // Nếu không phải trạng thái 5, 6 hoặc 7, cho phép hủy
+    };
+    $scope.cancelOrder = function () {
+        if (idHoaDon) {
+            // Kiểm tra trước khi hủy đơn hàng
+            const currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+
+            // Kiểm tra trạng thái hiện tại có phải là "Đang giao hàng" (5) hoặc "Chờ thanh toán" (6)
+            if (currentStatus.idLoaiTrangThaiHoaDon === 5 || currentStatus.idLoaiTrangThaiHoaDon === 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Không thể hủy đơn hàng',
+                    text: 'Đơn hàng hiện tại đang trong quá trình giao hàng hoặc chờ thanh toán, không thể hủy!'
+                });
+                return;
+            }
+
+            // Cập nhật trạng thái hủy đơn hàng (ID = 7)
+            updateStatusInBackend(7);
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng kiểm tra thông tin',
+                text: 'Không có mã hóa đơn để hủy!'
+            });
+        }
+    };
+    $scope.huyDonHang = function () {
+        if (idHoaDon) {
+            // Kiểm tra trước khi hủy đơn hàng
+            const currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+
+            if (currentStatus.idLoaiTrangThaiHoaDon === 6) {
+                updateStatusInBackend(12);
+            }
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng kiểm tra thông tin',
+                text: 'Không có mã hóa đơn để hủy!'
+            });
+        }
+    };
+    $scope.hoanTra = function () {
+        // Kiểm tra nếu có trạng thái hóa đơn
+        if ($scope.trangThaiHoaDon && $scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1]; // Trạng thái hiện tại của hóa đơn
+
+            // Kiểm tra nếu trạng thái là 5 (Đang giao hàng) hoặc 6 (Chờ thanh toán), thì không cho phép hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon !== 9) {
+                return false; // Không thể hủy nếu đang ở trạng thái 5 hoặc 6
+            }
+
+            // Nếu trạng thái là "Đã hủy" (ID = 7), ẩn nút hủy
+            if (currentStatus.idLoaiTrangThaiHoaDon === 9) {
+                return true; // Đã hủy, không cho phép hủy nữa
+            }
+        }
+
+        return true; // Nếu không phải trạng thái 5, 6 hoặc 7, cho phép hủy
+    };
+    $scope.sanPhamHoanTra = function () {
+        // Kiểm tra nếu có trạng thái hóa đơn
+        if ($scope.trangThaiHoaDon && $scope.trangThaiHoaDon.length > 0) {
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+            
+            // Kiểm tra nếu idLoaiTrangThaiHoaDon không phải là 9, 8 hoặc 10
+            if (![9, 8, 10,11].includes(currentStatus.idLoaiTrangThaiHoaDon)) {
+                return false;
+            }
+    
+            return true;
+        }
+    
+        return true;
+    };
+    
 
     // Lấy dữ liệu từ API
     $http.get('http://localhost:8080/api/admin/hoa_don/findTrangThaiHoaDon/' + idHoaDon)
@@ -486,26 +585,26 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
                             var modalElement = angular.element(document.getElementById('xacNhanModal'));
                             if (modalElement) {
                                 console.log('Modal exists in DOM, hiding modal...');
-                        
+
                                 // Loại bỏ class 'show' nếu modal đang hiển thị
                                 modalElement.removeClass('show');
-                        
+
                                 // Đặt lại style để chắc chắn modal bị ẩn
                                 modalElement.css('display', 'none');
-                        
+
                                 // Xóa backdrop nếu có
                                 var backdrop = angular.element(document.querySelector('.modal-backdrop'));
                                 if (backdrop) {
                                     backdrop.remove(); // Loại bỏ backdrop nếu có
                                 }
-                        
+
                                 // Kiểm tra lại xem modal đã bị ẩn chưa
                                 console.log('Modal visibility after hide:', modalElement.css('display'));
                             } else {
                                 console.error('Modal with ID "xacNhanModal" does not exist in the DOM.');
                             }
                         });
-                        
+
 
                     } else {
                         console.error('Lỗi khi cập nhật thanh toán:', response.data.message);
@@ -549,7 +648,97 @@ window.detailHoaDonController = function ($scope, $http, $routeParams) {
 
 
 
+    $scope.confirmReturn = function () {
+        if (idHoaDon) {
+            // Log ra idHoaDon để kiểm tra xem có giá trị hay không
+            console.log('idHoaDon:', idHoaDon);
 
+            // Log ra trạng thái hóa đơn hiện tại để kiểm tra trạng thái
+            var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+            console.log('Trạng thái hóa đơn hiện tại:', currentStatus);
+
+            // Lấy ID nhân viên từ thông tin người dùng
+            var userInfo = localStorage.getItem('user');
+            var userId = null;
+            if (userInfo) {
+                userInfo = JSON.parse(userInfo);
+                userId = userInfo.idNguoiDung;  // Lấy ID nhân viên từ thông tin người dùng
+            }
+
+            // Tạo confirmation dialog với các lựa chọn
+            Swal.fire({
+                title: 'Chọn hành động',
+                text: 'Bạn muốn xác nhận hoàn trả hay hủy hoàn trả?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Xác nhận hoàn trả',
+                cancelButtonText: 'Hủy hoàn trả',
+                reverseButtons: true, // Đảo vị trí của nút "Xác nhận" và "Hủy"
+            }).then((result) => {
+                var idLoaiTrangThaiHoaDon;
+                // Kiểm tra kết quả từ dialog
+                if (result.isConfirmed) {
+                    // Nếu người dùng chọn "Xác nhận hoàn trả" (trạng thái 11)
+                    idLoaiTrangThaiHoaDon = 11;
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Nếu người dùng chọn "Hủy hoàn trả" (trạng thái 10)
+                    idLoaiTrangThaiHoaDon = 10;
+                }
+
+                if (idLoaiTrangThaiHoaDon) {
+                    // Tiến hành gọi API cập nhật trạng thái với idLoaiTrangThaiHoaDon mới và ID nhân viên
+                    $http.put('http://localhost:8080/api/admin/doi_tra/cap-nhat-trang-thai/' + idHoaDon + '/' + idLoaiTrangThaiHoaDon + '/' + userId, {
+                    })
+                        .then(function (response) {
+                            console.log('Dữ liệu trả về từ API:', response.data); // Log dữ liệu trả về từ API
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cập nhật thành công',
+                                text: 'Trạng thái hóa đơn đã được cập nhật thành công!'
+                            });
+                            // Tải lại dữ liệu sau khi cập nhật
+                            fetchStatusAndInvoiceData();
+                        })
+                        .catch(function (error) {
+                            console.error('Lỗi khi gọi API:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Cập nhật thất bại',
+                                text: 'Có lỗi khi cập nhật trạng thái hoàn trả.'
+                            });
+                        });
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Vui lòng kiểm tra thông tin',
+                text: 'Không có mã hóa đơn để xác nhận hoàn trả!'
+            });
+        }
+    };
+
+    $scope.canConfirmReturn = function () {
+        // Log ra trạng thái hóa đơn để kiểm tra giá trị của trạng thái
+        var currentStatus = $scope.trangThaiHoaDon[$scope.trangThaiHoaDon.length - 1];
+        console.log('Trạng thái hóa đơn hiện tại:', currentStatus);
+
+        // Kiểm tra trạng thái có thể hoàn trả không
+        // Giả sử trạng thái có thể hoàn trả là trạng thái "Chờ xác nhận" (idLoaiTrangThaiHoaDon = 9)
+        var canReturn = currentStatus.idLoaiTrangThaiHoaDon === 9;  // Thay đổi theo trạng thái hoàn trả của bạn
+        console.log('Có thể hoàn trả không?', canReturn);  // Log ra kết quả kiểm tra
+
+        // Kiểm tra ID nhân viên có hợp lệ không
+        var userInfo = localStorage.getItem('user');
+        if (userInfo) {
+            userInfo = JSON.parse(userInfo);
+            var userId = userInfo.idNguoiDung;
+            console.log('ID Nhân viên:', userId);  // Log ID nhân viên
+            return canReturn && userId;  // Kiểm tra có thể hoàn trả và có ID nhân viên
+        }
+
+        return false;  // Nếu không có thông tin người dùng, không cho phép hoàn trả
+    };
 
 
 };

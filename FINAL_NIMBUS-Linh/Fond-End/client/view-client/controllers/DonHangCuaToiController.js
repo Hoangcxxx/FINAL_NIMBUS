@@ -1,7 +1,7 @@
 window.DonHangCuaToiController = function ($scope, $http, $window) {
 
 
-    
+
     // Lấy thông tin người dùng từ localStorage
     var userInfo = localStorage.getItem('user');
     // Lắng nghe sự kiện click trên nút "Tra Cứu"
@@ -118,6 +118,9 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                     // Cập nhật thông tin đơn hàng
                     $scope.orderHieu = {
                         maHoaDon: hoaDon.maHoaDon,
+                        idHoaDon: hoaDon.idHoaDon, // Lưu idHoaDon
+                        idNguoiDung: hoaDon.idNguoiDung, // Lưu idNguoiDung
+                        idLoaiTrangThai: hoaDon.idLoaiTrangThai, // Lưu idNguoiDung
                         tenPhuongThucThanhToan: hoaDon.tenPhuongThucThanhToan,
                         tenNguoiNhan: hoaDon.tenNguoiNhan,
                         diaChi: hoaDon.diaChi,
@@ -128,7 +131,7 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                         tinh: hoaDon.tenTinh,
                         huyen: hoaDon.tenHuyen,
                         xa: hoaDon.tenXa,
-                        giaTriMavoucher: hoaDon.giaTriMavoucher , // Đảm bảo mã voucher được lấy chính xác
+                        giaTriMavoucher: hoaDon.giaTriMavoucher, // Đảm bảo mã voucher được lấy chính xác
                         kieuGiamGia: hoaDon.kieuGiamGia,
                     };
 
@@ -168,15 +171,135 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
                 console.error("Lỗi khi lấy thông tin hóa đơn:", error);
             });
     }
-
-    // Ví dụ cách gọi hàm getOrderDetailsByMaHoaDon trong một sự kiện (ví dụ: khi người dùng nhấn nút chi tiết)
-    $scope.showOrderDetails = function (hoaDon) {
-        if (hoaDon && hoaDon.maHoaDon) {
-            getOrderDetailsByMaHoaDon(hoaDon.maHoaDon);
-        } else {
-            console.error("Mã hóa đơn không hợp lệ!");
+    $scope.submitReturnRequest = function () {
+        // Kiểm tra trạng thái đơn hàng trước khi xử lý hoàn trả
+        if ($scope.orderHieu.idLoaiTrangThai === 7) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Không thể yêu cầu hoàn trả vì đơn hàng của bạn đã bị hủy!',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                    $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                }
+            });
+            return; // Ngừng quá trình
         }
+    
+        // Kiểm tra danh sách sản phẩm có tồn tại và có sản phẩm không
+        if (!$scope.orderlist?.listSanPhamChiTiet?.length) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Không có sản phẩm nào trong đơn hàng để thực hiện hoàn trả!',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                    $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                }
+            });
+            return;
+        }
+    
+        // Lọc sản phẩm được chọn và có số lượng hoàn trả > 0
+        const filteredItems = $scope.orderlist.listSanPhamChiTiet.filter(
+            item => item.selected && item.soLuongHoanTra > 0
+        );
+    
+        if (filteredItems.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Vui lòng chọn ít nhất một sản phẩm và nhập số lượng hoàn trả hợp lệ!',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                    $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                }
+            });
+            return;
+        }
+    
+        // Kiểm tra lý do đổi trả hợp lệ và lấy lý do đã chọn hoặc lý do nhập tay
+        let reasonToSend = ($scope.selectedReason === 'other' && $scope.otherReason)
+            ? $scope.otherReason // Lưu lý do nhập tay nếu chọn "Lý do khác"
+            : $scope.selectedReason;
+    
+        if (!reasonToSend) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Vui lòng chọn lý do đổi trả hoặc nhập lý do khác!',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                    $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                }
+            });
+            return;
+        }
+    
+        // Log lý do nhập để kiểm tra
+        console.log("Lý do đổi trả: ", reasonToSend);
+    
+        // Tạo danh sách DoiTraDTO từ sản phẩm đã chọn
+        const doiTraDTOList = filteredItems.map(item => ({
+            idHoaDon: $scope.orderHieu.idHoaDon,
+            idSanPhamChiTiet: item.idspct,
+            soLuong: item.soLuongHoanTra,
+            lyDo: reasonToSend, // Gửi lý do đã nhập hoặc đã chọn
+            trangThai: true,
+            tongTien: item.soLuongHoanTra * item.tienSanPham
+        }));
+    
+        // Gửi yêu cầu đổi trả lên API backend và xử lý phản hồi
+        $http.post("http://localhost:8080/api/nguoi_dung/doi-tra/tao-doi-tra", doiTraDTOList)
+            .then(response => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: 'Yêu cầu hoàn trả của bạn đã được xử lý thành công!',
+                    confirmButtonText: 'Đồng ý'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                        $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                    }
+                });
+                resetForm(); // Đặt lại biểu mẫu sau khi hoàn tất
+            })
+            .catch(error => {
+                const errorMessage = error?.data?.message || 'Không thể xử lý yêu cầu hoàn trả do lỗi hệ thống. Vui lòng thử lại sau!';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: errorMessage,
+                    confirmButtonText: 'Đồng ý'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                        $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                    }
+                });
+            });
     };
+    
+    function resetForm() {
+        $scope.orderlist.listSanPhamChiTiet.forEach(item => {
+            item.selected = false;
+            item.soLuongHoanTra = 0;
+        });
+        $scope.selectedReason = '';
+        $scope.otherReason = '';
+    }
+    
+    
+    
 
     $scope.getTotalProductPrice = function () {
         let total = 0;
@@ -206,13 +329,13 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
         }
         return discount;
     };
-    
+
     $scope.calculateTotalAfterDiscount = function () {
         const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
         const discount = $scope.calculateDiscount(); // Số tiền giảm giá
         return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
     };
-    
+
 
 
     // Gọi API để lấy danh sách đơn hàng khi tải trang
@@ -242,6 +365,115 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
     // Gọi hàm getOrderDetails khi tải trang
     $scope.getOrderDetails();
 
+    $scope.cancelOrder = function () {
+        // Kiểm tra nếu $scope.orderHieu có giá trị hợp lệ
+        if (!$scope.orderHieu) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Không có thông tin đơn hàng để hủy!',
+                text: 'Vui lòng kiểm tra lại thông tin đơn hàng.',
+            });
+            return;
+        }
 
-    
+        // Kiểm tra lại giá trị của idHoaDon và idNguoiDung
+        var idHoaDon = $scope.orderHieu.idHoaDon;  // Lấy idHoaDon từ orderHieu
+        var idLoaiTrangThai = 7;  // ID trạng thái "Đơn hàng bị hủy bỏ"
+        var idNhanVien = $scope.orderHieu.idNguoiDung;  // Lấy idNhanVien từ orderHieu
+
+        // Log dữ liệu để kiểm tra
+        console.log('Cancel Order Details:');
+        console.log('idHoaDon:', idHoaDon);  // Kiểm tra giá trị của idHoaDon
+        console.log('idLoaiTrangThai:', idLoaiTrangThai);
+        console.log('idNhanVien:', idNhanVien);  // Kiểm tra giá trị của idNhanVien
+
+        // Kiểm tra nếu idHoaDon và idNhanVien có giá trị hợp lệ
+        if (!idHoaDon || !idNhanVien) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Thông tin không hợp lệ!',
+                text: 'Thông tin hóa đơn hoặc nhân viên không hợp lệ!',
+            });
+            return;
+        }
+
+        // Gọi API để cập nhật trạng thái đơn hàng bằng phương thức POST và tham số truyền qua query string
+        $http.post('http://localhost:8080/api/admin/hoa_don/updateLoaiTrangThai', null, {
+            params: {
+                idHoaDon: idHoaDon,
+                idLoaiTrangThai: idLoaiTrangThai,
+                idNhanVien: idNhanVien
+            }
+        })
+            .then(function (response) {
+                console.log('API Response:', response);
+                if (response.data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đơn hàng đã hủy bỏ thành công!',
+                        text: 'Đơn hàng đã được cập nhật trạng thái thành công.',
+                    });
+
+                    // Cập nhật trạng thái của đơn hàng
+                    $scope.orderHieu.tenLoaiTrangThai = "Đơn hàng bị hủy bỏ";
+
+                    // Đóng modal sau khi hủy thành công
+                    $('#orderDetailsModal').modal('hide');  // Đóng modal bằng jQuery
+                    $scope.getOrderDetails(); // Load lại bảng
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Có lỗi xảy ra!',
+                        text: 'Thông báo lỗi: ' + response.data.message,
+                    });
+                }
+            })
+            .catch(function (error) {
+                console.error('Error occurred while canceling the order:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra!',
+                    text: 'Đã xảy ra lỗi khi hủy đơn hàng. Vui lòng thử lại sau.',
+                });
+            });
+    };
+
+
+
+
+
+    // Ví dụ cách gọi hàm getOrderDetailsByMaHoaDon trong một sự kiện (ví dụ: khi người dùng nhấn nút chi tiết)
+    $scope.showOrderDetails = function (hoaDon) {
+        if (hoaDon && hoaDon.maHoaDon) {
+            // Lưu thông tin hóa đơn vào $scope.orderHieu
+            $scope.orderHieu = hoaDon;
+            // Log thông tin của hóa đơn để kiểm tra
+            console.log("Đơn hàng đã chọn:", $scope.orderHieu);
+            // Kiểm tra giá trị của idLoaiTrangThai
+            console.log("Checking idLoaiTrangThai:", $scope.orderHieu.idLoaiTrangThai);
+            console.log("Checking idLoaiTrangThai in showOrderDetails:", $scope.orderHieu.idLoaiTrangThai);
+            // Gọi API để lấy chi tiết đơn hàng nếu cần (nếu cần gọi API chi tiết)
+            getOrderDetailsByMaHoaDon(hoaDon.maHoaDon);
+        } else {
+            console.error("Mã hóa đơn không hợp lệ!");
+        }
+    };
+    $scope.toggleSelectAll = function () {
+        // Nếu selectAll được chọn, tất cả sản phẩm sẽ được chọn
+        angular.forEach($scope.orderlist.listSanPhamChiTiet, function (item) {
+            item.selected = $scope.selectAll;
+        });
+    };
+    // Function to update quantity input status based on checkbox selection
+    $scope.updateQuantityStatus = function (item) {
+        // Kiểm tra trạng thái checkbox của sản phẩm
+        if (!item.selected) {
+            item.soLuongHoanTra = ''; // Nếu bỏ chọn thì reset số lượng hoàn trả
+        }
+    };
+
+
+
+
 }
+

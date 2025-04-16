@@ -123,36 +123,11 @@ public class TrangThaiHoaDonService {
                     errorTrangThai.setMoTa(errorMessage);
                     return List.of(errorTrangThai);
                 }
+
             }
 
             if (idLoaiTrangThai == 6) {
                 boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 5);
-                if (!isPaymentConfirmed) {
-                    String errorMessage = "Không thể cập nhật trạng thái 'Chờ thanh toán' vì hóa đơn chưa được 'Đang giao hàng'.";
-                    System.out.println(errorMessage);
-
-                    // Khởi tạo TrangThaiHoaDon và gán thông báo lỗi vào MoTa
-                    TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
-                    errorTrangThai.setMoTa(errorMessage);
-                    return List.of(errorTrangThai);
-                }
-            }
-
-            if (idLoaiTrangThai == 7) {
-                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 6);
-                if (!isPaymentConfirmed) {
-                    String errorMessage = "Không thể cập nhật trạng thái 'Đã thanh toán thành công' vì hóa đơn chưa được 'Chờ thanh toán'.";
-                    System.out.println(errorMessage);
-
-                    // Khởi tạo TrangThaiHoaDon và gán thông báo lỗi vào MoTa
-                    TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
-                    errorTrangThai.setMoTa(errorMessage);
-                    return List.of(errorTrangThai);
-                }
-            }
-
-            if (idLoaiTrangThai == 8) {
-                boolean isPaymentConfirmed = isTrangThaiHoaDonExist(idHoaDon, 7);
                 if (!isPaymentConfirmed) {
                     String errorMessage = "Không thể cập nhật trạng thái 'Hoàn thành' vì hóa đơn chưa được xác nhận thanh toán.";
                     System.out.println(errorMessage);
@@ -162,6 +137,67 @@ public class TrangThaiHoaDonService {
                     errorTrangThai.setMoTa(errorMessage);
                     return List.of(errorTrangThai);
                 }
+            }
+            // Nếu trạng thái là hủy (idLoaiTrangThai == 7)
+            if (idLoaiTrangThai == 7) {
+                // Lưu trạng thái hủy
+                TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
+                trangThaiHoaDon.setHoaDon(hoaDon);
+                trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
+                trangThaiHoaDon.setNgayTao(new Date());
+                trangThaiHoaDon.setNgayCapNhat(new Date());
+                trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
+                trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
+
+                // Lưu trạng thái hủy vào database
+                TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
+                System.out.println("Trạng thái 'Hủy đơn hàng' đã được lưu: " + savedTrangThai);
+
+                // Cộng lại số lượng sản phẩm vào kho
+//                List<HoaDonChiTiet> hoaDonChiTietList = hoaDon.getHoaDonChiTietList();
+//                for (HoaDonChiTiet hoaDonChiTiet : hoaDonChiTietList) {
+//                    SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+//                    Integer soLuongBan = hoaDonChiTiet.getSoLuong();
+//                    Integer soLuongTon = sanPhamChiTiet.getSoLuong();
+//
+//                    // Cộng lại số lượng sản phẩm vào kho
+//                    sanPhamChiTiet.setSoLuong(soLuongTon + soLuongBan); // Cộng số lượng sản phẩm vào kho
+//                    sanPhamChiTietRepository.save(sanPhamChiTiet);  // Lưu lại thông tin sản phẩm chi tiết với số lượng mới
+//                    System.out.println("Đã cộng lại " + soLuongBan + " sản phẩm vào kho.");
+//                }
+
+                // Trả về kết quả thành công
+                return List.of(savedTrangThai);  // Trả về danh sách chứa trạng thái đã lưu
+            }
+            if (idLoaiTrangThai == 12) {
+                // Lưu trạng thái hủy
+                TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
+                trangThaiHoaDon.setHoaDon(hoaDon);
+                trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
+                trangThaiHoaDon.setNgayTao(new Date());
+                trangThaiHoaDon.setNgayCapNhat(new Date());
+                trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
+                trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
+
+                // Lưu trạng thái hủy vào database
+                TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
+                System.out.println("Trạng thái 'Hủy đơn hàng' đã được lưu: " + savedTrangThai);
+
+                // Cộng lại số lượng sản phẩm vào kho
+                List<HoaDonChiTiet> hoaDonChiTietList = hoaDon.getHoaDonChiTietList();
+                for (HoaDonChiTiet hoaDonChiTiet : hoaDonChiTietList) {
+                    SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+                    Integer soLuongBan = hoaDonChiTiet.getSoLuong();
+                    Integer soLuongTon = sanPhamChiTiet.getSoLuong();
+
+                    // Cộng lại số lượng sản phẩm vào kho
+                    sanPhamChiTiet.setSoLuong(soLuongTon + soLuongBan); // Cộng số lượng sản phẩm vào kho
+                    sanPhamChiTietRepository.save(sanPhamChiTiet);  // Lưu lại thông tin sản phẩm chi tiết với số lượng mới
+                    System.out.println("Đã cộng lại " + soLuongBan + " sản phẩm vào kho.");
+                }
+
+                // Trả về kết quả thành công
+                return List.of(savedTrangThai);  // Trả về danh sách chứa trạng thái đã lưu
             }
 
             // Sau khi các kiểm tra khác đều thành công:
@@ -220,72 +256,189 @@ public class TrangThaiHoaDonService {
         return List.of(errorTrangThai);  // Trả về danh sách chứa thông báo lỗi
     }
 
+    public List<TrangThaiHoaDon> saveDeleteTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai, Integer idNhanVien) {
+        // Kiểm tra sự tồn tại của hóa đơn và loại trạng thái
+        Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
+        Optional<LoaiTrangThai> loaiTrangThaiOpt = loaiTrangThaiRepository.findById(idLoaiTrangThai);
 
-    public void TrangThaiHoaDonKhiChonPTTT(Integer hoaDonId, Integer idNhanVien) {
-        // Tiến hành tạo trạng thái hóa đơn mới nếu chưa tồn tại
-        HoaDon savedHoaDon = hoaDonRepository.findById(hoaDonId)
-                .orElseThrow(() -> new IllegalArgumentException("Hóa đơn không tồn tại!"));
+        // Nếu hóa đơn và loại trạng thái tồn tại
+        if (hoaDonOpt.isPresent() && loaiTrangThaiOpt.isPresent()) {
+            HoaDon hoaDon = hoaDonOpt.get();
+            LoaiTrangThai loaiTrangThai = loaiTrangThaiOpt.get();
 
-        int loaiTrangThaiId = 6;
+            // Kiểm tra nếu trạng thái là hủy (idLoaiTrangThai == 7)
+            if (idLoaiTrangThai == 7) {
+                // Lưu trạng thái hủy
+                TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
+                trangThaiHoaDon.setHoaDon(hoaDon);
+                trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
+                trangThaiHoaDon.setNgayTao(new Date());
+                trangThaiHoaDon.setNgayCapNhat(new Date());
+                trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
+                trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
 
-        // Tạo trạng thái hóa đơn mới
-        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
-        trangThaiHoaDon2.setMoTa("Chờ Thanh Toán");
-        trangThaiHoaDon2.setNgayTao(new Date());
-        trangThaiHoaDon2.setNgayCapNhat(new Date());
+                // Lưu trạng thái hủy vào database
+                TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
+                System.out.println("Trạng thái 'Hủy đơn hàng' đã được lưu: " + savedTrangThai);
 
-        // Tìm loại trạng thái theo ID
-        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(loaiTrangThaiId)
-                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+                // Cộng lại số lượng sản phẩm vào kho
+//                List<HoaDonChiTiet> hoaDonChiTietList = hoaDon.getHoaDonChiTietList();
+//                for (HoaDonChiTiet hoaDonChiTiet : hoaDonChiTietList) {
+//                    SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+//                    Integer soLuongBan = hoaDonChiTiet.getSoLuong();
+//                    Integer soLuongTon = sanPhamChiTiet.getSoLuong();
+//
+//                    // Cộng lại số lượng sản phẩm vào kho
+//                    sanPhamChiTiet.setSoLuong(soLuongTon + soLuongBan); // Cộng số lượng sản phẩm vào kho
+//                    sanPhamChiTietRepository.save(sanPhamChiTiet);  // Lưu lại thông tin sản phẩm chi tiết với số lượng mới
+//                    System.out.println("Đã cộng lại " + soLuongBan + " sản phẩm vào kho.");
+//                }
 
-        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
-        trangThaiHoaDon2.setHoaDon(savedHoaDon);
+                // Trả về kết quả thành công
+                return List.of(savedTrangThai);  // Trả về danh sách chứa trạng thái đã lưu
+            }
 
-        // Lưu idNhanVien vào trạng thái hóa đơn (Giả sử TrangThaiHoaDon có một trường để lưu idNhanVien)
-        trangThaiHoaDon2.setIdNhanVien(idNhanVien);
+            // Nếu trạng thái không phải là hủy, trả về lỗi
+            String errorMessage = "Không phải trạng thái hủy, không thực hiện được hành động.";
+            TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+            errorTrangThai.setMoTa(errorMessage);
+            return List.of(errorTrangThai);  // Trả về thông báo lỗi
+        }
 
-        // Lưu trạng thái hóa đơn vào cơ sở dữ liệu
-        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+        // Trường hợp không tìm thấy hóa đơn hoặc loại trạng thái
+        String errorMessage = "Không tìm thấy hóa đơn hoặc loại trạng thái.";
+        System.out.println(errorMessage);
+
+        // Khởi tạo đối tượng TrangThaiHoaDon để trả về thông báo lỗi
+        TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+        errorTrangThai.setMoTa(errorMessage);  // Gán thông báo lỗi vào MoTa
+        return List.of(errorTrangThai);  // Trả về danh sách chứa thông báo lỗi
+    }
+    public List<TrangThaiHoaDon> huyTrangThaiHoaDon(Integer idHoaDon, Integer idLoaiTrangThai, Integer idNhanVien) {
+        // Kiểm tra sự tồn tại của hóa đơn và loại trạng thái
+        Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
+        Optional<LoaiTrangThai> loaiTrangThaiOpt = loaiTrangThaiRepository.findById(idLoaiTrangThai);
+
+        // Nếu hóa đơn và loại trạng thái tồn tại
+        if (hoaDonOpt.isPresent() && loaiTrangThaiOpt.isPresent()) {
+            HoaDon hoaDon = hoaDonOpt.get();
+            LoaiTrangThai loaiTrangThai = loaiTrangThaiOpt.get();
+
+            // Kiểm tra nếu trạng thái là hủy (idLoaiTrangThai == 7)
+            if (idLoaiTrangThai == 7) {
+                // Lưu trạng thái hủy
+                TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
+                trangThaiHoaDon.setHoaDon(hoaDon);
+                trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
+                trangThaiHoaDon.setNgayTao(new Date());
+                trangThaiHoaDon.setNgayCapNhat(new Date());
+                trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
+                trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
+
+                // Lưu trạng thái hủy vào database
+                TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
+                System.out.println("Trạng thái 'Hủy đơn hàng' đã được lưu: " + savedTrangThai);
+
+                // Cộng lại số lượng sản phẩm vào kho
+                List<HoaDonChiTiet> hoaDonChiTietList = hoaDon.getHoaDonChiTietList();
+                for (HoaDonChiTiet hoaDonChiTiet : hoaDonChiTietList) {
+                    SanPhamChiTiet sanPhamChiTiet = hoaDonChiTiet.getSanPhamChiTiet();
+                    Integer soLuongBan = hoaDonChiTiet.getSoLuong();
+                    Integer soLuongTon = sanPhamChiTiet.getSoLuong();
+
+                    // Cộng lại số lượng sản phẩm vào kho
+                    sanPhamChiTiet.setSoLuong(soLuongTon + soLuongBan); // Cộng số lượng sản phẩm vào kho
+                    sanPhamChiTietRepository.save(sanPhamChiTiet);  // Lưu lại thông tin sản phẩm chi tiết với số lượng mới
+                    System.out.println("Đã cộng lại " + soLuongBan + " sản phẩm vào kho.");
+                }
+
+                // Trả về kết quả thành công
+                return List.of(savedTrangThai);  // Trả về danh sách chứa trạng thái đã lưu
+            }
+
+            // Nếu trạng thái không phải là hủy, trả về lỗi
+            String errorMessage = "Không phải trạng thái hủy, không thực hiện được hành động.";
+            TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+            errorTrangThai.setMoTa(errorMessage);
+            return List.of(errorTrangThai);  // Trả về thông báo lỗi
+        }
+
+        // Trường hợp không tìm thấy hóa đơn hoặc loại trạng thái
+        String errorMessage = "Không tìm thấy hóa đơn hoặc loại trạng thái.";
+        System.out.println(errorMessage);
+
+        // Khởi tạo đối tượng TrangThaiHoaDon để trả về thông báo lỗi
+        TrangThaiHoaDon errorTrangThai = new TrangThaiHoaDon();
+        errorTrangThai.setMoTa(errorMessage);  // Gán thông báo lỗi vào MoTa
+        return List.of(errorTrangThai);  // Trả về danh sách chứa thông báo lỗi
     }
 
-    public TrangThaiHoaDon createTrangThaiHoaDon(Integer idHoaDon) {
-        // Lấy hóa đơn từ cơ sở dữ liệu
-        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
-                .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
 
-        // Lấy loại trạng thái 5
-        LoaiTrangThai loaiTrangThai1 = loaiTrangThaiRepository.findById(5)
-                .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+//    public void TrangThaiHoaDonKhiChonPTTT(Integer hoaDonId, Integer idNhanVien) {
+//        // Tiến hành tạo trạng thái hóa đơn mới nếu chưa tồn tại
+//        HoaDon savedHoaDon = hoaDonRepository.findById(hoaDonId)
+//                .orElseThrow(() -> new IllegalArgumentException("Hóa đơn không tồn tại!"));
+//
+//        int loaiTrangThaiId = 6;
+//
+//        // Tạo trạng thái hóa đơn mới
+//        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
+//        trangThaiHoaDon2.setMoTa("Chờ Thanh Toán");
+//        trangThaiHoaDon2.setNgayTao(new Date());
+//        trangThaiHoaDon2.setNgayCapNhat(new Date());
+//
+//        // Tìm loại trạng thái theo ID
+//        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(loaiTrangThaiId)
+//                .orElseThrow(() -> new IllegalArgumentException("Loại trạng thái không tồn tại!"));
+//
+//        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+//        trangThaiHoaDon2.setHoaDon(savedHoaDon);
+//
+//        // Lưu idNhanVien vào trạng thái hóa đơn (Giả sử TrangThaiHoaDon có một trường để lưu idNhanVien)
+//        trangThaiHoaDon2.setIdNhanVien(idNhanVien);
+//
+//        // Lưu trạng thái hóa đơn vào cơ sở dữ liệu
+//        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+//    }
 
-        // Tạo trạng thái hóa đơn loại 5
-        TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
-        trangThaiHoaDon1.setMoTa("Đã thanh toán thành công");
-        trangThaiHoaDon1.setNgayTao(new Date());
-        trangThaiHoaDon1.setNgayCapNhat(new Date());
-        trangThaiHoaDon1.setLoaiTrangThai(loaiTrangThai1);
-        trangThaiHoaDon1.setHoaDon(hoaDon);
-
-        // Lưu trạng thái hóa đơn loại 5
-        trangThaiHoaDonRepository.save(trangThaiHoaDon1);
-
-        // Lấy loại trạng thái 8
-        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(8)
-                .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
-
-        // Tạo trạng thái hóa đơn loại 8
-        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
-        trangThaiHoaDon2.setMoTa("Hoàn thành ");
-        trangThaiHoaDon2.setNgayTao(new Date());
-        trangThaiHoaDon2.setNgayCapNhat(new Date());
-        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
-        trangThaiHoaDon2.setHoaDon(hoaDon);
-
-        // Lưu trạng thái hóa đơn loại 8
-        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
-
-        // Trả về trạng thái loại 5 (hoặc bất kỳ trạng thái nào bạn muốn phản hồi)
-        return trangThaiHoaDon1;
-    }
+//    public TrangThaiHoaDon createTrangThaiHoaDon(Integer idHoaDon) {
+//        // Lấy hóa đơn từ cơ sở dữ liệu
+//        HoaDon hoaDon = hoaDonRepository.findById(idHoaDon)
+//                .orElseThrow(() -> new RuntimeException("Hóa đơn không tồn tại"));
+//
+//        // Lấy loại trạng thái 5
+//        LoaiTrangThai loaiTrangThai1 = loaiTrangThaiRepository.findById(5)
+//                .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+//
+//        // Tạo trạng thái hóa đơn loại 5
+//        TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
+//        trangThaiHoaDon1.setMoTa("Đã thanh toán thành công");
+//        trangThaiHoaDon1.setNgayTao(new Date());
+//        trangThaiHoaDon1.setNgayCapNhat(new Date());
+//        trangThaiHoaDon1.setLoaiTrangThai(loaiTrangThai1);
+//        trangThaiHoaDon1.setHoaDon(hoaDon);
+//
+//        // Lưu trạng thái hóa đơn loại 5
+//        trangThaiHoaDonRepository.save(trangThaiHoaDon1);
+//
+//        // Lấy loại trạng thái 8
+//        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(8)
+//                .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+//
+//        // Tạo trạng thái hóa đơn loại 8
+//        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
+//        trangThaiHoaDon2.setMoTa("Hoàn thành ");
+//        trangThaiHoaDon2.setNgayTao(new Date());
+//        trangThaiHoaDon2.setNgayCapNhat(new Date());
+//        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+//        trangThaiHoaDon2.setHoaDon(hoaDon);
+//
+//        // Lưu trạng thái hóa đơn loại 8
+//        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+//
+//        // Trả về trạng thái loại 5 (hoặc bất kỳ trạng thái nào bạn muốn phản hồi)
+//        return trangThaiHoaDon1;
+//    }
 
 
 }

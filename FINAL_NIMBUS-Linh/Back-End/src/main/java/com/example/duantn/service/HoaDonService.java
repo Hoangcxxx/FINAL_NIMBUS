@@ -133,6 +133,7 @@ public class HoaDonService {
         dto.setDiaChi(hoaDon.getDiaChi());
         dto.setThanhTien(hoaDon.getThanhTien());
         dto.setGhiChu(hoaDon.getMoTa());
+        dto.setIdNguoiDung(hoaDon.getNguoiDung().getIdNguoiDung());
 
 
 
@@ -303,30 +304,62 @@ public class HoaDonService {
 
         // Lấy hoặc lưu Tỉnh theo mã
         String cityCode = hoaDonDTO.getTinh().toString();  // Lấy mã Tỉnh từ hoaDonDTO
-        Tinh selectedCity = tinhRepository.findByMaTinh(cityCode)
+
+// Truy vấn danh sách tỉnh có mã tỉnh trùng
+        List<Tinh> cities = tinhRepository.findAllByMaTinh(cityCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Tinh selectedCity = cities.stream()
+                .findFirst()  // Lấy phần tử đầu tiên nếu tồn tại
                 .orElseGet(() -> {
-                    Tinh city = fetchCityInfoFromGHN(cityCode); // Gọi API GHN nếu không có trong DB
-                    return tinhRepository.save(city);          // Lưu vào DB
+                    Tinh city = fetchCityInfoFromGHN(cityCode);  // Gọi API GHN nếu không tìm thấy
+                    return tinhRepository.save(city);           // Lưu vào DB
                 });
 
-        // Lấy hoặc lưu Huyện theo mã
+// Thêm cảnh báo nếu có nhiều tỉnh trùng mã (tùy chọn)
+        if (cities.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều tỉnh trùng mã [" + cityCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+// Lấy hoặc lưu Huyện theo mã
         String districtCode = hoaDonDTO.getHuyen().toString();  // Lấy mã Huyện từ hoaDonDTO
-        Huyen selectedDistrict = huyenRepository.findByMaHuyen(districtCode)
+
+// Truy vấn danh sách huyện có mã trùng
+        List<Huyen> districts = huyenRepository.findAllByMaHuyen(districtCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Huyen selectedDistrict = districts.stream()
+                .findFirst()
                 .orElseGet(() -> {
-                    Huyen district = fetchDistrictInfoFromGHN(districtCode); // Gọi API GHN nếu không có trong DB
-                    district.setTinh(selectedCity);                         // Gán tỉnh liên quan
-                    return huyenRepository.save(district);                  // Lưu vào DB
+                    Huyen district = fetchDistrictInfoFromGHN(districtCode);  // Gọi API GHN nếu không có trong DB
+                    district.setTinh(selectedCity);                          // Gán tỉnh liên quan
+                    return huyenRepository.save(district);                   // Lưu vào DB
                 });
 
-        // Lấy hoặc lưu Xã theo mã
+        if (districts.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều huyện trùng mã [" + districtCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+// Lấy hoặc lưu Xã theo mã
         String wardCode = hoaDonDTO.getXa().toString();  // Lấy mã Xã từ hoaDonDTO
-        Xa selectedWard = xaRepository.findByMaXa(wardCode)
+
+// Truy vấn danh sách xã có mã trùng
+        List<Xa> wards = xaRepository.findAllByMaXa(wardCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Xa selectedWard = wards.stream()
+                .findFirst()
                 .orElseGet(() -> {
-                    // Gọi API GHN để lấy thông tin xã
-                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode); // Truyền mã huyện và mã xã
-                    ward.setHuyen(selectedDistrict);                       // Gán huyện liên quan
-                    return xaRepository.save(ward);                        // Lưu vào DB
+                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode);  // Gọi API GHN với mã huyện và mã xã
+                    ward.setHuyen(selectedDistrict);                        // Gán huyện liên quan
+                    return xaRepository.save(ward);                         // Lưu vào DB
                 });
+
+        if (wards.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều xã trùng mã [" + wardCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+
 
         // Tạo và lưu đối tượng DiaChiVanChuyen
         DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
@@ -394,10 +427,8 @@ public class HoaDonService {
                 throw new RuntimeException("Số lượng tồn kho không đủ");
             }
 
-//            // Cập nhật số lượng tồn kho
-//            sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() - sanPham.getSoLuong());
-//            sanPhamChiTietRepository.save(sanPhamChiTiet);
-// Tạo hoặc lấy LichSuHoaDon
+
+
 
             LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
             lichSuHoaDon.setNgayGiaoDich(new Date());
@@ -528,32 +559,64 @@ public class HoaDonService {
         if (hoaDonDTO.getTinh() == null || hoaDonDTO.getHuyen() == null || hoaDonDTO.getXa() == null) {
             throw new RuntimeException("Thông tin Tỉnh, Huyện, hoặc Xã không hợp lệ");
         }
+
         // Lấy hoặc lưu Tỉnh theo mã
         String cityCode = hoaDonDTO.getTinh().toString();  // Lấy mã Tỉnh từ hoaDonDTO
-        Tinh selectedCity = tinhRepository.findByMaTinh(cityCode)
+
+// Truy vấn danh sách tỉnh có mã tỉnh trùng
+        List<Tinh> cities = tinhRepository.findAllByMaTinh(cityCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Tinh selectedCity = cities.stream()
+                .findFirst()  // Lấy phần tử đầu tiên nếu tồn tại
                 .orElseGet(() -> {
-                    Tinh city = fetchCityInfoFromGHN(cityCode); // Gọi API GHN nếu không có trong DB
-                    return tinhRepository.save(city);          // Lưu vào DB
+                    Tinh city = fetchCityInfoFromGHN(cityCode);  // Gọi API GHN nếu không tìm thấy
+                    return tinhRepository.save(city);           // Lưu vào DB
                 });
 
-        // Lấy hoặc lưu Huyện theo mã
+// Thêm cảnh báo nếu có nhiều tỉnh trùng mã (tùy chọn)
+        if (cities.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều tỉnh trùng mã [" + cityCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+// Lấy hoặc lưu Huyện theo mã
         String districtCode = hoaDonDTO.getHuyen().toString();  // Lấy mã Huyện từ hoaDonDTO
-        Huyen selectedDistrict = huyenRepository.findByMaHuyen(districtCode)
+
+// Truy vấn danh sách huyện có mã trùng
+        List<Huyen> districts = huyenRepository.findAllByMaHuyen(districtCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Huyen selectedDistrict = districts.stream()
+                .findFirst()
                 .orElseGet(() -> {
-                    Huyen district = fetchDistrictInfoFromGHN(districtCode); // Gọi API GHN nếu không có trong DB
-                    district.setTinh(selectedCity);                         // Gán tỉnh liên quan
-                    return huyenRepository.save(district);                  // Lưu vào DB
+                    Huyen district = fetchDistrictInfoFromGHN(districtCode);  // Gọi API GHN nếu không có trong DB
+                    district.setTinh(selectedCity);                          // Gán tỉnh liên quan
+                    return huyenRepository.save(district);                   // Lưu vào DB
                 });
 
-        // Lấy hoặc lưu Xã theo mã
+        if (districts.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều huyện trùng mã [" + districtCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
+// Lấy hoặc lưu Xã theo mã
         String wardCode = hoaDonDTO.getXa().toString();  // Lấy mã Xã từ hoaDonDTO
-        Xa selectedWard = xaRepository.findByMaXa(wardCode)
+
+// Truy vấn danh sách xã có mã trùng
+        List<Xa> wards = xaRepository.findAllByMaXa(wardCode);
+
+// Nếu danh sách không trống, lấy giá trị đầu tiên. Nếu rỗng, gọi API GHN để thêm mới
+        Xa selectedWard = wards.stream()
+                .findFirst()
                 .orElseGet(() -> {
-                    // Gọi API GHN để lấy thông tin xã
-                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode); // Truyền mã huyện và mã xã
-                    ward.setHuyen(selectedDistrict);                       // Gán huyện liên quan
-                    return xaRepository.save(ward);                        // Lưu vào DB
+                    Xa ward = fetchWardInfoFromGHN(districtCode, wardCode);  // Gọi API GHN với mã huyện và mã xã
+                    ward.setHuyen(selectedDistrict);                        // Gán huyện liên quan
+                    return xaRepository.save(ward);                         // Lưu vào DB
                 });
+
+        if (wards.size() > 1) {
+            System.out.println("Cảnh báo: Tìm thấy nhiều xã trùng mã [" + wardCode + "]. Chỉ lấy kết quả đầu tiên.");
+        }
+
 
         // Tạo và lưu đối tượng DiaChiVanChuyen
         DiaChiVanChuyen diaChiVanChuyen = new DiaChiVanChuyen();
@@ -941,10 +1004,7 @@ public class HoaDonService {
         hoaDon.setThanhTien(updateHoaDonDTO.getThanhTien());
         hoaDon.setSdtNguoiNhan(updateHoaDonDTO.getSetSdtNguoiNhan());
 
-        PhuongThucThanhToanHoaDon ptThanhToan = new PhuongThucThanhToanHoaDon();
-        ptThanhToan.setIdThanhToanHoaDon(updateHoaDonDTO.getIdThanhToanHoaDon());
-
-        PhuongThucThanhToanHoaDon existingPtThanhToan = ptThanhToanHoaDonRepository.findById(ptThanhToan.getIdThanhToanHoaDon())
+        PhuongThucThanhToanHoaDon existingPtThanhToan = ptThanhToanHoaDonRepository.findById(updateHoaDonDTO.getIdThanhToanHoaDon())
                 .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không tồn tại."));
         hoaDon.setPhuongThucThanhToanHoaDon(existingPtThanhToan);
 
@@ -954,37 +1014,47 @@ public class HoaDonService {
             hoaDon.setVoucher(voucher);
         }
 
-        // Tạo trạng thái hóa đơn loại 5
-        TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
-        trangThaiHoaDon1.setMoTa("Đã thanh toán thành công");
-        trangThaiHoaDon1.setNgayTao(new Date());
-        trangThaiHoaDon1.setNgayCapNhat(new Date());
-        trangThaiHoaDon1.setHoaDon(hoaDon);
+        // Thêm trạng thái hóa đơn loại 13 (Chờ thanh toán)
+        TrangThaiHoaDon trangThaiHoaDon13 = new TrangThaiHoaDon();
+        trangThaiHoaDon13.setMoTa("Chờ thanh toán");
+        trangThaiHoaDon13.setNgayTao(new Date());
+        trangThaiHoaDon13.setNgayCapNhat(new Date());
+        trangThaiHoaDon13.setHoaDon(hoaDon);
+        trangThaiHoaDon13.setIdNhanVien(idNhanVien);
 
-        // Lưu idNhanVien vào trạng thái hóa đơn
-        trangThaiHoaDon1.setIdNhanVien(idNhanVien);
-
-        LoaiTrangThai loaiTrangThai1 = loaiTrangThaiRepository.findById(7)
+        LoaiTrangThai loaiTrangThai13 = loaiTrangThaiRepository.findById(13)
                 .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
-        trangThaiHoaDon1.setLoaiTrangThai(loaiTrangThai1);
+        trangThaiHoaDon13.setLoaiTrangThai(loaiTrangThai13);
 
-        trangThaiHoaDonRepository.save(trangThaiHoaDon1);
+        trangThaiHoaDonRepository.save(trangThaiHoaDon13);
 
-        // Tạo trạng thái hóa đơn loại 8
-        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
-        trangThaiHoaDon2.setMoTa("Hoàn thành");
-        trangThaiHoaDon2.setNgayTao(new Date());
-        trangThaiHoaDon2.setNgayCapNhat(new Date());
-        trangThaiHoaDon2.setHoaDon(hoaDon);
+        // Thêm trạng thái hóa đơn loại 14 (Đã thanh toán thành công)
+        TrangThaiHoaDon trangThaiHoaDon14 = new TrangThaiHoaDon();
+        trangThaiHoaDon14.setMoTa("Đã thanh toán thành công");
+        trangThaiHoaDon14.setNgayTao(new Date());
+        trangThaiHoaDon14.setNgayCapNhat(new Date());
+        trangThaiHoaDon14.setHoaDon(hoaDon);
+        trangThaiHoaDon14.setIdNhanVien(idNhanVien);
 
-        // Lưu idNhanVien vào trạng thái hóa đơn
-        trangThaiHoaDon2.setIdNhanVien(idNhanVien);
-
-        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(8)
+        LoaiTrangThai loaiTrangThai14 = loaiTrangThaiRepository.findById(14)
                 .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
-        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+        trangThaiHoaDon14.setLoaiTrangThai(loaiTrangThai14);
 
-        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+        trangThaiHoaDonRepository.save(trangThaiHoaDon14);
+
+        // Thêm trạng thái hóa đơn loại 15 (Hoàn thành)
+        TrangThaiHoaDon trangThaiHoaDon15 = new TrangThaiHoaDon();
+        trangThaiHoaDon15.setMoTa("Hoàn thành");
+        trangThaiHoaDon15.setNgayTao(new Date());
+        trangThaiHoaDon15.setNgayCapNhat(new Date());
+        trangThaiHoaDon15.setHoaDon(hoaDon);
+        trangThaiHoaDon15.setIdNhanVien(idNhanVien);
+
+        LoaiTrangThai loaiTrangThai15 = loaiTrangThaiRepository.findById(15)
+                .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+        trangThaiHoaDon15.setLoaiTrangThai(loaiTrangThai15);
+
+        trangThaiHoaDonRepository.save(trangThaiHoaDon15);
 
         hoaDonRepository.save(hoaDon);
 
@@ -995,6 +1065,7 @@ public class HoaDonService {
                 hoaDon.getPhuongThucThanhToanHoaDon().getIdThanhToanHoaDon()
         );
     }
+
 
 
     public List<HoaDonDTO> getHoaDonByUserId(Integer idNguoiDung) {
@@ -1083,4 +1154,73 @@ public class HoaDonService {
     public List<Object[]> searchHoaDonByMaHoaDon(String maHoaDon) {
         return hoaDonRepository.searchHoaDonByMaHoaDon(maHoaDon);
     }
+
+    public String hoanTraSanPhamTheoId(Integer idSanPhamChiTiet, Integer soLuongHoanTra, Integer idHoaDon, Integer idLoaiTrangThai, Integer idNhanVien) {
+        // Kiểm tra nếu hóa đơn và loại trạng thái tồn tại
+        Optional<HoaDon> hoaDonOpt = hoaDonRepository.findById(idHoaDon);
+        Optional<LoaiTrangThai> loaiTrangThaiOpt = loaiTrangThaiRepository.findById(idLoaiTrangThai);
+
+        if (!hoaDonOpt.isPresent()) {
+            return "Không tìm thấy hóa đơn với ID " + idHoaDon;
+        }
+
+        if (!loaiTrangThaiOpt.isPresent()) {
+            return "Không tìm thấy loại trạng thái với ID " + idLoaiTrangThai;
+        }
+
+        HoaDon hoaDon = hoaDonOpt.get();
+        LoaiTrangThai loaiTrangThai = loaiTrangThaiOpt.get();
+
+        if (idLoaiTrangThai == 8) {
+            // Lưu trạng thái hủy
+            TrangThaiHoaDon trangThaiHoaDon = new TrangThaiHoaDon();
+            trangThaiHoaDon.setHoaDon(hoaDon);
+            trangThaiHoaDon.setLoaiTrangThai(loaiTrangThai);
+            trangThaiHoaDon.setNgayTao(new Date());
+            trangThaiHoaDon.setNgayCapNhat(new Date());
+            trangThaiHoaDon.setIdNhanVien(idNhanVien); // Gán idNhanVien cho trạng thái hiện tại
+            trangThaiHoaDon.setMoTa(loaiTrangThai.getMoTa());
+
+            // Lưu trạng thái hủy vào database
+            TrangThaiHoaDon savedTrangThai = trangThaiHoaDonRepository.save(trangThaiHoaDon);
+            System.out.println("Trạng thái 'Hủy đơn hàng' đã được lưu: " + savedTrangThai);
+
+            // Tìm sản phẩm chi tiết bằng ID
+            SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(idSanPhamChiTiet).orElse(null);
+
+            if (sanPhamChiTiet == null) {
+                return "Không tìm thấy sản phẩm chi tiết với ID " + idSanPhamChiTiet;
+            }
+
+            // Tìm các chi tiết hóa đơn tương ứng với sản phẩm chi tiết này
+            List<HoaDonChiTiet> hoaDonChiTietList = hoaDonChiTietRepository.findBySanPhamChiTiet(sanPhamChiTiet);
+
+            if (hoaDonChiTietList.isEmpty()) {
+                return "Không có chi tiết hóa đơn nào với sản phẩm này.";
+            }
+
+            // Duyệt qua các chi tiết hóa đơn và thực hiện hoàn trả
+            for (HoaDonChiTiet hoaDonChiTiet : hoaDonChiTietList) {
+                // Kiểm tra xem có đủ số lượng để hoàn trả không
+                if (hoaDonChiTiet.getSoLuong() < soLuongHoanTra) {
+                    return "Số lượng hoàn trả vượt quá số lượng đã mua cho sản phẩm " + sanPhamChiTiet.getSanPham().getTenSanPham();
+                }
+
+                // Cập nhật số lượng tồn kho
+                sanPhamChiTiet.setSoLuong(sanPhamChiTiet.getSoLuong() + soLuongHoanTra);
+                sanPhamChiTietRepository.save(sanPhamChiTiet);
+
+                // Cập nhật số lượng trong HoaDonChiTiet
+                hoaDonChiTiet.setSoLuong(hoaDonChiTiet.getSoLuong() - soLuongHoanTra);
+
+                // Lưu lại thay đổi cho HoaDonChiTiet
+                hoaDonChiTietRepository.save(hoaDonChiTiet);
+            }
+        } else {
+            return "Chỉ có thể hoàn trả khi hóa đơn đã hoàn thành.";
+        }
+
+        return "Hoàn trả thành công!";
+    }
+
 }

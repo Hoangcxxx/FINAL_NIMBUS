@@ -57,9 +57,14 @@ window.DonHangController = function ($scope, $http) {
     $scope.tabs = [
         { id: 'tat-ca', label: 'Tất cả', status: '' },
         { id: 'chua-xu-ly', label: 'Chờ xác nhận', status: 'Chờ xác nhận' },
-        { id: 'cho-thanh-toan', label: 'Chờ thanh toán', status: 'Chờ thanh toán' },
         { id: 'chao-giao', label: 'Chờ giao hàng', status: 'Chờ giao hàng' },
-        { id: 'hoan-thanh', label: 'Hoàn thành', status: 'Hoàn thành' }
+        { id: 'cho-giao', label: 'Đang giao hàng', status: 'Đang giao hàng' },
+        { id: 'hoan-thanh', label: 'Giao hàng thành công', status: 'Giao hàng thành công' },
+        { id: 'don-hang-hoan-thanh', label: 'Đơn hàng hoàn thành', status: 'Đơn hàng hoàn thành' },
+        { id: 'yeu-cau-hoan-tra', label: 'Yêu cầu hoàn trả', status: 'Yêu cầu hoàn trả' },
+        { id: 'hoan-tra-thanh-cong', label: 'Hoàn trả thành công', status: 'Hoàn trả thành công' },
+        { id: 'hoan-tra-that-bai', label: 'Hoàn trả thất bại', status: 'Hoàn trả thất bại' },
+        { id: 'da-huy', label: 'Đã hủy', status: 'Đã hủy' }
     ];
 
     // Function to switch the selected tab

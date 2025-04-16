@@ -311,7 +311,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                 console.log('Danh sách sản phẩm chi tiết:', $scope.sanPhamChiTietList);
             })
             .catch(function (error) {
-                console.error("Có lỗi xảy ra khi gọi API sản phẩm chi tiết:", error);
+                console.error("Có lỗi xảy ra khi g  ọi API sản phẩm chi tiết:", error);
             });
     };
     $scope.colorOptions = ["Đỏ", "Xanh", "Vàng", "Trắng"]; // Các màu sắc có sẵn
@@ -331,7 +331,29 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         });
     };
 
-
+    $scope.kiemTraKhuyenMaiHopLe = function (sp) {
+        if (!sp.coKhuyenMai || !sp.ngayBatDauKhuyenMai || !sp.ngayKetThucKhuyenMai) {
+            return false;
+        }
+    
+        const now = new Date();
+        const batDau = new Date(sp.ngayBatDauKhuyenMai);
+        const ketThuc = new Date(sp.ngayKetThucKhuyenMai);
+    
+        return now >= batDau && now <= ketThuc;
+    };
+    $scope.kiemTraKhuyenMaiDetailHopLe = function (detail) {
+        if (!detail.gia_khuyen_mai || !detail.ngay_bat_dau || !detail.ngay_ket_thuc) {
+            return false;
+        }
+    
+        const now = new Date();
+        const batDau = new Date(detail.ngay_bat_dau);
+        const ketThuc = new Date(detail.ngay_ket_thuc);
+    
+        return now >= batDau && now <= ketThuc;
+    };
+    
 
     $scope.selectInvoice = function (invoice) {
         console.log("Hóa đơn đã chọn:", invoice);
@@ -536,9 +558,16 @@ window.BanHangController = function ($scope, $http, $window, $location) {
             item.soLuong = 1;
             return false;
         }
-
-        // Tính toán thông tin giỏ hàng
-        let donGia = $scope.selectedProduct.gia_khuyen_mai || $scope.selectedProduct.gia_ban;
+        let now = new Date();
+        let batDau = new Date($scope.selectedProduct.ngay_bat_dau);
+        let ketThuc = new Date($scope.selectedProduct.ngay_ket_thuc);
+        
+        let khuyenMaiHopLe = $scope.selectedProduct.gia_khuyen_mai !== null &&
+                             $scope.selectedProduct.gia_khuyen_mai !== undefined &&
+                             now >= batDau && now <= ketThuc;
+        
+        let donGia = khuyenMaiHopLe ? $scope.selectedProduct.gia_khuyen_mai : $scope.selectedProduct.gia_ban;
+        
         let soLuong = $scope.quantity;
         let thanhTien = donGia * soLuong;
 
@@ -683,7 +712,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                     // Giảm theo giá trị cố định
                     discount = $scope.selectedVoucher.giaTriGiamGia;
                 }
-
+                discount = Math.min(discount, $scope.totalPrice);
                 // Áp dụng giảm giá
                 $scope.totalPrice -= discount;
                 $scope.totalPrice = Math.max($scope.totalPrice, 0);  // Đảm bảo tổng tiền không âm

@@ -629,6 +629,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
         }
         function checkProductPrices() {
             const promises = $scope.cart.map(item => {
+                console.log("Kiểm tra sản phẩm trong giỏ hàng:", item);  // Debug thông tin item
                 return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham/kiem-tra-gia/${item.idSanPham}`)
                     .then(response => {
                         const giaBanMoi = response.data.giaBan;
@@ -637,10 +638,10 @@ window.ThanhToanController = function ($scope, $http, $window) {
                             Swal.fire({
                                 icon: 'error',
                                 title: "Giá sản phẩm không hợp lệ!",
-                                text: `Giá của sản phẩm "${item.tenSanPham}" không hợp lệ. Vui lòng kiểm tra lại.`,
+                                text: `Giá của sản phẩm "${item.tenSanPham || 'Không xác định'}" không hợp lệ. Vui lòng kiểm tra lại.`,
                                 confirmButtonText: 'Đồng ý'
                             });
-                            throw new Error(`Giá sản phẩm "${item.tenSanPham}" không hợp lệ.`);
+                            throw new Error(`Giá sản phẩm "${item.tenSanPham || 'Không xác định'}" không hợp lệ.`);
                         }
 
                         // Kiểm tra nếu giá sản phẩm thay đổi
@@ -652,33 +653,30 @@ window.ThanhToanController = function ($scope, $http, $window) {
                                 showCancelButton: true,
                                 confirmButtonText: 'Tiếp tục mua',
                                 cancelButtonText: 'Hủy'
-
                             }).then(result => {
-                                if (!result.isConfirmed) {
+                                if (result.isConfirmed) {
+                                    item.giaBan = giaBanMoi; // Cập nhật giá sản phẩm
+                                } else {
                                     throw new Error(`Người dùng từ chối mua sản phẩm "${item.tenSanPham}" với giá mới.`);
                                 }
-
-                                // Cập nhật giá sản phẩm trên giao diện (KHÔNG reload)
-                                item.giaBan = giaBanMoi;
-                                $scope.$apply(); // Cập nhật giao diện
                             });
                         }
                     })
                     .catch(error => {
-                        console.error(`Lỗi kiểm tra giá sản phẩm "${item.tenSanPham}":`, error);
-                        throw error;
+                        console.error(`Lỗi kiểm tra giá sản phẩm "${item.tenSanPham || 'Không xác định'}":`, error.message);
+                        throw error; // Tiếp tục đẩy lỗi để Promise.all xử lý
                     });
             });
 
             return Promise.all(promises)
                 .then(() => {
-                    // Sau khi kiểm tra giá, tính lại tổng tiền giỏ hàng
-                    $scope.calculateTotal();
+                    console.log("Tất cả sản phẩm đã được kiểm tra giá thành công.");
                 })
                 .catch(error => {
-                    console.error("Lỗi khi kiểm tra giá sản phẩm:", error);
+                    console.error("Lỗi trong quá trình kiểm tra giá sản phẩm:", error.message);
                 });
         }
+
 
 
 
@@ -864,65 +862,60 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         // Đánh dấu đang xử lý để tránh nhấn liên tục
                         $scope.isProcessing = true;
 
+                        // Gửi yêu cầu API đặt hàng
                         $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData)
                             .then(response => {
                                 const data = response.data;
-                                // Kiểm tra dữ liệu trả về từ API
-                                if (data && data.maHoaDon && data.idHoaDon) {
-                                    // Kiểm tra API có báo lỗi không
-                                    if (data.error) {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Lỗi đặt hàng',
-                                            text: data.error || 'Đơn hàng không thể xử lý. Vui lòng thử lại!',
-                                            confirmButtonText: 'Đồng ý'
-                                        });
-                                        return; // Không lưu vào localStorage nếu có lỗi
-                                    }
 
-                                    // Chỉ lưu vào localStorage khi API trả về dữ liệu hợp lệ
-                                    localStorage.setItem("maHoaDon", data.maHoaDon);
-                                    localStorage.setItem("idHoaDon", data.idHoaDon);
+                                if (!data || !data.maHoaDon || !data.idHoaDon) {
+                                    throw new Error("Dữ liệu trả về không hợp lệ.");
+                                }
 
-                                    Swal.fire({
-                                        icon: 'info',
-                                        title: 'Đang xử lý thanh toán...',
-                                        text: 'Vui lòng chờ trong giây lát. Quá trình thanh toán đang diễn ra.',
-                                        timer: 3000,
-                                        timerProgressBar: true,
-                                        showConfirmButton: false,
-                                        allowOutsideClick: false,
-                                        didOpen: () => {
-                                            Swal.showLoading();
-                                        },
-                                        didClose: () => {
-                                            $window.location.href = "/#!Thanhcong";
-                                            $scope.cart = [];
-                                            $scope.isOverlayVisible = false;
-                                        }
-                                    });
-                                } else {
+                                if (data.error) {
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Lỗi đặt hàng',
-                                        text: 'Dữ liệu trả về không hợp lệ. Thanh toán không được thực hiện!',
+                                        text: data.error || 'Đơn hàng không thể xử lý. Vui lòng thử lại!',
                                         confirmButtonText: 'Đồng ý'
                                     });
+                                    return;
                                 }
 
+                                // Lưu thông tin hóa đơn vào localStorage
+                                localStorage.setItem("maHoaDon", data.maHoaDon);
+                                localStorage.setItem("idHoaDon", data.idHoaDon);
+
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Đang xử lý thanh toán...',
+                                    text: 'Vui lòng chờ trong giây lát. Quá trình thanh toán đang diễn ra.',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                    didOpen: () => Swal.showLoading(),
+                                    willClose: () => {
+                                        $window.location.href = "/#!Thanhcong";
+                                        $scope.cart = [];
+                                        $scope.isOverlayVisible = false;
+
+                                        // Gửi email xác nhận sau khi thanh toán thành công
+                                        $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
+                                            .then(response => console.log("Email đã được gửi thành công"))
+                                            .catch(error => console.error("Lỗi khi gửi email:", error));
+                                    }
+                                });
                             })
                             .catch(error => {
-                                console.error('Lỗi khi đặt hàng COD:', error);
-                                // Thông báo lỗi nếu gọi API thất bại
+                                console.error("Lỗi khi đặt hàng:", error);
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Lỗi đặt hàng',
-                                    text: 'Có lỗi xảy ra khi xử lý đơn hàng. Thanh toán không được thực hiện!',
+                                    title: 'Lỗi',
+                                    text: 'Đã xảy ra sự cố. Vui lòng thử lại sau!',
                                     confirmButtonText: 'Đồng ý'
                                 });
                             })
                             .finally(() => {
-                                // Cho phép thực hiện lại khi API đã hoàn tất xử lý (thành công hoặc lỗi)
                                 $scope.isProcessing = false;
                             });
                     });

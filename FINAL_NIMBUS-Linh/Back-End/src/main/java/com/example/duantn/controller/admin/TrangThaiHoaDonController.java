@@ -14,8 +14,8 @@ public class TrangThaiHoaDonController {
     @Autowired
     private TrangThaiHoaDonService trangThaiHoaDonService;
 
-    @PostMapping("/create/{id_hoa_don}")
-    public ResponseEntity<TrangThaiHoaDon> createTrangThaiHoaDon(@PathVariable Integer id_hoa_don) {
-        return ResponseEntity.ok(trangThaiHoaDonService.createTrangThaiHoaDon(id_hoa_don));
-    }
+//    @PostMapping("/create/{id_hoa_don}")
+//    public ResponseEntity<TrangThaiHoaDon> createTrangThaiHoaDon(@PathVariable Integer id_hoa_don) {
+//        return ResponseEntity.ok(trangThaiHoaDonService.createTrangThaiHoaDon(id_hoa_don));
+//    }
 }

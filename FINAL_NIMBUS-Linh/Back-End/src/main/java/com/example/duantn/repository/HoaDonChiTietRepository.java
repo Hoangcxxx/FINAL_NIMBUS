@@ -1,6 +1,7 @@
 package com.example.duantn.repository;
 
 import com.example.duantn.entity.HoaDonChiTiet;
+import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.query.HoaDonChiTietQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,7 +32,8 @@ public interface HoaDonChiTietRepository extends JpaRepository<HoaDonChiTiet,Int
 
     @Query("SELECT h FROM HoaDonChiTiet h WHERE h.hoaDon.idHoaDon = :hoaDonId")
     List<HoaDonChiTiet> findByHoaDon_IdHoaDon(@Param("hoaDonId") Integer hoaDonId);
-
+    // Tìm các HoaDonChiTiet theo SanPhamChiTiet
+    List<HoaDonChiTiet> findBySanPhamChiTiet(SanPhamChiTiet sanPhamChiTiet);
 
 
 

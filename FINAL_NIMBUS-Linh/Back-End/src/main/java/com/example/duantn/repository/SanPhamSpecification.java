@@ -77,4 +77,14 @@ public class SanPhamSpecification {
             return null;
         };
     }
+
+    public static Specification<SanPham> withTenSanPham(String tenSanPham) {
+        return (root, query, criteriaBuilder) -> {
+            if (tenSanPham != null && !tenSanPham.isEmpty()) {
+                return criteriaBuilder.like(criteriaBuilder.lower(root.get("tenSanPham")), "%" + tenSanPham.toLowerCase() + "%");
+            }
+            return null;
+        };
+    }
+
 }
