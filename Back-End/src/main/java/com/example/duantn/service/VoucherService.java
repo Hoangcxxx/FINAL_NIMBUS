@@ -33,7 +33,7 @@ public class VoucherService {
 
     // Phương thức để lấy danh sách voucher sắp xếp theo ngày tạo
     public List<Voucher> getAllVouchers() {
-        return voucherRepository.findAll(Sort.by(Sort.Order.desc("ngayTao")));
+        return voucherRepository.findAll(Sort.by(Sort.Order.desc("ngayCapNhat")));
     }
     // Tìm kiếm voucher theo mã voucher
     // Tìm kiếm voucher theo mã voucher

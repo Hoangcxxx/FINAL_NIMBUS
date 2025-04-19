@@ -45,8 +45,19 @@ window.PhieuGiamGiaController = function ($scope, $http, $timeout) {
     };
 
     // Hàm tìm kiếm và lọc voucher theo kiểu giảm giá
-    $scope.deleteVoucher = function (id) {
-        if (confirm("Bạn có chắc chắn muốn xóa voucher này không?")) {
+    // Hàm xóa voucher
+$scope.deleteVoucher = function (id) {
+    Swal.fire({
+        title: 'Xác nhận',
+        text: 'Bạn có chắc chắn muốn xóa voucher này không?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Có, xóa!',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Nếu người dùng xác nhận xóa
             $http.delete('http://localhost:8080/api/admin/vouchers/' + id)
                 .then(function (response) {
                     Swal.fire({
@@ -67,8 +78,18 @@ window.PhieuGiamGiaController = function ($scope, $http, $timeout) {
                         confirmButtonText: 'OK'
                     });
                 });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // Nếu người dùng hủy
+            Swal.fire({
+                title: 'Đã hủy',
+                text: 'Hành động xóa đã bị hủy.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
         }
-    };
+    });
+};
+
 
     // Function to update product status
     $scope.updateTrangThai = function (idVoucher, newStatus) {

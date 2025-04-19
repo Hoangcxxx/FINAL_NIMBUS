@@ -223,6 +223,7 @@ public class ADHoaDonController {
                         errorMessage.equals("Đơn hàng đang được vận chuyển và trên đường giao đến khách hàng.") ||
                         errorMessage.equals("Người bán đã xác nhận đơn hàng.") ||
                         errorMessage.equals("Đơn hàng bị hủy bỏ.") ||
+                        errorMessage.equals("Khách hàng đã hoàn trả tất cả sản phẩm.") ||
                         errorMessage.equals("Đơn hàng đã được thanh toán thành công và đang chờ giao đến khách hàng.")) {
                     response.put("message", errorMessage);
                     response.put("success", true);  // Trả về success true

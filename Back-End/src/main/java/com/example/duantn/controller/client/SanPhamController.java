@@ -143,9 +143,11 @@ public class SanPhamController {
                                            @RequestParam(required = false) Integer danhMucId,
                                            @RequestParam(required = false) Integer chatLieuId,
                                            @RequestParam(required = false) Integer mauSacId,
-                                           @RequestParam(required = false) Integer kichThuocId) {
-        return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId);
+                                           @RequestParam(required = false) Integer kichThuocId,
+                                           @RequestParam(required = false) String tenSanPham) {
+        return sanPhamService.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId, tenSanPham);
     }
+
 
     @GetMapping("/phan_trang")
     public ResponseEntity<Map<String, Object>> getAllSanPhams(
@@ -164,22 +166,6 @@ public class SanPhamController {
         response.put("totalPages", sanPhams.getTotalPages());
 
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/kiem-tra-gia/{idSanPham}")
-    public ResponseEntity<?> validateProductPrice(@PathVariable Integer idSanPham) {
-        BigDecimal giaBan = sanPhamService.getGiaSanPham(idSanPham);
-
-        if (giaBan == null) {
-            return ResponseEntity.badRequest().body("Sản phẩm không tồn tại");
-        }
-
-        // Kiểm tra giá có hợp lệ không (ví dụ giá không được nhỏ hơn 0 hoặc quá cao)
-        if (giaBan.compareTo(BigDecimal.ZERO) <= 0) {
-            return ResponseEntity.badRequest().body("Giá sản phẩm không hợp lệ");
-        }
-
-        return ResponseEntity.ok(Map.of("idSanPham", idSanPham, "giaBan", giaBan));
     }
 
 }

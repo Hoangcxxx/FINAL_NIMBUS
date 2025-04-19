@@ -4,17 +4,19 @@ import com.example.duantn.dto.DoiTraDTO;
 import com.example.duantn.entity.DoiTra;
 
 import com.example.duantn.service.DoiTraSevice.DoiTraService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/nguoi_dung/doi-tra")
 public class DoiTraController {
-
     private final DoiTraService doiTraService;
-
     public DoiTraController(DoiTraService doiTraService) {
         this.doiTraService = doiTraService;
     }
@@ -32,4 +34,6 @@ public class DoiTraController {
         List<DoiTra> doiTras = doiTraService.getDoiTraByHoaDonId(idHoaDon);
         return ResponseEntity.ok(doiTras);
     }
+
+
 }

@@ -5,7 +5,7 @@ window.ThongKeController = function ($scope, $http) {
     // Lấy dữ liệu từ API
     $http.get('http://localhost:8080/api/admin/thong_ke/getAllThongKe')
         .then(function (response) {
-              // Dữ liệu trả về từ API
+            // Dữ liệu trả về từ API
             $scope.dsSanPhamBanChay = response.data;
         })
         .catch(function (error) {
@@ -87,6 +87,7 @@ window.ThongKeController = function ($scope, $http) {
         });
 
     // Lấy dữ liệu từ API tổng hợp số lượng trạng thái hóa đơn
+    // Lấy dữ liệu từ API tổng hợp số lượng trạng thái hóa đơn
     $http.get('http://localhost:8080/api/admin/thong_ke/tong_so_luong_trang_thai_hoa_don')
         .then(function (response) {
             // Lưu dữ liệu trả về vào biến $scope.dsThongKeTrangThai
@@ -95,7 +96,17 @@ window.ThongKeController = function ($scope, $http) {
             // Dữ liệu cho biểu đồ
             const labels = [];
             const data = [];
-            const backgroundColor = ['#FFCE56', '#4BC0C0', '#FF6384', '#FF5733', '#8E44AD', '#20c997']; // Màu sắc cho từng trạng thái
+
+            // Màu sắc cho từng trạng thái (dựa trên dữ liệu mẫu)
+            const backgroundColor = [
+                '#FFB6C1',   // Chờ xác nhận (hồng nhạt)
+                '#FFD700',   // Chờ giao hàng (vàng)
+                '#87CEEB',   // Đang giao hàng (xanh da trời)
+                '#32CD32',   // Giao hàng thành công (xanh lá cây)
+                '#FF6347',   // Đã hủy (đỏ cam)
+                '#FF4500',   // Hoàn trả thất bại (cam đỏ)
+                '#8A2BE2',   // Hoàn trả thành công (tím)
+            ];
 
             // Lặp qua dữ liệu và chuẩn bị labels và data cho biểu đồ
             $scope.dsThongKeTrangThai.forEach(item => {
@@ -111,7 +122,7 @@ window.ThongKeController = function ($scope, $http) {
                     labels: labels,
                     datasets: [{
                         data: data,
-                        backgroundColor: backgroundColor
+                        backgroundColor: backgroundColor.slice(0, $scope.dsThongKeTrangThai.length) // Cắt màu sắc theo số lượng trạng thái
                     }]
                 },
                 options: {
@@ -127,6 +138,7 @@ window.ThongKeController = function ($scope, $http) {
         .catch(function (error) {
             console.error("Lỗi khi lấy dữ liệu thống kê trạng thái hóa đơn:", error);
         });
+
 
 
 };

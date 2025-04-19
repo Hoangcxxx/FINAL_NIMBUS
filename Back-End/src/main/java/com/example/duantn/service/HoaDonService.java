@@ -1004,10 +1004,7 @@ public class HoaDonService {
         hoaDon.setThanhTien(updateHoaDonDTO.getThanhTien());
         hoaDon.setSdtNguoiNhan(updateHoaDonDTO.getSetSdtNguoiNhan());
 
-        PhuongThucThanhToanHoaDon ptThanhToan = new PhuongThucThanhToanHoaDon();
-        ptThanhToan.setIdThanhToanHoaDon(updateHoaDonDTO.getIdThanhToanHoaDon());
-
-        PhuongThucThanhToanHoaDon existingPtThanhToan = ptThanhToanHoaDonRepository.findById(ptThanhToan.getIdThanhToanHoaDon())
+        PhuongThucThanhToanHoaDon existingPtThanhToan = ptThanhToanHoaDonRepository.findById(updateHoaDonDTO.getIdThanhToanHoaDon())
                 .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không tồn tại."));
         hoaDon.setPhuongThucThanhToanHoaDon(existingPtThanhToan);
 
@@ -1017,37 +1014,47 @@ public class HoaDonService {
             hoaDon.setVoucher(voucher);
         }
 
-        // Tạo trạng thái hóa đơn loại 5
-        TrangThaiHoaDon trangThaiHoaDon1 = new TrangThaiHoaDon();
-        trangThaiHoaDon1.setMoTa("Đã thanh toán thành công");
-        trangThaiHoaDon1.setNgayTao(new Date());
-        trangThaiHoaDon1.setNgayCapNhat(new Date());
-        trangThaiHoaDon1.setHoaDon(hoaDon);
+        // Thêm trạng thái hóa đơn loại 13 (Chờ thanh toán)
+        TrangThaiHoaDon trangThaiHoaDon13 = new TrangThaiHoaDon();
+        trangThaiHoaDon13.setMoTa("Chờ thanh toán");
+        trangThaiHoaDon13.setNgayTao(new Date());
+        trangThaiHoaDon13.setNgayCapNhat(new Date());
+        trangThaiHoaDon13.setHoaDon(hoaDon);
+        trangThaiHoaDon13.setIdNhanVien(idNhanVien);
 
-        // Lưu idNhanVien vào trạng thái hóa đơn
-        trangThaiHoaDon1.setIdNhanVien(idNhanVien);
-
-        LoaiTrangThai loaiTrangThai1 = loaiTrangThaiRepository.findById(7)
+        LoaiTrangThai loaiTrangThai13 = loaiTrangThaiRepository.findById(13)
                 .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
-        trangThaiHoaDon1.setLoaiTrangThai(loaiTrangThai1);
+        trangThaiHoaDon13.setLoaiTrangThai(loaiTrangThai13);
 
-        trangThaiHoaDonRepository.save(trangThaiHoaDon1);
+        trangThaiHoaDonRepository.save(trangThaiHoaDon13);
 
-        // Tạo trạng thái hóa đơn loại 8
-        TrangThaiHoaDon trangThaiHoaDon2 = new TrangThaiHoaDon();
-        trangThaiHoaDon2.setMoTa("Hoàn thành");
-        trangThaiHoaDon2.setNgayTao(new Date());
-        trangThaiHoaDon2.setNgayCapNhat(new Date());
-        trangThaiHoaDon2.setHoaDon(hoaDon);
+        // Thêm trạng thái hóa đơn loại 14 (Đã thanh toán thành công)
+        TrangThaiHoaDon trangThaiHoaDon14 = new TrangThaiHoaDon();
+        trangThaiHoaDon14.setMoTa("Đã thanh toán thành công");
+        trangThaiHoaDon14.setNgayTao(new Date());
+        trangThaiHoaDon14.setNgayCapNhat(new Date());
+        trangThaiHoaDon14.setHoaDon(hoaDon);
+        trangThaiHoaDon14.setIdNhanVien(idNhanVien);
 
-        // Lưu idNhanVien vào trạng thái hóa đơn
-        trangThaiHoaDon2.setIdNhanVien(idNhanVien);
-
-        LoaiTrangThai loaiTrangThai2 = loaiTrangThaiRepository.findById(8)
+        LoaiTrangThai loaiTrangThai14 = loaiTrangThaiRepository.findById(14)
                 .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
-        trangThaiHoaDon2.setLoaiTrangThai(loaiTrangThai2);
+        trangThaiHoaDon14.setLoaiTrangThai(loaiTrangThai14);
 
-        trangThaiHoaDonRepository.save(trangThaiHoaDon2);
+        trangThaiHoaDonRepository.save(trangThaiHoaDon14);
+
+        // Thêm trạng thái hóa đơn loại 15 (Hoàn thành)
+        TrangThaiHoaDon trangThaiHoaDon15 = new TrangThaiHoaDon();
+        trangThaiHoaDon15.setMoTa("Hoàn thành");
+        trangThaiHoaDon15.setNgayTao(new Date());
+        trangThaiHoaDon15.setNgayCapNhat(new Date());
+        trangThaiHoaDon15.setHoaDon(hoaDon);
+        trangThaiHoaDon15.setIdNhanVien(idNhanVien);
+
+        LoaiTrangThai loaiTrangThai15 = loaiTrangThaiRepository.findById(15)
+                .orElseThrow(() -> new RuntimeException("Loại trạng thái không tồn tại"));
+        trangThaiHoaDon15.setLoaiTrangThai(loaiTrangThai15);
+
+        trangThaiHoaDonRepository.save(trangThaiHoaDon15);
 
         hoaDonRepository.save(hoaDon);
 
@@ -1058,6 +1065,7 @@ public class HoaDonService {
                 hoaDon.getPhuongThucThanhToanHoaDon().getIdThanhToanHoaDon()
         );
     }
+
 
 
     public List<HoaDonDTO> getHoaDonByUserId(Integer idNguoiDung) {

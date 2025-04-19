@@ -119,14 +119,21 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaS
 
 
     // Phương thức tìm kiếm sản phẩm với các tiêu chí
-    default List<SanPham> searchProducts(BigDecimal minPrice, BigDecimal maxPrice, Integer danhMucId, Integer chatLieuId, Integer mauSacId, Integer kichThuocId) {
-        // Sử dụng Specification để tạo các điều kiện tìm kiếm
+    default List<SanPham> searchProducts(BigDecimal minPrice, BigDecimal maxPrice, Integer danhMucId, Integer chatLieuId,
+                                         Integer mauSacId, Integer kichThuocId, String tenSanPham) {
+        // Tạo Specification để xây dựng các điều kiện tìm kiếm
         Specification<SanPham> specification = Specification.where(SanPhamSpecification.withPriceRange(minPrice, maxPrice))
                 .and(SanPhamSpecification.withDanhMuc(danhMucId))
                 .and(SanPhamSpecification.withChatLieu(chatLieuId))
                 .and(SanPhamSpecification.withMauSac(mauSacId))
                 .and(SanPhamSpecification.withKichThuoc(kichThuocId))
                 .and(SanPhamSpecification.withSanPhamChiTiet());
+
+        // Thêm điều kiện tìm kiếm theo tên sản phẩm
+        if (tenSanPham != null && !tenSanPham.trim().isEmpty()) {
+            specification = specification.and(SanPhamSpecification.withTenSanPham(tenSanPham));
+        }
+
         // Trả về kết quả tìm kiếm
         return findAll(specification);
     }

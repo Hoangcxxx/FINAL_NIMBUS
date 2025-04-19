@@ -713,7 +713,12 @@ VALUES
 (N'Đã hủy', N'Đơn hàng bị hủy bỏ.'),
 (N'Hoàn trả', N'Khách hàng hoàn trả đơn hàng.'),
 (N'Yêu cầu hoàn trả', N'Khách hàng đã gửi yêu cầu hoàn trả đơn hàng.'),
-(N'Xác nhận hoàn trả', N'Người bán đã xác nhận yêu cầu hoàn trả từ khách hàng.');
+(N'Hoàn trả thất bại', N'Người bán đã hủy bỏ yêu cầu hoàn trả từ khách hàng.'),
+(N'Hoàn trả thành công', N'Người bán đã xác nhận yêu cầu hoàn trả từ khách hàng.'),
+(N'Hoàn trả tất cả', N'Khách hàng đã hoàn trả tất cả sản phẩm.'),
+(N'Chờ thanh toán', N'Đơn hàng đang chưa thanh toán.'),
+(N'Đã thanh toán thành công', N'Khách hàng đã thanh toán thành công.'),
+(N'Đơn hàng hoàn thành', N'Đơn hàng đã giao đến khách hàng thành công.');
 
 -- Insert data for trang_thai_hoa_don
 -- Thêm trạng thái cho hóa đơn với Id_hoa_don là 1
@@ -1870,6 +1875,7 @@ select * from trang_thai_hoa_don
 select * from loai_trang_thai
 select * from hoa_don
 select * from hoa_don_chi_tiet
+select * from doi_tra
 select * from xac_thuc
 select * from lich_su_hoa_don
 select * from san_pham

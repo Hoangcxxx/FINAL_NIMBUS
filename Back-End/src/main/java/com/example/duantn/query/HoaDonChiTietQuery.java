@@ -22,7 +22,7 @@ public class HoaDonChiTietQuery {
             "LEFT JOIN \n" +
             "   hinh_anh_san_pham ha ON sp.Id_san_pham = ha.id_san_pham\n" +
             "WHERE \n" +
-            "    ltt.ten_loai_trang_thai = 'Giao hàng thành công' and  ha.thu_tu = 1  -- Trạng thái 'Hoàn thành'\n" +
+            "    (ltt.Id_loai_trang_thai = 6 OR ltt.Id_loai_trang_thai = 15) and  ha.thu_tu = 1  -- Trạng thái 'Hoàn thành'\n" +
             "GROUP BY \n" +
             "    sp.ten_san_pham,\n" +
             "    sp.gia_ban,\n" +
@@ -47,7 +47,7 @@ public class HoaDonChiTietQuery {
             "JOIN\n" +
             "    loai_trang_thai ltt ON tthd.id_loai_trang_thai = ltt.Id_loai_trang_thai\n" +
             "WHERE \n" +
-            "    ltt.ten_loai_trang_thai = 'Giao hàng thành công'  -- Trạng thái 'Hoàn thành'\n" +
+            "    (ltt.Id_loai_trang_thai = 6 OR ltt.Id_loai_trang_thai = 15)  -- Trạng thái 'Hoàn thành'\n" +
             "    AND CAST(hd.ngay_tao AS DATE) BETWEEN CAST(DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AS DATE) \n" +
             "                                        AND CAST(GETDATE() AS DATE)  -- Lọc trong tháng này";
     public static final String GET_TONG_SO_LUONG_BAN_RA_HOM_NAY ="SELECT \n" +
@@ -66,7 +66,7 @@ public class HoaDonChiTietQuery {
             "JOIN\n" +
             "    loai_trang_thai ltt ON tthd.id_loai_trang_thai = ltt.Id_loai_trang_thai\n" +
             "WHERE \n" +
-            "    ltt.ten_loai_trang_thai = 'Giao hàng thành công'  -- Trạng thái 'Hoàn thành'\n" +
+            "    (ltt.Id_loai_trang_thai = 6 OR ltt.Id_loai_trang_thai = 15)  -- Trạng thái 'Hoàn thành'\n" +
             "    AND CAST(hd.ngay_tao AS DATE) = CAST(GETDATE() AS DATE)  -- Lọc hóa đơn tạo trong ngày hôm nay";
     public static final String GET_TONG_HOA_DON_THANG_NAY ="SELECT \n" +
             "    COUNT(DISTINCT hd.Id_hoa_don) AS so_hoa_don_hoan_thanh  -- Số lượng hóa đơn hoàn thành\n" +
@@ -79,7 +79,7 @@ public class HoaDonChiTietQuery {
             "JOIN\n" +
             "    loai_trang_thai ltt ON tthd.id_loai_trang_thai = ltt.Id_loai_trang_thai\n" +
             "WHERE \n" +
-            "    ltt.ten_loai_trang_thai = 'Giao hàng thành công'  -- Trạng thái 'Hoàn thành'\n" +
+            "    (ltt.Id_loai_trang_thai = 6 OR ltt.Id_loai_trang_thai = 15)  -- Trạng thái 'Hoàn thành'\n" +
             "    AND CAST(hd.ngay_tao AS DATE) BETWEEN CAST(DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AS DATE) \n" +
             "                                        AND CAST(GETDATE() AS DATE)  -- Lọc trong tháng này";
 
@@ -96,7 +96,7 @@ public class HoaDonChiTietQuery {
             "JOIN\n" +
             "    loai_trang_thai ltt ON tthd.id_loai_trang_thai = ltt.Id_loai_trang_thai\n" +
             "WHERE \n" +
-            "    ltt.ten_loai_trang_thai = 'Giao hàng thành công'  -- Trạng thái 'Hoàn thành'\n" +
+            "    (ltt.Id_loai_trang_thai = 6 OR ltt.Id_loai_trang_thai = 15)  -- Trạng thái 'Hoàn thành'\n" +
             "    AND CAST(hd.ngay_tao AS DATE) = CAST(GETDATE() AS DATE)  -- Lọc theo ngày hôm nay";
     public static final String GET_ALL_TONG_SAN_PHAM_TRONG_THANG = "SELECT \n" +
             "    COUNT(DISTINCT spct.id_san_pham) AS tong_so_luong_san_pham_da_ban  -- Tổng số lượng sản phẩm đã bán\n" +
@@ -111,28 +111,43 @@ public class HoaDonChiTietQuery {
             "JOIN \n" +
             "    san_pham_chi_tiet spct ON hdct.id_san_pham_chi_tiet = spct.Id_san_pham_chi_tiet\n" +
             "WHERE \n" +
-            "    ltt.ten_loai_trang_thai = 'Giao hàng thành công'  -- Trạng thái 'Hoàn thành'\n" +
+            "    (ltt.Id_loai_trang_thai = 6 OR ltt.Id_loai_trang_thai = 15)  -- Trạng thái 'Hoàn thành'\n" +
             "    AND CAST(hd.ngay_tao AS DATE) BETWEEN CAST(DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AS DATE) \n" +
             "                                        AND CAST(GETDATE() AS DATE)  -- Lọc trong tháng này";
     public static final String GET_ALL_SO_LUONG_LOAI_TRANG_THAI_HOA_DON = "SELECT \n" +
-            "    lt.id_loai_trang_thai,\n" +
-            "    lt.ten_loai_trang_thai,\n" +
+            "    CASE \n" +
+            "        WHEN lt.id_loai_trang_thai = 15 THEN 6   -- Kết hợp trạng thái 15 vào 6\n" +
+            "        ELSE lt.id_loai_trang_thai\n" +
+            "    END AS id_loai_trang_thai,\n" +
+            "    CASE \n" +
+            "        WHEN lt.id_loai_trang_thai = 15 THEN 'Giao hàng thành công'  -- Gán tên trạng thái 'Giao hàng thành công' cho trạng thái 15\n" +
+            "        ELSE lt.ten_loai_trang_thai\n" +
+            "    END AS ten_loai_trang_thai,\n" +
             "    COUNT(DISTINCT hd.Id_hoa_don) AS so_hoa_don\n" +
             "FROM \n" +
             "    loai_trang_thai lt\n" +
             "LEFT JOIN \n" +
             "    trang_thai_hoa_don tshd ON lt.Id_loai_trang_thai = tshd.id_loai_trang_thai\n" +
             "LEFT JOIN \n" +
-            "    hoa_don hd ON tshd.id_hoa_don = hd.Id_hoa_don AND tshd.ngay_tao = (\n" +
+            "    hoa_don hd ON tshd.id_hoa_don = hd.Id_hoa_don \n" +
+            "    AND tshd.ngay_tao = (\n" +
             "        SELECT MAX(ngay_tao)\n" +
             "        FROM trang_thai_hoa_don\n" +
             "        WHERE id_hoa_don = hd.Id_hoa_don\n" +
             "    )\n" +
             "WHERE \n" +
-            "    lt.id_loai_trang_thai BETWEEN 2 AND 8 AND lt.id_loai_trang_thai != 3 \n" +
+            "    lt.id_loai_trang_thai BETWEEN 2 AND 15 \n" +
+            "    AND lt.id_loai_trang_thai NOT IN (3, 8, 9, 12, 13, 14)  -- Loại bỏ các trạng thái không cần thiết\n" +
             "GROUP BY \n" +
-            "    lt.id_loai_trang_thai, lt.ten_loai_trang_thai\n" +
+            "    CASE \n" +
+            "        WHEN lt.id_loai_trang_thai = 15 THEN 6   -- Kết hợp trạng thái 15 vào 6\n" +
+            "        ELSE lt.id_loai_trang_thai\n" +
+            "    END,\n" +
+            "    CASE \n" +
+            "        WHEN lt.id_loai_trang_thai = 15 THEN 'Giao hàng thành công'  -- Gán tên trạng thái 'Giao hàng thành công' cho trạng thái 15\n" +
+            "        ELSE lt.ten_loai_trang_thai\n" +
+            "    END\n" +
             "ORDER BY \n" +
-            "    lt.id_loai_trang_thai;";
+            "    id_loai_trang_thai;";
 
 }

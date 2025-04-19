@@ -227,15 +227,12 @@ public class SanPhamService {
     }
 
     // Phương thức tìm kiếm sản phẩm
-    public List<SanPhamDTO> searchProducts(BigDecimal minPrice, BigDecimal maxPrice, Integer danhMucId, Integer chatLieuId, Integer mauSacId, Integer kichThuocId) {
-        List<SanPham> sanPhams = sanPhamRepository.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId);
+    public List<SanPhamDTO> searchProducts(BigDecimal minPrice, BigDecimal maxPrice, Integer danhMucId,
+                                           Integer chatLieuId, Integer mauSacId, Integer kichThuocId, String tenSanPham) {
+        List<SanPham> sanPhams = sanPhamRepository.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId, tenSanPham);
         return sanPhams.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    public BigDecimal getGiaSanPham(Integer idSanPham) {
-        Optional<SanPham> sanPham = sanPhamRepository.findById(idSanPham);
-        return sanPham.map(SanPham::getGiaBan).orElse(null);
-    }
 
 
 }

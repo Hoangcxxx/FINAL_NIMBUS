@@ -99,11 +99,6 @@
                                             href="#userManagement" role="tab" aria-controls="userManagement"
                                             aria-selected="true">CHI TIẾT ĐƠN HÀNG</a>
                                     </li>
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link text-black" id="employeeTab" data-bs-toggle="tab"
-                                            href="#employeeManagement" role="tab" aria-controls="employeeManagement"
-                                            aria-selected="false">ĐỔI TRẢ HÀNG</a>
-                                    </li>
                                 </ul>
 
                                 <!-- Tab content -->
@@ -260,87 +255,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Quản Lý Nhân Viên -->
-                                    <div class="tab-pane fade" id="employeeManagement" role="tabpanel"
-                                        aria-labelledby="employeeTab">
-                                        <form>
-                                            <table class="table table-bordered table-striped">
-                                                <thead class="thead-light">
-                                                    <tr>
-                                                        <th class="text-center">
-                                                            <input type="checkbox" ng-model="selectAll"
-                                                                ng-change="toggleSelectAll()"> Chọn tất cả
-                                                        </th>
-                                                        <th class="text-center">Tên sản phẩm</th>
-                                                        <th class="text-center">Đơn giá</th>
-                                                        <th class="text-center">Số lượng mua</th>
-                                                        <th class="text-center">Số lượng hoàn trả</th>
-                                                        <th class="text-center">Tổng giá trị</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr ng-repeat="item in orderlist.listSanPhamChiTiet">
-                                                        <td class="text-center">
-                                                            <input type="checkbox" ng-model="item.selected">
-                                                        </td>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <div>
-                                                                    <img ng-if="item.urlAnh" ng-src="{{ item.urlAnh }}"
-                                                                        alt="{{ item.tenSanPham }}"
-                                                                        class="img-fluid rounded-3"
-                                                                        style="max-height: 100px; object-fit: cover;">
-                                                                    <span ng-if="!item.urlAnh" class="text-muted">Chưa
-                                                                        có hình ảnh</span>
-                                                                </div>
-                                                                <div class="ml-2 ms-3">
-                                                                    <strong>{{ item.tenSanPham }}</strong><br>
-                                                                    <span class="text-muted">{{ item.tenchatlieu }} - {{
-                                                                        item.tenmausac }} - {{ item.tenkichthuoc
-                                                                        }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-center">{{ item.tienSanPham | currency:"":0 }}
-                                                            VND</td>
-                                                        <td class="text-center">{{ item.soLuong }}</td>
-                                                        <td>
-                                                            <input type="number" class="form-control"
-                                                                ng-model="item.soLuongHoanTra" min="1"
-                                                                max="{{ item.soLuong }}" ng-disabled="!item.selected">
-                                                        </td>
-                                                        <td class="text-center">{{ item.soLuongHoanTra *
-                                                            item.tienSanPham | currency:"":0 }} VND</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <div class="mb-4">
-                                                <label for="reason" class="form-label">Lý do đổi trả</label>
-                                                <select class="form-control" id="reason" ng-model="selectedReason"
-                                                    ng-change="resetOtherReason()">
-                                                    <option value="">-- Chọn lý do --</option>
-                                                    <option value="Sản phẩm lỗi">Sản phẩm lỗi</option>
-                                                    <option value="Hàng giao sai">Hàng giao sai</option>
-                                                    <option value="Không đúng mô tả">Không đúng mô tả</option>
-                                                    <option value="Lý do khác">Lý do khác</option>
-                                                    <!-- Tùy chọn "Lý do khác" -->
-                                                </select>
-                                            </div>
-
-                                            <!-- Hiển thị textarea nếu người dùng chọn "Lý do khác" -->
-                                            <div class="mb-4" ng-if="selectedReason === 'Lý do khác'">
-                                                <label for=lyDo" class="lyDo-label">Lý do khác</label>
-                                                <textarea class="form-control" id="other-reason" rows="3"
-                                                    ng-model="otherReason" placeholder="Nhập lý do đổi trả"></textarea>
-                                            </div>
-
-
-                                            <div class="d-flex justify-content-end">
-                                                <button type="button" class="btn btn-primary"
-                                                    ng-click="submitReturnRequest()">Gửi yêu cầu đổi trả</button>
-                                            </div>
-                                        </form>
-                                    </div>
 
                                 </div>
 

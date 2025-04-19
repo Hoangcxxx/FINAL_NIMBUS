@@ -42,20 +42,24 @@
                     <div class="fs-5 d-flex justify-content-between mt-4">
                         <div>
                             <div>
-                                <!-- Hiển thị giá khuyến mãi nếu có giảm giá -->
-                                <span ng-if="sanPhamChiTiet.giaKhuyenMai" class="text-danger me-3"
-                                    style="font-weight: bold; font-size: 30px;">
+                                <!-- Hiển thị giá khuyến mãi nếu có giảm giá và trong khoảng thời gian hợp lệ -->
+                                <span
+                                    ng-if="sanPhamChiTiet.giaKhuyenMai !== null && isValidDiscountPeriod(sanPhamChiTiet)"
+                                    class="text-danger me-3" style="font-weight: bold; font-size: 30px;">
                                     {{ sanPhamChiTiet.giaKhuyenMai | currency: '': 0}} VND
                                 </span>
-                                <!-- Hiển thị giá ban đầu nếu có giảm giá -->
-                                <span ng-if="sanPhamChiTiet.giaKhuyenMai" style="font-size: 20px;">
+                                <!-- Hiển thị giá ban đầu nếu có giảm giá và trong khoảng thời gian hợp lệ -->
+                                <span
+                                    ng-if="sanPhamChiTiet.giaKhuyenMai !== null && isValidDiscountPeriod(sanPhamChiTiet)"
+                                    style="font-size: 20px;">
                                     <del>{{ sanPhamChiTiet.giaBan | currency: '': 0}}</del> VND
                                 </span>
-                                <!-- Nếu không có giảm giá, chỉ hiển thị giá gốc -->
+                                <!-- Nếu không có giảm giá hoặc không trong khoảng thời gian khuyến mãi, chỉ hiển thị giá gốc -->
+                                <h4 ng-if="sanPhamChiTiet.giaKhuyenMai === null || !isValidDiscountPeriod(sanPhamChiTiet)"
+                                    style="font-size: 30px;">
+                                    <span>{{ sanPhamChiTiet.giaBan | currency: '': 0}} VND</span>
+                                </h4>
                             </div>
-                            <h4 ng-if="!sanPhamChiTiet.giaKhuyenMai" style="font-size: 30px;">
-                                <span>{{ sanPhamChiTiet.giaBan | currency: '': 0}} VND</span>
-                            </h4>
                         </div>
 
                         <!-- Hiển thị số lượng tồn chỉ khi đã chọn đủ các thuộc tính -->
