@@ -172,75 +172,133 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
             });
     }
     $scope.submitReturnRequest = function () {
+        // Kiểm tra trạng thái đơn hàng trước khi xử lý hoàn trả
         if ($scope.orderHieu.idLoaiTrangThai === 7) {
-            showAlert('error', 'Lỗi!', 'Không thể yêu cầu hoàn trả vì đơn hàng của bạn đã bị hủy!');
-            return;
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Không thể yêu cầu hoàn trả vì đơn hàng của bạn đã bị hủy!',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                    $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                }
+            });
+            return; // Ngừng quá trình
         }
     
+        // Kiểm tra danh sách sản phẩm có tồn tại và có sản phẩm không
         if (!$scope.orderlist?.listSanPhamChiTiet?.length) {
-            showAlert('warning', 'Thông báo!', 'Không có sản phẩm nào trong đơn hàng để thực hiện hoàn trả!');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Không có sản phẩm nào trong đơn hàng để thực hiện hoàn trả!',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                    $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                }
+            });
             return;
         }
     
+        // Lọc sản phẩm được chọn và có số lượng hoàn trả > 0
         const filteredItems = $scope.orderlist.listSanPhamChiTiet.filter(
             item => item.selected && item.soLuongHoanTra > 0
         );
     
-        if (!filteredItems.length) {
-            showAlert('warning', 'Thông báo!', 'Vui lòng chọn ít nhất một sản phẩm và nhập số lượng hoàn trả hợp lệ!');
+        if (filteredItems.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Vui lòng chọn ít nhất một sản phẩm và nhập số lượng hoàn trả hợp lệ!',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                    $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                }
+            });
             return;
         }
     
-        // Kiểm tra lý do từ select hoặc textarea
-        let reasonToSend = $scope.selectedReason || $scope.otherReason;  
+        // Kiểm tra lý do đổi trả hợp lệ và lấy lý do đã chọn hoặc lý do nhập tay
+        let reasonToSend = ($scope.selectedReason === 'other' && $scope.otherReason)
+            ? $scope.otherReason // Lưu lý do nhập tay nếu chọn "Lý do khác"
+            : $scope.selectedReason;
+    
         if (!reasonToSend) {
-            showAlert('warning', 'Thông báo!', 'Vui lòng chọn lý do đổi trả hoặc nhập lý do!');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thông báo!',
+                text: 'Vui lòng chọn lý do đổi trả hoặc nhập lý do khác!',
+                confirmButtonText: 'Đồng ý'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                    $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                }
+            });
             return;
         }
     
+        // Log lý do nhập để kiểm tra
+        console.log("Lý do đổi trả: ", reasonToSend);
+    
+        // Tạo danh sách DoiTraDTO từ sản phẩm đã chọn
         const doiTraDTOList = filteredItems.map(item => ({
             idHoaDon: $scope.orderHieu.idHoaDon,
             idSanPhamChiTiet: item.idspct,
             soLuong: item.soLuongHoanTra,
-            lyDo: reasonToSend,  // Gửi lý do đã chọn hoặc nhập
+            lyDo: reasonToSend, // Gửi lý do đã nhập hoặc đã chọn
             trangThai: true,
             tongTien: item.soLuongHoanTra * item.tienSanPham
         }));
     
+        // Gửi yêu cầu đổi trả lên API backend và xử lý phản hồi
         $http.post("http://localhost:8080/api/nguoi_dung/doi-tra/tao-doi-tra", doiTraDTOList)
-            .then(() => {
-                showAlert('success', 'Thành công!', 'Yêu cầu hoàn trả của bạn đã được xử lý thành công!');
-                resetForm();
+            .then(response => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: 'Yêu cầu hoàn trả của bạn đã được xử lý thành công!',
+                    confirmButtonText: 'Đồng ý'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                        $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                    }
+                });
+                resetForm(); // Đặt lại biểu mẫu sau khi hoàn tất
             })
             .catch(error => {
                 const errorMessage = error?.data?.message || 'Không thể xử lý yêu cầu hoàn trả do lỗi hệ thống. Vui lòng thử lại sau!';
-                showAlert('error', 'Lỗi!', errorMessage);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: errorMessage,
+                    confirmButtonText: 'Đồng ý'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#orderDetailsModal').modal('hide'); // Đóng modal khi nhấn "Đồng ý"
+                        $scope.getOrderDetails(); // Làm mới lại bảng đơn hàng
+                    }
+                });
             });
     };
     
-    // Xóa lý do khác khi người dùng thay đổi lựa chọn lý do (giữ lại textarea để nhập tự do)
-    $scope.resetOtherReason = function () {
-        if ($scope.selectedReason !== 'Lý do khác') {
-            $scope.otherReason = '';
-        }
-    };
     function resetForm() {
         $scope.orderlist.listSanPhamChiTiet.forEach(item => {
             item.selected = false;
             item.soLuongHoanTra = 0;
         });
         $scope.selectedReason = '';
-        $scope.otherReason = ''; 
+        $scope.otherReason = '';
     }
     
-    function showAlert(icon, title, text) {
-        Swal.fire({
-            icon: icon,
-            title: title,
-            text: text,
-            confirmButtonText: 'Đồng ý'
-        });
-    }
+    
     
 
     $scope.getTotalProductPrice = function () {
@@ -257,32 +315,29 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
 
         return total;
     };
-// Sửa Phần NàyNày
+
     $scope.calculateDiscount = function () {
         let discount = 0;
-        const totalPrice = $scope.getTotalProductPrice();
-    
         if ($scope.orderHieu) {
             if ($scope.orderHieu.kieuGiamGia === false) {
-                // Giảm theo phần trăm
-                discount = (totalPrice * $scope.orderHieu.giaTriMavoucher) / 100;
+                // Giảm giá theo phần trăm
+                discount = ($scope.getTotalProductPrice() * $scope.orderHieu.giaTriMavoucher) / 100;
             } else if ($scope.orderHieu.kieuGiamGia === true) {
-                // Giảm theo số tiền
+                // Giảm giá trực tiếp bằng số tiền
                 discount = $scope.orderHieu.giaTriMavoucher;
             }
         }
-    
-        return Math.min(discount, totalPrice); // Không vượt quá tổng tiền
-    };
-    
-    $scope.calculateTotalAfterDiscount = function () {
-        const totalPrice = $scope.getTotalProductPrice();
-        const discount = $scope.calculateDiscount();
-        return Math.max(totalPrice - discount, 0); // Không bao giờ âm
+        return discount;
     };
 
-    // Sửa Phần NàyNày
-    
+    $scope.calculateTotalAfterDiscount = function () {
+        const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
+        const discount = $scope.calculateDiscount(); // Số tiền giảm giá
+        return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
+    };
+
+
+
     // Gọi API để lấy danh sách đơn hàng khi tải trang
     $scope.getOrderDetails = function () {
         const apiUrl = `http://localhost:8080/api/nguoi_dung/hoa_don/user/${$scope.idNguoiDung}`;
@@ -418,6 +473,7 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
     };
 
 
+
+
 }
 
-    

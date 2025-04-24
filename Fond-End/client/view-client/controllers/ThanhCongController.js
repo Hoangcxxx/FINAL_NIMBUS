@@ -123,12 +123,7 @@ window.ThanhCongController = function ($scope, $http) {
         const selectedVoucher = JSON.parse(localStorage.getItem("selectedVoucher"));
     
         if (!idTinh || !idHuyen || !idXa) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi!',
-                text: 'Thông tin địa chỉ không hợp lệ hoặc thiếu.',
-                confirmButtonText: 'Đồng ý'
-            });
+          
             return;
         }
     
