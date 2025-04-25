@@ -117,17 +117,7 @@
                                                                 style="width: 60px; text-align: center; margin: 0 5px; border-radius: 5px; border: 1px solid #ccc;" />
                                                         </div>
                                                     </td>
-                                                    <td>
-                                                        <span ng-if="sp.giaKhuyenMai"
-                                                            style="color: #999; text-decoration: line-through; display: block;">
-                                                            {{ sp.giaBan | currency: '' : 0 }} VND
-                                                        </span>
-                                                        <div
-                                                            style="color: #f00; font-weight: bold; margin-top: 5px; display: block;">
-                                                            {{ sp.giaKhuyenMai || sp.giaBan | currency: '' : 0 }}
-                                                            VND
-                                                        </div>
-                                                    </td>
+                                                    <td>{{ item.giaBan | currency: '' : 0 }} VND</td>
                                                     <td>
                                                         <button class="btn btn-danger btn-sm"
                                                             ng-click="deleteCartItem(item.idSanPhamChiTiet)">
@@ -553,6 +543,7 @@
                                         style="color: #999; text-decoration: line-through; display: block;">
                                         {{ detail.gia_ban | currency: '' : 0 }} VND
                                     </span>
+
                                     <!-- Hiển thị giá khuyến mãi nếu hợp lệ, ngược lại hiển thị giá gốc -->
                                     <div style="color: #f00; font-weight: bold; margin-top: 5px; display: block;">
                                         {{ kiemTraKhuyenMaiDetailHopLe(detail) ? (detail.gia_khuyen_mai | currency: '' :
