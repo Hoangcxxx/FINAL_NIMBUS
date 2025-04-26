@@ -1222,5 +1222,25 @@ public class HoaDonService {
 
         return "Hoàn trả thành công!";
     }
+    public void luuVoucher(String maHoaDon, String maVoucher, String tenVoucher, BigDecimal giaTriGiamGiaApDung, Boolean kieuGiamGiaApDung) {
+        // Tìm hóa đơn theo mã hóa đơn, sử dụng Optional để kiểm tra có tìm thấy hay không
+        Optional<HoaDon> hoaDonOptional = hoaDonRepository.findByMaHoaDon(maHoaDon);
+
+        // Nếu không tìm thấy hóa đơn, throw exception
+        if (!hoaDonOptional.isPresent()) {
+            throw new IllegalArgumentException("Hóa đơn không tồn tại.");
+        }
+
+        HoaDon hoaDon = hoaDonOptional.get();
+
+        // Cập nhật các giá trị voucher vào hóa đơn
+        hoaDon.setMaVoucherApDung(maVoucher);
+        hoaDon.setTenVoucherApDung(tenVoucher);
+        hoaDon.setGiaTriGiamGiaApDung(giaTriGiamGiaApDung != null ? giaTriGiamGiaApDung : BigDecimal.ZERO);
+        hoaDon.setKieuGiamGiaApDung(kieuGiamGiaApDung != null ? kieuGiamGiaApDung : false);
+
+        // Lưu hóa đơn và cập nhật ngay lập tức bằng phương thức saveAndFlush
+        hoaDonRepository.saveAndFlush(hoaDon);
+    }
 
 }

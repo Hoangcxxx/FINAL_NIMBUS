@@ -162,7 +162,8 @@
                 </button>
                 <!-- Nút Hủy hiển thị khi nhấn sẽ gọi hàm cancelOrder -->
                 <!-- <button class="btn btn-danger" ng-click="cancelOrder()" ng-if="!isOrderCancelled()">Hủy</button> -->
-                <button class="btn btn-danger" ng-click="cancelOrder()" ng-if="canCancelOrder()">Hủy</button>
+                 <!-- Nút Hủy chỉ hiển thị khi được phép hủy và không phải khách hàng lẽ -->
+    <button class="btn btn-danger" ng-click="cancelOrder()" ng-if="canCancelOrder() && !isKhachHangLe">Hủy</button>
 
             </div>
             <div>

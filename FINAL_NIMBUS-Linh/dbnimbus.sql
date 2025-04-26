@@ -1,7 +1,7 @@
-﻿CREATE DATABASE testdatn2;
+﻿CREATE DATABASE so7;
 GO
 
-USE testdatn2;
+USE so7;
 GO
 CREATE TABLE [vai_tro] (
   [Id_vai_tro] INT PRIMARY KEY IDENTITY(1,1),
@@ -281,6 +281,10 @@ CREATE TABLE hoa_don (
     [dia_chi] NVARCHAR(255),
     [sdt_nguoi_nhan] NVARCHAR(15),
     [thanh_tien] DECIMAL(18),
+	[ma_voucher_ap_dung] NVARCHAR(50),
+	[ten_voucher_ap_dung] NVARCHAR(255),
+	[gia_tri_giam_gia_ap_dung] DECIMAL(18),
+	[kieu_giam_gia_ap_dung] BIT,
     [ngay_tao] DATETIME DEFAULT GETDATE(),
     [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
     [mo_ta] NVARCHAR(MAX),
@@ -1888,5 +1892,7 @@ select * from dot_giam_gia
 select * from giam_gia_san_pham
 select * from trang_thai_giam_gia
 
-
-
+SELECT * 
+FROM hoa_don 
+WHERE ISNUMERIC(gia_tri_giam_gia_ap_dung) = 0 
+   OR ISNUMERIC(phi_ship) = 0;
