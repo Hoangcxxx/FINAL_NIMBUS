@@ -724,6 +724,11 @@ public class HoaDonService {
                 throw new RuntimeException("Voucher này đã hết số lượng sử dụng.");
             }
 
+            // Gán thông tin voucher áp dụng
+            hoaDon.setMaVoucherApDung(voucher.getMaVoucher());
+            hoaDon.setGiaTriGiamGiaApDung(new BigDecimal(String.valueOf(voucher.getGiaTriGiamGia())));
+            hoaDon.setTenVoucherApDung(voucher.getTenVoucher());
+            hoaDon.setKieuGiamGiaApDung(voucher.getKieuGiamGia());
             voucher.setSoLuong(voucher.getSoLuong() - 1);
             voucherRepository.save(voucher);
 

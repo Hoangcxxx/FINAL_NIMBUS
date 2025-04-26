@@ -60,7 +60,14 @@ public class HoaDon {
     private BigDecimal thanhTien;
     @Column(name = "trang_thai")
     private Boolean trangThai;
-
+    @Column(name = "ma_voucher_ap_dung")
+    private String maVoucherApDung;
+    @Column(name = "ten_voucher_ap_dung")
+    private String tenVoucherApDung;
+    @Column(name = "gia_tri_giam_gia_ap_dung")
+    private BigDecimal giaTriGiamGiaApDung;
+    @Column(name = "kieu_giam_gia_ap_dung")
+    private Boolean kieuGiamGiaApDung;
     @Column(name = "ngay_thanh_toan")
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayThanhToan;

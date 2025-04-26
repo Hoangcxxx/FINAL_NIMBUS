@@ -1,7 +1,7 @@
-﻿CREATE DATABASE testdatn2;
+﻿CREATE DATABASE datn;
 GO
 
-USE testdatn2;
+USE datn;
 GO
 CREATE TABLE [vai_tro] (
   [Id_vai_tro] INT PRIMARY KEY IDENTITY(1,1),
@@ -281,6 +281,10 @@ CREATE TABLE hoa_don (
     [dia_chi] NVARCHAR(255),
     [sdt_nguoi_nhan] NVARCHAR(15),
     [thanh_tien] DECIMAL(18),
+	[ma_voucher_ap_dung] NVARCHAR(50),
+	[ten_voucher_ap_dung] DECIMAL(18),
+	[gia_tri_giam_gia_ap_dung] DECIMAL(18),
+	[kieu_giam_gia_ap_dung] BIT,
     [ngay_tao] DATETIME DEFAULT GETDATE(),
     [ngay_cap_nhat] DATETIME DEFAULT GETDATE(),
     [mo_ta] NVARCHAR(MAX),

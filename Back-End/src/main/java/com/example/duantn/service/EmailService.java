@@ -127,43 +127,60 @@ public class EmailService {
             DecimalFormat formatter = new DecimalFormat("#,###");
 
             for (SanPhamChiTietDTO sanPham : hoaDonDTO.getListSanPhamChiTiet()) {
-                // Tính tổng tiền: Đơn giá × Số lượng
+                // Tính tổng tiền sản phẩm
                 BigDecimal tongTienSanPham = sanPham.getGiaTien().multiply(BigDecimal.valueOf(sanPham.getSoLuong()));
 
-                // Khởi tạo biến cho số tiền giảm giá
+// Khởi tạo biến cho số tiền giảm giá
                 BigDecimal giamGia = BigDecimal.ZERO;
 
-                // Kiểm tra kiểu giảm giá (true = VND, false = %)
+// Kiểm tra kiểu giảm giá (true = VND, false = %)
                 String voucherDisplay = "";
                 if (GiaTrivoucher != null && GiaTrivoucher.compareTo(BigDecimal.ZERO) > 0) {
-                    // Nếu có voucher và có giá trị hợp lệ
                     if (kieugiamgia) {
                         // Giảm giá theo VND
-                        giamGia = GiaTrivoucher.multiply(BigDecimal.valueOf(sanPham.getSoLuong())); // Giảm giá = Voucher * Số lượng
-                        voucherDisplay = "<span><strong>Voucher:</strong> " + formatter.format(GiaTrivoucher) + " VND</span>";
+                        giamGia = GiaTrivoucher.multiply(BigDecimal.valueOf(sanPham.getSoLuong()));
+                        if (giamGia.compareTo(tongTienSanPham) > 0) {
+                            giamGia = tongTienSanPham;
+                        }
+                        voucherDisplay = formatter.format(GiaTrivoucher) + " VND / sản phẩm";
                     } else {
                         // Giảm giá theo %
-                        giamGia = tongTienSanPham.multiply(GiaTrivoucher).divide(BigDecimal.valueOf(100)); // Giảm giá = Tổng tiền * phần trăm giảm
-                        voucherDisplay = "<span><strong>Voucher:</strong> " + formatter.format(GiaTrivoucher) + " %</span>";
+                        giamGia = tongTienSanPham.multiply(GiaTrivoucher).divide(BigDecimal.valueOf(100));
+                        voucherDisplay = GiaTrivoucher.stripTrailingZeros().toPlainString() + "%";
                     }
-                } else {
-                    // Nếu không có voucher, hiển thị là 0 VND
-                    voucherDisplay = "<span><strong>Voucher:</strong> 0 VND</span>";
                 }
 
-                // Tính tổng tiền sau giảm giá
+
+// Tính tổng tiền sau giảm giá
                 BigDecimal tongTienSauGiamGia = tongTienSanPham.subtract(giamGia);
 
-                // Thêm thông tin vào email content
+// Nếu tổng tiền sau giảm giá nhỏ hơn 0 thì đặt lại là 0 VND
+                if (tongTienSauGiamGia.compareTo(BigDecimal.ZERO) < 0) {
+                    tongTienSauGiamGia = BigDecimal.ZERO;
+                }
+
+// Tính phí vận chuyển
+                BigDecimal phiVanChuyen = phiship != null ? phiship : BigDecimal.ZERO;
+
+// Tính tổng thanh toán (sau khi giảm giá + phí vận chuyển)
+                BigDecimal tongThanhToan = tongTienSauGiamGia.add(phiVanChuyen);
+
+
+
+// Thêm thông tin vào email content
                 emailContent.append("<div class='order-item'>")
                         .append("<span><strong>Sản phẩm:</strong> " + tenSanPham + "</span>")
                         .append("<span><strong>Số lượng:</strong> " + sanPham.getSoLuong() + "</span>")
-                        .append(voucherDisplay)
                         .append("<span><strong>Tổng tiền Sản Phẩm:</strong> " + formatter.format(tongTienSanPham) + " VND</span>")
-                        .append("<span><strong>Số tiền giảm giá:</strong> " + formatter.format(giamGia) + " VND</span>")
-                        .append("<span><strong>Tổng tiền sau giảm giá:</strong> " + formatter.format(tongTienSauGiamGia) + " VND</span>")
-                        .append("<span><strong>Phi Vận Chuyển:</strong> " + formatter.format(phiship) + " VND</span>")
+                        .append("<span><strong>Voucher:</strong> " + voucherDisplay + "</span>")
+                        .append("<span><strong>Tổng tiền sau giảm giá:</strong> " + formatter.format(tongTienSauGiamGia) + " VND (Giảm " + formatter.format(giamGia) + " VND)</span>")  // Hiển thị thông tin giảm giá tại đây
+                        .append("<span><strong>Phí giao hàng:</strong> " + formatter.format(phiVanChuyen) + " VND</span>")
+                        .append("<span><strong>Tổng thanh toán:</strong> " + formatter.format(tongThanhToan) + " VND</span>")
                         .append("</div>");
+
+
+
+
             }
 
             emailContent.append("</div>")
