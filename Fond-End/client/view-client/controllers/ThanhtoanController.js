@@ -200,11 +200,9 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
     $scope.applyVoucher = function () {
         if ($scope.voucherCode) {
-            // Tìm voucher từ danh sách bằng mã nhập vào hoặc đã chọn
             const voucher = $scope.Voucher.find(v => v.maVoucher === $scope.voucherCode);
 
             if (!voucher || !voucher.isUsable) {
-                // Nếu voucher không tồn tại hoặc không hợp lệ
                 $scope.voucherError = 'Voucher không hợp lệ hoặc không thể sử dụng.';
                 Swal.fire({
                     icon: 'error',
@@ -215,34 +213,31 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 return;
             }
 
-            // Kiểm tra giá trị tối thiểu của hóa đơn
             if ($scope.totalAmount < voucher.soTienToiThieu) {
                 $scope.voucherError = 'Tổng tiền hóa đơn không đủ điều kiện áp dụng voucher. Bạn cần ít nhất ' + $scope.formatCurrency(voucher.soTienToiThieu) + ' để áp dụng.';
                 Swal.fire({
                     icon: 'error',
-                    title: 'Voucher không hợp lệ',
+                    title: 'Không đủ điều kiện',
                     text: $scope.voucherError,
                     confirmButtonText: 'OK'
                 });
                 return;
             }
 
-            // Kiểm tra giá trị tối đa của hóa đơn (nếu có)
             if (voucher.giaTriToiDa !== null && $scope.totalAmount > voucher.giaTriToiDa) {
-                $scope.voucherError = 'Tổng tiền hóa đơn vượt quá giá trị tối đa của voucher. Voucher này chỉ có thể áp dụng khi tổng tiền từ ' + $scope.formatCurrency(voucher.soTienToiThieu) + ' đến ' + $scope.formatCurrency(voucher.giaTriToiDa) + '.';
+                $scope.voucherError = 'Tổng tiền hóa đơn vượt quá giá trị tối đa của voucher. Voucher này chỉ áp dụng cho đơn từ ' + $scope.formatCurrency(voucher.soTienToiThieu) + ' đến ' + $scope.formatCurrency(voucher.giaTriToiDa) + '.';
                 Swal.fire({
                     icon: 'error',
-                    title: 'Voucher không hợp lệ',
+                    title: 'Vượt quá điều kiện',
                     text: $scope.voucherError,
                     confirmButtonText: 'OK'
                 });
                 return;
             }
 
-            // Xóa lỗi và áp dụng voucher
+            // Nếu mọi thứ ok, lưu voucher đã chọn
             $scope.voucherError = '';
             $scope.selectedVoucher = voucher;
-
             // Tính toán giảm giá
             let discount = 0;
             if (voucher.kieuGiamGia === false) {
@@ -260,26 +255,21 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
             // Tính lại tổng tiền để đảm bảo giá trị chính xác trong UI
             $scope.calculateTotal();
-
-            // Hiển thị thông báo thành công
             Swal.fire({
                 icon: 'success',
-                title: 'Voucher đã được áp dụng!',
-                text: 'Voucher mã ' + voucher.maVoucher + ' đã thành công. Tổng tiền sau khi giảm giá: ' + $scope.formatCurrency($scope.totalAmount),
+                title: 'Đã chọn voucher!',
+                text: 'Voucher mã ' + voucher.maVoucher + ' đã được chọn.',
                 confirmButtonText: 'OK'
             });
 
-            // Lưu voucher và tổng tiền vào localStorage
+            // Lưu vào localStorage nếu cần
             localStorage.setItem('selectedVoucher', JSON.stringify(voucher));
-            localStorage.setItem('totalAmount', $scope.totalAmount);
-
-            // Ẩn modal
             $('#voucherModal').modal('hide');
         } else {
-            // Nếu không có mã voucher
             $scope.voucherError = 'Vui lòng nhập hoặc chọn một mã voucher.';
         }
     };
+
 
 
     $scope.calculateDiscountAmount = function (voucher) {
@@ -388,6 +378,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
         console.log("Giảm giá:", discount);
         console.log("Tổng tiền sau khi áp dụng voucher và phí ship:", totalDiscountedPrice);
     };
+
 
 
     $scope.validateUserInfo = function () {
@@ -561,72 +552,67 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 });
         }
 
+
         function checkVoucher() {
-            // Lấy idVoucher và idTrangThaiGiamGia từ localStorage
             const idVoucher = localStorage.getItem('idVoucher');
-            const idTrangThaiGiamGia = localStorage.getItem('idTrangThaiGiamGia');
 
-            console.log("idVoucher từ localStorage:", idVoucher); // Log idVoucher lấy từ localStorage
-            console.log("idTrangThaiGiamGia từ localStorage:", idTrangThaiGiamGia); // Log idTrangThaiGiamGia lấy từ localStorage
-
-            // Kiểm tra nếu có idVoucher
-            if (idVoucher) {
-                console.log("Kiểm tra voucher với idvoucher: ", idVoucher); // Log idVoucher
-
-                return $http.get(`http://localhost:8080/api/nguoi_dung/vouchers/vouchers/${idVoucher}`)
-                    .then(function (response) {
-                        const voucher = response.data;
-                        console.log("Voucher nhận được từ API: ", voucher); // Log thông tin voucher nhận được từ API
-
-                        // Kiểm tra trạng thái giảm giá của voucher
-                        if (voucher && voucher.trangThaiGiamGiaId === 5) {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Voucher đã bị xóa!',
-                                text: 'Voucher này đã bị xóa bởi người bán và không thể sử dụng để thanh toán.',
-                                confirmButtonText: 'Đồng ý'
-                            }).then(function () {
-                                // Sau khi người dùng đóng thông báo lỗi, chỉ xóa idVoucher và idTrangThaiGiamGia nếu có voucher mới
-                                const newVoucherId = localStorage.getItem('idVoucher');
-                                if (newVoucherId !== idVoucher) { // Kiểm tra nếu voucher mới khác voucher cũ
-                                    localStorage.removeItem('idVoucher');
-                                    localStorage.removeItem('idTrangThaiGiamGia');
-                                }
-                            });
-                            throw new Error('Voucher không hợp lệ.');
-                        }
-
-                        // Kiểm tra số lượng của voucher
-                        if (voucher && voucher.soLuong === 0) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Voucher không còn khả dụng!',
-                                text: 'Rất tiếc, voucher này đã hết số lượng và không thể sử dụng nữa.',
-                                confirmButtonText: 'Đồng ý'
-                            })
-                                .then(function () {
-                                    // Sau khi người dùng đóng thông báo lỗi, chỉ xóa idVoucher và idTrangThaiGiamGia nếu có voucher mới
-                                    const newVoucherId = localStorage.getItem('idVoucher');
-                                    if (newVoucherId !== idVoucher) { // Kiểm tra nếu voucher mới khác voucher cũ
-                                        localStorage.removeItem('idVoucher');
-                                        localStorage.removeItem('idTrangThaiGiamGia');
-                                    }
-
-                                });
-                            throw new Error('Voucher đã hết số lượng.');
-                        }
-
-                        // Nếu voucher hợp lệ, xử lý tiếp (nếu cần)
-                        console.log("Voucher hợp lệ và có thể sử dụng.");
-                    })
-                    .catch(function (error) {
-                        console.error('Lỗi khi kiểm tra voucher:', error);
-                        throw error;
-                    });
-            } else {
-                console.log("Không có idVoucher trong localStorage để kiểm tra."); // Log nếu không có idVoucher trong localStorage
+            if (!idVoucher) {
+                console.log("Không có idVoucher trong localStorage.");
+                return Promise.resolve(); // Không có voucher thì cứ cho qua
             }
+
+            console.log("Kiểm tra voucher với idVoucher: ", idVoucher);
+
+            // Bắt đầu kiểm tra
+            return $http.get(`http://localhost:8080/api/nguoi_dung/vouchers/vouchers/${idVoucher}`)
+                .then(function (response) {
+                    const voucher = response.data;
+
+                    if (!voucher) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Voucher không tồn tại!',
+                            text: 'Voucher không còn hợp lệ hoặc đã bị xóa.',
+                            confirmButtonText: 'OK'
+                        });
+                        throw new Error('Voucher không tồn tại.');
+                    }
+
+                    if (voucher.trangThaiGiamGiaId === 5) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Voucher đã bị xóa!',
+                            text: 'Voucher này đã bị người bán xóa và không thể sử dụng.',
+                            confirmButtonText: 'Đồng ý'
+                        });
+                        throw new Error('Voucher đã bị xóa.');
+                    }
+
+                    // Nếu voucher còn tồn tại, kiểm tra số lượng
+                    return $http.get(`http://localhost:8080/api/nguoi_dung/vouchers/vouchers/quantity/${idVoucher}`);
+                })
+                .then(function (quantityResponse) {
+                    const quantity = quantityResponse.data;
+
+                    if (quantity === 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Voucher hết lượt sử dụng!',
+                            text: 'Rất tiếc, voucher này đã hết lượt và không thể dùng.',
+                            confirmButtonText: 'Đồng ý'
+                        });
+                        throw new Error('Voucher đã hết lượt.');
+                    }
+
+                    console.log("Voucher hợp lệ, còn lượt sử dụng.");
+                })
+                .catch(function (error) {
+                    console.error('Lỗi kiểm tra voucher:', error);
+                    throw error;
+                });
         }
+
+
         function checkProductPrices() {
             const promises = $scope.cart.map(item => {
                 console.log("Kiểm tra sản phẩm trong giỏ hàng:", item);  // Debug thông tin item
@@ -656,6 +642,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                             }).then(result => {
                                 if (result.isConfirmed) {
                                     item.giaBan = giaBanMoi; // Cập nhật giá sản phẩm
+                                    $scope.calculateTotal(); // Gọi lại hàm tính tổng khi giá thay đổi
                                 } else {
                                     throw new Error(`Người dùng từ chối mua sản phẩm "${item.tenSanPham}" với giá mới.`);
                                 }
@@ -676,6 +663,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                     console.error("Lỗi trong quá trình kiểm tra giá sản phẩm:", error.message);
                 });
         }
+
 
 
 
@@ -852,7 +840,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
                 } if ($scope.selectedPaymentMethod === "cod") {
                     if ($scope.isProcessing) return;
-                
+
                     Swal.fire({
                         icon: 'info',
                         title: 'Xác nhận thanh toán khi nhận hàng',
@@ -862,33 +850,33 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         cancelButtonText: 'Hủy bỏ'
                     }).then(async (result) => {
                         if (!result.isConfirmed) return;
-                
+
                         $scope.isProcessing = true;
-                
+
                         try {
                             // 🔍 Chuỗi kiểm tra dữ liệu
                             const isValidUser = await checkUserStatus();
                             if (!isValidUser) {
                                 throw new Error('Tài khoản bị khóa.');
                             }
-                
+
                             await checkVoucher();             // Kiểm tra mã giảm giá
-                            // await checkupdategiatienpai(); // Nếu cần cập nhật giá tạm thời
-                            await checkProductStock();        // Kiểm tra tồn kho
-                            await checkProductStatus();       // Kiểm tra trạng thái sản phẩm
-                            await checkProductPrices();       // Kiểm tra giá sản phẩm có thay đổi không
-                
+                            await checkProductStock();         // Kiểm tra tồn kho
+                            await checkProductStatus();        // Kiểm tra trạng thái sản phẩm
+                            await checkProductPrices();        // Kiểm tra giá sản phẩm có thay đổi không
+
                             // ✅ Tất cả kiểm tra ok → Gửi đơn hàng
                             const response = await $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData);
-                            const data = response.data;
-                
-                            if (!data || data.error || !data.maHoaDon || !data.idHoaDon) {
-                                throw new Error(data?.error || "Dữ liệu trả về không hợp lệ.");
+
+                            // Kiểm tra dữ liệu trả về từ backend
+                            if (!response || !response.data || response.data.error || !response.data.maHoaDon || !response.data.idHoaDon) {
+                                throw new Error(response.data?.error || "Dữ liệu trả về không hợp lệ.");
                             }
-                
-                            localStorage.setItem("maHoaDon", data.maHoaDon);
-                            localStorage.setItem("idHoaDon", data.idHoaDon);
-                
+
+                            // 👉 Chỉ khi chắc chắn nhận data ok mới lưu localStorage
+                            localStorage.setItem("maHoaDon", response.data.maHoaDon);
+                            localStorage.setItem("idHoaDon", response.data.idHoaDon);
+
                             Swal.fire({
                                 icon: 'info',
                                 title: 'Đang xử lý thanh toán...',
@@ -902,13 +890,14 @@ window.ThanhToanController = function ($scope, $http, $window) {
                                     $window.location.href = "/#!Thanhcong";
                                     $scope.cart = [];
                                     $scope.isOverlayVisible = false;
-                
+
+                                    // 👉 Sau khi chuyển trang xong gửi email
                                     $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
                                         .then(() => console.log("Email đã gửi"))
                                         .catch(err => console.error("Lỗi gửi email:", err));
                                 }
                             });
-                
+
                         } catch (error) {
                             console.error("Lỗi xử lý:", error);
                             Swal.fire({
@@ -921,6 +910,8 @@ window.ThanhToanController = function ($scope, $http, $window) {
                             $scope.isProcessing = false;
                         }
                     });
+
+
                 } else {
                     // Nếu không chọn phương thức thanh toán, báo lỗi
                     Swal.fire({

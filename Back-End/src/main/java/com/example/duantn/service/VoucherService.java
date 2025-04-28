@@ -364,4 +364,14 @@ public class VoucherService {
         }
         return null; // Hoặc có thể ném Exception tùy thuộc vào yêu cầu
     }
+
+    public int getVoucherQuantity(Integer idVoucher) {
+        // Lấy voucher từ cơ sở dữ liệu
+        Voucher voucher = voucherRepository.findById(idVoucher).orElse(null);
+        if (voucher == null) {
+            return 0; // Nếu không tìm thấy voucher, trả về số lượng là 0
+        }
+        return voucher.getSoLuong(); // Giả sử bạn có trường quantity trong entity Voucher
+    }
+
 }

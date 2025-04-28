@@ -234,5 +234,9 @@ public class SanPhamService {
     }
 
 
+    public BigDecimal getGiaSanPham(Integer idSanPham) {
+        Optional<SanPham> sanPham = sanPhamRepository.findById(idSanPham);
+        return sanPham.map(SanPham::getGiaBan).orElse(null);
+    }
 
 }

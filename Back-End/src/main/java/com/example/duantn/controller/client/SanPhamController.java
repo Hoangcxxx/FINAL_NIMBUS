@@ -168,4 +168,21 @@ public class SanPhamController {
         return ResponseEntity.ok(response);
     }
 
+
+    @GetMapping("/kiem-tra-gia/{idSanPham}")
+    public ResponseEntity<?> validateProductPrice(@PathVariable Integer idSanPham) {
+        BigDecimal giaBan = sanPhamService.getGiaSanPham(idSanPham);
+
+        if (giaBan == null) {
+            return ResponseEntity.badRequest().body("Sản phẩm không tồn tại");
+        }
+
+        // Kiểm tra giá có hợp lệ không (ví dụ giá không được nhỏ hơn 0 hoặc quá cao)
+        if (giaBan.compareTo(BigDecimal.ZERO) <= 0) {
+            return ResponseEntity.badRequest().body("Giá sản phẩm không hợp lệ");
+        }
+
+        return ResponseEntity.ok(Map.of("idSanPham", idSanPham, "giaBan", giaBan));
+    }
+
 }
