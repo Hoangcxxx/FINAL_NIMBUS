@@ -551,23 +551,21 @@ window.ThanhToanController = function ($scope, $http, $window) {
                     return false;
                 });
         }
-
-
         function checkVoucher() {
             const idVoucher = localStorage.getItem('idVoucher');
-
+        
             if (!idVoucher) {
                 console.log("Không có idVoucher trong localStorage.");
                 return Promise.resolve(); // Không có voucher thì cứ cho qua
             }
-
+        
             console.log("Kiểm tra voucher với idVoucher: ", idVoucher);
-
-            // Bắt đầu kiểm tra
+        
+            // Bắt đầu kiểm tra voucher
             return $http.get(`http://localhost:8080/api/nguoi_dung/vouchers/vouchers/${idVoucher}`)
                 .then(function (response) {
                     const voucher = response.data;
-
+        
                     if (!voucher) {
                         Swal.fire({
                             icon: 'error',
@@ -577,7 +575,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         });
                         throw new Error('Voucher không tồn tại.');
                     }
-
+        
                     if (voucher.trangThaiGiamGiaId === 5) {
                         Swal.fire({
                             icon: 'warning',
@@ -587,13 +585,14 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         });
                         throw new Error('Voucher đã bị xóa.');
                     }
-
-                    // Nếu voucher còn tồn tại, kiểm tra số lượng
+        
+                    // Nếu voucher hợp lệ, tiếp tục kiểm tra số lượng
                     return $http.get(`http://localhost:8080/api/nguoi_dung/vouchers/vouchers/quantity/${idVoucher}`);
                 })
                 .then(function (quantityResponse) {
                     const quantity = quantityResponse.data;
-
+        
+                    // Kiểm tra số lượng voucher
                     if (quantity === 0) {
                         Swal.fire({
                             icon: 'error',
@@ -603,14 +602,15 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         });
                         throw new Error('Voucher đã hết lượt.');
                     }
-
+        
                     console.log("Voucher hợp lệ, còn lượt sử dụng.");
                 })
                 .catch(function (error) {
                     console.error('Lỗi kiểm tra voucher:', error);
-                    throw error;
+                    throw error; // Lỗi được ném ra sẽ được xử lý ngoài hàm
                 });
         }
+        
 
 
         function checkProductPrices() {
@@ -840,7 +840,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
 
                 } if ($scope.selectedPaymentMethod === "cod") {
                     if ($scope.isProcessing) return;
-
+                
                     Swal.fire({
                         icon: 'info',
                         title: 'Xác nhận thanh toán khi nhận hàng',
@@ -850,33 +850,33 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         cancelButtonText: 'Hủy bỏ'
                     }).then(async (result) => {
                         if (!result.isConfirmed) return;
-
+                
                         $scope.isProcessing = true;
-
+                
                         try {
                             // 🔍 Chuỗi kiểm tra dữ liệu
                             const isValidUser = await checkUserStatus();
                             if (!isValidUser) {
                                 throw new Error('Tài khoản bị khóa.');
                             }
-
+                
                             await checkVoucher();             // Kiểm tra mã giảm giá
                             await checkProductStock();         // Kiểm tra tồn kho
                             await checkProductStatus();        // Kiểm tra trạng thái sản phẩm
                             await checkProductPrices();        // Kiểm tra giá sản phẩm có thay đổi không
-
+                
                             // ✅ Tất cả kiểm tra ok → Gửi đơn hàng
                             const response = await $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData);
-
+                
                             // Kiểm tra dữ liệu trả về từ backend
                             if (!response || !response.data || response.data.error || !response.data.maHoaDon || !response.data.idHoaDon) {
                                 throw new Error(response.data?.error || "Dữ liệu trả về không hợp lệ.");
                             }
-
+                
                             // 👉 Chỉ khi chắc chắn nhận data ok mới lưu localStorage
                             localStorage.setItem("maHoaDon", response.data.maHoaDon);
                             localStorage.setItem("idHoaDon", response.data.idHoaDon);
-
+                
                             Swal.fire({
                                 icon: 'info',
                                 title: 'Đang xử lý thanh toán...',
@@ -890,14 +890,14 @@ window.ThanhToanController = function ($scope, $http, $window) {
                                     $window.location.href = "/#!Thanhcong";
                                     $scope.cart = [];
                                     $scope.isOverlayVisible = false;
-
+                
                                     // 👉 Sau khi chuyển trang xong gửi email
                                     $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
                                         .then(() => console.log("Email đã gửi"))
                                         .catch(err => console.error("Lỗi gửi email:", err));
                                 }
                             });
-
+                
                         } catch (error) {
                             console.error("Lỗi xử lý:", error);
                             Swal.fire({
@@ -910,8 +910,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
                             $scope.isProcessing = false;
                         }
                     });
-
-
                 } else {
                     // Nếu không chọn phương thức thanh toán, báo lỗi
                     Swal.fire({
