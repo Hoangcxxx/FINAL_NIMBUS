@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 public class SanPhamController {
     @Autowired
     private SanPhamService sanPhamService;
+
+
     @Autowired
     private DotGiamGiaRepository dotGiamGiaRepository;
 
@@ -167,5 +169,13 @@ public class SanPhamController {
 
         return ResponseEntity.ok(response);
     }
+
+
+    @GetMapping("/kiem-tra-gia/{idSanPham}")
+    public ResponseEntity<?> validateProductPrice(@PathVariable Integer idSanPham) {
+        return sanPhamService.getGiaSanPhamDTO(idSanPham);
+    }
+
+
 
 }

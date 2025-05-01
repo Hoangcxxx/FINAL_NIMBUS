@@ -1,24 +1,23 @@
 <section id="wrapper">
-    <div class="form-box login">
-      <form ng-submit="dangNhap()">
-        <h1>Đăng Nhập</h1>
-        <div class="input-box">
-          <input type="text" ng-model="email" placeholder="Email">
-          <i class="fa-solid fa-user"></i>
-        </div>
-        <div class="input-box">
-          <input type="password" ng-model="matKhau" placeholder="Mật khẩu">
-          <i class="fa-solid fa-lock"></i>
-        </div>
-        <div class="remember-forgot">
-          <label><input type="checkbox"> Nhớ Mật Khẩu</label>
-          <a href="#!quenmatkhau">Quên Mật Khẩu</a>
-        </div>
-        <button type="submit" class="normal">Đăng Nhập</button>
-        <div class="register-link">
-          <p>Chưa Có Tài Khoản? <a href="#!register">Đăng Ký</a></p>
-        </div>
-      </form>
-      <div class="lantern"></div>
-    </div>
-  </section>
+  <div class="form-box login">
+    <form ng-submit="dangNhap()">
+      <h1>Đăng Nhập</h1>
+      <div class="input-box">
+        <input type="text" ng-model="email" placeholder="Email" required>
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <div class="input-box">
+        <input type="password" ng-model="matKhau" placeholder="Mật khẩu" required>
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div class="remember-forgot">
+        <label><input type="checkbox"> Nhớ Mật Khẩu</label>
+        <a href="#!quenmatkhau">Quên Mật Khẩu?</a>
+      </div>
+      <button type="submit" class="normal">Đăng Nhập</button>
+      <div class="register-link">
+        <p>Chưa Có Tài Khoản? <a href="#!register">Đăng Ký</a></p>
+      </div>
+    </form>
+  </div>
+</section>

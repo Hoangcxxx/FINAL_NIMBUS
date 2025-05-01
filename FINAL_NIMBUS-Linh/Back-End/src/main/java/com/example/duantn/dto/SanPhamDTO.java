@@ -40,6 +40,11 @@ public class SanPhamDTO {
         this.ngayKetThuc = ngayKetThuc;
         this.thuTu = thuTu;
     }
+    public SanPhamDTO(BigDecimal giaBan, BigDecimal giaKhuyenMai) {
+        this.giaBan = giaBan;
+        this.giaKhuyenMai = giaKhuyenMai;
+    }
+
 
     // Getters và setters
     public Integer getIdSanPham() {

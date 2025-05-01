@@ -196,4 +196,5 @@ window.ThanhCongController = function ($scope, $http) {
     
     $scope.payment();
     getOrderDetails(maHoaDon);
+    localStorage.removeItem("idVoucher");
 };
