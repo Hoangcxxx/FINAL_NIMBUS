@@ -611,15 +611,16 @@ window.ThanhToanController = function ($scope, $http, $window) {
                 });
         }
         
-
-
         function checkProductPrices() {
             const promises = $scope.cart.map(item => {
                 console.log("Kiểm tra sản phẩm trong giỏ hàng:", item);  // Debug thông tin item
+        
                 return $http.get(`http://localhost:8080/api/nguoi_dung/san_pham/kiem-tra-gia/${item.idSanPham}`)
                     .then(response => {
                         const giaBanMoi = response.data.giaBan;
-
+                        const giaKhuyenMaiMoi = response.data.giaKhuyenMai;
+        
+                        // Kiểm tra giá hợp lệ
                         if (giaBanMoi <= 0) {
                             Swal.fire({
                                 icon: 'error',
@@ -629,20 +630,35 @@ window.ThanhToanController = function ($scope, $http, $window) {
                             });
                             throw new Error(`Giá sản phẩm "${item.tenSanPham || 'Không xác định'}" không hợp lệ.`);
                         }
-
-                        // Kiểm tra nếu giá sản phẩm thay đổi
-                        if (item.giaBan !== giaBanMoi) {
+        
+                        // Kiểm tra nếu giá đã thay đổi
+                        const giaKhuyenMaiCu = item.giaKhuyenMai;
+                        const isChanged = item.giaBan !== giaBanMoi || giaKhuyenMaiCu !== giaKhuyenMaiMoi;
+        
+                        if (isChanged) {
+                            let message = `Shop vừa cập nhật giá của sản phẩm "${item.tenSanPham}".`;
+        
+                            const hasValidDiscount = giaKhuyenMaiMoi != null && giaKhuyenMaiMoi < giaBanMoi;
+        
+                            if (hasValidDiscount) {
+                                const giaTruoc = giaKhuyenMaiCu != null ? giaKhuyenMaiCu : item.giaBan;
+                                message += ` Giá khuyến mãi mới là ${giaKhuyenMaiMoi.toLocaleString()} VNĐ (trước đó ${giaTruoc.toLocaleString()} VNĐ).`;
+                            } else {
+                                message += ` Giá mới là ${giaBanMoi.toLocaleString()} VNĐ (trước đó ${item.giaBan.toLocaleString()} VNĐ).`;
+                            }
+        
                             return Swal.fire({
                                 icon: 'warning',
                                 title: "Cập nhật giá sản phẩm",
-                                text: `Shop vừa cập nhật giá của sản phẩm "${item.tenSanPham}". Giá mới là ${giaBanMoi.toLocaleString()} VNĐ (trước đó ${item.giaBan.toLocaleString()} VNĐ). Bạn có muốn tiếp tục đặt hàng không?`,
+                                text: message,
                                 showCancelButton: true,
                                 confirmButtonText: 'Tiếp tục mua',
                                 cancelButtonText: 'Hủy'
                             }).then(result => {
                                 if (result.isConfirmed) {
-                                    item.giaBan = giaBanMoi; // Cập nhật giá sản phẩm
-                                    $scope.calculateTotal(); // Gọi lại hàm tính tổng khi giá thay đổi
+                                    item.giaBan = giaBanMoi;
+                                    item.giaKhuyenMai = hasValidDiscount ? giaKhuyenMaiMoi : null; // reset nếu không hợp lệ
+                                    $scope.calculateTotal();
                                 } else {
                                     throw new Error(`Người dùng từ chối mua sản phẩm "${item.tenSanPham}" với giá mới.`);
                                 }
@@ -651,19 +667,12 @@ window.ThanhToanController = function ($scope, $http, $window) {
                     })
                     .catch(error => {
                         console.error(`Lỗi kiểm tra giá sản phẩm "${item.tenSanPham || 'Không xác định'}":`, error.message);
-                        throw error; // Tiếp tục đẩy lỗi để Promise.all xử lý
+                        throw error;
                     });
             });
-
-            return Promise.all(promises)
-                .then(() => {
-                    console.log("Tất cả sản phẩm đã được kiểm tra giá thành công.");
-                })
-                .catch(error => {
-                    console.error("Lỗi trong quá trình kiểm tra giá sản phẩm:", error.message);
-                });
+        
+            return Promise.all(promises);
         }
-
 
 
 
@@ -849,31 +858,29 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         confirmButtonText: 'Xác nhận',
                         cancelButtonText: 'Hủy bỏ'
                     }).then(async (result) => {
-                        if (!result.isConfirmed) return;
+                        if (!result.isConfirmed) {
+                            // Người dùng đã bấm "Hủy", không làm gì nữa
+                            console.log("Người dùng đã hủy thanh toán");
+                            return;
+                        }
                 
                         $scope.isProcessing = true;
                 
                         try {
-                            // 🔍 Chuỗi kiểm tra dữ liệu
                             const isValidUser = await checkUserStatus();
-                            if (!isValidUser) {
-                                throw new Error('Tài khoản bị khóa.');
-                            }
+                            if (!isValidUser) throw new Error('Tài khoản bị khóa.');
                 
-                            await checkVoucher();             // Kiểm tra mã giảm giá
-                            await checkProductStock();         // Kiểm tra tồn kho
-                            await checkProductStatus();        // Kiểm tra trạng thái sản phẩm
-                            await checkProductPrices();        // Kiểm tra giá sản phẩm có thay đổi không
+                            await checkVoucher();
+                            await checkProductStock();
+                            await checkProductStatus();
+                            await checkProductPrices();
                 
-                            // ✅ Tất cả kiểm tra ok → Gửi đơn hàng
                             const response = await $http.post("http://localhost:8080/api/nguoi_dung/hoa_don/them_thong_tin_nhan_hang", orderData);
                 
-                            // Kiểm tra dữ liệu trả về từ backend
                             if (!response || !response.data || response.data.error || !response.data.maHoaDon || !response.data.idHoaDon) {
                                 throw new Error(response.data?.error || "Dữ liệu trả về không hợp lệ.");
                             }
                 
-                            // 👉 Chỉ khi chắc chắn nhận data ok mới lưu localStorage
                             localStorage.setItem("maHoaDon", response.data.maHoaDon);
                             localStorage.setItem("idHoaDon", response.data.idHoaDon);
                 
@@ -891,7 +898,6 @@ window.ThanhToanController = function ($scope, $http, $window) {
                                     $scope.cart = [];
                                     $scope.isOverlayVisible = false;
                 
-                                    // 👉 Sau khi chuyển trang xong gửi email
                                     $http.post(`http://localhost:8080/api/nguoi_dung/email/send?recipientEmail=${$scope.userInfo.email}`, orderData)
                                         .then(() => console.log("Email đã gửi"))
                                         .catch(err => console.error("Lỗi gửi email:", err));
@@ -910,8 +916,8 @@ window.ThanhToanController = function ($scope, $http, $window) {
                             $scope.isProcessing = false;
                         }
                     });
+                
                 } else {
-                    // Nếu không chọn phương thức thanh toán, báo lỗi
                     Swal.fire({
                         icon: 'warning',
                         title: 'Chưa chọn phương thức thanh toán',
@@ -919,10 +925,7 @@ window.ThanhToanController = function ($scope, $http, $window) {
                         confirmButtonText: 'OK'
                     });
                 }
-
-
-
-
+                
 
             })
     }
