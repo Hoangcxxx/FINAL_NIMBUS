@@ -49,4 +49,10 @@ public class VoucherController {
     public VoucherDTO getVoucherById(@PathVariable("idVoucher") Integer idVoucher) {
         return voucherService.getVoucherByIdhaha(idVoucher);
     }
+
+    @GetMapping("/vouchers/quantity/{idVoucher}")
+    public int getVoucherQuantity(@PathVariable("idVoucher") Integer idVoucher) {
+        return voucherService.getVoucherQuantity(idVoucher);
+    }
+
 }

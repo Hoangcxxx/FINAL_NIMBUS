@@ -65,6 +65,7 @@ public class DoiTraServiceImpl implements DoiTraService {
             doiTra.setTrangThai(false);
             doiTra.setNgayTao(new Date());
             doiTra.setNgayCapNhat(new Date());
+//            hoaDonChiTiet.setSoLuong(doiTraDTO.getSoLuong());
 
             // Thêm trạng thái "Yêu cầu hoàn trả"
             createTrangThaiHoaDon(hoaDon, 9, "Yêu cầu hoàn trả");

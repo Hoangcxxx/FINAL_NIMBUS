@@ -58,14 +58,12 @@ public class HoaDonQuery {
             "WHERE \n" +
             "    h.Id_hoa_don = :idHoaDon;";
     public static final String GET_VOUCHER_HOA_DON_BY_ID_HOA_DON = "SELECT \n" +
-            "    v.ma_voucher,\n" +
-            "    v.ten_voucher,\n" +
-            "    v.gia_tri_giam_gia,\n" +
-            "    v.kieu_giam_gia\n" +
+            "    h.ma_voucher_ap_dung,\n" +
+            "    h.ten_voucher_ap_dung,\n" +
+            "    h.gia_tri_giam_gia_ap_dung,\n" +
+            "    h.kieu_giam_gia_ap_dung\n" +
             "FROM \n" +
             "    hoa_don h\n" +
-            "LEFT JOIN \n" +
-            "   voucher v on v.Id_voucher = h.id_voucher\n" +
             "WHERE \n" +
             "    h.Id_hoa_don = :idHoaDon;";
     public static final String GET_SAN_PHAM_CHI_TIET_HOA_DON_BY_ID_HOA_DON = "SELECT \n" +

@@ -119,6 +119,8 @@ window.ThanhCongttController = function ($scope, $http, $window) {
         return Math.max(total - discount, 0);
     };
 
-    // Gọi API để lấy chi tiết đơn hàng
     getOrderDetails(maHoaDon);
-};
+    localStorage.removeItem("idVoucher");
+
+    
+}

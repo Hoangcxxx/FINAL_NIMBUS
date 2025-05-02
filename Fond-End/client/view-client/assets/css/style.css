@@ -91,7 +91,7 @@ body {
 /* Home */
 
 #hero {
-    background-image: url("https://banghieuminhkhang.com/upload/sanpham/Backdrop-2/backdrop-tet-2025-7.jpg");
+    background-image: url("../img/Màu\ Be\ Đỏ\ và\ Hồng\ Sặc\ sỡ\ Nổi\ bật\ Khối\ Thời\ trang\ và\ Phụ\ kiện\ Banner.png");
     height: 90vh;
     width: 100%;
     background-size: cover;
@@ -750,9 +750,8 @@ footer a:hover {
 /* About */
 
 #page-header.about-header {
-    background-image: url("https://hoyang.vn/wp-content/uploads/2023/01/banner-bai-viet.jpg");
-    background-size: contain; /* Hiển thị toàn bộ hình ảnh */
-    background-position: center; /* Căn giữa hình ảnh */
+    background-image: url("../img/Xanh\ lá\ và\ Vàng\ đồng\ Trang\ nhã\ và\ Thanh\ lịch\ Doanh\ nghiệp\ Giáng\ sinh\ Banner\ ngoài\ trời.png");
+  
  
 
 }
@@ -1012,187 +1011,121 @@ footer a:hover {
     background-position: center;
 } */
 
-/* User */
+/* General styling for wrapper */
 #wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: url("../img/banner/b21.png");
-    background-size: cover; /* Đảm bảo ảnh phủ hết thẻ header */
+    background-image: url("https://images.pexels.com/photos/1158670/pexels-photo-1158670.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-}
-
-
-
-.form-box.login {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 30px;
-    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
-    border-radius: 10px;
-    background-color: #fafafa;
-    box-shadow: none;
-}
-
-.form-box.forgot-password {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 30px;
-    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
-    border-radius: 10px;
-    background-color: #fafafa;
-    box-shadow: none;
-}
-
-.form-box.verify-code {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 30px;
-    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
-    border-radius: 10px;
-    background-color: #fafafa;
-    box-shadow: none;
-}
-
-.form-box.reset-password {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 30px;
-    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
-    border-radius: 10px;
-    background-color: #fafafa;
-    box-shadow: none;
-}
-
-.form-box.register {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 30px;
-    border: 3px solid rgba(0, 0, 0, 0.2); /* Viền dày và rất đậm */
-    border-radius: 10px;
-    background-color: #fafafa;
-    box-shadow: none;
-}
-
-
-
-
-.form-box h1 {
-    font-size: 36px;
-    text-align: center;
-    color: #000000;
-}
-
-.form-box .input-box {
-    width: 100%;
-    height: 50px;
-    margin: 30px 0;
+    flex-direction: column;
     position: relative;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Styling the login box */
+.form-box {
+    background: rgba(255, 255, 255, 0.85); /* Semi-transparent background */
+    padding: 30px 40px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    backdrop-filter: blur(10px); /* Adds a blur effect to the background */
+}
+
+/* Heading style */
+h1 {
+    margin-bottom: 20px;
+    font-size: 26px;
+    color: #6a1b9a; /* Tím hồng */
+    font-weight: bold;
+}
+
+/* Styling for input boxes */
+.input-box {
+    position: relative;
+    margin-bottom: 20px;
 }
 
 .input-box input {
     width: 100%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    border-radius: 40px;
+    padding: 15px 10px;
+    padding-left: 40px; /* Space for icons */
     font-size: 16px;
-    color: fff;
-    padding: 20px 45px 20px 20px;
-}
-
-.input-box input::placeholder {
-    color: #060606;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
 }
 
 .input-box i {
     position: absolute;
-    right: 20px;
-    top: 16px;
-    font-size: 18px;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bbb;
 }
 
-.form-box .remember-forgot {
+/* Styling for the checkbox and forgot password link */
+.remember-forgot {
     display: flex;
     justify-content: space-between;
-    font-size: 14.5px;
-    margin: -15px 0 15px;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 20px;
 }
 
-.remember-forgot label input {
-    accent-color: fff;
-    margin-right: 3px;
+.remember-forgot label {
+    color: #555;
 }
 
 .remember-forgot a {
-    color: #000000;
+    color: #6a1b9a; /* Tím hồng */
     text-decoration: none;
+    font-weight: bold;
 }
 
 .remember-forgot a:hover {
     text-decoration: underline;
 }
 
-.form-box button {
+/* Button style */
+button.normal {
     width: 100%;
-    height: 45px;
-    border-radius: 40px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
-    cursor: pointer;
+    padding: 12px;
+    background-color: #6a1b9a; /* Tím hồng */
+    border: none;
+    color: white;
+    border-radius: 8px;
     font-size: 16px;
-    color: #333;
-    font-weight: 600;
-    padding-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-.form-box .register-link {
-    font-size: 14px;
-    text-align: center;
+button.normal:hover {
+    background-color: #9c4dcc; /* Sắc tím hồng đậm hơn khi hover */
+}
+
+/* Register link styling */
+.register-link {
     margin-top: 20px;
-}
-
-.register-link p {
-    color: #050505;
+    font-size: 14px;
+    color: #333;
 }
 
 .register-link a {
-    color: #050505;
+    color: #6a1b9a; /* Tím hồng */
     text-decoration: none;
-    font-weight: 600;
 }
 
-.register-link p a:hover {
+.register-link a:hover {
     text-decoration: underline;
 }
-
-.is-form {
-    background-color: #060606;
-    height: 25px;
-    width: 25px;
-    border: 1px solid #060606;
-    cursor: pointer;
-    line-height: 20px;
-}
-
-.is-form:focus,
-.input-text:focus {
-    outline: none;
-}
-
-.is-form.plus,
-.is-form.minus {
-    border-radius: 50%;
-}
-
-.input-qty {
-    width: 50px;
-    text-align: center;
-}
-
 
 
 

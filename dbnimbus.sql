@@ -282,7 +282,7 @@ CREATE TABLE hoa_don (
     [sdt_nguoi_nhan] NVARCHAR(15),
     [thanh_tien] DECIMAL(18),
 	[ma_voucher_ap_dung] NVARCHAR(50),
-	[ten_voucher_ap_dung] DECIMAL(18),
+	[ten_voucher_ap_dung] NVARCHAR(225),
 	[gia_tri_giam_gia_ap_dung] DECIMAL(18),
 	[kieu_giam_gia_ap_dung] BIT,
     [ngay_tao] DATETIME DEFAULT GETDATE(),

@@ -1,5 +1,6 @@
 package com.example.duantn.service;
 import com.example.duantn.dto.SanPhamDTO;
+import com.example.duantn.entity.GiamGiaSanPham;
 import com.example.duantn.entity.SanPham;
 import com.example.duantn.entity.SanPhamChiTiet;
 import com.example.duantn.repository.*;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -231,6 +233,33 @@ public class SanPhamService {
                                            Integer chatLieuId, Integer mauSacId, Integer kichThuocId, String tenSanPham) {
         List<SanPham> sanPhams = sanPhamRepository.searchProducts(minPrice, maxPrice, danhMucId, chatLieuId, mauSacId, kichThuocId, tenSanPham);
         return sanPhams.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+
+    public ResponseEntity<?> getGiaSanPhamDTO(Integer idSanPham) {
+        Optional<SanPham> optional = sanPhamRepository.findById(idSanPham);
+        if (optional.isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", "Sản phẩm không tồn tại"));
+        }
+
+        SanPham sanPham = optional.get();
+        BigDecimal giaBan = sanPham.getGiaBan();
+
+        if (giaBan == null || giaBan.compareTo(BigDecimal.ZERO) <= 0) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", "Giá sản phẩm không hợp lệ"));
+        }
+
+        BigDecimal giaKhuyenMai = null;
+        List<GiamGiaSanPham> giamGiaSanPhams = sanPham.getGiamGiaSanPham();
+        if (giamGiaSanPhams != null && !giamGiaSanPhams.isEmpty()) {
+            giaKhuyenMai = giamGiaSanPhams.get(0).getGiaKhuyenMai();
+        }
+
+        return ResponseEntity.ok(new SanPhamDTO(giaBan, giaKhuyenMai));
     }
 
 

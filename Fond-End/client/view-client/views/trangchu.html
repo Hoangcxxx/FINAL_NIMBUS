@@ -1,9 +1,4 @@
 <section id="hero">
-    <h4>Chào Xuân Mới</h4>
-    <h2>Ưu Đãi Lớn Dịp Tết</h2>
-    <h1>Giảm Giá Trên Mọi Sản Phẩm</h1>
-    <p>Nhận lì xì và ưu đãi lên đến 70%!</p>
-    <button>Khám Phá Ngay</button>
 </section>
 
 
@@ -36,12 +31,17 @@
         </div>
     </div>
 </section>
-
 <section id="banner" class="section-m1">
-    <h4>Dịch Vụ Tết</h4>
-    <h2>Ưu đãi lên đến <span>70%</span> - Cho Áo Dài & Phụ Kiện</h2>
-    <button class="normal">Khám Phá Thêm</button>
+    <div class="banner-content">
+        <h4 class="subtitle">Dịch Vụ</h4>
+        <h2 class="main-title">Ưu đãi lên đến 
+            <span class="highlight">70%</span> 
+            - Cho Mọi Sản Phẩm Đặc Biệt
+        </h2>
+        <button class="btn-discover">Khám Phá Thêm</button>
+    </div>
 </section>
+
 
 <section id="product1" class="section-p1">
     <h2>Sản Phẩm Đang Giảm Giá</h2>
@@ -107,30 +107,29 @@
     </div>
 </section>
 
-
 <section id="sm-banner" class="section-p1">
-    <div class="banner-box">
-
+    <div class="banner-box" style="background-image: url('https://www.elle.vn/wp-content/uploads/2020/06/05/403237/bo-anh-thoi-trang-tai-Uc.jpg'); background-size: cover; background-position: center; height: 300px;">
     </div>
 
-    <div class="banner-box banner-box2">
+    <div class="banner-box banner-box2" style="background-image: url('https://watermark.lovepik.com/photo/20211124/large/lovepik-fashion-womens-summer-shopping-image-picture_500961857.jpg'); background-size: cover; background-position: center; height: 300px;">
     </div>
 </section>
 
 <section id="l-banner">
-    <div class="banner-box">
+    <div class="banner-box" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8lelCK4CbG5C-Ff1_dQaCIAibjTrT4RDHvQ&s'); background-size: cover; background-position: center; height: 300px;">
         <h2>SEASONAL SALE</h2>
-        <h3>Winter Collection -50% OFF</h3>
+        <h3>Summer Collection -50% OFF</h3>
     </div>
-    <div class="banner-box banner-box2">
+    <div class="banner-box banner-box2" style="background-image: url('https://www.elleman.vn/app/uploads/2018/04/01/tho%CC%9B%CC%80i-trang-mua-he%CC%80-source-global-blue-paris-fashion-week-2018-elle-man-feature.jpg'); background-size: cover; background-position: center; height: 300px;">
         <h2>NEW FOOTWEAR COLLECTION</h2>
-        <h3>Spring / Summer 2022</h3>
+        <h3>Spring / Summer 2025</h3>
     </div>
-    <div class="banner-box banner-box3">
+    <div class="banner-box banner-box3" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlENy3nKq1o9Pyu4-05vnwN_wriL6-zpuAEQ&s'); background-size: cover; background-position: center; height: 300px;">
         <h2>T-SHIRTS</h2>
         <h3>New Trendy Prints</h3>
     </div>
 </section>
+
 <style>
     /* Cấu hình chung cho tất cả các banner */
     #sm-banner,
@@ -227,4 +226,62 @@
             transform: translateY(0);
         }
     }
+    #banner {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    padding: 50px 20px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-content {
+    z-index: 1;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.main-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.highlight {
+    color: #ffcc00;
+}
+
+.btn-discover {
+    background-color: #ffcc00;
+    color: black;
+    padding: 12px 30px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-discover:hover {
+    background-color: #e6b800;
+}
+
+#banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('background-image.jpg');
+    background-size: cover;
+    opacity: 0.2;
+    z-index: 0;
+}
+
 </style>

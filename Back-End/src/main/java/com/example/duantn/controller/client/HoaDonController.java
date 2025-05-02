@@ -7,6 +7,7 @@ import com.example.duantn.service.HoaDonService;
 import com.example.duantn.service.TrangThaiHoaDonService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,27 +31,36 @@ public class HoaDonController {
     @Autowired
     private TrangThaiHoaDonService trangThaiHoaDonService;
     @PostMapping("/them_thong_tin_nhan_hang")
+    @Transactional
     public ResponseEntity<Map<String, Object>> placeOrder(@RequestBody HoaDonDTO hoaDonDTO, HttpServletRequest request, HttpServletResponse reso) {
         try {
-            // Tạo đơn hàng và lấy mã đơn hàng mới tạo (giả sử bạn nhận được đối tượng hoặc thông tin từ service)
+            // Tạo đơn hàng và lấy mã đơn hàng mới tạo
             HoaDon hoaDon = hoaDonService.createOrder(hoaDonDTO, request, reso);
 
-            // Lấy mã đơn hàng và id đơn hàng từ đối tượng hoaDon (giả sử HoaDon có trường idHoaDon và maHoaDon)
+            // Kiểm tra xem đơn hàng có được tạo thành công không
+            if (hoaDon == null || hoaDon.getMaHoaDon() == null || hoaDon.getIdHoaDon() == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "Không thể tạo đơn hàng mới"));
+            }
+
+            // Lấy mã đơn hàng và id đơn hàng từ đối tượng hoaDon
             String maHoaDon = hoaDon.getMaHoaDon();
             Integer idHoaDon = hoaDon.getIdHoaDon();
 
             // Tạo phản hồi trả về cho frontend
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Đơn hàng đã được đặt thành công!");
-            response.put("maHoaDon", maHoaDon); // Thêm mã đơn hàng vào phản hồi
-            response.put("idHoaDon", idHoaDon); // Thêm idHoaDon vào phản hồi
+            response.put("maHoaDon", maHoaDon);
+            response.put("idHoaDon", idHoaDon);
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Lỗi khi đặt hàng: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest().body(Map.of("error", "Không thể đặt đơn hàng!"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Không thể đặt đơn hàng! Vui lòng thử lại sau"));
         }
     }
+
 
     // Hiển thị thông tin đơn hàng
     @GetMapping("/{maHoaDon}")

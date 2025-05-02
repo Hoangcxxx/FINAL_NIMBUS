@@ -318,24 +318,30 @@ window.DonHangCuaToiController = function ($scope, $http, $window) {
 
     $scope.calculateDiscount = function () {
         let discount = 0;
+        const totalPrice = $scope.getTotalProductPrice(); // Lấy tổng tiền sản phẩm
+    
         if ($scope.orderHieu) {
             if ($scope.orderHieu.kieuGiamGia === false) {
                 // Giảm giá theo phần trăm
-                discount = ($scope.getTotalProductPrice() * $scope.orderHieu.giaTriMavoucher) / 100;
+                discount = (totalPrice * $scope.orderHieu.giaTriMavoucher) / 100;
             } else if ($scope.orderHieu.kieuGiamGia === true) {
-                // Giảm giá trực tiếp bằng số tiền
+                // Giảm giá theo số tiền trực tiếp
                 discount = $scope.orderHieu.giaTriMavoucher;
             }
         }
-        return discount;
+    
+        // Kiểm tra nếu số tiền giảm quá lớn, không vượt quá tổng tiền sản phẩm
+        return Math.min(discount, totalPrice);
     };
-
+    
     $scope.calculateTotalAfterDiscount = function () {
         const totalPrice = $scope.getTotalProductPrice(); // Tổng tiền sản phẩm
         const discount = $scope.calculateDiscount(); // Số tiền giảm giá
-        return totalPrice - discount; // Tổng tiền sau khi trừ giảm giá
+    
+        // Nếu tổng tiền sau giảm giá < 0, set bằng 0 để tránh số âm
+        return totalPrice - discount < 0 ? 0 : totalPrice - discount;
     };
-
+    
 
 
     // Gọi API để lấy danh sách đơn hàng khi tải trang

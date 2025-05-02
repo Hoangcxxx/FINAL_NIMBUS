@@ -18,6 +18,17 @@ window.TrangchuController = function ($scope, $http,$location) {
         });
     }
 
+
+    $scope.checkTrangThaiNguoiDung = function () {
+        if (!$scope.nguoiDungDaDangNhap) {
+            alert("Bạn cần đăng nhập để xem đơn hàng!");
+            return;
+        }
+        // Chuyển hướng nếu đã đăng nhập
+        window.location.href = "#!don_hang_cua_toi";
+    };
+
+    
     // Hàm click vào danh mục đợt giảm giá
     $scope.onclickDotGiamGia = function (idDotGiamGia) {
         console.log("Đợt giảm giá được click: " + idDotGiamGia);
