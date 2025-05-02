@@ -128,33 +128,51 @@
         app.controller("ngController", function ($scope, $http, $filter, $window) {
             // Tải lại thông tin giỏ hàng mỗi khi giao diện được tải lại
             loadCartInfo();
+// Hàm kiểm tra và điều hướng đến Thông tin người dùng
+$scope.checkThongTinNguoiDung = function () {
+    $http.get('http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/' + $scope.idNguoiDung).then(
+        function (response) {
+            if (response.data.trangThai === true) {
+                $window.location.href = '#!thong_tin_nguoi_dung';
+            } else {
+                showAccountLockedAlert();
+            }
+        },
+        function (error) {
+            console.error('Không thể kiểm tra trạng thái người dùng:', error);
+            alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
+        }
+    );
+};
 
-            $scope.checkTrangThaiNguoiDung = function () {
-                $http.get('http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/' + $scope.idNguoiDung).then(
-                    function (response) {
-                        if (response.data.trangThai === true) {
-                            // Trạng thái hợp lệ, điều hướng tới trang cá nhân
-                            $window.location.href = '#!thong_tin_nguoi_dung';
-                        } else {
-                            // Trạng thái bị khóa, hiển thị thông báo
-                            Swal.fire({
-                                title: 'Tài khoản của bạn đã bị khóa!',
-                                text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
-                                icon: 'error',
-                                confirmButtonText: 'Liên hệ hỗ trợ',
-                                footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
-                            });
+// Hàm kiểm tra và điều hướng đến Đơn hàng của tôi
+$scope.checkDonHangCuaToi = function () {
+    $http.get('http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/' + $scope.idNguoiDung).then(
+        function (response) {
+            if (response.data.trangThai === true) {
+                $window.location.href = '#!don_hang_cua_toi';
+            } else {
+                showAccountLockedAlert();
+            }
+        },
+        function (error) {
+            console.error('Không thể kiểm tra trạng thái người dùng:', error);
+            alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
+        }
+    );
+};
 
+// Hàm hiển thị cảnh báo bị khóa
+function showAccountLockedAlert() {
+    Swal.fire({
+        title: 'Tài khoản của bạn đã bị khóa!',
+        text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
+        icon: 'error',
+        confirmButtonText: 'Liên hệ hỗ trợ',
+        footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
+    });
+}
 
-                            return;
-                        }
-                    },
-                    function (error) {
-                        console.error('Không thể kiểm tra trạng thái người dùng:', error);
-                        alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
-                    }
-                );
-            };
 
             // Hàm load thông tin giỏ hàng
             function loadCartInfo() {

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -280,7 +281,29 @@ public class ADHoaDonController {
         return ResponseEntity.ok(filteredProducts);
     }
 
+    @PostMapping("/luu-voucher")
+    public ResponseEntity<?> luuVoucherVaoHoaDon(@RequestBody Map<String, Object> data) {
+        try {
+            String maHoaDon = (String) data.get("maHoaDon");
+            String maVoucher = (String) data.get("maVoucherApDung");
+            String tenVoucher = (String) data.get("tenVoucherApDung");
 
+            // Kiểm tra và thay thế giá trị NULL bằng BigDecimal.ZERO
+            BigDecimal giaTriGiamGiaApDung = data.get("giaTriGiamGiaApDung") == null
+                    ? BigDecimal.ZERO
+                    : new BigDecimal(data.get("giaTriGiamGiaApDung").toString());
+
+            // Kiểm tra và thay thế giá trị NULL bằng giá trị mặc định cho kieuGiamGiaApDung
+            Boolean kieuGiamGiaApDung = data.get("kieuGiamGiaApDung") == null
+                    ? false
+                    : Boolean.parseBoolean(data.get("kieuGiamGiaApDung").toString());
+
+            hoaDonService.luuVoucher(maHoaDon, maVoucher, tenVoucher, giaTriGiamGiaApDung, kieuGiamGiaApDung);
+            return ResponseEntity.ok("Lưu voucher thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
+        }
+    }
 
 
 }

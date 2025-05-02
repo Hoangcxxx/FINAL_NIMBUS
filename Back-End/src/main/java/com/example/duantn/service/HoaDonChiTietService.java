@@ -74,51 +74,64 @@ public class HoaDonChiTietService {
         hoaDonChiTietRepository.save(hoaDonChiTiet);
     }
 
-    public List<HoaDonChiTietDTO> createMultipleHoaDonChiTiet(List<HoaDonChiTietDTO> dtoList,Integer userId) {
+    public List<HoaDonChiTietDTO> createMultipleHoaDonChiTiet(List<HoaDonChiTietDTO> dtoList, Integer userId) {
         List<HoaDonChiTietDTO> createdHoaDonChiTietList = new ArrayList<>();
+
+        // Tìm người dùng 1 lần duy nhất
+        NguoiDung nguoiDung = nguoiDungRepository.findById(userId)
+                .orElseThrow(() -> new ExpressionException("Người dùng không tìm thấy"));
+
         for (HoaDonChiTietDTO dto : dtoList) {
             HoaDonChiTiet hoaDonChiTiet = new HoaDonChiTiet();
-            // Tìm kiếm người dùng
-            NguoiDung nguoiDung = nguoiDungRepository.findById(userId)
-                    .orElseThrow(() -> new ExpressionException("Người dùng không tìm thấy"));
+
+            // Lấy sản phẩm chi tiết
             SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietRepository.findById(dto.getIdSanPhamChiTiet())
                     .orElseThrow(() -> new ExpressionException("Sản phẩm chi tiết không tìm thấy"));
-            hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
+
+            // Lấy hóa đơn
             HoaDon hoaDon = hoaDonRepository.findById(dto.getIdHoaDon())
                     .orElseThrow(() -> new ExpressionException("Hóa đơn không tìm thấy"));
 
+            // Lấy giá bán và giá khuyến mãi
             GiamGiaSanPham giamGiaSanPham = giamGiaSanPhamRepository.findBySanPham(sanPhamChiTiet.getSanPham())
                     .orElse(null);
 
             BigDecimal giaKhuyenMai = giamGiaSanPham != null ? giamGiaSanPham.getGiaKhuyenMai() : null;
             BigDecimal giaBan = sanPhamChiTiet.getSanPham().getGiaBan();
 
-            // Tính giá thực tế
-            BigDecimal giaTinh = (giaKhuyenMai != null && giaKhuyenMai.compareTo(BigDecimal.ZERO) > 0)
-                    ? giaKhuyenMai
-                    : giaBan;
+            BigDecimal giaTinh = (giaKhuyenMai != null) ? giaKhuyenMai : giaBan;
 
-            // Tính tổng tiền
             BigDecimal tongTien = giaTinh.multiply(BigDecimal.valueOf(dto.getSoLuong()));
+
+
+            // Thiết lập thông tin hóa đơn chi tiết
+            hoaDonChiTiet.setSanPhamChiTiet(sanPhamChiTiet);
             hoaDonChiTiet.setHoaDon(hoaDon);
             hoaDonChiTiet.setSoLuong(dto.getSoLuong());
             hoaDonChiTiet.setTongTien(tongTien);
             hoaDonChiTiet.setSoTienThanhToan(dto.getSoTienThanhToan());
-            hoaDonChiTiet.setTienSanPham(giaBan);
+            hoaDonChiTiet.setTienSanPham(giaKhuyenMai != null ? giaKhuyenMai : giaBan); // Lưu giá đã áp dụng
             hoaDonChiTiet.setTienTraLai(dto.getTienTraLai());
             hoaDonChiTiet.setMoTa(dto.getMoTa());
-            Date now = new Date();
-            hoaDonChiTiet.setNgayTao(now);
-            hoaDonChiTiet.setNgayCapNhat(now);
+            hoaDonChiTiet.setNgayTao(new Date());
+            hoaDonChiTiet.setNgayCapNhat(new Date());
             hoaDonChiTiet.setTrangThai(true);
+
+            // Lưu hóa đơn chi tiết trước
             hoaDonChiTietRepository.save(hoaDonChiTiet);
+
+            // Tạo lịch sử hóa đơn
             LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
-            lichSuHoaDon.setNgayGiaoDich(now);
+            lichSuHoaDon.setNgayGiaoDich(new Date());
             lichSuHoaDon.setSoTienThanhToan(dto.getSoTienThanhToan());
             lichSuHoaDon.setNguoiDung(nguoiDung);
             lichSuHoaDonRepository.save(lichSuHoaDon);
+
+            // Gán lịch sử hóa đơn vào hóa đơn chi tiết và cập nhật lại
             hoaDonChiTiet.setLichSuHoaDon(lichSuHoaDon);
             hoaDonChiTietRepository.save(hoaDonChiTiet);
+
+            // Tạo DTO trả về
             HoaDonChiTietDTO createdDto = new HoaDonChiTietDTO(
                     sanPhamChiTiet.getIdSanPhamChiTiet(),
                     hoaDon.getIdHoaDon(),
@@ -130,9 +143,12 @@ public class HoaDonChiTietService {
                     hoaDonChiTiet.getTienSanPham(),
                     hoaDonChiTiet.getMoTa()
             );
+
             createdHoaDonChiTietList.add(createdDto);
         }
+
         return createdHoaDonChiTietList;
     }
+
 
 }
