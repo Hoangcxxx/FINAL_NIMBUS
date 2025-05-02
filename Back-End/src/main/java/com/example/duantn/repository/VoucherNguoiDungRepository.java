@@ -1,5 +1,6 @@
 package com.example.duantn.repository;
 
+import com.example.duantn.entity.NguoiDung;
 import com.example.duantn.entity.VaiTro;
 import com.example.duantn.entity.Voucher;
 import com.example.duantn.entity.VoucherNguoiDung;
@@ -17,4 +18,5 @@ public interface VoucherNguoiDungRepository extends JpaRepository<VoucherNguoiDu
             "WHERE vn.voucher.idVoucher = :idVoucher AND vn.nguoiDung.idNguoiDung = :idNguoiDung")
     boolean existsByIdVoucherAndIdNguoiDung(@Param("idVoucher") Integer idVoucher,
                                             @Param("idNguoiDung") Integer idNguoiDung);
+    Integer countByVoucherAndNguoiDung(Voucher voucher, NguoiDung nguoiDung);
 }
