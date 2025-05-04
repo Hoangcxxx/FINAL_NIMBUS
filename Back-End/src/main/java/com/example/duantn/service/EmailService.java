@@ -110,7 +110,7 @@ public class EmailService {
                     .append("<div class='container email-container'>")
                     .append("<div class='header'><h1>Xác Nhận Đơn Hàng</h1></div>")
                     .append("<div style='text-align: center;'>")
-                    .append("<img src='https://mythuattanviet.com/wp-content/uploads/2024/09/ran-doi-non-2.jpg' alt='Logo NimBus Shop' style='width: 150px; height: 150px; border-radius: 50%; margin-top: 10px;'>")
+                    .append("<img src='https://i.ibb.co/cK7wZ3Z7/favicon1.webp' alt='Logo NimBus Shop' style='width: 150px; height: 150px; border-radius: 50%; margin-top: 10px;'>")
                     .append("</div>")
                     .append("<div class='content'>")
                     .append("<h2>Xin chào, " + hoaDonDTO.getTenNguoiNhan() + "</h2>")

@@ -962,7 +962,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
         // Lưu thông tin mới vào localStorage
         localStorage.setItem('totalPriceInfo', JSON.stringify(totalPriceInfo));
         localStorage.removeItem('selectedVoucher'); // Xóa voucher đã lưu trong localStorage
-
+        localStorage.removeItem('voucherdachon');
         console.log('Voucher đã bị xóa và giao diện đã được cập nhật.');
     };
 
@@ -1440,8 +1440,8 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         text: message
                     }).then(() => {
                      
-                        localStorage.removeItem('voucherdachon');
-                        location.reload();
+                        
+                        return;
 
                     });
                 }
@@ -1453,7 +1453,19 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                         const voucherId = voucher.idVoucher;
                         const voucherResponse = await $http.get(`http://localhost:8080/api/admin/ban_hang/vouchers/${voucherId}`);
                         const voucherData = voucherResponse.data;
-                
+                        if (voucherData.soLuong <= 0) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Voucher đã hết!',
+                                text: 'Số lượng sử dụng voucher này đã hết.',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                localStorage.removeItem('voucherdachon');
+                                $scope.removeVoucher(); // Xóa ở giao diện
+                                return;
+                            });
+                            return;
+                        }
                         const trangThaiVoucher = voucherData.trangThaiGiamGiaId;
                 
                         switch (trangThaiVoucher) {
@@ -1525,12 +1537,7 @@ window.BanHangController = function ($scope, $http, $window, $location) {
                     });
                     console.log("Lưu voucher vào hóa đơn thành công", responseVoucher.data);
                 } catch (error) {
-                    console.error("LỖI khi lưu voucher vào hóa đơn:", error.response ? error.response.data : error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi!',
-                        text: 'Không lưu được voucher vào hóa đơn!',
-                    });
+                    
                 }
                 localStorage.removeItem('voucherdachon');
                 // Nếu có voucher được chọn, trừ số lượng của voucher

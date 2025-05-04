@@ -24,6 +24,8 @@ public class HoaDonService {
     @Autowired
     private HoaDonRepository hoaDonRepository;
     @Autowired
+    private VoucherNguoiDungRepository repository;
+    @Autowired
     private PhiVanChuyenRepository phiVanChuyenRepository;
     @Autowired
     private LichSuHoaDonRepository lichSuHoaDonRepository;
@@ -134,18 +136,9 @@ public class HoaDonService {
         dto.setThanhTien(hoaDon.getThanhTien());
         dto.setGhiChu(hoaDon.getMoTa());
         dto.setIdNguoiDung(hoaDon.getNguoiDung().getIdNguoiDung());
+        dto.setKieuGiamGia(hoaDon.getKieuGiamGiaApDung());
+        dto.setGiaTriMavoucher(hoaDon.getGiaTriGiamGiaApDung());
 
-
-
-        if (hoaDon.getVoucher() != null) {
-            dto.setGiaTriMavoucher(hoaDon.getVoucher().getGiaTriGiamGia());
-            dto.setMavoucher(hoaDon.getVoucher().getMaVoucher());
-            dto.setKieuGiamGia(hoaDon.getVoucher().getKieuGiamGia());
-        } else {
-            dto.setGiaTriMavoucher(BigDecimal.ZERO); // Default value if no voucher
-            dto.setMavoucher(null);
-            dto.setKieuGiamGia(null); // Ensure this is null if no voucher is present
-        }
         // Thông tin địa chỉ vận chuyển
         if (hoaDon.getDiaChiVanChuyen() != null) {
             DiaChiVanChuyen diaChiVanChuyen = hoaDon.getDiaChiVanChuyen();
@@ -484,13 +477,19 @@ public class HoaDonService {
 
 
         // Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
+        Voucher voucher = null;
         if (hoaDonDTO.getIdvoucher() != null) {
-            Voucher voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher()).orElseThrow(() -> new RuntimeException("Không tìm thấy Voucher với ID: " + hoaDonDTO.getIdvoucher()));
+            voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher()).orElseThrow(() -> new RuntimeException("Không tìm thấy Voucher với ID: " + hoaDonDTO.getIdvoucher()));
 
             if (voucher.getSoLuong() <= 0) {
                 throw new RuntimeException("Voucher này đã hết số lượng sử dụng.");
             }
 
+            // Gán thông tin voucher áp dụng
+            hoaDon.setMaVoucherApDung(voucher.getMaVoucher());
+            hoaDon.setGiaTriGiamGiaApDung(new BigDecimal(String.valueOf(voucher.getGiaTriGiamGia())));
+            hoaDon.setTenVoucherApDung(voucher.getTenVoucher());
+            hoaDon.setKieuGiamGiaApDung(voucher.getKieuGiamGia());
             voucher.setSoLuong(voucher.getSoLuong() - 1);
             voucherRepository.save(voucher);
 
@@ -498,6 +497,10 @@ public class HoaDonService {
         } else {
             hoaDon.setVoucher(null);
         }
+        VoucherNguoiDung voucherNguoiDung = new VoucherNguoiDung();
+        voucherNguoiDung.setNguoiDung(nguoiDung);
+        voucherNguoiDung.setVoucher(voucher);
+        repository.save(voucherNguoiDung);
 
         hoaDon.setNgayTao(new Date());
         hoaDon.setTenNguoiNhan(hoaDonDTO.getTenNguoiNhan());
@@ -717,8 +720,9 @@ public class HoaDonService {
 
 
         // Kiểm tra nếu idvoucher không phải null trước khi thực hiện các thao tác
+        Voucher voucher = null;
         if (hoaDonDTO.getIdvoucher() != null) {
-            Voucher voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher()).orElseThrow(() -> new RuntimeException("Không tìm thấy Voucher với ID: " + hoaDonDTO.getIdvoucher()));
+            voucher = voucherRepository.findById(hoaDonDTO.getIdvoucher()).orElseThrow(() -> new RuntimeException("Không tìm thấy Voucher với ID: " + hoaDonDTO.getIdvoucher()));
 
             if (voucher.getSoLuong() <= 0) {
                 throw new RuntimeException("Voucher này đã hết số lượng sử dụng.");
@@ -736,7 +740,6 @@ public class HoaDonService {
         } else {
             hoaDon.setVoucher(null);
         }
-
         hoaDon.setNgayTao(new Date());
         hoaDon.setTenNguoiNhan(hoaDonDTO.getTenNguoiNhan());
         hoaDon.setDiaChi(hoaDonDTO.getDiaChi());
@@ -745,6 +748,11 @@ public class HoaDonService {
         hoaDon.setMoTa(hoaDonDTO.getGhiChu());
         hoaDon.setTrangThai(true);
         hoaDon.setLoai(1);
+
+        VoucherNguoiDung voucherNguoiDung = new VoucherNguoiDung();
+        voucherNguoiDung.setNguoiDung(nguoiDung);
+        voucherNguoiDung.setVoucher(voucher);
+        repository.save(voucherNguoiDung);
 
         LoaiTrangThai loaiTrangThai;
         switch (hoaDonDTO.getTenPhuongThucThanhToan()) {

@@ -128,25 +128,14 @@
         app.controller("ngController", function ($scope, $http, $filter, $window) {
             // Tải lại thông tin giỏ hàng mỗi khi giao diện được tải lại
             loadCartInfo();
-
-            $scope.checkTrangThaiNguoiDung = function () {
+            // Hàm kiểm tra và điều hướng đến Thông tin người dùng
+            $scope.checkThongTinNguoiDung = function () {
                 $http.get('http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/' + $scope.idNguoiDung).then(
                     function (response) {
                         if (response.data.trangThai === true) {
-                            // Trạng thái hợp lệ, điều hướng tới trang cá nhân
                             $window.location.href = '#!thong_tin_nguoi_dung';
                         } else {
-                            // Trạng thái bị khóa, hiển thị thông báo
-                            Swal.fire({
-                                title: 'Tài khoản của bạn đã bị khóa!',
-                                text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
-                                icon: 'error',
-                                confirmButtonText: 'Liên hệ hỗ trợ',
-                                footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
-                            });
-
-
-                            return;
+                            showAccountLockedAlert();
                         }
                     },
                     function (error) {
@@ -155,6 +144,35 @@
                     }
                 );
             };
+
+            // Hàm kiểm tra và điều hướng đến Đơn hàng của tôi
+            $scope.checkDonHangCuaToi = function () {
+                $http.get('http://localhost:8080/api/admin/nguoi_dung/check_trang_thai/' + $scope.idNguoiDung).then(
+                    function (response) {
+                        if (response.data.trangThai === true) {
+                            $window.location.href = '#!don_hang_cua_toi';
+                        } else {
+                            showAccountLockedAlert();
+                        }
+                    },
+                    function (error) {
+                        console.error('Không thể kiểm tra trạng thái người dùng:', error);
+                        alert('Đã xảy ra lỗi, vui lòng thử lại sau.');
+                    }
+                );
+            };
+
+            // Hàm hiển thị cảnh báo bị khóa
+            function showAccountLockedAlert() {
+                Swal.fire({
+                    title: 'Tài khoản của bạn đã bị khóa!',
+                    text: 'Rất tiếc, tài khoản của bạn đã bị tạm khóa do phát hiện hoạt động bất thường hoặc vi phạm chính sách sử dụng. Để được hỗ trợ mở khóa, vui lòng liên hệ Quản trị viên qua hotline: 0987 233 227 hoặc email: Nimbus@example.com.',
+                    icon: 'error',
+                    confirmButtonText: 'Liên hệ hỗ trợ',
+                    footer: '<a href="chinhsach.html">Xem chính sách sử dụng</a>'
+                });
+            }
+
 
             // Hàm load thông tin giỏ hàng
             function loadCartInfo() {
@@ -276,17 +294,11 @@
     <script src="lib/bootstrap.js"></script>
     <script src="view-client/assets/javascript/script.js"></script>
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-    <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.1.0-beta.0/libs/oversea/index.js"></script>
-    <script>
-        new CozeWebSDK.WebChatClient({
-          config: {
-            bot_id: '7459675161169002504',
-          },
-          componentProps: {
-            title: 'Coze',
-          },
-        });
-    </script>
+    <script
+        src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/oversea/index.js"></script>
+    <script src="https://app.preny.ai/embed-global.js" data-button-style="width:200px;height:200px" async defer
+        data-preny-bot-id="681696ada495430a006c81f7">
+        </script>
     <!-- Tùy chỉnh CSS cho Chatbot -->
 </body>
 
