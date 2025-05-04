@@ -80,6 +80,15 @@ window.SanPhamController = function ($scope, $http) {
             });
     };
     $scope.onUpdate = function () {
+        // Validate giá bán
+        if (isNaN($scope.SanPham.giaBan) || $scope.SanPham.giaBan <= 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Giá bán không hợp lệ',
+                text: 'Vui lòng nhập giá bán là số lớn hơn 0.',
+            });
+            return;
+        }
         // Tạo đối tượng dữ liệu cập nhật từ form
         let updatedProduct = {
             idSanPham: $scope.SanPham.idSanPham,
@@ -219,9 +228,6 @@ window.SanPhamController = function ($scope, $http) {
         $('#updateProductModal').modal('hide'); // Hide the modal
     };
 
-
-    // Function to update product status
-    // Function to update product status
     $scope.updateTrangThai = function (idSanPham, newStatus) {
         $http.put('http://localhost:8080/api/admin/san_pham/update_status/' + idSanPham, { trangThai: newStatus })
             .then(function (response) {
@@ -254,9 +260,6 @@ window.SanPhamController = function ($scope, $http) {
                 });
             });
     };
-
-
-
 
 
 
@@ -300,7 +303,6 @@ window.SanPhamController = function ($scope, $http) {
         $scope.hideModal('updateProductModal');  // Đóng modal addProductModal
     };
     // Handle product creation
-    // Handle product creation
     $scope.onCreate = function () {
         $scope.SanPham.idDanhMuc = parseInt($scope.SanPham.idDanhMuc, 10);
         $scope.SanPham.giaBan = parseInt($scope.SanPham.giaBan, 10);
@@ -313,7 +315,15 @@ window.SanPhamController = function ($scope, $http) {
             });
             return;
         }
-
+        // Validate giá bán
+        if (isNaN($scope.SanPham.giaBan) || $scope.SanPham.giaBan <= 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Giá bán không hợp lệ',
+                text: 'Vui lòng nhập giá bán là số lớn hơn 0.',
+            });
+            return;
+        }
         const images = document.getElementById('up-hinh-anh').files;
         $scope.SanPham.hinhAnh = [];
         const categoryFolder = getCategoryFolder($scope.SanPham.idDanhMuc);

@@ -526,20 +526,36 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
     // Hàm lưu số lượng sản phẩm khi nhấn nút "Lưu số lượng sản phẩm"
     $scope.saveQuantities = function () {
         let updatedProducts = [];
-
+        let hasInvalidInput = false;
+    
         $scope.filteredProducts.forEach(function (materialGroup) {
             materialGroup.colors.forEach(function (colorGroup) {
                 colorGroup.products[0].items.forEach(function (item) {
-                    if (item.soLuong !== undefined && item.selected) {
-                        updatedProducts.push({
-                            idSanPhamCT: item.idSanPhamCT,
-                            newQuantity: item.soLuong
-                        });
+                    if (item.selected) {
+                        const quantity = item.soLuong;
+    
+                        if (quantity === undefined || quantity === null || quantity === '' || isNaN(quantity) || parseFloat(quantity) < 0) {
+                            hasInvalidInput = true;
+                        } else {
+                            updatedProducts.push({
+                                idSanPhamCT: item.idSanPhamCT,
+                                newQuantity: parseInt(quantity)
+                            });
+                        }
                     }
                 });
             });
         });
-
+    
+        if (hasInvalidInput) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cảnh báo',
+                text: 'Vui lòng kiểm tra lại số lượng. Có sản phẩm bị nhập sai!',
+            });
+            return;
+        }
+    
         if (updatedProducts.length > 0) {
             $http.put('http://localhost:8080/api/admin/san_pham_chi_tiet/updateQuantities', updatedProducts)
                 .then(function (response) {
@@ -561,11 +577,11 @@ window.addSanPhamController = function ($scope, $http, $routeParams) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Chú ý',
-                text: 'Vui lòng chọn sản phẩm ít nhất một sản phẩm để lưu!',
+                text: 'Vui lòng chọn ít nhất một sản phẩm hợp lệ để lưu!',
             });
         }
     };
-
+    
 
 
 

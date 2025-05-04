@@ -1670,12 +1670,14 @@ VALUES
 
 go
 -- Insert data for gio_hang_chi_tiet
+/*
 INSERT INTO gio_hang_chi_tiet (id_san_pham_chi_tiet, id_gio_hang, so_luong, don_gia, thanh_tien) VALUES 
 (1, 1, 1, 200000, 200000),
 (2, 2, 2, 300000, 600000),
 (3, 1, 1, 500000, 500000),
 (4, 1, 1, 100000, 100000),
 (5, 1, 1, 1500000, 1500000);
+*/
 go
 INSERT INTO hinh_anh_san_pham (id_san_pham, url_anh, mo_ta, trang_thai, thu_tu, loai_hinh_anh) VALUES /* Áo phông */
 (1, 'images/ao_phong/aophongbantaydep.jpg', N'Hình ảnh áo phông', 1, 1, N'Áo phông'),
